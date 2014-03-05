@@ -9,13 +9,21 @@ def patchCfiles(package_dir, patch_fp):
     ''' Patch C files in a given package using a patch file with
     specially-delimited comments:
 
-        Delimiter that prefaces replacements for a given file:
-            //#FILE#path/to/file/relative/to/source/package/dir
-
         Delimiter that prefaces an individual function / definition
+            //#FILE#path/to/file/relative/to/source/package/dir##
+            //#BLOCK#blockname##
+            //#PRESIG#(?regex)*for[^pre]sig(usedtoidblockinoriginalfile)##
+            //#POSTSIG#(?regex)*for[^post]sig(usedtoidblockinoriginalfile)##
+            Content to insert
+            //#ENDBLOCK##  
+
+        Delimiter that prefaces a single statment to be replaced:
+            //#FILE#path/to/file/relative/to/source/package/dir
             //#BLOCK#blockname
-            //#PRESIG#(?regex)*for[^pre]signature(usedtoidblockinoriginalfile)
-            //#POSTSIG#(?regex)*for[^post]signature(usedtoidblockinoriginalfile)
+            //#REPLACE#(?regex)*for[^sig]tobe(replaced)
+            //#STARTBLOCK##
+            Content to insert
+            //#ENDBLOCK##            
 
     The patched files are saved with the suffix _mod, so orig.c becomes
     orig_mod.c.
@@ -69,7 +77,7 @@ def patchCfiles(package_dir, patch_fp):
         r'//#BLOCK#(?P<block>.+?(?=##))##\s*'                              \
         r'(?://#PRESIG#(?P<presig>.+?(?=##))##\s*)?'                       \
         r'(?://#POSTSIG#(?P<postsig>.+?(?=##))##\s*)?'                     \
-        r'(?://#REPLACE#(?P<replace>.+?(?=##))##\s*)?'                      \
+        r'(?://#REPLACE#(?P<replace>.+?(?=##))##\s*)?'                     \
         r'//#STARTBLOCK##(?P<content>.+?(?=//#ENDBLOCK##))//#ENDBLOCK##',
         re.DOTALL)
 
