@@ -67,9 +67,10 @@ def patchCfiles(package_dir, patch_fp):
     _patch_re = re.compile(
         r'//#FILE#(?P<fp>.+?(?=##))##\s*'                                  \
         r'//#BLOCK#(?P<block>.+?(?=##))##\s*'                              \
-        r'//#PRESIG#(?P<presig>.+?(?=##))##\s*'                            \
+        r'(?://#PRESIG#(?P<presig>.+?(?=##))##\s*)?'                       \
         r'(?://#POSTSIG#(?P<postsig>.+?(?=##))##\s*)?'                     \
-        r'//#STARTBLOCK##(?P<content>(.+?)(?=//#ENDBLOCK##))//#ENDBLOCK##',
+        r'(?://#REPLACE#(?P<replace>.+?(?=##))##\s*)?'                      \
+        r'//#STARTBLOCK##(?P<content>.+?(?=//#ENDBLOCK##))//#ENDBLOCK##',
         re.DOTALL)
 
     patch_dict = {}
@@ -84,14 +85,22 @@ def patchCfiles(package_dir, patch_fp):
         patch_dict[fp][patch.group('block')] = {
                 'presig': patch.group('presig'),
                 'postsig': patch.group('postsig'),
-                'content': patch.group('content')
+                'content': patch.group('content'),
+                'replace': patch.group('replace')
             }
     for file_to_patch, patches in patch_dict.items():
         with open(pjoin(package_dir, file_to_patch)) as fd:
             contents_to_patch = fd.read()
         for block_name, patch in patches.items():
-            contents_to_patch = replaceCblock(contents_to_patch, patch['presig'],
-                                            patch['content'], patch['postsig'])
+            if patch['replace'] and patch['replace'] != '':
+                contents_to_patch = re.subn(patch['replace'], 
+                                            patch['content'],
+                                            contents_to_patch)[0]
+            else:
+                contents_to_patch = replaceCblock(contents_to_patch, 
+                                                  patch['presig'],
+                                                  patch['content'], 
+                                                  patch['postsig'])
         _processPatch(contents_to_patch, file_to_patch)
         fp, ext = os.path.splitext(file_to_patch)
         new_fp = fp + '_mod' + ext

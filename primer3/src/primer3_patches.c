@@ -114,3 +114,10 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
     return;
 }
 //#ENDBLOCK##
+
+//#FILE#src/thal.c##
+//#BLOCK#NoSS##
+//#REPLACE#fputs\("No secondary structure could be calculated\\n",stderr\);##
+//#STARTBLOCK##
+o->no_structure = 1;
+//#ENDBLOCK##
