@@ -27,7 +27,10 @@ primer3_path = pjoin(src_path, 'primer3-2.3.6')
 primer3_src = pjoin(primer3_path, 'src')
 
 primer3_srcs = [pjoin(primer3_src, 'thal_mod.c'),
-                pjoin(primer3_src, 'oligotm.c')]
+                pjoin(primer3_src, 'oligotm.c'),
+                pjoin(primer3_src, 'p3_seq_lib_mod.c'),
+                pjoin(primer3_src, 'libprimer3_mod.c'),
+                pjoin(primer3_src, 'dpal.c')]
 
 if not os.path.exists(primer3_path):
     p3fd = tarfile.open(os.path.join(src_path, 'primer3-src-2.3.6.tar.gz'))
@@ -67,10 +70,13 @@ def recursivelyFindFiles(srcdir, subdir):
 
 p3_files = recursivelyFindFiles(primer3_path, package_path + '/')
 
+# Insure that g++ is the compiler (primer3 does not play nice w/ clang)
+os.environ["CC"] = "g++"
+os.environ["CXX"] = "g++"
 
 primer3_ext = Extension('primer3._primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,
-                        include_dirs=[primer3_src],
+                        include_dirs=[primer3_src]
                         )
 
 setup (

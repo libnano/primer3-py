@@ -37,6 +37,7 @@ def patchCfiles(package_dir, patch_fp):
 
     def _correctHeaderRefs(patched_files):
         to_correct = {}
+        print patched_files
         for old_fp, new_fp in patched_files:
             directory, old_fn = os.path.split(old_fp)
             if old_fn.split('.')[-1] == 'h':
@@ -49,7 +50,7 @@ def patchCfiles(package_dir, patch_fp):
                 fn_pre, ext = os.path.splitext(fn)
                 if fn_pre + '_mod' + ext in files_to_check:
                     continue
-                if ext == '.c':
+                if ext == '.c' or ext == '.h':
                     updated = False
                     with open(os.path.join(directory, fn)) as fd:
                         try:
@@ -69,6 +70,8 @@ def patchCfiles(package_dir, patch_fp):
                                 mod_fp = os.path.join(directory, fn_base + ext)
                                 with open(mod_fp, 'w') as mod_fd:
                                     mod_fd.write(contents)
+                                if ext == '.h':
+                                    _correctHeaderRefs([(os.path.join(directory, fn), mod_fp)])
                         except UnicodeDecodeError:
                             pass
 

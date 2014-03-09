@@ -121,3 +121,13 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
 //#STARTBLOCK##
 o->no_structure = 1;
 //#ENDBLOCK##
+
+
+//#FILE#src/p3_seq_lib.h##
+//#BLOCK#create_seq_lib##
+//#REPLACE##endif##
+//#STARTBLOCK##
+seq_lib *create_empty_seq_lib();
+
+#endif
+//#ENDBLOCK##
