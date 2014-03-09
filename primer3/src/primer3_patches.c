@@ -1,5 +1,5 @@
 /* This file contains c code patches for the primer3-2.3.6 distribution that
- * allow for better python C api integration. For all intenstive purposes,
+ * allow for better python C api integration. For all intents and purposes,
  * the code within this file is valid C; however, there are specially
  * delimited comments that facilitate python-implemented parsing and patching.
  * (see buildutil.py for information on delimiters)
