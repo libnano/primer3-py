@@ -17,20 +17,20 @@
 PyDoc_STRVAR(primer3__doc__, "Python bindings for Primer3\n");
 
 /* function doc strings */
-PyDoc_STRVAR(getThermoFunction__doc__,
+PyDoc_STRVAR(getThermoParams__doc__,
 "Loads the thermodynamic values from the parameter files in the specified\n"
 "parameter directory. Should only need to be called once on module import\n"
 "path: path to the parameter directory"
 );
 
-PyDoc_STRVAR(thalFunction__doc__,
+PyDoc_STRVAR(calcThermo__doc__,
 "Computes the best alignment between oligo1 and oligo2\n"
 "oligo1: sequence of the first oligo\n"
 "oligo2: sequence of the second oligo\n"
 "align_type: alignment type (1: any, 2: end1, 3: end3, 4: hairpin)\n"
 "mv_conc: concentration of monovalent cations\n"
 "dv_conc: concentration of divalent cations\n"
-"dntp_conc: concentration of dntps\n"
+/* ~~~~~~~~~~~~~~~~~ "dntp_conc: concentration of dntps\n" ~~~~~~~~~~~~~~~~~ */
 "dna_conc: concentration of oligonucleotides\n"
 "temp: temperature at which hairpin structures will be calculated\n"
 "max_loop: maximum size of a loop to consider (must be <=30)\n"
@@ -38,7 +38,7 @@ PyDoc_STRVAR(thalFunction__doc__,
 "debug: debug printing turned on if true\n"
 );
 
-PyDoc_STRVAR(seqTmFunction__doc__,
+PyDoc_STRVAR(calcTm__doc__,
 "Computes the tm of oligo\n"
 "oligo: sequence of the oligo\n"
 "mv_conc: concentration of monovalent cations\n"
@@ -52,9 +52,9 @@ PyDoc_STRVAR(seqTmFunction__doc__,
 );
 
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PYTHON FUNCS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-static PyObject *getThermoFunction(PyObject *self, PyObject *args) {
+static PyObject *getThermoParams(PyObject *self, PyObject *args) {
     /* This loads the thermodynamic parameters from the parameter files
      * found at the provided path and should only need to be called once
      * prior to running thermodynamic calculations. Returns boolean indicating
@@ -66,7 +66,6 @@ static PyObject *getThermoFunction(PyObject *self, PyObject *args) {
     int             load_success;   // get_thermodynamic_values returns 0 on success
 
     if (!PyArg_ParseTuple(args, "s", &param_path)) {
-        PyErr_SetString(PyExc_TypeError, "getThermoFunction: param_path is of incorrect type\n");
         return NULL;
     }
 
@@ -82,7 +81,9 @@ static PyObject *getThermoFunction(PyObject *self, PyObject *args) {
     }
 }
 
-static PyObject *thalFunction(PyObject *self, PyObject *args){
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOW-LEVEL BINDINGS ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+static PyObject *calcThermo(PyObject *self, PyObject *args){
     /* Wraps the main thal function in thal.c/thal.h. Arguments are parsed
      * into a thal_args struct (see thal.h).
      */
@@ -108,7 +109,6 @@ static PyObject *thalFunction(PyObject *self, PyObject *args){
                           &thalargs.dv, &thalargs.dntp, &thalargs.dna_conc,
                           &thalargs.temp,  &thalargs.maxLoop,
                           &thalargs.temponly, &thalargs.debug)) {
-        PyErr_SetString(PyExc_TypeError, "thalFunction: could not parse params\n");
         return NULL;
     }
     thal((const unsigned char *)oligo1, (const unsigned char *)oligo2,
@@ -119,7 +119,7 @@ static PyObject *thalFunction(PyObject *self, PyObject *args){
                               thalres.align_end_2);
 }
 
-static PyObject *seqTmFunction(PyObject *self, PyObject *args){
+static PyObject *calcTm(PyObject *self, PyObject *args){
     /* Wraps the seq function in oligotm.c/oligotm.h, which is used to
      * calculate the tm of a short sequence.
      */
@@ -132,7 +132,6 @@ static PyObject *seqTmFunction(PyObject *self, PyObject *args){
                           &oligo, &mv_conc, &dv_conc, &dntp_conc, &dna_conc,
                           &max_nn_length, &tm_method,
                           &salt_correction_method)) {
-        PyErr_SetString(PyExc_TypeError, "oligoTmFunction: could not parse params\n");
         return NULL;
     }
 
@@ -142,12 +141,16 @@ static PyObject *seqTmFunction(PyObject *self, PyObject *args){
     return Py_BuildValue("d", tm);
 }
 
+/* ~~~~~~~~~~~~~~~~~~~~~ PRIMER / OLIGO DESIGN BINDINGS ~~~~~~~~~~~~~~~~~~~~ */
+
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 static PyMethodDef primer3_methods[] = {
-    { "getThermoFunction", getThermoFunction, METH_VARARGS, getThermoFunction__doc__ },
-    { "thalFunction", thalFunction, METH_VARARGS, thalFunction__doc__ },
-    { "seqTmFunction", seqTmFunction, METH_VARARGS, seqTmFunction__doc__ },
+    { "getThermoParams", getThermoParams, METH_VARARGS, getThermoParams__doc__ },
+    { "calcThermo", calcThermo, METH_VARARGS, calcThermo__doc__ },
+    { "calcTm", calcTm, METH_VARARGS, calcTm__doc__ },
     { NULL, NULL }
 };
 

@@ -22,7 +22,7 @@ PRIMER3_HOME = os.environ.get('PRIMER3HOME')
 
 # ~~~~~~~~~~~~~~~~ Load thermodynamic parameters into memory ~~~~~~~~~~~~~~~~ #
 
-_primer3.getThermoFunction(pjoin(PRIMER3_HOME, 'src', 'primer3_config/'))
+_primer3.getThermoParams(pjoin(PRIMER3_HOME, 'src', 'primer3_config/'))
 
 
 
@@ -35,7 +35,7 @@ THALRESULT = namedtuple('thal_result', ['msg', 'no_structure', 'temp_c',
 
 def thalFunction(seq1, seq2, calc_type=0, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                  dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
-    res = _primer3.thalFunction(seq1, seq2, calc_type, mv_conc, dv_conc,
+    res = _primer3.calcThermo(seq1, seq2, calc_type, mv_conc, dv_conc,
                                 dntp_conc, dna_conc, temp_c + 273.15,
                                 max_loop, temp_only, 0)
     return THALRESULT(*res)
@@ -81,6 +81,6 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     if not salt_meth:
         raise ValueError('{} is not a valid salt correction method'.format(
                          salt_meth))
-    return _primer3.seqTmFunction(seq, mv_conc, dv_conc, dntp_conc, dna_conc,
+    return _primer3.calcTm(seq, mv_conc, dv_conc, dntp_conc, dna_conc,
                                   max_nn_length, tm_meth, salt_meth)
 
