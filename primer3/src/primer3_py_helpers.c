@@ -1,3 +1,13 @@
+/*
+
+primer3_py_helpers.c
+~~~~~~~~~~~~~~~~~~~~
+
+This file defines macros and helper functions that facilitate interaction 
+between Python C API code and primer3 native C code. 
+
+*/
+
 #include    <string.h>
 #include    <stdio.h>
 #include    <Python.h>
@@ -6,6 +16,7 @@
 // Check python dictionary `d` for key `k` and (if it exists) assign the
 // value to Py_Object o. Return 1 on success or 0 if the key is not in the dict
 #define DICT_GET_OBJ(o, d, k) ((o = PyDict_GetItemString(d, k)) != NULL)
+
 // Wraps DICT_GET_OBJ and takes the dictionary value object, extracts a long,
 // casts it to an int and assigns its value to `st`
 #define DICT_GET_AND_ASSIGN_INT(o, d, k, st, err)                              \
@@ -15,6 +26,7 @@
             sprintf(err, "Value of %s is not an integer.", k);                 \
             return NULL;}                                                      \
     }
+
 // Wraps DICT_GET_OBJ and takes the dictionary value object, extracts a long,
 // casts it to `type` and assigns its value to `st`
 #define DICT_GET_AND_ASSIGN_INT_TYPE(o, d, k, st, err, t)                      \
@@ -24,6 +36,7 @@
             sprintf(err, "Value of %s is not an integer.", k);                 \
             return NULL;}                                                      \
     }
+
 // Wraps DICT_GET_OBJ and takes the dictionary value object, extracts a double,
 // and assigns its value to `st`
 #define DICT_GET_AND_ASSIGN_DOUBLE(o, d, k, st, err)                           \
@@ -33,9 +46,14 @@
             sprintf(err, "Value of %s is not an integer or float.", k);        \
             return NULL;}                                                      \
     }
+
+// Wraps DICT_GET_OBJ and takes the dictionary value object, exposes the 
+// internal string buffer, and copies the string into newly allocated memory
+// pointed to by st (note that a pointer to st is passed in, so we need to
+// further dereference it to get to the actual string pointer).    
 // PyString_AsString exposes the internal buffer of the string (null terminated)
 // It must not be changed or freed, so we have to malloc new memory for the
-// param value
+// param value.
 #define DICT_GET_AND_COPY_STR(o, d, k, st, err)                                \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
         if (PyString_AsString(o) == NULL){                                     \
@@ -65,6 +83,25 @@ parseGlobalParams(PyObject *self, PyObject *p3s_dict, char *err) {
 
     pa = p3_create_global_settings();
 
+    /* Note that some of the documented primer3 parameters are ignored in 
+     * this function. Specifically, any parameters related to file IO (as 
+     * well as thermodynamic parameter files) are ignored:
+     *
+     *      P3_FILE_FLAG
+     *      PRIMER_EXPLAIN_FLAG
+     *      PRIMER_MISPRIMING_LIBRARY
+     *      PRIMER_INTERNAL_MISHYB_LIBRARY
+     *      PRIMER_THERMODYNAMIC_PARAMETERS_PATH
+     *
+     * Otherwise, all parameters are generally parsed in the same order as
+     * in read_boulder.c in the primer3 source. This code will permit some
+     * edge cases that are more directly addressed in read_boulder.c (for 
+     * example, if you provide both PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE /
+     * PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE and 
+     * PRIMER_MIN_THREE_PRIME_DISTANCE, the latter value will be used for both
+     * the left and right three prime distance parameters.
+     */
+
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_OPT_SIZE", &pa->p_args.opt_size, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MIN_SIZE", &pa->p_args.min_size, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MAX_SIZE", &pa->p_args.max_size, err);
@@ -93,11 +130,9 @@ parseGlobalParams(PyObject *self, PyObject *p3s_dict, char *err) {
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_COMPL_END", &pa->pair_compl_end, err);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_COMPL_ANY_TH", &pa->pair_compl_any_th, err);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_COMPL_END_TH", &pa->p_args.divalent_conc, err);
-    // DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "P3_FILE_FLAG", &pa->p_args.divalent_conc, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_PICK_ANYWAY", &pa->pick_anyway, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_GC_CLAMP", &pa->gc_clamp, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MAX_END_GC", &pa->max_end_gc, err);
-    // DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_EXPLAIN_FLAG", &pa->explain_flag, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_LIBERAL_BASE", &pa->liberal_base, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_FIRST_BASE_INDEX", &pa->first_base_index, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_NUM_RETURN", &pa->num_return, err);
@@ -152,13 +187,10 @@ parseGlobalParams(PyObject *self, PyObject *p3s_dict, char *err) {
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_LIB_AMBIGUITY_CODES_CONSENSUS", &pa->lib_ambiguity_codes_consensus, err);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_INSIDE_PENALTY", &pa->inside_penalty, err);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_OUTSIDE_PENALTY", &pa->outside_penalty, err);
-    // DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_MISPRIMING_LIBRARY",    &pa->p_args, err);
-    // DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_INTERNAL_MISHYB_LIBRARY",    &pa->p_args, err);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_MAX_END_STABILITY", &pa->max_end_stability, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_LOWERCASE_MASKING", &pa->lowercase_masking, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_THERMODYNAMIC_OLIGO_ALIGNMENT", &pa->thermodynamic_oligo_alignment, err);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_THERMODYNAMIC_TEMPLATE_ALIGNMENT", &pa->thermodynamic_template_alignment, err);
-    // GPO(p_obj, p3s_dict, "PRIMER_THERMODYNAMIC_PARAMETERS_PATH",    &pa->p_args., err);
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MUST_MATCH_FIVE_PRIME", &pa->p_args.must_match_five_prime, err);
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MUST_MATCH_THREE_PRIME", &pa->p_args.must_match_three_prime, err);
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_FIVE_PRIME", &pa->o_args.must_match_five_prime, err);
