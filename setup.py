@@ -9,7 +9,7 @@ Support for both Python 2.7.x and Python 3.x.x
 
 """
 
-
+import sys
 import os
 import subprocess
 import tarfile
@@ -30,7 +30,8 @@ primer3_srcs = [pjoin(primer3_src, 'thal_mod.c'),
                 pjoin(primer3_src, 'oligotm.c'),
                 pjoin(primer3_src, 'p3_seq_lib_mod.c'),
                 pjoin(primer3_src, 'libprimer3_mod.c'),
-                pjoin(primer3_src, 'dpal.c')]
+                pjoin(primer3_src, 'dpal.c'),
+                pjoin(src_path, 'primer3_py_helpers.c')]
 
 if not os.path.exists(primer3_path):
     p3fd = tarfile.open(os.path.join(src_path, 'primer3-src-2.3.6.tar.gz'))
@@ -48,31 +49,33 @@ p3build.wait()
 
 # Find all primer3 data files
 
-def opj(*args):
-    path = os.path.join(*args)
-    return os.path.normpath(path)
+# os.path.walk is deprecated in Python 3 (os.walk is much simpler anyway)
+# def opj(*args):
+#     path = os.path.join(*args)
+#     return os.path.normpath(path)
+# 
+# def recursivelyFindFiles(srcdir, subdir):
+#     def walk_helper(arg, dirname, file_list):
+#         names = []
+#         lst = arg
+#         wc_name = opj(dirname, '*.*')
+#         for f in file_list:
+#             filename = opj(dirname, f)
+#             if fnmatch(filename, wc_name) and not os.path.isdir(filename):
+#                 names.append(filename.replace(subdir, ''))
+#         if names:
+#             lst += names
+#
+#     file_list = []
+#     os.path.walk(srcdir, walk_helper, file_list)
+#     return file_list
 
-def recursivelyFindFiles(srcdir, subdir):
-    def walk_helper(arg, dirname, file_list):
-        names = []
-        lst = arg
-        wc_name = opj(dirname, '*.*')
-        for f in file_list:
-            filename = opj(dirname, f)
-            if fnmatch(filename, wc_name) and not os.path.isdir(filename):
-                names.append(filename.replace(subdir, ''))
-        if names:
-            lst += names
+p3_files = [pjoin(root, f) for root, _, files in os.walk(primer3_path) for f in files]
 
-    file_list = []
-    os.path.walk(srcdir, walk_helper, file_list)
-    return file_list
-
-p3_files = recursivelyFindFiles(primer3_path, package_path + '/')
-
-# Insure that g++ is the compiler (primer3 does not play nice w/ clang)
-os.environ["CC"] = "g++"
-os.environ["CXX"] = "g++"
+# Insure that g++ is the compiler on OS X (primer3 does not play nice w/ clang)
+if sys.platform == 'darwin':
+    os.environ["CC"] = "g++"
+    os.environ["CXX"] = "g++"
 
 primer3_ext = Extension('primer3._primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,

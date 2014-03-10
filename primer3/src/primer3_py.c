@@ -8,6 +8,9 @@
 #include    <oligotm.h>
 #include    <libprimer3_mod.h>
 
+// primer3_py helper functions
+#include "primer3_py_helpers.h"
+
 #if PY_MAJOR_VERSION >= 3
 /* see http://python3porting.com/cextensions.html */
     #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
@@ -56,7 +59,8 @@ PyDoc_STRVAR(calcTm__doc__,
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-static PyObject *getThermoParams(PyObject *self, PyObject *args) {
+static PyObject*
+getThermoParams(PyObject *self, PyObject *args) {
     /* This loads the thermodynamic parameters from the parameter files
      * found at the provided path and should only need to be called once
      * prior to running thermodynamic calculations. Returns boolean indicating
@@ -83,20 +87,19 @@ static PyObject *getThermoParams(PyObject *self, PyObject *args) {
     }
 }
 
-seq_lib *genSeqLib(PyObject *self, PyObject *seq_dict){
+static seq_lib*
+genSeqLib(PyObject *self, PyObject *seq_dict){
     /* Generates a library of sequences for mispriming checks.
      * Input is a Python dictionary with <seq name: sequence> key value
      * pairs. 
      */
 
     seq_lib                 *sl;
-    int                     num_seqs;
     PyObject                *py_seq_name, *py_seq;
     Py_ssize_t              pos;
     char                    *seq_name, *seq, *errfrag=NULL;
 
     sl = create_empty_seq_lib();
-    num_seqs = (int)PyDict_Size(seq_dict);
 
     pos = 0;
     while (PyDict_Next(seq_dict, &pos, &py_seq_name, &py_seq)) {
@@ -112,7 +115,8 @@ seq_lib *genSeqLib(PyObject *self, PyObject *seq_dict){
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOW-LEVEL BINDINGS ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-static PyObject *calcThermo(PyObject *self, PyObject *args){
+static PyObject*
+calcThermo(PyObject *self, PyObject *args){
     /* Wraps the main thal function in thal.c/thal.h. Arguments are parsed
      * into a thal_args struct (see thal.h).
      */
@@ -148,7 +152,8 @@ static PyObject *calcThermo(PyObject *self, PyObject *args){
                               thalres.align_end_2);
 }
 
-static PyObject *calcTm(PyObject *self, PyObject *args){
+static PyObject*
+calcTm(PyObject *self, PyObject *args){
     /* Wraps the seq function in oligotm.c/oligotm.h, which is used to
      * calculate the tm of a short sequence.
      */
@@ -173,7 +178,10 @@ static PyObject *calcTm(PyObject *self, PyObject *args){
 
 /* ~~~~~~~~~~~~~~~~~~~~~ PRIMER / OLIGO DESIGN BINDINGS ~~~~~~~~~~~~~~~~~~~~ */
 
+static PyObject*
+designPrimers(PyObject *self, PyObject *args){
 
+}
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 

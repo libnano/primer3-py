@@ -37,7 +37,6 @@ def patchCfiles(package_dir, patch_fp):
 
     def _correctHeaderRefs(patched_files):
         to_correct = {}
-        print patched_files
         for old_fp, new_fp in patched_files:
             directory, old_fn = os.path.split(old_fp)
             if old_fn.split('.')[-1] == 'h':
