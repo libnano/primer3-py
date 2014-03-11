@@ -171,6 +171,53 @@ between Python C API code and primer3 native C code.
         }                                                                      \
     }                                                                          \
 
+#if PY_MAJOR_VERSION < 3
+    #define COPY_SEQ_NAME_AND_SEQ_TO_SEQ_LIB(py_seq_name, py_seq, seq_lib) {   \
+        if (PyString_Check(py_seq_name)) {                                     \
+            seq_name = PyString_AsString(py_seq_name);                         \
+        } else {                                                               \
+            PyErr_SetString(PyExc_TypeError,                                   \
+                "Cannot add seq name with non-String type to seq_lib");        \
+            return NULL;                                                       \
+        }                                                                      \
+        if (PyString_Check(py_seq)) {                                          \
+            seq_name = PyString_AsString(py_seq);                              \
+        } else {                                                               \
+            PyErr_SetString(PyExc_TypeError,                                   \
+                "Cannot add seq with non-String type to seq_lib");             \
+            return NULL;                                                       \
+        }                                                                      \
+        if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {     \
+            PyErr_SetString(PyExc_IOError, errfrag);                           \
+            return NULL;                                                       \
+        }                                                                      \
+    }
+#else
+    #define COPY_SEQ_NAME_AND_SEQ_TO_SEQ_LIB(py_seq_name, py_seq, seq_lib) {   \
+        if (PyUnicode_Check(py_seq_name)) {                                    \
+            seq_name = PyBytes_AsString(PyUnicode_AsASCIIString(py_seq_name)); \
+        } else if (PyBytes_Check(py_seq_name)){                                \
+            seq_name = PyBytes_AsString(py_seq_name);                          \
+        } else {                                                               \
+            PyErr_SetString(PyExc_TypeError,                                   \
+                "Cannot add seq name with non-Unicode/Bytes type to seq_lib"); \
+            return NULL;                                                       \
+        }                                                                      \
+        if (PyUnicode_Check(py_seq)) {                                         \
+            seq = PyBytes_AsString(PyUnicode_AsASCIIString(py_seq));           \
+        } else if (PyBytes_Check(py_seq)){                                     \
+            seq = PyBytes_AsString(py_seq);                                    \
+        } else {                                                               \
+            PyErr_SetString(PyExc_TypeError,                                   \
+                "Cannot add seq with non-Unicode/Bytes type to seq_lib");      \
+            return NULL;                                                       \
+        }                                                                      \
+        if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {     \
+            PyErr_SetString(PyExc_IOError, errfrag);                           \
+            return NULL;                                                       \
+        }                                                                      \
+    }
+#endif
 
 p3_global_settings*
 setGlobalParams(PyObject *self, PyObject *p3s_dict) {
@@ -179,8 +226,8 @@ setGlobalParams(PyObject *self, PyObject *p3s_dict) {
      * Parses the user-provided settings from p3_settings_dict and 
      * overwrites the defaults (note that minimal error checking is 
      * performed in this function). If there is an error during the process
-     * (e.g., a param is not of the correct time), `err` will be set to the
-     * error string and the function will return NULL.
+     * (e.g., a param is not of the correct type), the python error string will
+     * be set and the function will return NULL. 
      */
 
     p3_global_settings      *pa;
@@ -360,7 +407,7 @@ seq_lib*
 createSeqLib(PyObject *self, PyObject *seq_dict){
     /* Generates a library of sequences for mispriming checks.
      * Input is a Python dictionary with <seq name: sequence> key value
-     * pairs. 
+     * pairs. Returns NULL and sets the Python error string on failure.
      */
 
     seq_lib                 *sl;
@@ -375,12 +422,7 @@ createSeqLib(PyObject *self, PyObject *seq_dict){
 
     pos = 0;
     while (PyDict_Next(seq_dict, &pos, &py_seq_name, &py_seq)) {
-        seq_name = PyBytes_AsString(py_seq_name);
-        seq = PyBytes_AsString(py_seq);
-        if(add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
-            PyErr_SetString(PyExc_IOError, errfrag);
-            return NULL;
-        }
+        COPY_SEQ_NAME_AND_SEQ_TO_SEQ_LIB(py_seq_name, py_seq, sl);
     }
     return sl;
 }
@@ -388,6 +430,10 @@ createSeqLib(PyObject *self, PyObject *seq_dict){
 
 seq_args*
 createSeqArgs(PyObject *self, PyObject *sa_dict){
+    /* Creates a sequence args object that defines a DNA/RNA sequence for 
+     * which you want to design primers / oligos. Returns NULL and sets the
+     * Python error string on failure.
+     */
 
     seq_args                *sa;
     PyObject                *p_obj;
@@ -397,7 +443,6 @@ createSeqArgs(PyObject *self, PyObject *sa_dict){
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
         return NULL;
     }
-    // Sequence strings
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_TEMPLATE", &sa->sequence);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_ID", &sa->right_input);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER", &sa->left_input);
