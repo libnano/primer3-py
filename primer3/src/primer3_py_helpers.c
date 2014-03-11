@@ -14,11 +14,11 @@ between Python C API code and primer3 native C code.
 #include    <libprimer3_mod.h>
 
 
-#if PY_MAJOR_VERSION < 3
-/* see http://python3porting.com/cextensions.html */
-    #define PyLong_Check PyInt_Check
-    #define PyLong_AsLong PyInt_AsLong
-#endif
+// #if PY_MAJOR_VERSION < 3
+// /* see http://python3porting.com/cextensions.html */
+//     #define PyLong_Check PyInt_Check
+//     #define PyLong_AsLong PyInt_AsLong
+// #endif
 
 
 // Check python dictionary `d` for key `k` and (if it exists) assign the
@@ -73,11 +73,12 @@ between Python C API code and primer3 native C code.
         if (DICT_GET_OBJ(o, d, k)) {                                           \
             if (!PyString_Check(o)){                                           \
                 PyErr_Format(PyExc_TypeError,                                  \
-                            sprintf("Value of %s is not of type string", k));  \
+                             "Value of %s is not of type string", k);          \
                 return NULL;}                                                  \
             *st = (char *) malloc(PyBytes_Size(o));                            \
             if (st == NULL) {                                                  \
-                strcpy(err, "Primer3 out of memory");                          \
+                PyErr_Format(PyExc_IOError,                                    \
+                            "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
             strcpy(*st, PyString_AsString(o));                                 \
         }
@@ -232,6 +233,7 @@ setGlobalParams(PyObject *self, PyObject *p3s_dict) {
 
     p3_global_settings      *pa;
     PyObject                *p_obj;
+    char                    *task_tmp=NULL;
 
     if (!(pa = p3_create_global_settings())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
@@ -400,6 +402,63 @@ setGlobalParams(PyObject *self, PyObject *p3s_dict) {
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_WT_TEMPLATE_MISPRIMING", pa->pr_pair_weights.template_mispriming);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_WT_TEMPLATE_MISPRIMING_TH", pa->pr_pair_weights.template_mispriming_th);
 
+    // Handler primer task
+    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_TASK", &task_tmp);
+    if (task_tmp == NULL) {
+        PyErr_SetString(PyExc_ValueError, \
+            "Primer3 args must include PRIMER_TASK");
+        return NULL;
+    }
+    // Directly from read_boulder.c
+    if (!strcmp_nocase(task_tmp, "pick_pcr_primers")) {
+      pa->primer_task = generic;
+      pa->pick_left_primer = 1;
+      pa->pick_right_primer = 1;
+      pa->pick_internal_oligo = 0;
+    } else if (!strcmp_nocase(task_tmp, "pick_pcr_primers_and_hyb_probe")) {
+      pa->primer_task = generic; 
+      pa->pick_left_primer = 1;
+      pa->pick_right_primer = 1;
+      pa->pick_internal_oligo = 1;
+    } else if (!strcmp_nocase(task_tmp, "pick_left_only")) {
+      pa->primer_task = generic;
+      pa->pick_left_primer = 1;
+      pa->pick_right_primer = 0;
+      pa->pick_internal_oligo = 0;
+    } else if (!strcmp_nocase(task_tmp, "pick_right_only")) {
+      pa->primer_task = generic;
+      pa->pick_left_primer = 0;
+      pa->pick_right_primer = 1;
+      pa->pick_internal_oligo = 0;
+    } else if (!strcmp_nocase(task_tmp, "pick_hyb_probe_only")) {
+      pa->primer_task = generic;
+      pa->pick_left_primer = 0;
+      pa->pick_right_primer = 0;
+      pa->pick_internal_oligo = 1;
+    } else if (!strcmp_nocase(task_tmp, "generic")) {
+      pa->primer_task = generic;
+    } else if (!strcmp_nocase(task_tmp, "pick_detection_primers")) {
+      pa->primer_task = generic; /* Deliberate duplication for
+                    backward compatibility. */
+    } else if (!strcmp_nocase(task_tmp, "pick_cloning_primers")) {
+      pa->primer_task = pick_cloning_primers;
+    } else if (!strcmp_nocase(task_tmp, "pick_discriminative_primers")) {
+      pa->primer_task = pick_discriminative_primers;
+    } else if (!strcmp_nocase(task_tmp, "pick_sequencing_primers")) {
+      pa->primer_task = pick_sequencing_primers;
+    } else if (!strcmp_nocase(task_tmp, "pick_primer_list")) {
+      pa->primer_task = pick_primer_list;
+    } else if (!strcmp_nocase(task_tmp, "check_primers")) {
+      pa->primer_task = check_primers;
+      /* check_primers sets the picking flags itself */
+    } else {
+        PyErr_Format(PyExc_ValueError, "%s is not a valid PRIMER_TASK",\
+                     task_tmp);        
+        free(task_tmp);
+        return NULL;
+    }
+    free(task_tmp);
+
     return pa;
 }
 
@@ -413,7 +472,7 @@ createSeqLib(PyObject *self, PyObject *seq_dict){
     seq_lib                 *sl;
     PyObject                *py_seq_name, *py_seq;
     Py_ssize_t              pos;
-    char                    *seq_name, *seq, *errfrag=NULL;
+    char                    *seq_name=NULL, *seq=NULL, *errfrag=NULL;
 
     if (!(sl = create_empty_seq_lib())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_lib");
@@ -429,7 +488,7 @@ createSeqLib(PyObject *self, PyObject *seq_dict){
 
 
 seq_args*
-createSeqArgs(PyObject *self, PyObject *sa_dict){
+createSeqArgs(PyObject *self, PyObject *sa_dict, p3_global_settings *pa){
     /* Creates a sequence args object that defines a DNA/RNA sequence for 
      * which you want to design primers / oligos. Returns NULL and sets the
      * Python error string on failure.
