@@ -417,10 +417,27 @@ createSeqArgs(PyObject *self, PyObject *sa_dict){
     }
     if DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_INCLUDED_REGION") {
         if (!PyList_Check(p_obj)) {
-
+            PyErr_SetString(PyExc_TypeError,\
+                "Value of \"SEQUENCE_INCLUDED_REGION\" is not of type list");
+            return NULL;
+        } else if (PyList_Size(p_obj) != 2) {
+            PyErr_SetString(PyExc_ValueError,\
+                "Length of \"SEQUENCE_INCLUDED_REGION\" is not 2");
+            return NULL;
+        } else if (!PyLong_Check(PyList_GetItem(p_obj, 0)) || \
+                   !PyLong_Check(PyList_GetItem(p_obj, 1))) {
+            PyErr_SetString(PyExc_TypeError,\
+                "\"SEQUENCE_INCLUDED_REGION\" contains non-int value");
+            return NULL;                    
         }
+        sa->incl_s = PyLong_AsLong(PyList_GetItem(p_obj, 0));
+        sa->incl_l = PyLong_AsLong(PyList_GetItem(p_obj, 1));
     }
-    // Still to add: read_boulder.c lines 278-294
+    DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_START_CODON_POSITION", sa->start_codon_pos);
+    DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_LEFT_START", sa->force_left_start);
+    DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_LEFT_END", sa->force_left_end);
+    DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_RIGHT_START", sa->force_right_start);
+    DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_RIGHT_END", sa->force_right_end);
 
     return sa;
 }
