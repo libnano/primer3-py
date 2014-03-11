@@ -14,7 +14,6 @@ import os
 import subprocess
 import tarfile
 
-from fnmatch import fnmatch
 from distutils.core import setup, Extension
 from os.path import join as pjoin
 
@@ -48,28 +47,6 @@ p3build = subprocess.Popen(['make'], shell=True, cwd=primer3_src)
 p3build.wait()
 
 # Find all primer3 data files
-
-# os.path.walk is deprecated in Python 3 (os.walk is much simpler anyway)
-# def opj(*args):
-#     path = os.path.join(*args)
-#     return os.path.normpath(path)
-# 
-# def recursivelyFindFiles(srcdir, subdir):
-#     def walk_helper(arg, dirname, file_list):
-#         names = []
-#         lst = arg
-#         wc_name = opj(dirname, '*.*')
-#         for f in file_list:
-#             filename = opj(dirname, f)
-#             if fnmatch(filename, wc_name) and not os.path.isdir(filename):
-#                 names.append(filename.replace(subdir, ''))
-#         if names:
-#             lst += names
-#
-#     file_list = []
-#     os.path.walk(srcdir, walk_helper, file_list)
-#     return file_list
-
 p3_files = [pjoin(root, f) for root, _, files in os.walk(primer3_path) for f in files]
 
 # Insure that g++ is the compiler on OS X (primer3 does not play nice w/ clang)
