@@ -87,31 +87,6 @@ getThermoParams(PyObject *self, PyObject *args) {
     }
 }
 
-static seq_lib*
-genSeqLib(PyObject *self, PyObject *seq_dict){
-    /* Generates a library of sequences for mispriming checks.
-     * Input is a Python dictionary with <seq name: sequence> key value
-     * pairs. 
-     */
-
-    seq_lib                 *sl;
-    PyObject                *py_seq_name, *py_seq;
-    Py_ssize_t              pos;
-    char                    *seq_name, *seq, *errfrag=NULL;
-
-    sl = create_empty_seq_lib();
-
-    pos = 0;
-    while (PyDict_Next(seq_dict, &pos, &py_seq_name, &py_seq)) {
-        seq_name = PyString_AsString(py_seq_name);
-        seq = PyString_AsString(py_seq);
-        if(add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
-            PyErr_SetString(PyExc_IOError, errfrag);
-            return NULL;
-        }
-    }
-    return sl;
-}
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOW-LEVEL BINDINGS ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 

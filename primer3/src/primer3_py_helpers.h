@@ -10,4 +10,4 @@ Python C API code and primer3 native C code.
 
 #include    <libprimer3_mod.h>
 
-static p3_global_settings* parseGlobalParams(PyObject *self, PyObject *p3_settings_dict, char *err);
+static p3_global_settings* setGlobalParams(PyObject *self, PyObject *p3_settings_dict, char *err);

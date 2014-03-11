@@ -21,7 +21,7 @@ between Python C API code and primer3 native C code.
 // casts it to an int and assigns its value to `st`
 #define DICT_GET_AND_ASSIGN_INT(o, d, k, st, err)                              \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
-        *st = (int)PyInt_AsLong(o);                                            \
+        *st = (int)PyLong_AsLong(o);                                           \
         if (st == NULL) {                                                      \
             sprintf(err, "Value of %s is not an integer.", k);                 \
             return NULL;}                                                      \
@@ -31,7 +31,7 @@ between Python C API code and primer3 native C code.
 // casts it to `type` and assigns its value to `st`
 #define DICT_GET_AND_ASSIGN_INT_TYPE(o, d, k, st, err, t)                      \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
-        *st = (t)PyInt_AsLong(o);                                              \
+        *st = (t)PyLong_AsLong(o);                                             \
         if (st == NULL) {                                                      \
             sprintf(err, "Value of %s is not an integer.", k);                 \
             return NULL;}                                                      \
@@ -56,19 +56,85 @@ between Python C API code and primer3 native C code.
 // param value.
 #define DICT_GET_AND_COPY_STR(o, d, k, st, err)                                \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
-        if (PyString_AsString(o) == NULL){                                     \
+        if (PyBytes_AsString(o) == NULL){                                      \
             sprintf(err, "Value of %s is not a string.", k);                   \
             return NULL;}                                                      \
-        *st = (char *) malloc(strlen(PyString_AsString(o)));                   \
+        *st = (char *) malloc(PyBytes_Size(o));                                \
         if (st == NULL) {                                                      \
             strcpy(err, "Primer3 out of memory");                              \
             return NULL;}                                                      \
-        strcpy(*st, PyString_AsString(o));                                     \
+        strcpy(*st, PyBytes_AsString(o));                                      \
     }
 
+#define DICT_GET_AND_COPY_ARRAY(o, d, k, st, arr_len, err)                     \
+    if (DICT_GET_OBJ(o, d, k)) {                                               \
+        if (!PyList_Check(o)){                                                 \
+            sprintf(err, "Value of %s is not a list.", k);                     \
+            return NULL;}                                                      \
+        *arr_len = PyList_Size(o);                                             \
+        int arr[*arr_len];                                                     \
+        int i;                                                                 \
+        for (i=0; i < *arr_len; i++) {                                         \
+            arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
+        }                                                                      \
+        *st = arr;                                                             \
+    }                                                                          
 
-static p3_global_settings*
-parseGlobalParams(PyObject *self, PyObject *p3s_dict, char *err) {
+#define DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(o, d, k, st, arr_len, err)          \
+    if (DICT_GET_OBJ(o, d, k)) {                                               \
+        if (!PyList_Check(o)){                                                 \
+            sprintf(err, "Value of %s is not a list.", k);                     \
+            return NULL;}                                                      \
+        *arr_len = PyList_Size(o);                                             \
+        int i;                                                                 \
+        for (i=0; i < *arr_len; i++) {                                         \
+            *st[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
+        }                                                                      \
+    }    
+
+#define DICT_GET_AND_COPY_TO_2_INTERVAL_ARRAY(o, d, k, st, err)                \
+    if (DICT_GET_OBJ(o, d, k)){                                                \
+        if (!PyList_Check(o)){                                                 \
+            sprintf(err, "Value of %s is not a list.", k);                     \
+            return NULL;}                                                      \
+        st.count = 0;                                                          \
+        st.any_pair = 0;                                                       \
+        st.any_left = st.any_right = 0;                                        \
+        *arr_len = (int)PyList_Size(p_obj);                                    \
+        if (!arr_len % 2) {                                                    \
+            sprintf(err, "%s must be a linear multiple of 4 in length.", k);   \
+            return NULL;                                                       \
+        }                                                                      \
+        for (i = 0; i < *arr_len / 4; i++) {                                   \
+            p3_add_to_2_interval_array(&st,                                    \
+                   (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),               \
+                   (int)PyLong_AsLong(PyList_GetItem(p_obj, i+1)),             \
+                   (int)PyLong_AsLong(PyList_GetItem(p_obj, i+2)),             \
+                   (int)PyLong_AsLong(PyList_GetItem(p_obj, i+3)));            \
+        }                                                                      \
+    }                                                                          \
+
+#define DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(o, d, k, st, err)                  \
+    if (DICT_GET_OBJ(o, d, k)){                                                \
+        if (!PyList_Check(o)){                                                 \
+            sprintf(err, "Value of %s is not a list.", k);                     \
+            return NULL;}                                                      \
+        st.count = 0;                                                          \
+        *arr_len = PyList_Size(p_obj);                                         \
+        if (!arr_len % 2) {                                                    \
+            sprintf(err, "%s must be a linear multiple of 2 in length.", k);   \
+            return NULL;                                                       \
+        }                                                                      \
+        for (i = 0; i < *arr_len / 2; i++) {                                   \
+            p3_add_to_interval_array(&st,                                      \
+                 (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),                 \
+                 (int)PyLong_AsLong(PyList_GetItem(p_obj, i+1)));              \
+        }                                                                      \
+    }                                                                          \
+
+
+p3_global_settings*
+setGlobalParams(PyObject *self, PyObject *p3s_dict, char *err) {
     /* Creates a new p3_global_settings struct and initializes it with 
      * defaults using p3_create_global_settings() from libprimer3.c.
      * Parses the user-provided settings from p3_settings_dict and 
@@ -81,7 +147,10 @@ parseGlobalParams(PyObject *self, PyObject *p3s_dict, char *err) {
     p3_global_settings      *pa;
     PyObject                *p_obj;
 
-    pa = p3_create_global_settings();
+    if (!(pa = p3_create_global_settings())) {
+        PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
+        return NULL;
+    }
 
     /* Note that some of the documented primer3 parameters are ignored in 
      * this function. Specifically, any parameters related to file IO (as 
@@ -248,3 +317,67 @@ parseGlobalParams(PyObject *self, PyObject *p3s_dict, char *err) {
     return pa;
 }
 
+seq_lib*
+createSeqLib(PyObject *self, PyObject *seq_dict){
+    /* Generates a library of sequences for mispriming checks.
+     * Input is a Python dictionary with <seq name: sequence> key value
+     * pairs. 
+     */
+
+    seq_lib                 *sl;
+    PyObject                *py_seq_name, *py_seq;
+    Py_ssize_t              pos;
+    char                    *seq_name, *seq, *errfrag=NULL;
+
+    if (!(sl = create_empty_seq_lib())) {
+        PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_lib");
+        return NULL;
+    }
+
+    pos = 0;
+    while (PyDict_Next(seq_dict, &pos, &py_seq_name, &py_seq)) {
+        seq_name = PyBytes_AsString(py_seq_name);
+        seq = PyBytes_AsString(py_seq);
+        if(add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
+            PyErr_SetString(PyExc_IOError, errfrag);
+            return NULL;
+        }
+    }
+    return sl;
+}
+
+
+seq_args*
+createSeqArgs(PyObject *sefl, PyObject *sa_dict, char *err){
+
+    seq_args                *sa;
+    PyObject                *p_obj;
+    int                     i, *arr_len=NULL;   
+
+    if (!(sa = create_seq_arg())) {
+        PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
+        return NULL;
+    }
+    // Sequence strings
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_TEMPLATE", &sa->sequence, err);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_ID", &sa->right_input, err);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER", &sa->left_input, err);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER_REVCOMP", &sa->right_input, err);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_INTERNAL_OLIGO", &sa->internal_input, err);
+    DICT_GET_AND_COPY_ARRAY(p_obj, sa_dict, "SEQUENCE_QUALITY", &sa->quality, arr_len, err);
+    if (sa->quality != NULL) {
+        sa->n_quality = *arr_len;
+    }
+    DICT_GET_AND_COPY_TO_2_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST", sa->ok_regions, err);
+    DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_TARGET", sa->tar2, err);
+    DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_EXCLUDED_REGION", sa->excl2, err);
+    DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_INTERNAL_EXCLUDED_REGION", sa->excl_internal2, err);
+    DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(p_obj, sa_dict,  "SEQUENCE_OVERLAP_JUNCTION_LIST", &sa->primer_overlap_junctions, arr_len, err);
+    if (sa->primer_overlap_junctions != NULL) {
+        sa->primer_overlap_junctions_count = *arr_len;
+    }
+
+    // Still to add: read_boulder.c lines 278-294
+
+    return sa;
+}
