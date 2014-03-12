@@ -30,7 +30,7 @@ between Python C API code and primer3 native C code.
 #define DICT_GET_AND_ASSIGN_INT(o, d, k, st)                                   \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
         if (!PyLong_Check(o)) {                                                \
-            PyErr_Format(PyExc_TypeError,                                   \
+            PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not an integer.", k);              \
             return NULL;                                                       \
         }                                                                      \
@@ -545,6 +545,8 @@ createSeqArgs(PyObject *self, PyObject *sa_dict, p3_global_settings *pa){
 
     return sa;
 }
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 /* Code for dumping all primer3 output to a python dictionary. This is 
  * a modified version of print_boulder and its helper methods from
@@ -1136,7 +1138,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
             oligo_max_template_mispriming_thermod(rev), obj_ptr);
 
     }
-     /************************************************************************************/
+
      /* Print the pair parameters*/
     if (retval->output_type == primer_pairs) {
         if (go_int == 1 && NULL != sa->quality) {
@@ -1206,7 +1208,5 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
         
     } /* End of the big loop printing all data */
 
-    Py_DECREF(output_dict);
     return output_dict;
 }
-
