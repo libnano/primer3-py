@@ -154,8 +154,58 @@ calcTm(PyObject *self, PyObject *args){
 /* ~~~~~~~~~~~~~~~~~~~~~ PRIMER / OLIGO DESIGN BINDINGS ~~~~~~~~~~~~~~~~~~~~ */
 
 static PyObject*
-designPrimers(PyObject *self, PyObject *args){
+designPrimers(PyObject *self, PyObject *args, PyObject *kwargs){
+    /* Wraps the primer design functionality of primer3. Parameters that are 
+     * usually passed in via a file or STDIN are passed in via a series of 
+     * Python dictionaries:
+     *      p3_args - the main primer3 args (not case / sequence specific)
+     *      seq_args - sequence specific args (i.e., the target sequence)
+     *      misprime_lib - dictionary of name: seq pairs for mispriming checks
+     *      mishyb_lib - dictionary of name: seq pairs for mishyb checks
+     *                   (internal oligo design)
+     */
 
+    PyObject                *p3_args=NULL, seq_args=NULL, misprime_lib=NULL; 
+    PyObject                *mishyb_lib=NULL, *results;
+    p3_global_settings      *pa;
+    seq_args                *sa;
+    seq_lib                 *mp_lib, *mh_lib;
+    p3_retval               *retval
+
+    static char *kwlist[] = {"misprime_lib", "mishyb_lib", NULL};
+
+    if (!PyArg_ParseTuple(args, kwargs, "O!O!|OO",
+                          &PyDict_Type, p3_args, &PyDict_Type, &seq_args,
+                          misprime_lib, &mishyb_lib)) {
+        return NULL;
+    }
+
+    if ((pa = setGlobalParams(p3_args)) == NULL){
+        return NULL;
+    }
+    if ((sa = createSeqArgs(seq_args, pa))==NULL) {
+        return NULL;
+    }
+
+    if (misprime_lib != NULL misprime_lib != Py_None) {
+        if ((*mp_lib = createSeqLib(misprime_lib)) == NULL) {
+            return NULL;
+        }
+        pa->p_args.repeat_lib = mp_lib;
+    }
+    if (mishyb_lib != NULL mishyb_lib != Py_None) {
+        if ((*mh_lib = createSeqLib(mishyb_lib))==NULL) {
+            return NULL;
+        }
+        pa->p_args.repeat_lib = mh_lib;
+    }
+
+    retval = choose_primers(pa, sa);
+    if ((results = p3OutputToDict(pa, sa, retval)) == NULL){
+        return NULL;
+    }
+
+    return results;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

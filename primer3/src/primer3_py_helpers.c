@@ -221,7 +221,7 @@ between Python C API code and primer3 native C code.
 #endif
 
 p3_global_settings*
-setGlobalParams(PyObject *self, PyObject *p3s_dict) {
+setGlobalParams(PyObject *p3s_dict) {
     /* Creates a new p3_global_settings struct and initializes it with 
      * defaults using p3_create_global_settings() from libprimer3.c.
      * Parses the user-provided settings from p3_settings_dict and 
@@ -463,7 +463,7 @@ setGlobalParams(PyObject *self, PyObject *p3s_dict) {
 }
 
 seq_lib*
-createSeqLib(PyObject *self, PyObject *seq_dict){
+createSeqLib(PyObject *seq_dict){
     /* Generates a library of sequences for mispriming checks.
      * Input is a Python dictionary with <seq name: sequence> key value
      * pairs. Returns NULL and sets the Python error string on failure.
@@ -488,7 +488,7 @@ createSeqLib(PyObject *self, PyObject *seq_dict){
 
 
 seq_args*
-createSeqArgs(PyObject *self, PyObject *sa_dict, p3_global_settings *pa){
+createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     /* Creates a sequence args object that defines a DNA/RNA sequence for 
      * which you want to design primers / oligos. Returns NULL and sets the
      * Python error string on failure.
