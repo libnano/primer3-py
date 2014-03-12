@@ -84,3 +84,35 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     return _primer3.calcTm(seq, mv_conc, dv_conc, dntp_conc, dna_conc,
                                   max_nn_length, tm_meth, salt_meth)
 
+def designPrimers(p3_args, s_args, misprime_lib=None, mishyb_lib=None):
+    return _primer3.designPrimers(p3_args, s_args, misprime_lib, mishyb_lib)
+
+def testDesignPrimers():
+    p3_args = {
+        'PRIMER_OPT_SIZE': 20,
+        'PRIMER_PICK_INTERNAL_OLIGO': 1,
+        'PRIMER_INTERNAL_MAX_SELF_END': 8,
+        'PRIMER_MIN_SIZE': 18,
+        'PRIMER_MAX_SIZE': 25,
+        'PRIMER_OPT_TM': 60.0,
+        'PRIMER_MIN_TM': 57.0,
+        'PRIMER_MAX_TM': 63.0,
+        'PRIMER_MIN_GC': 20.0,
+        'PRIMER_MAX_GC': 80.0,
+        'PRIMER_MAX_POLY_X': 100,
+        'PRIMER_INTERNAL_MAX_POLY_X': 100,
+        'PRIMER_SALT_MONOVALENT': 50.0,
+        'PRIMER_DNA_CONC': 50.0,
+        'PRIMER_MAX_NS_ACCEPTED': 0,
+        'PRIMER_MAX_SELF_ANY': 12,
+        'PRIMER_MAX_SELF_END': 8,
+        'PRIMER_PAIR_MAX_COMPL_ANY': 12,
+        'PRIMER_PAIR_MAX_COMPL_END': 8,
+    }
+    s_args = {
+        'PRIMER_PRODUCT_SIZE_RANGE': [75,100,100,125,125,150,150,175,175,200,200,225],
+        'SEQUENCE_ID': 'MH1000',
+        'SEQUENCE_TEMPLATE': 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG',
+        'SEQUENCE_INCLUDED_REGION': [36,342]
+    }
+    print(designPrimers(p3_args, s_args))

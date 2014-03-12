@@ -56,6 +56,15 @@ PyDoc_STRVAR(calcTm__doc__,
 "salt_correction_method: the method used for salt corrections (see oligotm.h)\n"
 );
 
+PyDoc_STRVAR(designPrimers__doc__,
+"Design primers using the internal primer3 design engine\n"
+"p3_args: dict of general primer3 args (see p3 docs)\n"
+"seq_args: dict of sequence specific args (e.g., target sequence)\n"
+"misprime_lib: dict of name: seq pairs for mispriming checks\n"
+"mishyb_lib: dict of name: seq pairs for off-target hybridization checks\n"
+);
+
+
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
@@ -154,47 +163,46 @@ calcTm(PyObject *self, PyObject *args){
 /* ~~~~~~~~~~~~~~~~~~~~~ PRIMER / OLIGO DESIGN BINDINGS ~~~~~~~~~~~~~~~~~~~~ */
 
 static PyObject*
-designPrimers(PyObject *self, PyObject *args, PyObject *kwargs){
+designPrimers(PyObject *self, PyObject *args){
     /* Wraps the primer design functionality of primer3. Parameters that are 
      * usually passed in via a file or STDIN are passed in via a series of 
      * Python dictionaries:
      *      p3_args - the main primer3 args (not case / sequence specific)
-     *      seq_args - sequence specific args (i.e., the target sequence)
+     *      s_args - sequence specific args (i.e., the target sequence)
      *      misprime_lib - dictionary of name: seq pairs for mispriming checks
      *      mishyb_lib - dictionary of name: seq pairs for mishyb checks
      *                   (internal oligo design)
      */
 
-    PyObject                *p3_args=NULL, seq_args=NULL, misprime_lib=NULL; 
+    PyObject                *p3_args=NULL, *s_args=NULL, *misprime_lib=NULL; 
     PyObject                *mishyb_lib=NULL, *results;
     p3_global_settings      *pa;
     seq_args                *sa;
     seq_lib                 *mp_lib, *mh_lib;
-    p3_retval               *retval
+    p3retval                *retval;
 
-    static char *kwlist[] = {"misprime_lib", "mishyb_lib", NULL};
 
-    if (!PyArg_ParseTuple(args, kwargs, "O!O!|OO",
-                          &PyDict_Type, p3_args, &PyDict_Type, &seq_args,
-                          misprime_lib, &mishyb_lib)) {
+    if (!PyArg_ParseTuple(args, "O!O!OO",
+                          &PyDict_Type, &p3_args, &PyDict_Type, &s_args,
+                          &misprime_lib, &mishyb_lib)) {
         return NULL;
     }
 
     if ((pa = setGlobalParams(p3_args)) == NULL){
         return NULL;
     }
-    if ((sa = createSeqArgs(seq_args, pa))==NULL) {
+    if ((sa = createSeqArgs(s_args, pa))==NULL) {
         return NULL;
     }
 
-    if (misprime_lib != NULL misprime_lib != Py_None) {
-        if ((*mp_lib = createSeqLib(misprime_lib)) == NULL) {
+    if (misprime_lib != NULL || misprime_lib != Py_None) {
+        if ((mp_lib = createSeqLib(misprime_lib)) == NULL) {
             return NULL;
         }
         pa->p_args.repeat_lib = mp_lib;
     }
-    if (mishyb_lib != NULL mishyb_lib != Py_None) {
-        if ((*mh_lib = createSeqLib(mishyb_lib))==NULL) {
+    if (mishyb_lib != NULL || mishyb_lib != Py_None) {
+        if ((mh_lib = createSeqLib(mishyb_lib))==NULL) {
             return NULL;
         }
         pa->p_args.repeat_lib = mh_lib;
@@ -205,6 +213,15 @@ designPrimers(PyObject *self, PyObject *args, PyObject *kwargs){
         return NULL;
     }
 
+    if ((pa->thermodynamic_oligo_alignment == 1) ||
+            (pa->thermodynamic_template_alignment == 1)) {
+        destroy_thal_structures();
+    }
+
+    p3_destroy_global_settings(pa);
+    destroy_seq_args(sa);
+    destroy_dpal_thal_arg_holder();
+
     return results;
 }
 
@@ -214,6 +231,7 @@ static PyMethodDef primer3_methods[] = {
     { "getThermoParams", getThermoParams, METH_VARARGS, getThermoParams__doc__ },
     { "calcThermo", calcThermo, METH_VARARGS, calcThermo__doc__ },
     { "calcTm", calcTm, METH_VARARGS, calcTm__doc__ },
+    { "designPrimers", designPrimers,  METH_VARARGS, designPrimers__doc__},
     { NULL, NULL }
 };
 

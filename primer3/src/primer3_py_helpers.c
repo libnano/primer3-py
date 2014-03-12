@@ -53,7 +53,7 @@ between Python C API code and primer3 native C code.
 // and assigns its value to `st`
 #define DICT_GET_AND_ASSIGN_DOUBLE(o, d, k, st)                                \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
-        if (!PyFloat_Check(o) || !PyLong_Check(o)) {                           \
+        if (!PyFloat_Check(o) && !PyLong_Check(o)) {                           \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type float or integer.", k);\
             return NULL;                                                       \
@@ -258,13 +258,12 @@ setGlobalParams(PyObject *p3s_dict) {
      * PRIMER_MIN_THREE_PRIME_DISTANCE, the latter value will be used for both
      * the left and right three prime distance parameters.
      */
-
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_OPT_SIZE", pa->p_args.opt_size);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MIN_SIZE", pa->p_args.min_size);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MAX_SIZE", pa->p_args.max_size);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MAX_POLY_X", pa->p_args.max_poly_x);
-    DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_OPT_TM", pa->p_args.opt_tm);
-    DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_OPT_GC_PERCENT", pa->p_args.opt_gc_content);
+    DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_OPT_TM", pa->p_args.opt_tm);
+    DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_OPT_GC_PERCENT", pa->p_args.opt_gc_content);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_MIN_TM", pa->p_args.min_tm);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_MAX_TM", pa->p_args.max_tm);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_DIFF_TM", pa->max_diff_tm);
@@ -404,60 +403,62 @@ setGlobalParams(PyObject *p3s_dict) {
 
     // Handler primer task
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_TASK", &task_tmp);
-    if (task_tmp == NULL) {
-        PyErr_SetString(PyExc_ValueError, \
-            "Primer3 args must include PRIMER_TASK");
-        return NULL;
-    }
+    // if (task_tmp == NULL) {
+    //     PyErr_SetString(PyExc_ValueError, \
+    //         "Primer3 args must include PRIMER_TASK");
+    //     return NULL;
+    // }
     // Directly from read_boulder.c
-    if (!strcmp_nocase(task_tmp, "pick_pcr_primers")) {
-      pa->primer_task = generic;
-      pa->pick_left_primer = 1;
-      pa->pick_right_primer = 1;
-      pa->pick_internal_oligo = 0;
-    } else if (!strcmp_nocase(task_tmp, "pick_pcr_primers_and_hyb_probe")) {
-      pa->primer_task = generic; 
-      pa->pick_left_primer = 1;
-      pa->pick_right_primer = 1;
-      pa->pick_internal_oligo = 1;
-    } else if (!strcmp_nocase(task_tmp, "pick_left_only")) {
-      pa->primer_task = generic;
-      pa->pick_left_primer = 1;
-      pa->pick_right_primer = 0;
-      pa->pick_internal_oligo = 0;
-    } else if (!strcmp_nocase(task_tmp, "pick_right_only")) {
-      pa->primer_task = generic;
-      pa->pick_left_primer = 0;
-      pa->pick_right_primer = 1;
-      pa->pick_internal_oligo = 0;
-    } else if (!strcmp_nocase(task_tmp, "pick_hyb_probe_only")) {
-      pa->primer_task = generic;
-      pa->pick_left_primer = 0;
-      pa->pick_right_primer = 0;
-      pa->pick_internal_oligo = 1;
-    } else if (!strcmp_nocase(task_tmp, "generic")) {
-      pa->primer_task = generic;
-    } else if (!strcmp_nocase(task_tmp, "pick_detection_primers")) {
-      pa->primer_task = generic; /* Deliberate duplication for
-                    backward compatibility. */
-    } else if (!strcmp_nocase(task_tmp, "pick_cloning_primers")) {
-      pa->primer_task = pick_cloning_primers;
-    } else if (!strcmp_nocase(task_tmp, "pick_discriminative_primers")) {
-      pa->primer_task = pick_discriminative_primers;
-    } else if (!strcmp_nocase(task_tmp, "pick_sequencing_primers")) {
-      pa->primer_task = pick_sequencing_primers;
-    } else if (!strcmp_nocase(task_tmp, "pick_primer_list")) {
-      pa->primer_task = pick_primer_list;
-    } else if (!strcmp_nocase(task_tmp, "check_primers")) {
-      pa->primer_task = check_primers;
-      /* check_primers sets the picking flags itself */
-    } else {
-        PyErr_Format(PyExc_ValueError, "%s is not a valid PRIMER_TASK",\
-                     task_tmp);        
+    if (task_tmp != NULL) {
+        if (!strcmp_nocase(task_tmp, "pick_pcr_primers")) {
+          pa->primer_task = generic;
+          pa->pick_left_primer = 1;
+          pa->pick_right_primer = 1;
+          pa->pick_internal_oligo = 0;
+        } else if (!strcmp_nocase(task_tmp, "pick_pcr_primers_and_hyb_probe")) {
+          pa->primer_task = generic; 
+          pa->pick_left_primer = 1;
+          pa->pick_right_primer = 1;
+          pa->pick_internal_oligo = 1;
+        } else if (!strcmp_nocase(task_tmp, "pick_left_only")) {
+          pa->primer_task = generic;
+          pa->pick_left_primer = 1;
+          pa->pick_right_primer = 0;
+          pa->pick_internal_oligo = 0;
+        } else if (!strcmp_nocase(task_tmp, "pick_right_only")) {
+          pa->primer_task = generic;
+          pa->pick_left_primer = 0;
+          pa->pick_right_primer = 1;
+          pa->pick_internal_oligo = 0;
+        } else if (!strcmp_nocase(task_tmp, "pick_hyb_probe_only")) {
+          pa->primer_task = generic;
+          pa->pick_left_primer = 0;
+          pa->pick_right_primer = 0;
+          pa->pick_internal_oligo = 1;
+        } else if (!strcmp_nocase(task_tmp, "generic")) {
+          pa->primer_task = generic;
+        } else if (!strcmp_nocase(task_tmp, "pick_detection_primers")) {
+          pa->primer_task = generic; /* Deliberate duplication for
+                        backward compatibility. */
+        } else if (!strcmp_nocase(task_tmp, "pick_cloning_primers")) {
+          pa->primer_task = pick_cloning_primers;
+        } else if (!strcmp_nocase(task_tmp, "pick_discriminative_primers")) {
+          pa->primer_task = pick_discriminative_primers;
+        } else if (!strcmp_nocase(task_tmp, "pick_sequencing_primers")) {
+          pa->primer_task = pick_sequencing_primers;
+        } else if (!strcmp_nocase(task_tmp, "pick_primer_list")) {
+          pa->primer_task = pick_primer_list;
+        } else if (!strcmp_nocase(task_tmp, "check_primers")) {
+          pa->primer_task = check_primers;
+          /* check_primers sets the picking flags itself */
+        } else {
+            PyErr_Format(PyExc_ValueError, "%s is not a valid PRIMER_TASK",\
+                         task_tmp);        
+            free(task_tmp);
+            return NULL;
+        }
         free(task_tmp);
-        return NULL;
     }
-    free(task_tmp);
 
     return pa;
 }
@@ -503,7 +504,7 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
         return NULL;
     }
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_TEMPLATE", &sa->sequence);
-    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_ID", &sa->right_input);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_ID", &sa->sequence_name);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER", &sa->left_input);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER_REVCOMP", &sa->right_input);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_INTERNAL_OLIGO", &sa->internal_input);
@@ -658,7 +659,6 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
 PyObject*
 p3OutputToDict(const p3_global_settings *pa, const seq_args *sa, 
                const p3retval *retval) {
-
     PyObject *output_dict = PyDict_New();
     PyObject *obj_ptr=NULL, *obj_ptr2=NULL;
 
@@ -814,6 +814,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
             print_int = num_pair;
         }
     }
+
     // Save the number of each type of oligo that was found
     SET_DICT_KEY_TO_LONG(output_dict, "PRIMER_LEFT_NUM_RETURNED", print_fwd, obj_ptr); 
     SET_DICT_KEY_TO_LONG(output_dict, "PRIMER_RIGHT_NUM_RETURNED", print_rev, obj_ptr); 
@@ -826,7 +827,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     for(i=0; i<loop_max; i++) {
     /* What needs to be printed */
     /* The conditions for primer lists */
-
+        
     if (retval->output_type == primer_list) {
       /* Attach the selected primers to the pointers */
       fwd = &retval->fwd.oligo[i];
@@ -910,15 +911,16 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     }
 
     /* Print primer sequences. */
+
     if (go_fwd == 1) {
         sprintf(outbuff, "PRIMER_LEFT%s_SEQUENCE", suffix);
         SET_DICT_KEY_TO_STR(output_dict, outbuff, \
             pr_oligo_sequence(sa, fwd), obj_ptr); 
-    }  
+    } 
     if (go_rev == 1) {
         sprintf(outbuff, "PRIMER_RIGHT%s_SEQUENCE", suffix);
         SET_DICT_KEY_TO_STR(output_dict, outbuff, \
-            pr_oligo_sequence(sa, rev), obj_ptr); 
+            pr_oligo_rev_c_sequence(sa, rev), obj_ptr); 
     }
     if (go_int == 1) {
         sprintf(outbuff, "PRIMER_%s%s_SEQUENCE", int_oligo, suffix);
@@ -1086,7 +1088,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
         }
       /* Has to be here and in primer pairs for backward compatibility */
     }
-        
+       
     /* Print position penalty, this is for backward compatibility */
     if (!_PR_DEFAULT_POSITION_PENALTIES(pa) || !PR_START_CODON_POS_IS_NULL(sa)){
         sprintf(outbuff, "PRIMER_LEFT%s_POSITION_PENALTY", suffix);

@@ -32,7 +32,7 @@ createSeqLib(PyObject *seq_dict);
  * p3_global_settings pointer to set appropriate flags based on input.
  */
 seq_args* 
-createSeqArgs(PyObject *sa_dict, p3_global_settings *pa)
+createSeqArgs(PyObject *sa_dict, p3_global_settings *pa);
 
 /* Parse the primer3 output to a dictionary. The dictionary will have 
  * a flat structure much like a BoulderIO output file, with the field
@@ -40,4 +40,4 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa)
  */
 PyObject*
 p3OutputToDict(const p3_global_settings *pa, const seq_args *sa, 
-               const p3retval *retval)
+               const p3retval *retval);

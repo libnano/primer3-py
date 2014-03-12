@@ -16,6 +16,7 @@ import tarfile
 
 from distutils.core import setup, Extension
 from os.path import join as pjoin
+from os.path import relpath as rpath
 
 from buildutil import patchCfiles
 
@@ -47,7 +48,8 @@ p3build = subprocess.Popen(['make'], shell=True, cwd=primer3_src)
 p3build.wait()
 
 # Find all primer3 data files
-p3_files = [pjoin(root, f) for root, _, files in os.walk(primer3_path) for f in files]
+p3_files = [rpath(pjoin(root, f), package_path) for root, _, files in
+            os.walk(primer3_path) for f in files]
 
 # Insure that g++ is the compiler on OS X (primer3 does not play nice w/ clang)
 if sys.platform == 'darwin':
