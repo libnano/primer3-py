@@ -53,8 +53,11 @@ p3_files = [rpath(pjoin(root, f), package_path) for root, _, files in
 
 # Insure that g++ is the compiler on OS X (primer3 does not play nice w/ clang)
 if sys.platform == 'darwin':
-    os.environ["CC"] = "g++"
-    os.environ["CXX"] = "g++"
+    os.environ['CC'] = 'g++'
+    os.environ['CXX'] = 'g++'
+    os.environ['CFLAGS'] = '-Qunused-arguments'
+    os.environ['CCFLAGS'] = '-Qunused-arguments'
+
 
 primer3_ext = Extension('primer3._primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,
@@ -70,6 +73,6 @@ setup (
     long_description=__doc__,
     packages=['primer3'],
     ext_modules=[primer3_ext],
-    package_data={'primer3': p3_files}
+    package_data={'primer3': p3_files},
 )
 

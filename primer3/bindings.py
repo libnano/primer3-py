@@ -26,36 +26,36 @@ _primer3.getThermoParams(pjoin(PRIMER3_HOME, 'src', 'primer3_config/'))
 
 
 
-THALRESULT = namedtuple('thal_result', ['msg', 'no_structure', 'temp_c',
+THERMORESULT = namedtuple('thal_result', ['msg', 'no_structure', 'tm',
                                         'ds', 'dh', 'dg', 'align_end_1',
                                         'align_end_2'])
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Main bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
-def thalFunction(seq1, seq2, calc_type=0, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                 dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
+def calcThermo(seq1, seq2, calc_type=0, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+                   dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
     res = _primer3.calcThermo(seq1, seq2, calc_type, mv_conc, dv_conc,
                                 dntp_conc, dna_conc, temp_c + 273.15,
                                 max_loop, temp_only, 0)
-    return THALRESULT(*res)
+    return THERMORESULT(*res)
 
 
 def calcHairpin(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
                 temp_c=37, max_loop=30, temp_only=False):
-    return thalFunction(seq, seq, 4, mv_conc, dv_conc, dntp_conc, dna_conc,
+    return calcThermo(seq, seq, 4, mv_conc, dv_conc, dntp_conc, dna_conc,
                         temp_c, max_loop, temp_only)
 
 
-def calcDimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
                 temp_c=37, max_loop=30, temp_only=False):
-    return thalFunction(seq, seq, 1, mv_conc, dv_conc, dntp_conc, dna_conc,
+    return calcThermo(seq, seq, 1, mv_conc, dv_conc, dntp_conc, dna_conc,
                         temp_c, max_loop, temp_only)
 
 
 def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                     dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
-    return thalFunction(seq1, seq2, 1, mv_conc, dv_conc, dntp_conc, dna_conc,
+    return calcThermo(seq1, seq2, 1, mv_conc, dv_conc, dntp_conc, dna_conc,
                         temp_c, max_loop, temp_only)
 
 
