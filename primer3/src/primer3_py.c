@@ -154,7 +154,7 @@ calcTm(PyObject *self, PyObject *args){
     }
 
     tm = seqtm((const char *)oligo, dna_conc, mv_conc, dv_conc,
-                 dntp_conc, max_nn_length, (tm_method_type)tm_method, 
+                 dntp_conc, max_nn_length, (tm_method_type)tm_method,
                  (salt_correction_type)salt_correction_method);
 
     return Py_BuildValue("d", tm);
@@ -164,8 +164,8 @@ calcTm(PyObject *self, PyObject *args){
 
 static PyObject*
 designPrimers(PyObject *self, PyObject *args){
-    /* Wraps the primer design functionality of primer3. Parameters that are 
-     * usually passed in via a file or STDIN are passed in via a series of 
+    /* Wraps the primer design functionality of primer3. Parameters that are
+     * usually passed in via a file or STDIN are passed in via a series of
      * Python dictionaries:
      *      p3_args - the main primer3 args (not case / sequence specific)
      *      s_args - sequence specific args (i.e., the target sequence)
@@ -174,7 +174,7 @@ designPrimers(PyObject *self, PyObject *args){
      *                   (internal oligo design)
      */
 
-    PyObject                *p3_args=NULL, *s_args=NULL, *misprime_lib=NULL; 
+    PyObject                *p3_args=NULL, *s_args=NULL, *misprime_lib=NULL;
     PyObject                *mishyb_lib=NULL, *results;
     p3_global_settings      *pa;
     seq_args                *sa;
@@ -221,7 +221,7 @@ designPrimers(PyObject *self, PyObject *args){
     p3_destroy_global_settings(pa);
     destroy_seq_args(sa);
     destroy_dpal_thal_arg_holder();
-
+    Py_INCREF(results);
     return results;
 }
 

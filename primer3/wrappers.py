@@ -1,5 +1,5 @@
 '''
-Simple subprocess wrappers for the primer3 library. 
+Simple subprocess wrappers for the primer3 library.
 
 '''
 from __future__ import print_function
@@ -167,9 +167,9 @@ _salt_correction_methods = {
 }
 
 def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-           max_nn_length=60, tm_method='santalucia', 
+           max_nn_length=60, tm_method='santalucia',
            salt_corrections_method='santalucia'):
-    ''' Return the tm of `seq` as a float. 
+    ''' Return the tm of `seq` as a float.
     '''
     tm_meth = _tm_methods.get(tm_method)
     if not tm_meth:
@@ -180,15 +180,15 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
         raise ValueError('{} is not a valid salt correction method'.format(
                          salt_meth))
     # For whatever reason mv_conc and dna_conc have to be ints
-    args = [pjoin(PRIMER3_SRC, 'oligotm'), 
-            '-mv',  str(int(mv_conc)), 
-            '-dv',  str(dv_conc), 
-            '-n',   str(dntp_conc), 
-            '-d',   str(int(dna_conc)), 
-            '-tp',  str(tm_meth), 
-            '-sc',  str(salt_meth), 
+    args = [pjoin(PRIMER3_SRC, 'oligotm'),
+            '-mv',  str(int(mv_conc)),
+            '-dv',  str(dv_conc),
+            '-n',   str(dntp_conc),
+            '-d',   str(int(dna_conc)),
+            '-tp',  str(tm_meth),
+            '-sc',  str(salt_meth),
             seq]
-    tm = subprocess.check_output(args, cwd=TMP_DIR, stderr=DEV_NULL, 
+    tm = subprocess.check_output(args, cwd=TMP_DIR, stderr=DEV_NULL,
                                  env=os.environ)
     return float(tm)
 
@@ -209,63 +209,63 @@ def _parse_ntthal(ntthal_output):
     ) if parsed_vals else None
 
 
-def calcThermo(seq1, seq2, calc_type='ANY', mv_conc=50, dv_conc=0, 
-                 dntp_conc=0.8, dna_conc=50, temp_c=37, max_loop=30, 
+def calcThermo(seq1, seq2, calc_type='ANY', mv_conc=50, dv_conc=0,
+                 dntp_conc=0.8, dna_conc=50, temp_c=37, max_loop=30,
                  temp_only=False):
     """ Main subprocess wrapper for calls to the ntthal executable.
 
     Returns a named tuple with tm, ds, dh, and dg values or None if no
     structure / complex could be computed.
     """
-    args = [pjoin(PRIMER3_SRC, 'ntthal'), 
-            '-a',       str(calc_type), 
-            '-mv',      str(mv_conc), 
-            '-dv',      str(dv_conc), 
-            '-n',       str(dntp_conc), 
-            '-d',       str(dna_conc), 
-            '-t',       str(temp_c), 
-            '-maxloop', str(max_loop), 
+    args = [pjoin(PRIMER3_SRC, 'ntthal'),
+            '-a',       str(calc_type),
+            '-mv',      str(mv_conc),
+            '-dv',      str(dv_conc),
+            '-n',       str(dntp_conc),
+            '-d',       str(dna_conc),
+            '-t',       str(temp_c),
+            '-maxloop', str(max_loop),
             '-path',    THERMO_PATH,
             '-s1',      seq1,
             '-s2',      seq2]
     if temp_only:
         args += ['-r']
-    out = subprocess.check_output(args, cwd=TMP_DIR, stderr=DEV_NULL, 
+    out = subprocess.check_output(args, cwd=TMP_DIR, stderr=DEV_NULL,
                                   env=os.environ)
     return _parse_ntthal(out)
 
 
-def calcHairpin(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50, 
+def calcHairpin(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
                  temp_c=37, max_loop=30, temp_only=False):
-    ''' Return a namedtuple of the dS, dH, dG, and Tm of any hairpin struct 
+    ''' Return a namedtuple of the dS, dH, dG, and Tm of any hairpin struct
     present.
 
     Returns None if the sequence does not form a hairpin.
 
     '''
-    return calcThermo(seq, seq, 'HAIRPIN', mv_conc, dv_conc, dntp_conc, 
+    return calcThermo(seq, seq, 'HAIRPIN', mv_conc, dv_conc, dntp_conc,
                         dna_conc, temp_c, max_loop, temp_only)
 
 
-def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8, 
+def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                      dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
-    ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer. 
+    ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
 
     Returns None if the sequences do not form a heterodimer.
 
     '''
-    return calcThermo(seq1, seq2, 'ANY', mv_conc, dv_conc, dntp_conc, 
+    return calcThermo(seq1, seq2, 'ANY', mv_conc, dv_conc, dntp_conc,
                         dna_conc, temp_c, max_loop, temp_only)
 
 
-def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, 
+def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                    dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
-    ''' Return a tuple of the dS, dH, dG, and Tm of any predicted homodimer. 
+    ''' Return a tuple of the dS, dH, dG, and Tm of any predicted homodimer.
 
     Returns None if the sequence does not form a homodimer.
 
     '''
-    return calcThermo(seq, seq, 'ANY', mv_conc, dv_conc, dntp_conc, 
+    return calcThermo(seq, seq, 'ANY', mv_conc, dv_conc, dntp_conc,
                         dna_conc, temp_c, max_loop, temp_only)
 
 
@@ -289,15 +289,15 @@ def assessOligo(seq):
 def _writeBoulderIO(fp, p3_args):
     with open(fp, 'wb') as fd:
         for k, v in p3_args.items():
-            fd.write(k + '=' + v + '\n')
-        fd.write('=')
+            fd.write(bytes('{}={}\n'.format(k,v), 'UTF-8'))
+        fd.write(bytes('=', 'UTF-8'))
 
 
 def _parseBoulderIO(fp):
     data_dict = OrderedDict()
     with open(fp, 'rb') as fd:
         for line in fd:
-            k,v = line.strip().split('=')
+            k,v = line.decode('utf-8').strip().split('=')
             data_dict[k] = v
     return data_dict
 
@@ -310,7 +310,7 @@ def runP3Main(p3_args):
     fp_in = unique_fn(TMP_DIR, file_ext='.in')
     _writeBoulderIO(fp_in, p3_args)
     fp_out = fp_in.rstrip('.in') + '.out'
-    subprocess.check_call([pjoin(PRIMER3_SRC, 'primer3_core'), '--output', 
-                           fp_out, fp_in], stderr=DEV_NULL, env=os.environ)
+    subprocess.check_call([pjoin(PRIMER3_SRC, 'primer3_core'), '--output',
+                           fp_out, fp_in], env=os.environ)
     return _parseBoulderIO(fp_out)
 
