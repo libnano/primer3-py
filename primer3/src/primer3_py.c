@@ -207,21 +207,17 @@ designPrimers(PyObject *self, PyObject *args){
         }
         pa->p_args.repeat_lib = mh_lib;
     }
-
+    
     retval = choose_primers(pa, sa);
     if ((results = p3OutputToDict(pa, sa, retval)) == NULL){
         return NULL;
     }
 
-    if ((pa->thermodynamic_oligo_alignment == 1) ||
-            (pa->thermodynamic_template_alignment == 1)) {
-        destroy_thal_structures();
-    }
-
     p3_destroy_global_settings(pa);
     destroy_seq_args(sa);
-    destroy_dpal_thal_arg_holder();
-    Py_INCREF(results);
+    // Commented out for now (causes "malloc: *** error for object 0x101a03e20:
+    // pointer being freed was not allocated") error
+    // destroy_dpal_thal_arg_holder();
     return results;
 }
 
