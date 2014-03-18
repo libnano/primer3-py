@@ -85,8 +85,8 @@ getThermoParams(PyObject *self, PyObject *args) {
     }
 
     load_success = get_thermodynamic_values(param_path, &o);
-    //free(param_path);
-    //free(&o);
+    free(param_path);
+    free(&o);
 
     if (load_success){
         PyErr_SetString(PyExc_IOError, o.msg);
@@ -207,17 +207,19 @@ designPrimers(PyObject *self, PyObject *args){
         }
         pa->p_args.repeat_lib = mh_lib;
     }
-    
+
     retval = choose_primers(pa, sa);
     if ((results = p3OutputToDict(pa, sa, retval)) == NULL){
         return NULL;
     }
 
+    destroy_p3retval(retval);
     p3_destroy_global_settings(pa);
     destroy_seq_args(sa);
     // Commented out for now (causes "malloc: *** error for object 0x101a03e20:
     // pointer being freed was not allocated") error
     // destroy_dpal_thal_arg_holder();
+
     return results;
 }
 

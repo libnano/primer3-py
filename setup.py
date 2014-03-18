@@ -44,8 +44,8 @@ if not os.path.exists(primer3_path):
 patched_files = patchCfiles(pjoin(primer3_path), pjoin(
                             root_path, 'primer3', 'src', 'primer3_patches.c'))
 # Copy libprimer3_mod.c to libprimer3_mod.ccp (avoids issues w/ hash_map #include)
-# shutil.copyfile(pjoin(primer3_src, 'libprimer3_mod.c'),
-#                 pjoin(primer3_src, 'libprimer3_mod.cpp'))
+# shutil.move(pjoin(primer3_src, 'libprimer3_mod.c'),
+#             pjoin(primer3_src, 'libprimer3_mod.cpp'))
 
 
 # Build primer3 for subprocess bindings

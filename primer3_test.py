@@ -235,13 +235,56 @@ class TestDesignBindings(unittest.TestCase):
                 'SEQUENCE_INCLUDED_REGION': '36,342'
             }
         )
+        print('\n\n\n{:<30} {:<25} {:<25}'.format('Output Key', 'Wrapper Result', 'Binding Result'))
+        print('-'*80)
         for k, v in binding_res.items():
-            try:
-                print('Key: {}, Wrapper output: {}, Binding output: {}'.format(k, wrapper_res.get(k), v))
+            print('{:<30} {:<25} {:<25}'.format(k, repr(wrapper_res.get(k)), repr(v)))
+            # try:
                 # self.assertEqual(str(wrapper_res.get(k)), v)
-            except AssertionError:
-                print('\nKey: {}, Wrapper output: {}, Binding output: {}'.format(k, wrapper_res.get(k), v))
-                raise
+            # except AssertionError:
+            #     print('\nKey: {}, Wrapper output: {}, Binding output: {}'.format(k, wrapper_res.get(k), v))
+            #     raise
+
+    def test_memoryLeaks(self):
+        sm = _getMemUsage()
+        for x in range(100):
+            bindings.designPrimers(
+                {
+                    'PRIMER_OPT_SIZE': 20,
+                    'PRIMER_PICK_INTERNAL_OLIGO': 1,
+                    'PRIMER_INTERNAL_MAX_SELF_END': 8,
+                    'PRIMER_MIN_SIZE': 18,
+                    'PRIMER_MAX_SIZE': 25,
+                    'PRIMER_OPT_TM': 60.0,
+                    'PRIMER_MIN_TM': 57.0,
+                    'PRIMER_MAX_TM': 63.0,
+                    'PRIMER_MIN_GC': 20.0,
+                    'PRIMER_MAX_GC': 80.0,
+                    'PRIMER_MAX_POLY_X': 100,
+                    'PRIMER_INTERNAL_MAX_POLY_X': 100,
+                    'PRIMER_SALT_MONOVALENT': 50.0,
+                    'PRIMER_DNA_CONC': 50.0,
+                    'PRIMER_MAX_NS_ACCEPTED': 0,
+                    'PRIMER_MAX_SELF_ANY': 12,
+                    'PRIMER_MAX_SELF_END': 8,
+                    'PRIMER_PAIR_MAX_COMPL_ANY': 12,
+                    'PRIMER_PAIR_MAX_COMPL_END': 8,
+                    'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
+                },
+                {
+                    'SEQUENCE_ID': 'MH1000',
+                    'SEQUENCE_TEMPLATE': 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG',
+                    'SEQUENCE_INCLUDED_REGION': [36,342]
+                })
+        sleep(0.1)  # Pause for any GC
+        em = _getMemUsage()
+        print('\n\tMemory usage before 1k runs of designPrimers: ', sm)
+        print('\tMemory usage after 1k runs of designPrimers:  ', em)
+        print('\t\t\t\t\tDifference: \t', em-sm)
+        if em-sm > 500:
+            raise AssertionError('Memory usage increase after 1k runs of \n\t'
+                                 'designPrimers > 500 bytes -- potential \n\t'
+                                 'memory leak (mem increase: {})'.format(em-sm))
 
 if __name__ == '__main__':
     # unittest.main(verbosity=2)
