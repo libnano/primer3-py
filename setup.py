@@ -12,6 +12,7 @@ Support for both Python 2.7.x and Python 3.x.x
 import sys
 import os
 import subprocess
+import shutil
 import tarfile
 
 from distutils.core import setup, Extension
@@ -29,6 +30,7 @@ primer3_src = pjoin(primer3_path, 'src')
 primer3_srcs = [pjoin(primer3_src, 'thal_mod.c'),
                 pjoin(primer3_src, 'oligotm.c'),
                 pjoin(primer3_src, 'p3_seq_lib_mod.c'),
+                # pjoin(primer3_src, 'libprimer3_mod.cpp'),
                 pjoin(primer3_src, 'libprimer3_mod.c'),
                 pjoin(primer3_src, 'dpal.c'),
                 pjoin(src_path, 'primer3_py_helpers.c')]
@@ -41,6 +43,9 @@ if not os.path.exists(primer3_path):
 # Patch primer3 files w/ code for C api bindings
 patched_files = patchCfiles(pjoin(primer3_path), pjoin(
                             root_path, 'primer3', 'src', 'primer3_patches.c'))
+# Copy libprimer3_mod.c to libprimer3_mod.ccp (avoids issues w/ hash_map #include)
+# shutil.copyfile(pjoin(primer3_src, 'libprimer3_mod.c'),
+#                 pjoin(primer3_src, 'libprimer3_mod.cpp'))
 
 
 # Build primer3 for subprocess bindings
@@ -52,12 +57,15 @@ p3_files = [rpath(pjoin(root, f), package_path) for root, _, files in
             os.walk(primer3_path) for f in files]
 
 # Insure that g++ is the compiler on OS X (primer3 does not play nice w/ clang)
-if sys.platform == 'darwin':
-    os.environ['CC'] = 'g++'
-    os.environ['CXX'] = 'g++'
-    os.environ['CFLAGS'] = '-Qunused-arguments'
-    os.environ['CCFLAGS'] = '-Qunused-arguments'
-
+# if sys.platform == 'darwin':
+#     os.environ['CC'] = 'g++'
+#     os.environ['CXX'] = 'g++'
+#     os.environ['CFLAGS'] = '-Qunused-arguments'
+#     os.environ['CCFLAGS'] = '-Qunused-arguments'
+os.environ['CC'] = 'g++'
+os.environ['CXX'] = 'g++'
+os.environ['CFLAGS'] = '-Qunused-arguments'
+os.environ['CCFLAGS'] = '-Qunused-arguments'
 
 primer3_ext = Extension('primer3._primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,

@@ -3,8 +3,8 @@
 primer3_py_helpers.c
 ~~~~~~~~~~~~~~~~~~~~
 
-This file defines macros and helper functions that facilitate interaction 
-between Python C API code and primer3 native C code. 
+This file defines macros and helper functions that facilitate interaction
+between Python C API code and primer3 native C code.
 
 */
 
@@ -61,10 +61,10 @@ between Python C API code and primer3 native C code.
         st = PyFloat_AsDouble(o);                                              \
     }
 
-// Wraps DICT_GET_OBJ and takes the dictionary value object, exposes the 
+// Wraps DICT_GET_OBJ and takes the dictionary value object, exposes the
 // internal string buffer, and copies the string into newly allocated memory
 // pointed to by st (note that a pointer to st is passed in, so we need to
-// further dereference it to get to the actual string pointer).    
+// further dereference it to get to the actual string pointer).
 // PyString_AsString exposes the internal buffer of the string (null terminated)
 // It must not be changed or freed, so we have to malloc new memory for the
 // param value.
@@ -97,7 +97,7 @@ between Python C API code and primer3 native C code.
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
             strcpy(*st, PyBytes_AsString(o));                                  \
-        }        
+        }
 #endif
 
 #define DICT_GET_AND_COPY_ARRAY(o, d, k, st, arr_len)                          \
@@ -113,7 +113,7 @@ between Python C API code and primer3 native C code.
             arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
         }                                                                      \
         *st = arr;                                                             \
-    }                                                                          
+    }
 
 #define DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(o, d, k, st, arr_len)               \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
@@ -126,7 +126,7 @@ between Python C API code and primer3 native C code.
         for (i=0; i < *arr_len; i++) {                                         \
             *st[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
         }                                                                      \
-    }    
+    }
 
 #define DICT_GET_AND_COPY_TO_2_INTERVAL_ARRAY(o, d, k, st)                     \
     if (DICT_GET_OBJ(o, d, k)){                                                \
@@ -222,17 +222,18 @@ between Python C API code and primer3 native C code.
 
 p3_global_settings*
 setGlobalParams(PyObject *p3s_dict) {
-    /* Creates a new p3_global_settings struct and initializes it with 
+    /* Creates a new p3_global_settings struct and initializes it with
      * defaults using p3_create_global_settings() from libprimer3.c.
-     * Parses the user-provided settings from p3_settings_dict and 
-     * overwrites the defaults (note that minimal error checking is 
+     * Parses the user-provided settings from p3_settings_dict and
+     * overwrites the defaults (note that minimal error checking is
      * performed in this function). If there is an error during the process
      * (e.g., a param is not of the correct type), the python error string will
-     * be set and the function will return NULL. 
+     * be set and the function will return NULL.
      */
 
     p3_global_settings      *pa;
-    PyObject                *p_obj;
+    PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
+    int                     i;
     char                    *task_tmp=NULL;
 
     if (!(pa = p3_create_global_settings())) {
@@ -240,8 +241,8 @@ setGlobalParams(PyObject *p3s_dict) {
         return NULL;
     }
 
-    /* Note that some of the documented primer3 parameters are ignored in 
-     * this function. Specifically, any parameters related to file IO (as 
+    /* Note that some of the documented primer3 parameters are ignored in
+     * this function. Specifically, any parameters related to file IO (as
      * well as thermodynamic parameter files) are ignored:
      *
      *      P3_FILE_FLAG
@@ -252,9 +253,9 @@ setGlobalParams(PyObject *p3s_dict) {
      *
      * Otherwise, all parameters are generally parsed in the same order as
      * in read_boulder.c in the primer3 source. This code will permit some
-     * edge cases that are more directly addressed in read_boulder.c (for 
+     * edge cases that are more directly addressed in read_boulder.c (for
      * example, if you provide both PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE /
-     * PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE and 
+     * PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE and
      * PRIMER_MIN_THREE_PRIME_DISTANCE, the latter value will be used for both
      * the left and right three prime distance parameters.
      */
@@ -401,6 +402,48 @@ setGlobalParams(PyObject *p3s_dict) {
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_WT_TEMPLATE_MISPRIMING", pa->pr_pair_weights.template_mispriming);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_WT_TEMPLATE_MISPRIMING_TH", pa->pr_pair_weights.template_mispriming_th);
 
+    if DICT_GET_OBJ(p_obj, p3s_dict, "PRIMER_PRODUCT_SIZE_RANGE") {
+        if (!PySequence_Check(p_obj)) {
+            PyErr_SetString(PyExc_TypeError,\
+                "Value of \"PRIMER_PRODUCT_SIZE_RANGE\" is not a list or tuple");
+            return NULL;
+        }
+        for (i=0; i < (int)PySequence_Length(p_obj); i++){
+            p_obj2 = PySequence_GetItem(p_obj, i);
+            if (!PySequence_Check(p_obj2)){
+                PyErr_Format(PyExc_TypeError,\
+                    "Object at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not a list or tuple", i);
+                return NULL;
+            }
+            if (PySequence_Length(p_obj2) != 2) {
+                PyErr_Format(PyExc_TypeError,\
+                    "Object at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not of length 2", i);
+                return NULL;
+            }
+            p_obj3 = PySequence_GetItem(p_obj2, 0);
+            p_obj4 = PySequence_GetItem(p_obj2, 1);
+            if ((pa->pr_min[i] = PyLong_AsLong(p_obj3)) == -1) {
+                PyErr_Format(PyExc_TypeError,\
+                    "Object 1 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
+                Py_DECREF(p_obj2);
+                Py_DECREF(p_obj3);
+                Py_DECREF(p_obj4);
+                return NULL;
+            }
+            if ((pa->pr_max[i] = PyLong_AsLong(p_obj4)) == -1) {
+                PyErr_Format(PyExc_TypeError,\
+                    "Object 2 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
+                Py_DECREF(p_obj2);
+                Py_DECREF(p_obj3);
+                Py_DECREF(p_obj4);
+                return NULL;
+            }
+            Py_DECREF(p_obj2);
+            Py_DECREF(p_obj3);
+            Py_DECREF(p_obj4);
+        }
+    }
+
     // Handler primer task
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_TASK", &task_tmp);
     // if (task_tmp == NULL) {
@@ -416,7 +459,7 @@ setGlobalParams(PyObject *p3s_dict) {
           pa->pick_right_primer = 1;
           pa->pick_internal_oligo = 0;
         } else if (!strcmp_nocase(task_tmp, "pick_pcr_primers_and_hyb_probe")) {
-          pa->primer_task = generic; 
+          pa->primer_task = generic;
           pa->pick_left_primer = 1;
           pa->pick_right_primer = 1;
           pa->pick_internal_oligo = 1;
@@ -453,7 +496,7 @@ setGlobalParams(PyObject *p3s_dict) {
           /* check_primers sets the picking flags itself */
         } else {
             PyErr_Format(PyExc_ValueError, "%s is not a valid PRIMER_TASK",\
-                         task_tmp);        
+                         task_tmp);
             free(task_tmp);
             return NULL;
         }
@@ -490,14 +533,14 @@ createSeqLib(PyObject *seq_dict){
 
 seq_args*
 createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
-    /* Creates a sequence args object that defines a DNA/RNA sequence for 
+    /* Creates a sequence args object that defines a DNA/RNA sequence for
      * which you want to design primers / oligos. Returns NULL and sets the
      * Python error string on failure.
      */
 
     seq_args                *sa;
     PyObject                *p_obj;
-    int                     i, *arr_len=NULL;   
+    int                     i, *arr_len=NULL;
 
     if (!(sa = create_seq_arg())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
@@ -533,11 +576,12 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                    !PyLong_Check(PyList_GetItem(p_obj, 1))) {
             PyErr_SetString(PyExc_TypeError,\
                 "\"SEQUENCE_INCLUDED_REGION\" contains non-int value");
-            return NULL;                    
+            return NULL;
         }
         sa->incl_s = PyLong_AsLong(PyList_GetItem(p_obj, 0));
         sa->incl_l = PyLong_AsLong(PyList_GetItem(p_obj, 1));
     }
+
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_START_CODON_POSITION", sa->start_codon_pos);
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_LEFT_START", sa->force_left_start);
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_LEFT_END", sa->force_left_end);
@@ -549,7 +593,7 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-/* Code for dumping all primer3 output to a python dictionary. This is 
+/* Code for dumping all primer3 output to a python dictionary. This is
  * a modified version of print_boulder and its helper methods from
  * print_boulder.c/h
  */
@@ -571,7 +615,7 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
         return NULL;                                                           \
     }                                                                          \
     SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)                                    \
-                                                                              
+
 
 #define SET_DICT_KEY_TO_DOUBLE(dict, key, num, obj_ptr)                        \
     if ((obj_ptr = PyFloat_FromDouble(num)) == NULL){                          \
@@ -580,7 +624,7 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
         return NULL;                                                           \
     }                                                                          \
     SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)                                    \
- 
+
 
 #if PY_MAJOR_VERSION < 3
     #define SET_DICT_KEY_TO_STR(dict, key, str, obj_ptr)                       \
@@ -589,7 +633,7 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                          "Could not convert value for %s to PyString", key);   \
             return NULL;                                                       \
         }                                                                      \
-        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)                                
+        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
 #else
     #define SET_DICT_KEY_TO_STR(dict, key, str, obj_ptr)                       \
         if ((obj_ptr = PyUnicode_FromString(str)) == NULL){                    \
@@ -597,7 +641,7 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                          "Could not convert value for %s to PyUnicode", key);  \
             return NULL;                                                       \
         }                                                                      \
-        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)                                
+        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
 #endif
 
 // Note that PyTuple_SetItem steals a ref so the PyLong objs don't need to be
@@ -617,7 +661,7 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                      key);                                                     \
         return NULL;                                                           \
     }                                                                          \
-    SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)                                    
+    SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
 
 #if PY_MAJOR_VERSION < 3
     #define SET_DICT_KEY_TO_TUPLE_OF_LONG_AND_STR(dict, key, num, str, obj_ptr)\
@@ -646,21 +690,21 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
             PyErr_Format(PyExc_IOError,                                        \
                          "Could not pack value 1 for %s into tuple", key);     \
             return NULL;                                                       \
-        }                                                                      \                   
+        }                                                                      \
         if (PyTuple_SetItem(obj_ptr, 1, PyUnicode_FromString(str))) {          \
             PyErr_Format(PyExc_IOError,                                        \
                          "Could not pack value 2 for %s into tuple",key);      \
-            return NULL;                                                       \ 
+            return NULL;                                                       \
         }                                                                      \
         SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
-#endif   
+#endif
 
 
 PyObject*
-p3OutputToDict(const p3_global_settings *pa, const seq_args *sa, 
+p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
                const p3retval *retval) {
     PyObject *output_dict = PyDict_New();
-    PyObject *obj_ptr=NULL, *obj_ptr2=NULL;
+    PyObject *obj_ptr=NULL;
 
     if (output_dict == NULL) {
         PyErr_SetString(PyExc_IOError, "Could not create Primer3 output dict");
@@ -704,10 +748,10 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     /* This deals with the renaming of the internal oligo */
     const char *new_oligo_name = "INTERNAL";
     char *int_oligo = (char*) new_oligo_name;
-        
+
     /* Check if there are warnings and print them */
     if ((warning = p3_get_rv_and_gs_warnings(retval, pa)) != NULL) {
-    SET_DICT_KEY_TO_STR(output_dict, "PRIMER_WARNING", warning, obj_ptr); 
+    SET_DICT_KEY_TO_STR(output_dict, "PRIMER_WARNING", warning, obj_ptr);
     // printf("PRIMER_WARNING=%s\n", warning);
     free(warning);
     }
@@ -716,19 +760,19 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     if (NULL == combined_retval_err) {
         PyErr_SetString(PyExc_IOError, "Primer3 ran out of memory.");
         return NULL;
-    } 
+    }
 
-    if (pr_append_new_chunk_external(combined_retval_err, 
+    if (pr_append_new_chunk_external(combined_retval_err,
                                    retval->glob_err.data)){
         PyErr_SetString(PyExc_IOError, "Primer3 ran out of memory.");
         return NULL;
-    } 
+    }
 
-    if (pr_append_new_chunk_external(combined_retval_err, 
+    if (pr_append_new_chunk_external(combined_retval_err,
                                    retval->per_sequence_err.data)){
         PyErr_SetString(PyExc_IOError, "Primer3 ran out of memory.");
         return NULL;
-    } 
+    }
 
 
     /* Check if there are errors, print and return */
@@ -755,15 +799,15 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     if (pa->pick_right_primer == 1
       && !(pa->pick_anyway && sa->right_input)) {
         SET_DICT_KEY_TO_STR(output_dict, "PRIMER_RIGHT_EXPLAIN", \
-            p3_get_oligo_array_explain_string(p3_get_rv_rev(retval)), obj_ptr);        
+            p3_get_oligo_array_explain_string(p3_get_rv_rev(retval)), obj_ptr);
     }
 
     if ( pa->pick_internal_oligo == 1
       && !(pa->pick_anyway && sa->internal_input)){
         SET_DICT_KEY_TO_STR(output_dict, "PRIMER_INTERNAL_EXPLAIN", \
-            p3_get_oligo_array_explain_string(p3_get_rv_intl(retval)), obj_ptr);           
+            p3_get_oligo_array_explain_string(p3_get_rv_intl(retval)), obj_ptr);
     }
-    if (pa->pick_right_primer == 1 
+    if (pa->pick_right_primer == 1
       && pa->pick_left_primer == 1) {
         SET_DICT_KEY_TO_STR(output_dict, "PRIMER_INTERNAL_EXPLAIN", \
             p3_get_pair_array_explain_string(p3_get_rv_best_pairs(retval)), \
@@ -816,8 +860,8 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     }
 
     // Save the number of each type of oligo that was found
-    SET_DICT_KEY_TO_LONG(output_dict, "PRIMER_LEFT_NUM_RETURNED", print_fwd, obj_ptr); 
-    SET_DICT_KEY_TO_LONG(output_dict, "PRIMER_RIGHT_NUM_RETURNED", print_rev, obj_ptr); 
+    SET_DICT_KEY_TO_LONG(output_dict, "PRIMER_LEFT_NUM_RETURNED", print_fwd, obj_ptr);
+    SET_DICT_KEY_TO_LONG(output_dict, "PRIMER_RIGHT_NUM_RETURNED", print_rev, obj_ptr);
     sprintf(outbuff, "PRIMER_%s_NUM_RETURNED", int_oligo);
     SET_DICT_KEY_TO_LONG(output_dict, outbuff, print_int, obj_ptr);
     SET_DICT_KEY_TO_LONG(output_dict, "PRIMER_PAIR_NUM_RETURNED", num_pair, obj_ptr);
@@ -827,7 +871,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     for(i=0; i<loop_max; i++) {
     /* What needs to be printed */
     /* The conditions for primer lists */
-        
+
     if (retval->output_type == primer_list) {
       /* Attach the selected primers to the pointers */
       fwd = &retval->fwd.oligo[i];
@@ -867,7 +911,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
         go_int = 0;
       }
     }
-      
+
     /* Get the number for pimer counting in suffix[0] */
     sprintf(suffix, "_%d", i);
 
@@ -875,21 +919,21 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     if (retval->output_type == primer_pairs) {
       sprintf(outbuff, "PRIMER_PAIR%s_PENALTY", suffix);
       SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
-        retval->best_pairs.pairs[i].pair_quality, obj_ptr); 
+        retval->best_pairs.pairs[i].pair_quality, obj_ptr);
     }
 
     /* Print single primer penalty */
     if (go_fwd == 1) {
         sprintf(outbuff, "PRIMER_LEFT%s_PENALTY", suffix);
-        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, fwd->quality, obj_ptr); 
+        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, fwd->quality, obj_ptr);
     }
     if (go_rev == 1) {
         sprintf(outbuff, "PRIMER_RIGHT%s_PENALTY", suffix);
-        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, rev->quality, obj_ptr); 
+        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, rev->quality, obj_ptr);
     }
     if (go_int == 1) {
         sprintf(outbuff, "PRIMER_%s%s_PENALTY", int_oligo, suffix);
-        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, intl->quality, obj_ptr); 
+        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, intl->quality, obj_ptr);
     }
 
     /* Print the oligo_problems */
@@ -897,7 +941,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     if (go_fwd == 1 && p3_ol_has_any_problem(fwd)) {
         sprintf(outbuff, "PRIMER_LEFT%s_PROBLEMS", suffix);
         SET_DICT_KEY_TO_STR(output_dict, outbuff, \
-            p3_get_ol_problem_string(fwd), obj_ptr); 
+            p3_get_ol_problem_string(fwd), obj_ptr);
     }
     if (go_rev == 1 && p3_ol_has_any_problem(rev)) {
         sprintf(outbuff, "PRIMER_RIGHT%s_PROBLEMS", suffix);
@@ -915,19 +959,19 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     if (go_fwd == 1) {
         sprintf(outbuff, "PRIMER_LEFT%s_SEQUENCE", suffix);
         SET_DICT_KEY_TO_STR(output_dict, outbuff, \
-            pr_oligo_sequence(sa, fwd), obj_ptr); 
-    } 
+            pr_oligo_sequence(sa, fwd), obj_ptr);
+    }
     if (go_rev == 1) {
         sprintf(outbuff, "PRIMER_RIGHT%s_SEQUENCE", suffix);
         SET_DICT_KEY_TO_STR(output_dict, outbuff, \
-            pr_oligo_rev_c_sequence(sa, rev), obj_ptr); 
+            pr_oligo_rev_c_sequence(sa, rev), obj_ptr);
     }
     if (go_int == 1) {
         sprintf(outbuff, "PRIMER_%s%s_SEQUENCE", int_oligo, suffix);
         SET_DICT_KEY_TO_STR(output_dict, outbuff, \
-            pr_oligo_sequence(sa, intl), obj_ptr); 
-    } 
-        
+            pr_oligo_sequence(sa, intl), obj_ptr);
+    }
+
     /* Print primer start and length */
     if (go_fwd == 1) {
       sprintf(outbuff, "PRIMER_LEFT%s", suffix);
@@ -948,11 +992,11 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     /* Print primer Tm */
     if (go_fwd == 1) {
         sprintf(outbuff, "PRIMER_LEFT%s_TM", suffix);
-        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, fwd->temp, obj_ptr); 
+        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, fwd->temp, obj_ptr);
     }
     if (go_rev == 1) {
         sprintf(outbuff, "PRIMER_RIGHT%s_TM", suffix);
-        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, rev->temp, obj_ptr); 
+        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, rev->temp, obj_ptr);
     }
     if (go_int == 1) {
         sprintf(outbuff, "PRIMER_%s%s_TM", int_oligo, suffix);
@@ -1088,7 +1132,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
         }
       /* Has to be here and in primer pairs for backward compatibility */
     }
-       
+
     /* Print position penalty, this is for backward compatibility */
     if (!_PR_DEFAULT_POSITION_PENALTIES(pa) || !PR_START_CODON_POS_IS_NULL(sa)){
         sprintf(outbuff, "PRIMER_LEFT%s_POSITION_PENALTY", suffix);
@@ -1098,7 +1142,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
         SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, rev->position_penalty, \
                                obj_ptr);
     }
-        
+
     /* Print primer end stability */
     if (go_fwd == 1) {
         sprintf(outbuff, "PRIMER_LEFT%s_END_STABILITY", suffix);
@@ -1113,13 +1157,13 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     }
 
     /* Print primer template mispriming */
-    if ((pa->thermodynamic_template_alignment == 0) && (go_fwd == 1) && 
+    if ((pa->thermodynamic_template_alignment == 0) && (go_fwd == 1) &&
          (oligo_max_template_mispriming(fwd) != ALIGN_SCORE_UNDEF)) {
         sprintf(outbuff, "PRIMER_LEFT%s_TEMPLATE_MISPRIMING", suffix);
-        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, 
+        SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff,
             oligo_max_template_mispriming(fwd), obj_ptr);
     }
-    if ( (pa->thermodynamic_template_alignment == 0) && (go_rev == 1) && 
+    if ( (pa->thermodynamic_template_alignment == 0) && (go_rev == 1) &&
          (oligo_max_template_mispriming(rev) != ALIGN_SCORE_UNDEF)) {
         sprintf(outbuff, "PRIMER_RIGHT%s_TEMPLATE_MISPRIMING", suffix);
         SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
@@ -1127,13 +1171,13 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     }
 
      /* Print primer template mispriming, thermodynamical approach*/
-    if ((pa->thermodynamic_template_alignment == 0) && (go_fwd == 1) && 
+    if ((pa->thermodynamic_template_alignment == 0) && (go_fwd == 1) &&
          (oligo_max_template_mispriming(fwd) != ALIGN_SCORE_UNDEF)) {
         sprintf(outbuff, "PRIMER_LEFT%s_TEMPLATE_MISPRIMING_TH", suffix);
         SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
             oligo_max_template_mispriming_thermod(fwd), obj_ptr);
     }
-    if ( (pa->thermodynamic_template_alignment == 0) && (go_rev == 1) && 
+    if ( (pa->thermodynamic_template_alignment == 0) && (go_rev == 1) &&
          (oligo_max_template_mispriming(rev) != ALIGN_SCORE_UNDEF)) {
         sprintf(outbuff, "PRIMER_RIGHT%s_TEMPLATE_MISPRIMING_TH", suffix);
         SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
@@ -1152,19 +1196,19 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
         if (pa->thermodynamic_oligo_alignment==0){
             sprintf(outbuff, "PRIMER_PAIR%s_COMPL_ANY", suffix);
             SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
-                retval->best_pairs.pairs[i].compl_any, obj_ptr);    
+                retval->best_pairs.pairs[i].compl_any, obj_ptr);
         }
         if (pa->thermodynamic_oligo_alignment==1) {
             sprintf(outbuff, "PRIMER_PAIR%s_COMPL_ANY_TH", suffix);
             SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
-                retval->best_pairs.pairs[i].compl_any, obj_ptr);  
+                retval->best_pairs.pairs[i].compl_any, obj_ptr);
         }
         /* Print pair comp_end */
         if (pa->thermodynamic_oligo_alignment==0) {
             sprintf(outbuff, "PRIMER_PAIR%s_COMPL_END", suffix);
             SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
                 retval->best_pairs.pairs[i].compl_end, obj_ptr);
-        }  
+        }
         if (pa->thermodynamic_oligo_alignment==1) {
             sprintf(outbuff, "PRIMER_PAIR%s_COMPL_END_TH", suffix);
             SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
@@ -1184,14 +1228,14 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
             sprintf(outbuff, "PRIMER_PAIR%s_PRODUCT_TM_OLIGO_TM_DIFF", suffix);
             SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
                 retval->best_pairs.pairs[i].product_tm_oligo_tm_diff, obj_ptr);
-     
+
             sprintf(outbuff, "PRIMER_PAIR%s_T_OPT_A=", suffix);
             SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, \
                 retval->best_pairs.pairs[i].t_opt_a, obj_ptr);
         }
-      
+
         /* Print the primer pair template mispriming */
-        if ((pa->thermodynamic_template_alignment == 0) && 
+        if ((pa->thermodynamic_template_alignment == 0) &&
             (retval->best_pairs.pairs[i].template_mispriming !=\
              ALIGN_SCORE_UNDEF)) {
             sprintf(outbuff, "PRIMER_PAIR%s_TEMPLATE_MISPRIMING", suffix);
@@ -1199,7 +1243,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
                 retval->best_pairs.pairs[i].template_mispriming, obj_ptr);
         }
        /* Print the primer pair template mispriming. Thermodynamic approach.  */
-       if ((pa->thermodynamic_template_alignment == 1) && 
+       if ((pa->thermodynamic_template_alignment == 1) &&
           (retval->best_pairs.pairs[i].template_mispriming != \
            ALIGN_SCORE_UNDEF)) {
             sprintf(outbuff, "PRIMER_PAIR%s_TEMPLATE_MISPRIMING_TH", suffix);
@@ -1207,7 +1251,7 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
                 retval->best_pairs.pairs[i].template_mispriming, obj_ptr);
         }
     } /* End of print parameters of primer pairs */
-        
+
     } /* End of the big loop printing all data */
 
     return output_dict;
