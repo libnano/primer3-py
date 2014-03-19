@@ -85,8 +85,6 @@ getThermoParams(PyObject *self, PyObject *args) {
     }
 
     load_success = get_thermodynamic_values(param_path, &o);
-    free(param_path);
-    free(&o);
 
     if (load_success){
         PyErr_SetString(PyExc_IOError, o.msg);
