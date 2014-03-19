@@ -540,7 +540,7 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
 
     seq_args                *sa;
     PyObject                *p_obj;
-    int                     i, *arr_len=NULL;
+    int                     i, *arr_len=NULL, *seq_qual_len=NULL, *overlap_junction_len=NULL;
 
     if (!(sa = create_seq_arg())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
@@ -551,17 +551,18 @@ createSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER", &sa->left_input);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER_REVCOMP", &sa->right_input);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_INTERNAL_OLIGO", &sa->internal_input);
-    DICT_GET_AND_COPY_ARRAY(p_obj, sa_dict, "SEQUENCE_QUALITY", &sa->quality, arr_len);
-    if (sa->quality != NULL) {
+    DICT_GET_AND_COPY_ARRAY(p_obj, sa_dict, "SEQUENCE_QUALITY", &sa->quality, seq_qual_len);
+    if (seq_qual_len != NULL && sa->quality != NULL) {
         sa->n_quality = *arr_len;
     }
+    arr_len = NULL;
     DICT_GET_AND_COPY_TO_2_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST", sa->ok_regions);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_TARGET", sa->tar2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_EXCLUDED_REGION", sa->excl2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_INTERNAL_EXCLUDED_REGION", sa->excl_internal2);
-    DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(p_obj, sa_dict,  "SEQUENCE_OVERLAP_JUNCTION_LIST", &sa->primer_overlap_junctions, arr_len);
-    if (sa->primer_overlap_junctions != NULL) {
-        sa->primer_overlap_junctions_count = *arr_len;
+    DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(p_obj, sa_dict,  "SEQUENCE_OVERLAP_JUNCTION_LIST", &sa->primer_overlap_junctions, overlap_junction_len);
+    if (overlap_junction_len != NULL && sa->primer_overlap_junctions != NULL) {
+        sa->primer_overlap_junctions_count = *overlap_junction_len;
     }
     if DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_INCLUDED_REGION") {
         if (!PyList_Check(p_obj)) {
