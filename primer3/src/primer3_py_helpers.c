@@ -143,7 +143,7 @@ between Python C API code and primer3 native C code.
                             "%s must be linear multiple of 4 in length", k);   \
             return NULL;                                                       \
         }                                                                      \
-        for (i = 0; i < *arr_len / 4; i++) {                                   \
+        for (i = 0; i < *arr_len / 4; i+4) {                                   \
             p3_add_to_2_interval_array(&st,                                    \
                    (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),               \
                    (int)PyLong_AsLong(PyList_GetItem(p_obj, i+1)),             \
