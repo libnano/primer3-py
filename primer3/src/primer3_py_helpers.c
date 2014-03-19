@@ -14,11 +14,11 @@ between Python C API code and primer3 native C code.
 #include    <libprimer3_mod.h>
 
 
-// #if PY_MAJOR_VERSION < 3
-// /* see http://python3porting.com/cextensions.html */
-//     #define PyLong_Check PyInt_Check
-//     #define PyLong_AsLong PyInt_AsLong
-// #endif
+#if PY_MAJOR_VERSION < 3
+/* see http://python3porting.com/cextensions.html */
+    #define PyLong_Check PyInt_Check
+    #define PyLong_AsLong PyInt_AsLong
+#endif
 
 
 // Check python dictionary `d` for key `k` and (if it exists) assign the

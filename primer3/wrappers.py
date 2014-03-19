@@ -8,8 +8,8 @@ import glob
 import os
 import re
 import subprocess
+import sys
 
-from tempfile import mkstemp
 from collections import OrderedDict, namedtuple
 
 from os.path import join as pjoin
@@ -43,6 +43,7 @@ _salt_correction_methods = {
     'santalucia': 1,
     'owczarzy': 2
 }
+
 
 def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
            max_nn_length=60, tm_method='santalucia',
@@ -144,7 +145,7 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 
     '''
     return calcThermo(seq, seq, 'ANY', mv_conc, dv_conc, dntp_conc,
-                        dna_conc, temp_c, max_loop, temp_only)
+                      dna_conc, temp_c, max_loop, temp_only)
 
 
 def assessOligo(seq):
@@ -162,23 +163,41 @@ def assessOligo(seq):
 
 # ~~~~~~~ RUDIMENTARY PRIMER3 MAIN WRAPPER (see Primer3 docs for args) ~~~~~~ #
 
-# TODO: modify runP3Main to use STDERR and STDIN for IO (see docs)
+if sys.version_info[0] > 2:
 
-def _writeBoulderIO(fp, p3_args):
-    with open(fp, 'wb') as fd:
-        for k, v in p3_args.items():
-            fd.write(bytes('{}={}\n'.format(k,v), 'UTF-8'))
-        fd.write(bytes('=', 'UTF-8'))
-        fd.flush()
+    def _formatBoulderIO(p3_args):
+        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in 
+                              p3_args.items()])
+        boulder_str += '=\n'
+        return bytes(boulder_str, 'UTF-8')
 
+    def _parseBoulderIO(boulder_str):
+        data_dict = OrderedDict()
+        for line in boulder_str[0].decode("utf-8").split('\n'):
+            try:
+                k,v = line.strip().split('=')
+                data_dict[k] = v
+            except:
+                pass
+        return data_dict
 
-def _parseBoulderIO(fp):
-    data_dict = OrderedDict()
-    with open(fp, 'rb') as fd:
-        for line in fd:
-            k,v = line.decode('utf-8').strip().split('=')
-            data_dict[k] = v
-    return data_dict
+else:
+
+    def _formatBoulderIO(p3_args):
+        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in 
+                              p3_args.items()])
+        boulder_str += '=\n'
+        return boulder_str
+
+    def _parseBoulderIO(boulder_str):
+        data_dict = OrderedDict()
+        for line in boulder_str[0].split('\n'):
+            try:
+                k,v = line.strip().split('=')
+                data_dict[k] = v
+            except:
+                pass
+        return data_dict 
 
 
 def runP3Main(p3_args):
@@ -186,17 +205,9 @@ def runP3Main(p3_args):
 
     Returns an ordered dict of the boulderIO-format primer3 output file
     '''
-    fd_in, fp_in = mkstemp(suffix='.in')
-    fd_out, fp_out = mkstemp(suffix='.out')
-    os.close(fd_in)
-    os.close(fd_out)
-    _writeBoulderIO(fp_in, p3_args)
-    subprocess.check_call([pjoin(PRIMER3_SRC, 'primer3_core'), '--output',
-                          fp_out, fp_in], env=os.environ)
-    out_dict = _parseBoulderIO(fp_out)
-    try:
-        os.remove(fp_in)
-        os.remove(fp_out)
-    except IOError:
-        pass
-    return out_dict
+    sp = subprocess.Popen([pjoin(PRIMER3_SRC, 'primer3_core')], 
+                          stdout=subprocess.PIPE, stdin=subprocess.PIPE, 
+                          stderr=subprocess.STDOUT)
+    in_str = _formatBoulderIO(p3_args)
+    out_str = sp.communicate(input=in_str)
+    return _parseBoulderIO(out_str)
