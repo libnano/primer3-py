@@ -1,0 +1,11 @@
+language: python
+python:
+  - "3.4"
+  - "3.3"
+  - "3.2"
+  - "2.7"
+  - "2.6"
+
+install: python setup.py build_ext
+# command to run tests, e.g. python setup.py test
+script: python primer3_test.py
