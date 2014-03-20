@@ -13,4 +13,4 @@ Bindings are included for:
     - Homo/Heterodimer formation
   * Primer3 primer design engine
 
-** Built and tested for Python 2.7, 3.2, 3.3, and 3.4 **
+**Built and tested for Python 2.7, 3.2, 3.3, and 3.4**
