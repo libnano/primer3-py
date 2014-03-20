@@ -44,18 +44,21 @@ shutil.copy(pjoin(primer3_src, 'libprimer3.c'),
             pjoin(primer3_src, 'libprimer3.cpp'))
 
 # Patch primer3 files w/ code for C api bindings
+print('Patch Primer3 Files'.center(80, '*'))
 patched_files = patchCfiles(pjoin(primer3_path), pjoin(
                             root_path, 'primer3', 'src', 'primer3_patches.c'))
-
+print('END Patch Primer3 Files'.center(80, '*'))
 # Build primer3 for subprocess bindings
+print('Make Primer3'.center(80, '*'))
 p3build = subprocess.Popen(['make'], shell=True, cwd=primer3_src)
 p3build.wait()
+print('END Make Primer3'.center(80, '*'))
 
 # Find all primer3 data files
 p3_files = [rpath(pjoin(root, f), package_path) for root, _, files in
             os.walk(primer3_path) for f in files]
 
-# Temporary fix for OS X / Python compiler flag incompatibilities 
+# Temporary fix for OS X / Python compiler flag incompatibilities
 if sys.platform == 'darwin':
     os.environ['CFLAGS'] = '-Qunused-arguments'
     os.environ['CCFLAGS'] = '-Qunused-arguments'
@@ -65,7 +68,7 @@ primer3_ext = Extension('primer3._primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,
                         include_dirs=[primer3_src]
                         )
-
+print('Module Setup'.center(80, '*'))
 setup (
     name='primer3-py',
     license='GPLv2',
@@ -77,4 +80,4 @@ setup (
     ext_modules=[primer3_ext],
     package_data={'primer3': p3_files},
 )
-
+print('END Module Setup'.center(80, '*'))

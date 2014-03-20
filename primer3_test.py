@@ -68,7 +68,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
             if not wrapper_res:
-                self.assertTrue(binding_res.no_structure == 1)
+                self.assertTrue(binding_res == None)
             else:
                 self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
@@ -92,7 +92,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
             if not wrapper_res:
-                self.assertTrue(binding_res.no_structure == 1)
+                self.assertTrue(binding_res == None)
             else:
                 self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
@@ -119,7 +119,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
             if not wrapper_res:
-                self.assertTrue(binding_res.no_structure == 1)
+                self.assertTrue(binding_res == None)
             else:
                 self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 

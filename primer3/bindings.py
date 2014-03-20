@@ -24,9 +24,8 @@ _primer3.getThermoParams(pjoin(PRIMER3_HOME, 'src', 'primer3_config/'))
 
 
 
-THERMORESULT = namedtuple('thal_result', ['msg', 'no_structure', 'tm',
-                                        'ds', 'dh', 'dg', 'align_end_1',
-                                        'align_end_2'])
+THERMORESULT = namedtuple('thermoresult', ['tm', 'ds', 'dh', 'dg',
+                                           'align_end_1', 'align_end_2'])
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Low level bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -35,7 +34,12 @@ def calcThermo(seq1, seq2, calc_type=0, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     res = _primer3.calcThermo(seq1, seq2, calc_type, mv_conc, dv_conc,
                                 dntp_conc, dna_conc, temp_c + 273.15,
                                 max_loop, temp_only, 0)
-    return THERMORESULT(*res)
+    if res[1] == 1: # No structure found
+        if res[0] != '':
+            raise IOError('Primer3 error: {}'.format(res[0]))
+        else:
+            return None
+    return THERMORESULT(*res[2:])
 
 
 def calcHairpin(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
