@@ -1,4 +1,3 @@
-import glob
 import os
 
 from collections import namedtuple
@@ -13,8 +12,7 @@ local_dir = os.path.dirname(os.path.realpath(__file__))
 
 if not os.environ.get('PRIMER3HOME'):
     try:
-        np_dir = glob.glob(os.path.join(local_dir, 'src/primer3-*.*.*'))
-        os.environ['PRIMER3HOME'] = os.path.abspath(np_dir[0])
+        os.environ['PRIMER3HOME'] = pjoin(local_dir, 'src/primer3-2.3.6')
     except:
         raise ImportError('PRIMER3HOME environmental variable is not set.')
 PRIMER3_HOME = os.environ.get('PRIMER3HOME')
