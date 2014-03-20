@@ -20,7 +20,7 @@ Python C API code and primer3 native C code.
  *      PRIMER_THERMODYNAMIC_PARAMETERS_PATH
  */
 p3_global_settings* 
-setGlobalParams(PyObject *p3_settings_dict);
+_setGlobals(PyObject *p3_settings_dict);
 
 /* Create a sequence library from a dictionary of key: value pairs in
  * createSeqLib (key = seq name, value = seq)
@@ -32,7 +32,7 @@ createSeqLib(PyObject *seq_dict);
  * p3_global_settings pointer to set appropriate flags based on input.
  */
 seq_args* 
-createSeqArgs(PyObject *sa_dict, p3_global_settings *pa);
+_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa);
 
 /* Parse the primer3 output to a dictionary. The dictionary will have 
  * a flat structure much like a BoulderIO output file, with the field
