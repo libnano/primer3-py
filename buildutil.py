@@ -49,7 +49,7 @@ def patchCfiles(package_dir, patch_fp):
                 fn_pre, ext = os.path.splitext(fn)
                 if fn_pre + '_mod' + ext in files_to_check:
                     continue
-                if ext == '.c' or ext == '.h':
+                if ext in ['.c', '.h', '.cpp']:
                     updated = False
                     with open(os.path.join(directory, fn)) as fd:
                         try:

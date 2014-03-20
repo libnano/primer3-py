@@ -132,4 +132,14 @@ seq_lib *create_empty_seq_lib();
 #endif
 //#ENDBLOCK##
 
-
+//#FILE#src/libprimer3.cpp##
+//#BLOCK#c++ extern##
+//#REPLACE##include "dpal.h"\s+#include "thal.h"\s+#include "oligotm.h"\s+#include "libprimer3.h"##
+//#STARTBLOCK##
+extern "C" {
+    #include "dpal.h"
+    #include "thal.h"
+    #include "oligotm.h"
+    #include "libprimer3.h"
+}
+//#ENDBLOCK##
