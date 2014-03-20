@@ -241,11 +241,6 @@ class TestDesignBindings(unittest.TestCase):
         print('-'*80)
         for k, v in binding_res.items():
             print('{:<30} {:<25} {:<25}'.format(k, repr(wrapper_res.get(k)), repr(v)))
-            # try:
-                # self.assertEqual(str(wrapper_res.get(k)), v)
-            # except AssertionError:
-            #     print('\nKey: {}, Wrapper output: {}, Binding output: {}'.format(k, wrapper_res.get(k), v))
-            #     raise
 
     def test_memoryLeaks(self):
         sm = _getMemUsage()
