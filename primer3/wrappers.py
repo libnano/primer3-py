@@ -200,7 +200,7 @@ else:
         return data_dict 
 
 
-def runP3Main(p3_args):
+def designPrimers(p3_args):
     ''' Return the raw primer3_core output for the provided primer3 args.
 
     Returns an ordered dict of the boulderIO-format primer3 output file
