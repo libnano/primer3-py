@@ -208,6 +208,8 @@ def designPrimers(p3_args):
     sp = subprocess.Popen([pjoin(PRIMER3_SRC, 'primer3_core')], 
                           stdout=subprocess.PIPE, stdin=subprocess.PIPE, 
                           stderr=subprocess.STDOUT)
+    p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH', 
+                       pjoin(PRIMER3_SRC, 'primer3_config/'))
     in_str = _formatBoulderIO(p3_args)
     out_str = sp.communicate(input=in_str)
     return _parseBoulderIO(out_str)
