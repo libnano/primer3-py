@@ -1,7 +1,13 @@
 '''
-Simple subprocess wrappers for the primer3 library.
+primer3.wrappers | wrappers.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Simple subprocess wrappers for Primer3 executables. These functions closely 
+mirror the functions found in bindings.py, but are much slower and should
+only be used for testing / comparative purposes.
 
 '''
+
 from __future__ import print_function
 
 import glob

@@ -1,3 +1,11 @@
+/******************************************************************************
+** primer3_py_helpers.c
+** ~~~~~~~~~~~~~~~~~~~~
+**
+** Helper functions to facilitate information passing between the Python C API
+** and the Primer3 library.
+******************************************************************************/
+
 /*
 
 primer3_py_helpers.c

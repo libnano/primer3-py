@@ -1,8 +1,8 @@
 /******************************************************************************
 ** primer3_py.c
 ** 
-** Python-callable C API bindings for primer3 (these functions are exposed
-** to Python via the built _primer3 module)
+** Python-callable C API bindings for Primer3 (these functions are exposed
+** to Python via the _primer3 module).
 ******************************************************************************/
 
 #include    <Python.h>
@@ -66,8 +66,8 @@ PyDoc_STRVAR(calcTm__doc__,
 );
 
 PyDoc_STRVAR(setGlobals__doc__,
-"Set the Primer3 global params and add a mispriming and/or mishyb libary\n\n"
-"p3_params: dictionary of Primer3 paramters\n"
+"Set the Primer3 global args and add a mispriming and/or mishyb libary\n\n"
+"global_args: dictionary of Primer3 args\n"
 "misprime_lib: mispriming library dictionary\n"
 "mishyb_lib: mishybridization library dictionary\n"
 );
@@ -187,7 +187,7 @@ setGlobals(PyObject *self, PyObject *args){
     ** organized as `seq_name`:`seq_value` key:value pairs. 
     */
 
-    PyObject                *p3_params=NULL, *misprime_lib=NULL;
+    PyObject                *global_args=NULL, *misprime_lib=NULL;
     PyObject                *mishyb_lib=NULL;
     seq_lib                 *mp_lib, *mh_lib;
 
@@ -196,7 +196,7 @@ setGlobals(PyObject *self, PyObject *args){
         p3_destroy_global_settings(pa);
     }
 
-    if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &p3_params, 
+    if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args, 
                           &misprime_lib, &mishyb_lib)) {
         return NULL;
     }
@@ -215,7 +215,7 @@ setGlobals(PyObject *self, PyObject *args){
         pa->p_args.repeat_lib = mh_lib;
     }
 
-    if ((pa = _setGlobals(p3_params)) == NULL){
+    if ((pa = _setGlobals(global_args)) == NULL){
         return NULL;
     }
     Py_RETURN_NONE;
@@ -231,7 +231,7 @@ setSeqArgs(PyObject *self, PyObject *args){
     PyObject                *seq_args=NULL;
 
     if (pa == NULL) {
-        PyErr_SetString(PyExc_IOError, "Primer3 global parameters must be \
+        PyErr_SetString(PyExc_IOError, "Primer3 global args must be \
             set prior to sequence args.");
         return NULL;
     }
@@ -262,7 +262,7 @@ runDesign(PyObject *self, PyObject *args){
     p3retval                *retval=NULL;
 
     if (pa == NULL || sa == NULL) {
-        PyErr_SetString(PyExc_IOError, "Primer3 global parameters and sequence\
+        PyErr_SetString(PyExc_IOError, "Primer3 global args and sequence\
             args must be set prior to calling runDesign.");
         return NULL;        
     }
