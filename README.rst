@@ -12,7 +12,7 @@ PCR primer design library.
 
 
 API Summary
-------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 primer3.bindings
  : Module interface to Primer3 C API calls.
@@ -40,7 +40,7 @@ primer3.wrappers
 
 
 Development status
-------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Primer3-py is still undergoing active development. It is highly unlikely that
 there will be any major changes to the API; most of our continuing efforts
