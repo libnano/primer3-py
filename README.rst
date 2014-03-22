@@ -19,7 +19,7 @@ primer3.bindings
 
 primer3.bindings.calcTm
  : Calculate DNA sequence melting temperature using nearest-neighbor
-   thermodynamics.
+ thermodynamics.
 
 primer3.bindings.calcHairpin
  : Calculate DNA sequence hairpin formation thermodynamics (dS, dH, dG, Tm).
@@ -32,11 +32,11 @@ primer3.bindings.calcHeterodimer
 
 primer3.bindings.designPrimers
  : Run the Primer3 design engine using parameters provided in a Python
-   dictionary. Returns a flat dictionary of the Primer3 output.
+ dictionary. Returns a flat dictionary of the Primer3 output.
 
 primer3.wrappers
  : Module interface to simple subprocess wrappers for the primer3 executables.
-   Provided for comparison purposes.
+ Provided for comparison purposes.
 
 
 Development status
