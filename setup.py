@@ -39,15 +39,6 @@ primer3.wrappers
  : Module interface to simple subprocess wrappers for the primer3 executables.
  Provided for comparison purposes.
 
-
-Development status
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-primer3-py is still undergoing active development. It is highly unlikely that
-there will be any major changes to the API; most of our continuing efforts
-will be focused on under-the-hood performance enhancements and improvements
-to the primer/oligo design I/O.
-
 '''
 
 import sys
