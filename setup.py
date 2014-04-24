@@ -107,7 +107,7 @@ if sys.platform == 'darwin':
     os.environ['CFLAGS'] = '-Qunused-arguments'
     os.environ['CCFLAGS'] = '-Qunused-arguments'
 
-primer3_ext = Extension('primer3._primer3',
+primer3_ext = Extension('_primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,
                         include_dirs=[primer3_src]
                         )
