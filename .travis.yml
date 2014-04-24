@@ -4,6 +4,6 @@ python:
   - "3.2"
   - "2.7"
 
-install: python setup.py build_ext
+install: python setup.py install
 # command to run tests, e.g. python setup.py test
 script: python primer3_test.py

@@ -1,11 +1,12 @@
 '''
-primer3-py
-~~~~~~~~~~
+==============================================================================
+ primer3-py
+==============================================================================
 
-Python C API bindings for Primer3.
+Primer3-py is a package of *fast* Python C API bindings for the Primer3
+PCR primer design library.
 
-Current Primer3 version included in package: 2.3.6
-Support for both Python 2.7.x and Python 3.x.x
+See README.rst for more information and primer3_test.py for usage examples.
 
 '''
 
@@ -66,11 +67,7 @@ if sys.platform == 'darwin':
     os.environ['CFLAGS'] = '-Qunused-arguments'
     os.environ['CCFLAGS'] = '-Qunused-arguments'
 
-# Read in readme file as long_description
-with open('README.rst') as fd:
-    long_description = fd.read()
-
-primer3_ext = Extension('primer3._primer3',
+primer3_ext = Extension('_primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,
                         include_dirs=[primer3_src]
                         )
@@ -84,7 +81,19 @@ setup (
     author_email='bpruittvt@gmail.com',
     url='https://github.com/benpruitt/primer3-py',
     description='Python C API bindings for Primer3',
-    long_description=long_description,
+    long_description=__doc__,
+    classifiers=[
+        'Programming Language :: C',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)'
+    ],
     packages=['primer3'],
     ext_modules=[primer3_ext],
     package_data={'primer3': p3_files},
