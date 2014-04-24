@@ -1,6 +1,6 @@
 '''
 ==============================================================================
- Primer3-py
+ primer3-py
 ==============================================================================
 
 .. image:: https://secure.travis-ci.org/benpruitt/primer3-py.png
@@ -43,7 +43,7 @@ primer3.wrappers
 Development status
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Primer3-py is still undergoing active development. It is highly unlikely that
+primer3-py is still undergoing active development. It is highly unlikely that
 there will be any major changes to the API; most of our continuing efforts
 will be focused on under-the-hood performance enhancements and improvements
 to the primer/oligo design I/O.
