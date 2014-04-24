@@ -1,0 +1,13 @@
+primer3-py changelog
+====================
+
+Version 0.1 													  March 3, 2014
+-------------------------------------------------------------------------------
+
+-Initial release
+
+Version 0.2 													 April 23, 2014
+-------------------------------------------------------------------------------
+
+-Corrected installation issue (replace inplace with build_lib in setup.cfg)
+-Documentation updates
