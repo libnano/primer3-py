@@ -3,8 +3,8 @@
  primer3-py
 ==============================================================================
 
-Primer3-py is a package of *fast* Python C API bindings for the Primer3
-PCR primer design library.
+Primer3-py is a package of *fast*  and easy-to-use Python bindings for the 
+Primer3 PCR primer design library.
 
 See README.rst for more information and primer3_test.py for usage examples.
 
@@ -80,7 +80,7 @@ setup (
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',
     url='https://github.com/benpruitt/primer3-py',
-    description='Python C API bindings for Primer3',
+    description='Python bindings for Primer3',
     long_description=__doc__,
     classifiers=[
         'Programming Language :: C',

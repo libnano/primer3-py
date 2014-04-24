@@ -2,7 +2,7 @@
 primer3-py
 ~~~~~~~~~~
 
-Python C API bindings for Primer3.
+Python bindings for Primer3.
 
 Current Primer3 version included in package: 2.3.6
 Support for both Python 2.7.x and Python 3.x.x
