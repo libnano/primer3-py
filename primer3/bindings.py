@@ -11,7 +11,7 @@ import os
 from collections import namedtuple
 from os.path import join as pjoin
 
-from primer3 import _primer3
+import _primer3
 
 
 # ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
