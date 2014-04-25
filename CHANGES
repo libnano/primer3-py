@@ -11,3 +11,8 @@ Version 0.2                                                      April 23, 2014
 
 -Corrected installation issue (replace inplace with build_lib in setup.cfg)
 -Documentation updates
+
+Version 0.2.1                                                    April 24, 2014
+-------------------------------------------------------------------------------
+
+-C API path fix
