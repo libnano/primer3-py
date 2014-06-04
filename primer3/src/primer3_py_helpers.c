@@ -527,7 +527,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
     int                     i, j, *arr_len=NULL;
     int                     len1, len2;
-    int                     *seq_qual_len=NULL, *overlap_junction_len=NULL;
+    int                     *seq_qual_len=NULL;
 
     if (!(sa = create_seq_arg())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
