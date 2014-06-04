@@ -16,3 +16,15 @@ Version 0.2.1                                                    April 24, 2014
 -------------------------------------------------------------------------------
 
 -C API path fix
+
+Version 0.2.2                                                      June 3, 2014
+-------------------------------------------------------------------------------
+
+-Corrected issue with parsing "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST" as a 
+ python sequence object. "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST" should now 
+ be provided as a list of lists or tuple of tuples (or a combination of the
+ two). -1 should be used in the case where an index is ommitted. For example:
+ 
+      Primer3 boulder IO input:   100,50,300,50 ; 900,60,,
+      Primer3 python input:       [[100,50,300,50], [900,60,-1,-1]]
+      
