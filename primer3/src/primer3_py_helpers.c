@@ -136,30 +136,6 @@ between Python C API code and primer3 native C code.
         }                                                                      \
     }
 
-#define DICT_GET_AND_COPY_TO_2_INTERVAL_ARRAY(o, d, k, st)                     \
-    if (DICT_GET_OBJ(o, d, k)){                                                \
-        if (!PyList_Check(o)){                                                 \
-            PyErr_Format(PyExc_TypeError,                                      \
-                            "Value of %s is not of type list", k);             \
-            return NULL;}                                                      \
-        st.count = 0;                                                          \
-        st.any_pair = 0;                                                       \
-        st.any_left = st.any_right = 0;                                        \
-        *arr_len = (int)PyList_Size(p_obj);                                    \
-        if (!arr_len % 4) {                                                    \
-            PyErr_Format(PyExc_TypeError,                                      \
-                            "%s must be linear multiple of 4 in length", k);   \
-            return NULL;                                                       \
-        }                                                                      \
-        for (i = 0; i < *arr_len / 4; i+4) {                                   \
-            p3_add_to_2_interval_array(&st,                                    \
-                   (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),               \
-                   (int)PyLong_AsLong(PyList_GetItem(p_obj, i+1)),             \
-                   (int)PyLong_AsLong(PyList_GetItem(p_obj, i+2)),             \
-                   (int)PyLong_AsLong(PyList_GetItem(p_obj, i+3)));            \
-        }                                                                      \
-    }                                                                          \
-
 #define DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(o, d, k, st)                       \
     if (DICT_GET_OBJ(o, d, k)){                                                \
         if (!PyList_Check(o)){                                                 \
@@ -227,6 +203,7 @@ between Python C API code and primer3 native C code.
         }                                                                      \
     }
 #endif
+
 
 p3_global_settings*
 _setGlobals(PyObject *p3s_dict) {
@@ -547,8 +524,10 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
      */
 
     seq_args                *sa;
-    PyObject                *p_obj;
-    int                     i, *arr_len=NULL, *seq_qual_len=NULL, *overlap_junction_len=NULL;
+    PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
+    int                     i, j, *arr_len=NULL;
+    int                     len1, len2;
+    int                     *seq_qual_len=NULL, *overlap_junction_len=NULL;
 
     if (!(sa = create_seq_arg())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
@@ -563,8 +542,45 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     if (seq_qual_len != NULL && sa->quality != NULL) {
         sa->n_quality = *arr_len;
     }
-    arr_len = NULL;
-    DICT_GET_AND_COPY_TO_2_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST", sa->ok_regions);
+    if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST")){
+        if ((p_obj2 = PySequence_Fast(p_obj, "Value of 'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' " 
+                                   "must support the seqeunce protocol.")) == NULL){                          
+            return NULL;}                                                  
+        sa->ok_regions.count = 0;                                                       
+        sa->ok_regions.any_pair = 0;                                                      
+        sa->ok_regions.any_left = sa->ok_regions.any_right = 0;                                   
+        len1 = (int)PySequence_Fast_GET_SIZE(p_obj2);  
+        for (i = 0; i < len1; i++) {   
+            p_obj3 = PySequence_Fast_GET_ITEM(p_obj, (Py_ssize_t)i);
+            if ((p_obj4 = PySequence_Fast(p_obj3, "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must support "
+                                                  "the sequence protocol and be comprised of items "
+                                                  "that support the sequence protocol (e.g., it must be "
+                                                  "a list of lists, tuple of tuples or some combination "
+                                                  "of the two).")) == NULL){                          
+                return NULL;
+            } 
+            len2 = (int)PySequence_Fast_GET_SIZE(p_obj4);              
+            if (!len2 == 4) {                                                   
+                PyErr_Format(PyExc_TypeError, "Sub-list/tuple #%d of " 
+                             "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
+                             "of length 4", i);  
+                return NULL;                                                      
+            }                                                                      
+            for (j = 0; j < 4; j++) { 
+                if (!PyLong_Check(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)j))) {
+                    PyErr_Format(PyExc_TypeError, "Object #%d of sub-list/tuple %d" 
+                         "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
+                         "be an integer or long", j, i);  
+                    return NULL;
+                }        
+            }                     
+            p3_add_to_2_interval_array(&sa->ok_regions,                                   
+                   (int)PyLong_AsLong(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)0)),              
+                   (int)PyLong_AsLong(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)1)),            
+                   (int)PyLong_AsLong(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)2)),            
+                   (int)PyLong_AsLong(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)3)));             
+        }  
+    }                
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_TARGET", sa->tar2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_EXCLUDED_REGION", sa->excl2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_INTERNAL_EXCLUDED_REGION", sa->excl_internal2);
