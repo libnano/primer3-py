@@ -83,7 +83,7 @@ between Python C API code and primer3 native C code.
                 PyErr_Format(PyExc_TypeError,                                  \
                              "Value of %s is not of type string", k);          \
                 return NULL;}                                                  \
-            *st = (char *) malloc(PyBytes_Size(o));                            \
+            *st = (char *) malloc((int)PyString_Size(o));                      \
             if (st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
@@ -99,7 +99,7 @@ between Python C API code and primer3 native C code.
                 PyErr_Format(PyExc_TypeError,                                  \
                             "Value of %s is not of type unicode or bytes", k); \
                 return NULL;}                                                  \
-            *st = (char *) malloc(PyBytes_Size(o));                            \
+            *st = (char *) malloc((int)PyBytes_Size(o));                       \
             if (st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
@@ -121,7 +121,7 @@ between Python C API code and primer3 native C code.
             arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
         }                                                                      \
         *st = arr;                                                             \
-    }
+    }                                                                          \
 
 #define DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(o, d, k, st, arr_len)               \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
@@ -134,7 +134,7 @@ between Python C API code and primer3 native C code.
         for (i=0; i < *arr_len; i++) {                                         \
             *st[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
         }                                                                      \
-    }
+    }                                                                          \
 
 #define DICT_GET_AND_COPY_TO_2_INTERVAL_ARRAY(o, d, k, st)                     \
     if (DICT_GET_OBJ(o, d, k)){                                                \
@@ -548,7 +548,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
 
     seq_args                *sa;
     PyObject                *p_obj;
-    int                     i, *arr_len=NULL, *seq_qual_len=NULL, *overlap_junction_len=NULL;
+    int                     i, *arr_len=NULL, *seq_qual_len=NULL;
 
     if (!(sa = create_seq_arg())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
@@ -568,9 +568,24 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_TARGET", sa->tar2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_EXCLUDED_REGION", sa->excl2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_INTERNAL_EXCLUDED_REGION", sa->excl_internal2);
-    DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(p_obj, sa_dict,  "SEQUENCE_OVERLAP_JUNCTION_LIST", &sa->primer_overlap_junctions, overlap_junction_len);
-    if (overlap_junction_len != NULL && sa->primer_overlap_junctions != NULL) {
-        sa->primer_overlap_junctions_count = *overlap_junction_len;
+    // DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(p_obj, sa_dict,  "SEQUENCE_OVERLAP_JUNCTION_LIST", &sa->primer_overlap_junctions, overlap_junction_len);
+    int overlap_junction_arr_len = 0;
+    if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_OVERLAP_JUNCTION_LIST")) {
+        if (!PyList_Check(p_obj)){
+            PyErr_Format(PyExc_TypeError,
+                            "Value of 'SEQUENCE_OVERLAP_JUNCTION_LIST' is not of type list");
+            return NULL;}
+        overlap_junction_arr_len = (int)PyList_Size(p_obj);
+        if (overlap_junction_arr_len > 200) {
+            PyErr_Format(PyExc_TypeError,
+                            "'SEQUENCE_OVERLAP_JUNCTION_LIST' cannot have over 200 values");
+            return NULL;
+        }
+        sa->primer_overlap_junctions_count = overlap_junction_arr_len;
+        int *poj_arr = &sa->primer_overlap_junctions[0];
+        for (i=0; i < overlap_junction_arr_len; i++, poj_arr++) {
+            *poj_arr = (int)PyLong_AsLong(PyList_GetItem(p_obj, i));
+        }
     }
     if DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_INCLUDED_REGION") {
         if (!PyList_Check(p_obj)) {
