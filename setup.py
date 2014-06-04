@@ -75,7 +75,7 @@ primer3_ext = Extension('_primer3',
 print('Module Setup'.center(80, '*'))
 setup (
     name='primer3-py',
-    version='0.2.1',
+    version='0.2.2',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',
