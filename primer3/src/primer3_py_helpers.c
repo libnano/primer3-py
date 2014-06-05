@@ -77,34 +77,44 @@ between Python C API code and primer3 native C code.
 // It must not be changed or freed, so we have to malloc new memory for the
 // param value.
 #if PY_MAJOR_VERSION < 3
-    #define DICT_GET_AND_COPY_STR(o, d, k, st)                                 \
+    #define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
         if (DICT_GET_OBJ(o, d, k)) {                                           \
             if (!PyString_Check(o)){                                           \
                 PyErr_Format(PyExc_TypeError,                                  \
                              "Value of %s is not of type string", k);          \
                 return NULL;}                                                  \
-            *st = (char *) malloc((int)PyString_Size(o));                      \
+            if (PyString_AsStringAndSize(o, &tc, &ss) == -1) {                 \
+                return NULL;}                                                  \
+            *st = (char *) malloc((ss + 1) * sizeof(char));                    \
             if (st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
-            strcpy(*st, PyString_AsString(o));                                 \
+            memcpy(*st, tc, (int)(ss + 1));                                    \
         }
 #else
-    #define DICT_GET_AND_COPY_STR(o, d, k, st)                                 \
+    #define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
         if (DICT_GET_OBJ(o, d, k)) {                                           \
             if (PyUnicode_Check(o)) {                                          \
-                o = PyUnicode_AsASCIIString(o);                                \
-            } else if (!PyBytes_Check(o)){                                     \
+                *tc = PyUnicode_AsUTF8AndSize(o, &ss);                         \
+            } else if (PyBytes_Check(o)){                                      \
+                if (PyBytes_AsStringAndSize(o, &tc, &ss) == -1) {              \
+                    return NULL;}                                              \
+            } else {                                                           \
                 PyErr_Format(PyExc_TypeError,                                  \
                             "Value of %s is not of type unicode or bytes", k); \
                 return NULL;}                                                  \
-            *st = (char *) malloc((int)PyBytes_Size(o));                       \
+            if (tc == NULL){                                                   \
+                    PyErr_Format(PyExc_TypeError,                              \
+                            "Error processing string in %s", k);               \
+                    return NULL;                                               \
+                }                                                              \
+            *st = (char *) malloc(ss * sizeof(char));                          \
             if (st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
-            strcpy(*st, PyBytes_AsString(o));                                  \
+            memcpy(*st, tc, (int)(ss + 1);                                     \
         }
 #endif
 
@@ -156,54 +166,6 @@ between Python C API code and primer3 native C code.
         }                                                                      \
     }                                                                          \
 
-#if PY_MAJOR_VERSION < 3
-    #define COPY_SEQ_NAME_AND_SEQ_TO_SEQ_LIB(py_seq_name, py_seq, seq_lib) {   \
-        if (PyString_Check(py_seq_name)) {                                     \
-            seq_name = PyString_AsString(py_seq_name);                         \
-        } else {                                                               \
-            PyErr_SetString(PyExc_TypeError,                                   \
-                "Cannot add seq name with non-String type to seq_lib");        \
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyString_Check(py_seq)) {                                          \
-            seq_name = PyString_AsString(py_seq);                              \
-        } else {                                                               \
-            PyErr_SetString(PyExc_TypeError,                                   \
-                "Cannot add seq with non-String type to seq_lib");             \
-            return NULL;                                                       \
-        }                                                                      \
-        if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {     \
-            PyErr_SetString(PyExc_IOError, errfrag);                           \
-            return NULL;                                                       \
-        }                                                                      \
-    }
-#else
-    #define COPY_SEQ_NAME_AND_SEQ_TO_SEQ_LIB(py_seq_name, py_seq, seq_lib) {   \
-        if (PyUnicode_Check(py_seq_name)) {                                    \
-            seq_name = PyBytes_AsString(PyUnicode_AsASCIIString(py_seq_name)); \
-        } else if (PyBytes_Check(py_seq_name)){                                \
-            seq_name = PyBytes_AsString(py_seq_name);                          \
-        } else {                                                               \
-            PyErr_SetString(PyExc_TypeError,                                   \
-                "Cannot add seq name with non-Unicode/Bytes type to seq_lib"); \
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyUnicode_Check(py_seq)) {                                         \
-            seq = PyBytes_AsString(PyUnicode_AsASCIIString(py_seq));           \
-        } else if (PyBytes_Check(py_seq)){                                     \
-            seq = PyBytes_AsString(py_seq);                                    \
-        } else {                                                               \
-            PyErr_SetString(PyExc_TypeError,                                   \
-                "Cannot add seq with non-Unicode/Bytes type to seq_lib");      \
-            return NULL;                                                       \
-        }                                                                      \
-        if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {     \
-            PyErr_SetString(PyExc_IOError, errfrag);                           \
-            return NULL;                                                       \
-        }                                                                      \
-    }
-#endif
-
 
 p3_global_settings*
 _setGlobals(PyObject *p3s_dict) {
@@ -219,7 +181,8 @@ _setGlobals(PyObject *p3s_dict) {
     p3_global_settings      *pa;
     PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
     int                     i;
-    char                    *task_tmp=NULL;
+    Py_ssize_t              str_size;
+    char                    *temp_char, *task_tmp=NULL;
 
     if (!(pa = p3_create_global_settings())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
@@ -333,10 +296,10 @@ _setGlobals(PyObject *p3s_dict) {
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_LOWERCASE_MASKING", pa->lowercase_masking);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_THERMODYNAMIC_OLIGO_ALIGNMENT", pa->thermodynamic_oligo_alignment);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_THERMODYNAMIC_TEMPLATE_ALIGNMENT", pa->thermodynamic_template_alignment);
-    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MUST_MATCH_FIVE_PRIME", &pa->p_args.must_match_five_prime);
-    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MUST_MATCH_THREE_PRIME", &pa->p_args.must_match_three_prime);
-    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_FIVE_PRIME", &pa->o_args.must_match_five_prime);
-    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_THREE_PRIME", &pa->o_args.must_match_three_prime);
+    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MUST_MATCH_FIVE_PRIME", &pa->p_args.must_match_five_prime, temp_char, str_size);
+    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MUST_MATCH_THREE_PRIME", &pa->p_args.must_match_three_prime, temp_char, str_size);
+    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_FIVE_PRIME", &pa->o_args.must_match_five_prime, temp_char, str_size);
+    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_THREE_PRIME", &pa->o_args.must_match_three_prime, temp_char, str_size);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_TM_GT", pa->p_args.weights.temp_gt);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_TM_LT", pa->p_args.weights.temp_lt);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_GC_PERCENT_GT", pa->p_args.weights.gc_content_gt);
@@ -430,7 +393,7 @@ _setGlobals(PyObject *p3s_dict) {
     }
 
     // Handler primer task
-    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_TASK", &task_tmp);
+    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_TASK", &task_tmp, temp_char, str_size);
     // if (task_tmp == NULL) {
     //     PyErr_SetString(PyExc_ValueError, \
     //         "Primer3 args must include PRIMER_TASK");
@@ -510,7 +473,49 @@ createSeqLib(PyObject *seq_dict){
 
     pos = 0;
     while (PyDict_Next(seq_dict, &pos, &py_seq_name, &py_seq)) {
-        COPY_SEQ_NAME_AND_SEQ_TO_SEQ_LIB(py_seq_name, py_seq, sl);
+#if PY_MAJOR_VERSION < 3 
+            if (PyString_Check(py_seq_name)) {                                    
+                seq_name = PyString_AsString(py_seq_name);                        
+            } else {                                                              
+                PyErr_SetString(PyExc_TypeError,                                  
+                    "Cannot add seq name with non-String type to seq_lib");       
+                return NULL;                                                      
+            }                                                                     
+            if (PyString_Check(py_seq)) {                                         
+                seq_name = PyString_AsString(py_seq);                             
+            } else {                                                              
+                PyErr_SetString(PyExc_TypeError,                                  
+                    "Cannot add seq with non-String type to seq_lib");            
+                return NULL;                                                      
+            }                                                                     
+            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {    
+                PyErr_SetString(PyExc_IOError, errfrag);                          
+                return NULL;         
+            }                                                                                                              
+#else 
+            if (PyUnicode_Check(py_seq_name)) {                                   
+                seq_name = PyUnicode_AsUTF8(py_seq_name);
+            } else if (PyBytes_Check(py_seq_name)){                               
+                seq_name = PyBytes_AsString(py_seq_name);                         
+            } else {                                                              
+                PyErr_SetString(PyExc_TypeError,                                  
+                    "Cannot add seq name with non-Unicode/Bytes type to seq_lib");
+                return NULL;                                                      
+            }                                                                     
+            if (PyUnicode_Check(py_seq)) {                                        
+                seq = PyUnicode_AsUTF8(py_seq);          
+            } else if (PyBytes_Check(py_seq)){                                    
+                seq = PyBytes_AsString(py_seq);                                   
+            } else {                                                              
+                PyErr_SetString(PyExc_TypeError,                                  
+                    "Cannot add seq with non-Unicode/Bytes type to seq_lib");     
+                return NULL;                                                      
+            }                                                                     
+            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {    
+                PyErr_SetString(PyExc_IOError, errfrag);                          
+                return NULL;                                                      
+            }                                                                     
+#endif
     }
     return sl;
 }
@@ -525,19 +530,19 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
 
     seq_args                *sa;
     PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
-    int                     i, j, *arr_len=NULL;
-    int                     len1, len2;
-    int                     *seq_qual_len=NULL;
+    char                    *temp_char;
+    int                     i, j, len1, len2, *arr_len=NULL, *seq_qual_len=NULL;
+    Py_ssize_t              str_size;
 
     if (!(sa = create_seq_arg())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
         return NULL;
     }
-    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_TEMPLATE", &sa->sequence);
-    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_ID", &sa->sequence_name);
-    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER", &sa->left_input);
-    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER_REVCOMP", &sa->right_input);
-    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_INTERNAL_OLIGO", &sa->internal_input);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_TEMPLATE", &sa->sequence, temp_char, str_size);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_ID", &sa->sequence_name, temp_char, str_size);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER", &sa->left_input, temp_char, str_size);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER_REVCOMP", &sa->right_input, temp_char, str_size);
+    DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_INTERNAL_OLIGO", &sa->internal_input, temp_char, str_size);
     DICT_GET_AND_COPY_ARRAY(p_obj, sa_dict, "SEQUENCE_QUALITY", &sa->quality, seq_qual_len);
     if (seq_qual_len != NULL && sa->quality != NULL) {
         sa->n_quality = *arr_len;
