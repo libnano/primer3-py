@@ -96,7 +96,7 @@ between Python C API code and primer3 native C code.
     #define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
         if (DICT_GET_OBJ(o, d, k)) {                                           \
             if (PyUnicode_Check(o)) {                                          \
-                *tc = PyUnicode_AsUTF8AndSize(o, &ss);                         \
+                tc = PyUnicode_AsUTF8AndSize(o, &ss);                          \
             } else if (PyBytes_Check(o)){                                      \
                 if (PyBytes_AsStringAndSize(o, &tc, &ss) == -1) {              \
                     return NULL;}                                              \
@@ -114,7 +114,7 @@ between Python C API code and primer3 native C code.
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
-            memcpy(*st, tc, (int)(ss + 1);                                     \
+            memcpy(*st, tc, (int)(ss + 1));                                    \
         }
 #endif
 
