@@ -9,7 +9,7 @@ primer3-py is a package of *fast* and easy-to-use Python bindings for the
 Primer3 PCR primer design library. The bindings interface directly with
 the Primer3 library via the Python C API. 
 
-**Built and tested for Python 2.7, 3.2, 3.3, and 3.4**
+**Built and tested for Python 2.7, 3.3, and 3.4**
 
 
 API Summary
