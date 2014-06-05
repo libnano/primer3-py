@@ -30,4 +30,5 @@ Version 0.2.2                                                      June 3, 2014
 
 Version 0.2.3                                                      June 5, 2014
 -------------------------------------------------------------------------------      
-Corrected several potential sources of memory leaks in the C API design bindings.
+-Corrected several potential sources of memory leaks in the C API design 
+ bindings.
