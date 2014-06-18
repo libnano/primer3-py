@@ -32,3 +32,8 @@ Version 0.2.3                                                      June 5, 2014
 -------------------------------------------------------------------------------      
 -Corrected several potential sources of memory leaks in the C API design 
  bindings.
+
+Version 0.2.4                                                     June 17, 2014
+-------------------------------------------------------------------------------      
+-Addressed bug in mispriming/mishybridization library parsing in which 
+ memory for the global parameters struct was not being properly allocated
