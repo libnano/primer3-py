@@ -171,11 +171,11 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
     '''
     tm_meth = _tm_methods.get(tm_method)
-    if not tm_meth:
+    if tm_meth == None:
         raise ValueError('{} is not a valid tm calculation method'.format(
                          tm_meth))
     salt_meth = _tm_methods.get(tm_method)
-    if not salt_meth:
+    if salt_meth == None:
         raise ValueError('{} is not a valid salt correction method'.format(
                          salt_meth))
     return _primer3.calcTm(seq, mv_conc, dv_conc, dntp_conc, dna_conc,

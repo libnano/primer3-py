@@ -2,7 +2,7 @@
 primer3.wrappers | wrappers.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Simple subprocess wrappers for Primer3 executables. These functions closely 
+Simple subprocess wrappers for Primer3 executables. These functions closely
 mirror the functions found in bindings.py, but are much slower and should
 only be used for testing / comparative purposes.
 
@@ -57,11 +57,11 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     ''' Return the tm of `seq` as a float.
     '''
     tm_meth = _tm_methods.get(tm_method)
-    if not tm_meth:
+    if tm_meth == None:
         raise ValueError('{} is not a valid tm calculation method'.format(
                          tm_meth))
     salt_meth = _tm_methods.get(tm_method)
-    if not salt_meth:
+    if salt_meth == None:
         raise ValueError('{} is not a valid salt correction method'.format(
                          salt_meth))
     # For whatever reason mv_conc and dna_conc have to be ints
@@ -172,7 +172,7 @@ def assessOligo(seq):
 if sys.version_info[0] > 2:
 
     def _formatBoulderIO(p3_args):
-        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in 
+        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in
                               p3_args.items()])
         boulder_str += '=\n'
         return bytes(boulder_str, 'UTF-8')
@@ -190,7 +190,7 @@ if sys.version_info[0] > 2:
 else:
 
     def _formatBoulderIO(p3_args):
-        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in 
+        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in
                               p3_args.items()])
         boulder_str += '=\n'
         return boulder_str
@@ -203,7 +203,7 @@ else:
                 data_dict[k] = v
             except:
                 pass
-        return data_dict 
+        return data_dict
 
 
 def designPrimers(p3_args):
@@ -211,10 +211,10 @@ def designPrimers(p3_args):
 
     Returns an ordered dict of the boulderIO-format primer3 output file
     '''
-    sp = subprocess.Popen([pjoin(PRIMER3_SRC, 'primer3_core')], 
-                          stdout=subprocess.PIPE, stdin=subprocess.PIPE, 
+    sp = subprocess.Popen([pjoin(PRIMER3_SRC, 'primer3_core')],
+                          stdout=subprocess.PIPE, stdin=subprocess.PIPE,
                           stderr=subprocess.STDOUT)
-    p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH', 
+    p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH',
                        pjoin(PRIMER3_SRC, 'primer3_config/'))
     in_str = _formatBoulderIO(p3_args)
     out_str = sp.communicate(input=in_str)
