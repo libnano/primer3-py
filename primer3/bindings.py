@@ -174,7 +174,7 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     if tm_meth == None:
         raise ValueError('{} is not a valid tm calculation method'.format(
                          tm_meth))
-    salt_meth = _tm_methods.get(tm_method)
+    salt_meth = _salt_correction_methods.get(salt_corrections_method)
     if salt_meth == None:
         raise ValueError('{} is not a valid salt correction method'.format(
                          salt_meth))
