@@ -37,3 +37,8 @@ Version 0.2.4                                                     June 17, 2014
 -------------------------------------------------------------------------------      
 -Addressed bug in mispriming/mishybridization library parsing in which 
  memory for the global parameters struct was not being properly allocated
+
+Version 0.2.5                                                    August 7, 2014
+-------------------------------------------------------------------------------      
+-Fixed incorrect tm/salt correction method lookups in calcTm function in 
+ both bindings and wrappers
