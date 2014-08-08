@@ -232,6 +232,10 @@ setGlobals(PyObject *self, PyObject *args){
         // Free memory for previous global settings
         p3_destroy_global_settings(pa);
     }
+    // Allocate memory for global settings
+    if (!(pa = (p3_global_settings *) malloc(sizeof(*pa)))) {
+        return NULL;
+    }
 
     if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args,
                           &misprime_lib, &mishyb_lib)) {
@@ -244,7 +248,6 @@ setGlobals(PyObject *self, PyObject *args){
         }
         pa->p_args.repeat_lib = mp_lib;
     }
-
     if (mishyb_lib != NULL && mishyb_lib != Py_None) {
         if ((mh_lib = createSeqLib(mishyb_lib))==NULL) {
             return NULL;

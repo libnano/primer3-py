@@ -131,6 +131,35 @@ class TestLowLevelBindings(unittest.TestCase):
             else:
                 self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
+    def test_correctionMethods(self):
+        self.randArgs()
+        for sc_method in ['schildkraut', 'santalucia', 'owczarzy']:
+            for tm_method in ['breslauer', 'santalucia']:
+                binding_tm = bindings.calcTm(
+                                    seq=self.seq1,
+                                    mv_conc=int(self.mv_conc),
+                                    dv_conc=self.dv_conc,
+                                    dntp_conc=self.dntp_conc,
+                                    dna_conc=int(self.dna_conc),
+                                    tm_method=tm_method,
+                                    salt_corrections_method=sc_method)
+                wrapper_tm = wrappers.calcTm(
+                                    seq=self.seq1,
+                                    mv_conc=int(self.mv_conc),
+                                    dv_conc=self.dv_conc,
+                                    dntp_conc=self.dntp_conc,
+                                    dna_conc=int(self.dna_conc),
+                                    tm_method=tm_method,
+                                    salt_corrections_method=sc_method)
+                self.assertEqual(int(binding_tm), int(wrapper_tm))
+        self.assertRaises(ValueError, bindings.calcTm,
+                                    seq=self.seq1,
+                                    mv_conc=int(self.mv_conc),
+                                    dv_conc=self.dv_conc,
+                                    dntp_conc=self.dntp_conc,
+                                    dna_conc=int(self.dna_conc),
+                                    tm_method='not_a_tm_method')
+
     def test_memoryLeaks(self):
         sm = _getMemUsage()
         for x in range(1000):
@@ -254,9 +283,9 @@ class TestDesignBindings(unittest.TestCase):
         print('\n\tMemory usage before 1k runs of designPrimers: ', sm)
         print('\tMemory usage after 1k runs of designPrimers:  ', em)
         print('\t\t\t\t\tDifference: \t', em-sm)
-        if em-sm > 500:
+        if em-sm > 1000:
             raise AssertionError('Memory usage increase after 1k runs of \n\t'
-                                 'designPrimers > 500 bytes -- potential \n\t'
+                                 'designPrimers > 1000 bytes -- potential \n\t'
                                  'memory leak (mem increase: {})'.format(em-sm))
 
 if __name__ == '__main__':

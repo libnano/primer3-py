@@ -69,13 +69,15 @@ if sys.platform == 'darwin':
 
 primer3_ext = Extension('_primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,
-                        include_dirs=[primer3_src]
+                        include_dirs=[primer3_src],
+                        # Necessary to build primer3 w/ Python 3.4 compiler flags
+                        extra_compile_args=["-Wno-error=declaration-after-statement"]
                         )
 
 print('Module Setup'.center(80, '*'))
 setup (
     name='primer3-py',
-    version='0.2.3',
+    version='0.2.5',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',

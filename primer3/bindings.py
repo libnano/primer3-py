@@ -217,7 +217,7 @@ _tm_methods = {
     'santalucia': 1
 }
 
-_salt_correction_methods = {
+_salt_corrections_methods = {
     'schildkraut': 0,
     'santalucia': 1,
     'owczarzy': 2
@@ -248,13 +248,13 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
     '''
     tm_meth = _tm_methods.get(tm_method)
-    if not tm_meth:
+    if tm_meth is None:
         raise ValueError('{} is not a valid tm calculation method'.format(
-                         tm_meth))
-    salt_meth = _tm_methods.get(tm_method)
-    if not salt_meth:
+                         tm_method))
+    salt_meth = _salt_corrections_methods.get(salt_corrections_method)
+    if salt_meth is None:
         raise ValueError('{} is not a valid salt correction method'.format(
-                         salt_meth))
+                         salt_corrections_method))
     return _primer3.calcTm(seq, mv_conc, dv_conc, dntp_conc, dna_conc,
                                   max_nn_length, tm_meth, salt_meth)
 

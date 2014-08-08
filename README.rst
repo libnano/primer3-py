@@ -32,7 +32,7 @@ primer3.bindings.calcHomodimer
   Calculate DNA sequence homodimer formation thermodynamics (dS, dH, dG, Tm).
 
 primer3.bindings.calcHeterodimer
-  Calculate heterdimer thermodynamics (dS, dH, dG, Tm) for two DNA sequences.
+  Calculate heterodimer thermodynamics (dS, dH, dG, Tm) for two DNA sequences.
 
 primer3.bindings.designPrimers
   Run the Primer3 design engine using parameters provided in a Python dictionary. Returns a flat dictionary of the Primer3 output.

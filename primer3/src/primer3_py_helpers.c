@@ -480,18 +480,18 @@ createSeqLib(PyObject *seq_dict){
                 PyErr_SetString(PyExc_TypeError,                                  
                     "Cannot add seq name with non-String type to seq_lib");       
                 return NULL;                                                      
-            }                                                                     
+            }                                                                  
             if (PyString_Check(py_seq)) {                                         
-                seq_name = PyString_AsString(py_seq);                             
+                seq = PyString_AsString(py_seq);                             
             } else {                                                              
                 PyErr_SetString(PyExc_TypeError,                                  
                     "Cannot add seq with non-String type to seq_lib");            
                 return NULL;                                                      
-            }                                                                     
-            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {    
+            }                                                                  
+            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) { 
                 PyErr_SetString(PyExc_IOError, errfrag);                          
                 return NULL;         
-            }                                                                                                              
+            }                                                                                                         
 #else 
             if (PyUnicode_Check(py_seq_name)) {                                   
                 seq_name = PyUnicode_AsUTF8(py_seq_name);
