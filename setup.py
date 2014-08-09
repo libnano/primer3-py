@@ -37,20 +37,20 @@ primer3_srcs = [pjoin(primer3_src, 'thal_mod.c'),
                 pjoin(src_path, 'primer3_py_helpers.c')]
 
 # Extract the Primer3 source if necessary
-if not os.path.exists(primer3_path):
-    p3fd = tarfile.open(os.path.join(src_path, 'primer3-src-2.3.6.tar.gz'))
-    p3fd.extractall(path=src_path)
-    p3fd.close()
+# if not os.path.exists(primer3_path):
+#     p3fd = tarfile.open(os.path.join(src_path, 'primer3-src-2.3.6.tar.gz'))
+#     p3fd.extractall(path=src_path)
+#     p3fd.close()
 
 # Copy libprimer3_mod.c to libprimer3_mod.ccp (avoids issues w/ hash_map #include)
-shutil.copy(pjoin(primer3_src, 'libprimer3.c'),
-            pjoin(primer3_src, 'libprimer3.cpp'))
+# shutil.copy(pjoin(primer3_src, 'libprimer3.c'),
+#             pjoin(primer3_src, 'libprimer3.cpp'))
 
 # Patch primer3 files w/ code for C api bindings
-print('Patch Primer3 Files'.center(80, '*'))
-patched_files = patchCfiles(pjoin(primer3_path), pjoin(
-                            root_path, 'primer3', 'src', 'primer3_patches.c'))
-print('END Patch Primer3 Files'.center(80, '*'))
+# print('Patch Primer3 Files'.center(80, '*'))
+# patched_files = patchCfiles(pjoin(primer3_path), pjoin(
+#                             root_path, 'primer3', 'src', 'primer3_patches.c'))
+# print('END Patch Primer3 Files'.center(80, '*'))
 
 # Build primer3 for subprocess bindings
 print('Make Primer3'.center(80, '*'))
