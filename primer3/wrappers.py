@@ -2,7 +2,7 @@
 primer3.wrappers | wrappers.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Simple subprocess wrappers for Primer3 executables. These functions closely 
+Simple subprocess wrappers for Primer3 executables. These functions closely
 mirror the functions found in bindings.py, but are much slower and should
 only be used for testing / comparative purposes.
 
@@ -23,21 +23,21 @@ from os.path import join as pjoin
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PRIMER3 WRAPPERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
-DEV_NULL = open(os.devnull, 'wb')
 
-local_dir = os.path.dirname(os.path.realpath(__file__))
+# ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
+
+LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
 if not os.environ.get('PRIMER3HOME'):
     try:
-        np_dir = glob.glob(os.path.join(local_dir, 'src/primer3-*.*.*'))
-        os.environ['PRIMER3HOME'] = os.path.abspath(np_dir[0])
+        os.environ['PRIMER3HOME'] = pjoin(LOCAL_DIR, 'src/libprimer3')
     except:
         raise ImportError('PRIMER3HOME environmental variable is not set.')
 PRIMER3_HOME = os.environ.get('PRIMER3HOME')
 
-PRIMER3_SRC = pjoin(PRIMER3_HOME, 'src')
-THERMO_PATH = pjoin(PRIMER3_SRC, 'primer3_config/')
+THERMO_PATH = pjoin(PRIMER3_HOME, 'primer3_config/')
 
+DEV_NULL = open(os.devnull, 'wb')
 
 _tm_methods = {
     'breslauer': 0,
@@ -65,7 +65,7 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
         raise ValueError('{} is not a valid salt correction method'.format(
                          salt_corrections_method))
     # For whatever reason mv_conc and dna_conc have to be ints
-    args = [pjoin(PRIMER3_SRC, 'oligotm'),
+    args = [pjoin(PRIMER3_HOME, 'oligotm'),
             '-mv',  str(int(mv_conc)),
             '-dv',  str(dv_conc),
             '-n',   str(dntp_conc),
@@ -102,7 +102,7 @@ def calcThermo(seq1, seq2, calc_type='ANY', mv_conc=50, dv_conc=0,
     Returns a named tuple with tm, ds, dh, and dg values or None if no
     structure / complex could be computed.
     """
-    args = [pjoin(PRIMER3_SRC, 'ntthal'),
+    args = [pjoin(PRIMER3_HOME, 'ntthal'),
             '-a',       str(calc_type),
             '-mv',      str(mv_conc),
             '-dv',      str(dv_conc),
@@ -172,7 +172,7 @@ def assessOligo(seq):
 if sys.version_info[0] > 2:
 
     def _formatBoulderIO(p3_args):
-        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in 
+        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in
                               p3_args.items()])
         boulder_str += '=\n'
         return bytes(boulder_str, 'UTF-8')
@@ -190,7 +190,7 @@ if sys.version_info[0] > 2:
 else:
 
     def _formatBoulderIO(p3_args):
-        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in 
+        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in
                               p3_args.items()])
         boulder_str += '=\n'
         return boulder_str
@@ -203,7 +203,7 @@ else:
                 data_dict[k] = v
             except:
                 pass
-        return data_dict 
+        return data_dict
 
 
 def designPrimers(p3_args):
@@ -211,11 +211,11 @@ def designPrimers(p3_args):
 
     Returns an ordered dict of the boulderIO-format primer3 output file
     '''
-    sp = subprocess.Popen([pjoin(PRIMER3_SRC, 'primer3_core')], 
-                          stdout=subprocess.PIPE, stdin=subprocess.PIPE, 
+    sp = subprocess.Popen([pjoin(PRIMER3_HOME, 'primer3_core')],
+                          stdout=subprocess.PIPE, stdin=subprocess.PIPE,
                           stderr=subprocess.STDOUT)
-    p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH', 
-                       pjoin(PRIMER3_SRC, 'primer3_config/'))
+    p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH',
+                       pjoin(PRIMER3_HOME, 'primer3_config/'))
     in_str = _formatBoulderIO(p3_args)
     out_str = sp.communicate(input=in_str)
     return _parseBoulderIO(out_str)
