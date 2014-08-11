@@ -250,6 +250,7 @@ class TestDesignBindings(unittest.TestCase):
     def test_memoryLeaks(self):
         sm = _getMemUsage()
         for x in range(100):
+            # bindings.runP3Design()
             bindings.designPrimers(
                 {
                     'SEQUENCE_ID': 'MH1000',

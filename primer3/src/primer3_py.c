@@ -85,6 +85,7 @@ PyDoc_STRVAR(runDesign__doc__,
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+
 static PyObject*
 getThermoParams(PyObject *self, PyObject *args) {
     /* This loads the thermodynamic parameters from the parameter files
@@ -231,14 +232,20 @@ setGlobals(PyObject *self, PyObject *args){
     if (pa != NULL) {
         // Free memory for previous global settings
         p3_destroy_global_settings(pa);
+        pa = NULL;
     }
-    // Allocate memory for global settings
-    if (!(pa = (p3_global_settings *) malloc(sizeof(*pa)))) {
-        return NULL;
-    }
+    // // Allocate memory for global settings
+    // if ((pa = (p3_global_settings *) malloc(sizeof(p3_global_settings))) == NULL) {
+    //     return NULL;
+    // }
 
     if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args,
                           &misprime_lib, &mishyb_lib)) {
+        return NULL;
+    }
+
+
+    if ((pa = _setGlobals(global_args)) == NULL) {
         return NULL;
     }
 
@@ -255,9 +262,6 @@ setGlobals(PyObject *self, PyObject *args){
         pa->p_args.repeat_lib = mh_lib;
     }
 
-    if ((pa = _setGlobals(global_args)) == NULL){
-        return NULL;
-    }
     Py_RETURN_NONE;
 }
 
@@ -352,6 +356,10 @@ static PyMethodDef primer3_methods[] = {
 
 MOD_INIT(_primer3){
 /* standard numpy compatible initiation */
+    if (Py_AtExit(&cleanUp) < 0) {
+        // printf("Failed to register cleanUp\n");
+        // fflush(stdout);
+    }
 #if PY_MAJOR_VERSION >= 3
     static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
@@ -369,6 +377,4 @@ MOD_INIT(_primer3){
 #else
     Py_InitModule3("_primer3", primer3_methods, primer3__doc__);
 #endif
-
-Py_AtExit(&cleanUp);
 }
