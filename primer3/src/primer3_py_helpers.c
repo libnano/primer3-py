@@ -19,11 +19,17 @@ between Python C API code and primer3 native C code.
 #include    <string.h>
 #include    <stdio.h>
 #include    <Python.h>
-#include    <libprimer3_mod.h>
+#include    <libprimer3.h>
 
 
 #if PY_MAJOR_VERSION < 3
 /* see http://python3porting.com/cextensions.html */
+    #ifdef PyLong_Check
+        #undef PyLong_Check
+    #endif
+    #ifdef PyLong_AsLong
+        #undef PyLong_AsLong
+    #endif
     #define PyLong_Check PyInt_Check
     #define PyLong_AsLong PyInt_AsLong
 #endif
@@ -124,7 +130,7 @@ between Python C API code and primer3 native C code.
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
-        *arr_len = PyList_Size(o);                                             \
+        *arr_len = (int)PyList_Size(o);                                             \
         int arr[*arr_len];                                                     \
         int i;                                                                 \
         for (i=0; i < *arr_len; i++) {                                         \
@@ -139,7 +145,7 @@ between Python C API code and primer3 native C code.
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
-        *arr_len = PyList_Size(o);                                             \
+        *arr_len = (int)PyList_Size(o);                                             \
         int i;                                                                 \
         for (i=0; i < *arr_len; i++) {                                         \
             *st[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
@@ -153,7 +159,7 @@ between Python C API code and primer3 native C code.
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
         st.count = 0;                                                          \
-        *arr_len = PyList_Size(p_obj);                                         \
+        *arr_len = (int)PyList_Size(p_obj);                                         \
         if (!arr_len % 2) {                                                    \
             PyErr_Format(PyExc_TypeError,                                      \
                             "%s must be linear multiple of 2 in length", k);   \
@@ -371,7 +377,7 @@ _setGlobals(PyObject *p3s_dict) {
             }
             p_obj3 = PySequence_GetItem(p_obj2, 0);
             p_obj4 = PySequence_GetItem(p_obj2, 1);
-            if ((pa->pr_min[i] = PyLong_AsLong(p_obj3)) == -1) {
+            if ((pa->pr_min[i] = (int)PyLong_AsLong(p_obj3)) == -1) {
                 PyErr_Format(PyExc_TypeError,\
                     "Object 1 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
                 Py_DECREF(p_obj2);
@@ -379,7 +385,7 @@ _setGlobals(PyObject *p3s_dict) {
                 Py_DECREF(p_obj4);
                 return NULL;
             }
-            if ((pa->pr_max[i] = PyLong_AsLong(p_obj4)) == -1) {
+            if ((pa->pr_max[i] = (int)PyLong_AsLong(p_obj4)) == -1) {
                 PyErr_Format(PyExc_TypeError,\
                     "Object 2 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
                 Py_DECREF(p_obj2);
@@ -474,48 +480,48 @@ createSeqLib(PyObject *seq_dict){
 
     pos = 0;
     while (PyDict_Next(seq_dict, &pos, &py_seq_name, &py_seq)) {
-#if PY_MAJOR_VERSION < 3 
-            if (PyString_Check(py_seq_name)) {                                    
-                seq_name = PyString_AsString(py_seq_name);                        
-            } else {                                                              
-                PyErr_SetString(PyExc_TypeError,                                  
-                    "Cannot add seq name with non-String type to seq_lib");       
-                return NULL;                                                      
-            }                                                                  
-            if (PyString_Check(py_seq)) {                                         
-                seq = PyString_AsString(py_seq);                             
-            } else {                                                              
-                PyErr_SetString(PyExc_TypeError,                                  
-                    "Cannot add seq with non-String type to seq_lib");            
-                return NULL;                                                      
-            }                                                                  
-            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) { 
-                PyErr_SetString(PyExc_IOError, errfrag);                          
-                return NULL;         
-            }                                                                                                         
-#else 
-            if (PyUnicode_Check(py_seq_name)) {                                   
+#if PY_MAJOR_VERSION < 3
+            if (PyString_Check(py_seq_name)) {
+                seq_name = PyString_AsString(py_seq_name);
+            } else {
+                PyErr_SetString(PyExc_TypeError,
+                    "Cannot add seq name with non-String type to seq_lib");
+                return NULL;
+            }
+            if (PyString_Check(py_seq)) {
+                seq = PyString_AsString(py_seq);
+            } else {
+                PyErr_SetString(PyExc_TypeError,
+                    "Cannot add seq with non-String type to seq_lib");
+                return NULL;
+            }
+            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
+                PyErr_SetString(PyExc_IOError, errfrag);
+                return NULL;
+            }
+#else
+            if (PyUnicode_Check(py_seq_name)) {
                 seq_name = PyUnicode_AsUTF8(py_seq_name);
-            } else if (PyBytes_Check(py_seq_name)){                               
-                seq_name = PyBytes_AsString(py_seq_name);                         
-            } else {                                                              
-                PyErr_SetString(PyExc_TypeError,                                  
+            } else if (PyBytes_Check(py_seq_name)){
+                seq_name = PyBytes_AsString(py_seq_name);
+            } else {
+                PyErr_SetString(PyExc_TypeError,
                     "Cannot add seq name with non-Unicode/Bytes type to seq_lib");
-                return NULL;                                                      
-            }                                                                     
-            if (PyUnicode_Check(py_seq)) {                                        
-                seq = PyUnicode_AsUTF8(py_seq);          
-            } else if (PyBytes_Check(py_seq)){                                    
-                seq = PyBytes_AsString(py_seq);                                   
-            } else {                                                              
-                PyErr_SetString(PyExc_TypeError,                                  
-                    "Cannot add seq with non-Unicode/Bytes type to seq_lib");     
-                return NULL;                                                      
-            }                                                                     
-            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {    
-                PyErr_SetString(PyExc_IOError, errfrag);                          
-                return NULL;                                                      
-            }                                                                     
+                return NULL;
+            }
+            if (PyUnicode_Check(py_seq)) {
+                seq = PyUnicode_AsUTF8(py_seq);
+            } else if (PyBytes_Check(py_seq)){
+                seq = PyBytes_AsString(py_seq);
+            } else {
+                PyErr_SetString(PyExc_TypeError,
+                    "Cannot add seq with non-Unicode/Bytes type to seq_lib");
+                return NULL;
+            }
+            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
+                PyErr_SetString(PyExc_IOError, errfrag);
+                return NULL;
+            }
 #endif
     }
     return sl;
@@ -624,8 +630,8 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                 "\"SEQUENCE_INCLUDED_REGION\" contains non-int value");
             return NULL;
         }
-        sa->incl_s = PyLong_AsLong(PyList_GetItem(p_obj, 0));
-        sa->incl_l = PyLong_AsLong(PyList_GetItem(p_obj, 1));
+        sa->incl_s = (int)PyLong_AsLong(PyList_GetItem(p_obj, 0));
+        sa->incl_l = (int)PyLong_AsLong(PyList_GetItem(p_obj, 1));
     }
 
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_START_CODON_POSITION", sa->start_codon_pos);

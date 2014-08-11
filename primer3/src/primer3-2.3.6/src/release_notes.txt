@@ -1,0 +1,681 @@
+release 2.3.6 2013-10-22 ===============================================
+
+Important changes:
+
+1. Four new input tags were added:
+- PRIMER_MUST_MATCH_THREE_PRIME
+- PRIMER_MUST_MATCH_FIVE_PRIME
+- PRIMER_INTERNAL_MUST_MATCH_THREE_PRIME
+- PRIMER_INTERNAL_MUST_MATCH_FIVE_PRIME
+The MUST_MATCH tags allow to define 5 nt patterns which the first and 
+the last five bases of a primer or oligo have to match. For example, 
+the pattern "NNGTN" would require the 3rd and 2nd last bases to be G and 
+T respectively.
+
+Minor fixes:
+
+1. Fixed two bugs in ntdpal and oligotm that caused segmentation fault
+whenever these binaries were called without specifying a given
+option value.
+
+release 2.3.5 2013-01-03 ===============================================
+
+Important changes:
+
+1. The tag PRIMER_THERMODYNAMIC_ALIGNMENT was replaced by two new tags:
+
+   - PRIMER_THERMODYNAMIC_OLIGO_ALIGNMENT which governs hairpin 
+and oligo-oligo interactions. Therefore, whenever it is set to 1 
+(the default) thermodynamic alignments will be used for oligo-
+oligo interactions and hairpins.
+
+   - PRIMER_THERMODYNAMIC_TEMPLATE_ALIGNMENT which governs the 
+oligo-template interactions and, when set to 1 (default is 0), will 
+cause primer3 to use the thermodynamic alignment against templates.
+
+The reason for this change is to provide the option of using the 
+old alignment for oligo-template interactions when the thermodynamic 
+alignment is too slow or the template is too long (there is a hard 
+limit THAL_MAX_SEQ=10k on the length of sequences involved in 
+thermodynamic alignments).
+
+1.1 Added corresponding functions to libprimer3.c and libprimer3.h:
+
+p3_set_gs_primer_thermodynamic_oligo_alignment
+p3_set_gs_primer_thermodynamic_template_alignment
+
+2. Modified the error handling of non-memory related errors that
+can occur during the thermodynamic alignment. They are no longer
+fatal errors.
+
+3. Made a performance improvement for the case when thermodynamic 
+alignment is used for templates: the alignment is done only once
+for each oligo and the result is kept. This way we avoid performing
+the same expensive alignment more than once.
+
+4. Removed io_version 3, which was only kept for backward compatibility
+with very old versions of primer3.
+
+5. Fixed an error in which PRIMER_DNTP_CONC > PRIMER_SALT_DIVALENT causes 
+Primer3 to crash.
+
+6. Fixed a bug that made Primer3 not generate results in some cases
+when PRIMER_FIRST_BASE_INDEX is negative.
+
+Minor corrections:
+
+1. Added function p3_set_max_end_gc (sets max_end_gc in the
+primer_global_settings struct).
+
+2. Removed intentional compile time division by zero in thal.c if
+macro INFINITY is defined.
+
+3. Updated text in error messages from function thal() to make them
+more informative.
+
+release 2.3.4 2012-05-30 ===============================================
+
+Major correction:
+
+1. Fixed error in which PRIMER_..._..._TEMPLATE_MISPRIMING_TH was
+   calculated incorrectly in libprimer3.c
+
+release 2.3.3 2012-05-18 ===============================================
+
+Major correction:
+
+1. Fixed error in which non-default values of monovalent and divalent
+salt concentrations and non-default values of dNTP and DNA
+concentrations were being ignored in thermodynamic calculations.
+
+release 2.3.2 2012-03-15 ===============================================
+
+Minor corrections:
+
+1. _Removed_ warning if PRIMER_INTERNAL_SALT_DIVALENT > 0.0 but
+PRIMER_INTERNAL_DNTP_CONC <= 0.0.  (dNTPs not used in hybridizations.)
+
+release 2.3.1 2012-02-27 ===============================================
+
+Minor corrections:
+
+1. Added warnings if PRIMER_SALT_DIVALENT > 0.0 but PRIMER_DNTP_CONC
+<= 0.0 or PRIMER_INTERNAL_SALT_DIVALENT > 0.0 but
+PRIMER_INTERNAL_DNTP_CONC <= 0.0.
+
+2. No longer an error if a settings file has
+PRIMER_THERMODYNAMIC_ALIGNMENT=1 but does not have a valid
+PRIMER_THERMODYNAMIC_PARAMETERS_PATH.
+(PRIMER_THERMODYNAMIC_PARAMETERS_PATH can then be set in the regular
+boulder IO input stream.)
+
+3. Updates to documetation on salt corrections.
+
+4. Corrections to primer3web_v3_0_0_default_settings.txt (removed
+non-existent tags and removed the setting of
+PRIMER_THERMODYNAMIC_PARAMETERS_PATH)
+
+5. Removed un-needed files from distribution .tar.gz file.
+
+6. Removed the -i option from the oligotm executable, as the
+necessary information is in the Primer3 manual.
+
+7. Updated PRIMER_PRODUCT_SIZE_RANGE in
+primer3web_v3_0_0_default_settings to same value as in previous
+version of primer3web.
+
+release 2.3.0 2012-02-03 ===============================================
+
+1. *** We changed the following default values:
+
+1.1 Changing default oligo temperature calculations
+
+PRIMER_TM_FORMULA=1  (was 0)
+PRIMER_SALT_CORRECTIONS=1 (was 0)
+
+1.2 Making thermodynamic secondary structure calculations the default:
+
+PRIMER_THERMODYNAMIC_ALIGNMENT=1 (was 0)
+
+1.3 The following need reasonable values to support the changes in 1.1
+and 1.2 above:
+
+PRIMER_SALT_DIVALENT=1.5 (was 0.0)
+PRIMER_DNTP_CONC=0.6 (was 0.0)
+
+1.4 To make old defaults easily accessible, we added a command line
+argument, --default_version=1, which directs primer3_core to use the
+old defaults. --default_version=2 directs primer3_core to use the new
+defaults.  The default is --default_version=2.
+
+1.5 IMPORTANT: because PRIMER_THERMODYNAMIC_ALIGNMENT=1,
+PRIMER_THERMODYNAMIC_PARAMETERS_PATH must point to the right location.
+This tag specifies the path to the directory that contains all the
+parameter files used by the thermodynamic approach. In Linux, there
+are two *default* locations that are tested if this tag is not
+defined: ./primer3_config/ and /opt/primer3_config/. For Windows,
+there is only one default location: .\primer3_config\.  If the the
+parameter files are not in one these locations, be sure to set
+PRIMER_THERMODYNAMIC_PARAMETERS_PATH
+
+1.6 Changed default for 
+
+PRIMER_LIB_AMBIGUITY_CODES_CONSENSUS=0 (was 1)
+
+(0 is almost always the the behavior one wants.)
+
+1.7 To get the behavior of -default_version=1 when -default_version=2
+set the following:
+
+PRIMER_TM_FORMULA=0
+PRIMER_SALT_CORRECTIONS=0
+PRIMER_THERMODYNAMIC_ALIGNMENT=0
+PRIMER_SALT_DIVALENT=0.0
+PRIMER_DNTP_CONC=0.0
+PRIMER_LIB_AMBIGUITY_CODES_CONSENSUS=1
+
+1.8 To get the behavior of -default_version=2 when -default_version=1
+set the following:
+
+PRIMER_TM_FORMULA=1
+PRIMER_SALT_CORRECTIONS=1
+PRIMER_THERMODYNAMIC_ALIGNMENT=1
+PRIMER_SALT_DIVALENT=1.5
+PRIMER_DNTP_CONC=0.6
+PRIMER_LIB_AMBIGUITY_CODES_CONSENSUS=0
+
+2. We changed the NULL value for SEQUENCE_FORCE_{LEFT,RIGHT}_START_END to
+-1000000, and made it an error to select PRIMER_FIRST_BASE_INDEX <=
+this value.  This is to correct an error when
+SEQUENCE_FORCE_{LEFT,RIGHT}_START_END was -1 (value previously used to
+indicate a NULL) but PRIMER_FIRST_BASE_INDEX was < 0, which caused the
+intended NULL value (-1) to be treated as a constraint on primer
+location (a constraint that was not possible to satisfy).
+
+3. We changed the PRIMER_TASK called 'pick_detection_primers' to
+'generic' while retaining 'pick_detection_primers' as an alias for
+backward compatibility.
+
+4. The code now uses 'end' alignments when assessing template mispriming
+using thermodynamic alignments. This is consistent with the approach
+taken with the previous alignment algorithm and with checking for
+mispriming against repeat libraries.
+
+4. We removed PRIMER_PAIR_MAX_HAIRPIN_TH (which was ignored previously).
+
+5. Primer3 now requires the user to set SEQUENCE_TARGET, not
+SEQUENCE_INCLUDED_REGION when PRIMER_TASK=pick_discriminative_primers
+
+5. When PRIMER_TASK=pick_discriminative_primers or
+PRIMER_TASK=pick_cloning_primers the value of SEQUENCE_INCLUDED_REGION
+is no longer changed to the entire input sequence.
+
+6. The handling of divalent cations when PRIMER_SALT_CORRECTIONS=2
+(not the default and not the recommended value) has been updated. The
+rationale is that, when divalent cations are present, the formula by
+Owczarzy et al., 2004 (used previously by Primer3) can be improved
+upon as described in (Ahsen et al., 2010; Owczarzy et al.,
+2008). Therefore we have updated the melting temperature calculation
+to follow the scheme in Figure 9 of (Owczarzy et al., 2008). Please
+find references to these papers in the Primer3 manual.
+
+7. In addition, several error corrections:
+
+7.1 Corrected a short, fixed-size buffer for the file/path names specified
+by the command line arguments -output, -error and for the settings
+file.
+
+7.2 Two other corrected errors were in p3_set_gs_primer_self_end and
+p3_set_gs_primer_internal_oligo_self_end, which erroneously multiplied
+their 'val' arguments by 100.
+
+7.3 Primer3 now detects and handles the situation in which user-supplied
+primers (SEQUENCE_PRIMER and SEQUENCE_PRIMER_REVCOMP) have the left
+primer to the right of the right primer.  Also issue a warning if
+user-supplied primers occur in more than one location in the template.
+
+release 2.2.3 2010-07-08 ===============================================
+
+Minor error corrections, minor cleanup.
+This is a stable release.
+
+release 2.2.2 beta 2010-03-04 ==========================================
+
+This release adds a performance enhancement for inputs involving
+SEQUENCE_PRIMER_PAIR_OK_REGION_LIST.
+
+This release adds two new tags, PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE
+and PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE
+
+release 2.2.1 alpha 2009-10-28 ==========================================
+
+This release adds several performance enhancements.
+
+release 2.2.0 alpha 2009-10-23 ==========================================
+
+This release adds multiple new features to primer3_core and related
+C code.
+
+The enhancements fall under several categories:
+
+1. PRIMER/OLIGO SECONDARY STRUCTURE AND PRIMER-DIMER AND TEMPLATE
+MISPRIMING PREDICTION
+
+We added capabilities for predicting secondary structure,
+primer-dimer, and template mispriming based on a thermodynamic model.
+
+INPUT/OUTPUT TAGS:
+
+Added tags PRIMER_THERMODYNAMIC_ALIGNMENT,
+PRIMER_INTERNAL_MAX_{HAIRPIN,SELF_ANY_TH,SELF_END_TH,TEMPLATE_MISHYB_TH},
+PRIMER_INTERNAL_WT_{HAIRPIN,SELF_ANY_TH,SELF_END_TH,TEMPLATE_MISHYB_TH},
+PRIMER_MAX_{HAIRPIN,SELF_ANY_TH,SELF_END_TH,TEMPLATE_MISPRIMING_TH},
+PRIMER_PAIR_MAX_{COMPL_ANY_TH,COMPL_END_TH,HAIRPIN,TEMPLATE_MISPRIMING_TH},
+PRIMER_PAIR_WT_{COMPL_ANY_TH,COMPL_END_TH,HAIRPIN,TEMPLATE_MISPRIMING_TH},
+PRIMER_WT_{HAIRPIN,SELF_ANY_TH,SELF_END_TH,TEMPLATE_MISPRIMING_TH}
+
+See the documentation for details. The tag
+PRIMER_THERMODYNAMICAL_ALIGNMENT=1 directs primer3_core to use the
+thermodynamic alignments.
+
+NEW EXECUTABLE: ntthal
+
+ntthal is analogous to ntdpal.  Between two sequences, ntthal finds
+alignment/sec structure, that has the highest melting
+temperature. Ntthal is based on nearest-neighbor thermodynamical
+approach.  For input parameters to ntthal, execute: ./ntthal (without
+arguments).
+
+2. NEW COMMAND LINE FLAGS AND ARGUMENTS
+
+primer3_core now has a more conventional command line.  For example,
+you can type
+
+primer3_core -output my_output -error my_error my_input
+
+and primer3_core will take its input from my_input and put
+its outputs in the files my_output and my_error.  There
+is also a command line flag -echo_settings_file to cause
+the settings file contents to be echoed to output.
+
+3. NEW INPUT TAGS TO CONTROL PRIMER LOCATION
+
+See the documentation for SEQUENCE_PRIMER_PAIR_OK_REGION_LIST.  Tags
+SEQUENCE_OVERLAP_JUNCTION_LIST,
+PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION,
+PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION have _replaced_
+SEQUENCE_PRIMER_OVERLAP_POS and PRIMER_POS_OVERLAP_TO_END_DIST.  See
+the documentation.
+
+4. PERFORMANCE IMPROVEMENTS
+
+release 2.0.0 alpha 2008-12-15 ==========================================
+
+ This is major release, involving enhancements to functionality,
+  software architecture, and input and output conventions.
+
+ INPUT/OUTPUT CHANGES:
+
+ * A new command line flag, -io_version=3 provides backward compatible
+   behavior for boulder IO input, and boulder IO output that is
+   backward compatible except for error messages, warnings, and the
+   text of PRIMER...EXPLAIN tags.
+
+ * -io_version=3 IS NOT the default -- you must specify it on the
+   command line.
+  
+ For the new default IO, we renamed many Boulder IO INPUT/OUTPUT TAGS
+  for clarification and easier integration into scripts
+  
+ NEW OR IMPROVED FUNCTIONALITY:
+   
+ Primer3 'settings' files were added.  A settings file can be read in
+  at program start up to set global parameters.  Our intent is that
+  parameter values suitable for particular primer design objectives
+  can be easily stored and re-used.
+
+ We added new "tasks" such as selection of primer lists, sequencing
+  primers, or cloning primers, or the checking of primers or primer pairs
+  in the absence of a target sequence. See tag PRIMER_TASK.
+ 
+ It is now possible to request only unique primers when multiple
+  primer pairs are requested.  (In the past, each _pair_ was unique,
+  but the same primer might occur in more than one pair).  The user
+  also has some control over what constitutes a 'unique' primer. See
+  tag PRIMER_MIN_THREE_PRIME_DISTANCE.
+
+ When an illegal primer pair is specified for checking primer3, the
+  program now assess it.  In the past, primer3 assessed individual
+  primers if they violated a constraint, but in some cases not pairs
+  that violated constraints on pairs (such as product size).
+
+ We added new functionality with tags 
+  SEQUENCE_PRIMER_OVERLAP_POS, PRIMER_POS_OVERLAP_TO_END_DIST,
+  PRIMER_MAX_END_GC.  Please see the documentation.
+
+ We added tags PRIMER_PAIR_MAX_COMPL_END and
+  PRIMER_PAIR_MAX_COMPL_ANY, which previously took the same values as
+  PRIMER_SELF_{END,ANY}
+
+ OTHER CHANGES TO BEHAVIOR:
+
+ We corrected a few errors and a mis-feature in the ways in which
+  primer3 searches for primer pairs. Consequently, the latest version
+  of primer3 will return different sets of primer pairs in a few
+  instances.
+  
+ INTERNAL CHANGES:
+
+ It is now possible to use the main primer3 functionality from a
+  single C function. We cleanly separated the functionality of reading
+  in Boulder IO records from the primer choosing / designing
+  functionality.  We also substantially simplified the organization
+  and documentation of the main primer picking code, now in
+  libprimer3.[ch].  The file libprimer3.h specifies the external
+  interface, although it is not separately documented. It is also
+  possible to create a binary library file that provides this
+  functionality (libprimer3.a or libprimer3.so in Unix/Linux).  All C
+  code is ANSI C.
+
+release 1.1.2 2007-06-10 ================================================
+
+ Updates to dpal.c so that no error forces an exit.
+ Adaptation in primer3_main.c and ntdpal_main.c to 
+   updated error handling in dpal().
+ Arranged for primer3_main.c align() to check for
+   and circumvent local alignments to "targets" < nucleotides
+   long, and added tests for this condition.
+ Comment and code readability updates in dpal.h and dpal.c
+
+release 1.1.1 3/37/2007 ==================================================
+
+ Minor corrections
+
+release 1.1.0 1/17/2007 ==================================================
+
+ Added tags PRIMER_TM_SANTALUCIA, PRIMER_SALT_CORRECTIONS,
+   PRIMER_LOWERCASE_MASKING, PRIMER_DIVALENT_CONC,
+   and PRIMER_DNTP_CONC.  See the README for
+   details of what these tags do.  Briefly, the first two
+   tags allow the use of modern melting temperature 
+   calculations.  New tests for this functionality
+   were added to the tests/ subdirectory
+
+ NOTE: The oligotm executable now takes additional
+   arguments.
+
+ Cleaned up Makefile, and created Makefile for the test
+   directory with a target to clean up after tests
+
+ Most (but not all) temporary files created by the
+   tests now end in .tmp or .tmp2
+
+ Tried to create more informative test for 
+   MAX_PRIMER_LENGTH > DPAL_MAX_ALIGN in primer3_main.c
+
+ NOTE: The oligtotm() function is now provided as
+   a library, liboligotm.
+
+ NOTE: non-backward compatible change: removed support of
+   flag -2x_compat.
+
+release 1.0.1 11/06 ==================================================
+
+ Identical to 1.0b except for release number
+
+release 1.0b 11/06 ==================================================
+
+  Corrected bug involving check for template mispriming
+  Minor code cleanup
+
+release 1.0a   9/06 ==================================================
+
+  No new functionality (bug fixes and minor code cleanup only)
+
+  Bug fixes:
+
+    * Corrected calculation of ..._TEMPLATE_MISPRIMING when
+      INCLUDED_REGION was set (thanks to Tomoaki Nishiyama, Advanced
+      Sciences Research Center, Kanazawa University, Japan).
+
+    * Corrected error that caused crash when
+      PRIMER_WT_TEMPLATE_MISPRIMING was set (thanks to Peng Yu,
+      Functional Genomics Group II, Chinese National Human Genome
+      Center, Beijing).
+
+    * Added olgiotm_main.c (for executable oligotm)
+
+release 1.0   6/04 ==================================================
+
+  Added ability to search source sequence (template) for
+  mispriming or mishybing sites.
+
+  Added _experimental_ facility to calculate Tm on long
+  oligos using a GC% based formula.
+
+  Miscellaneous fixes and cleanup, including:
+
+    * Avoiding closing NULL file handles when a mispriming or mishyb
+      library is missing
+
+    * Correction to long_seq_tm() in oligotm.c plus addition of
+      related tests.
+
+    * Gave user the ability to _not_ treat IUB/IUPAC ambiguity
+      codes as a consensus while matching against mispriming
+      or mishyb libraries.  Inability to turn off this "feature"
+      caused severe problems when libraries contained strings
+      of N's:  NNNNNNNNN, since if N is treated as a consensus,
+      any base matches.
+
+release 0.9  9/98 ==================================================
+
+  Corrected errors in calculation of amplicon Tm.
+
+release 0.8  6/98 ==================================================
+
+  Added flexible objective function.  Various tags governing
+  the penalty weights are not fully documented in this
+  release.
+  
+  Added much changed web interface.
+
+  Added ability to select only a single
+  left or right primer or hyb probe.
+
+  Made it possible to continue even if 
+  PRIMER_{LEFT,RIGHT,INTERNAL_OLIGO}_INPUT is
+  not legal.
+
+  Added PRIMER_{LEFT,RIGHT,INTERNAL_OLIGO}_GC_PERCENT
+  output tags.
+
+release 0.7  5/98   ==================================================
+
+  Fixed the 'case problem' for
+  PRIMER_{LEFT,RIGHT,INTERNAL_OLIGO}_INPUT (and at the
+  same time a related bug).
+
+  Added experimental PRIMER_START_CODON_POSITION tag
+  and related outputs.  This feature should still be
+  considered experimental and the user should scrutinize
+  the output.
+
+  Added PRIMER_PRODUCT_{MAX,MIN}_TM and related outputs.
+
+release 0.6   ==================================================
+
+  Bug fixes (most introduced as part of 0.5 enhancements).
+
+release 0.5   ==================================================
+
+  ** Non-Backward compatible change:
+  Fixed inconsistency in output format;
+  PRIMER_INTERNAL_n_OLIGO_SEQUENCE
+  -> PRIMER_INTERNAL_OLIGO_n_SEQUENCE.
+  The old format can be preserved by
+  compiling with the precompiler
+  symbol USE_OLD_FORMAT_MISTAKE defined.
+
+  Added end-anchored local alignment option to dpal.
+
+  Removed some un-needed dpal implementations.
+
+  Added end-anchored local alignments for checking
+  mispriming libraries.
+
+  Added mispriming estimates for primer _pairs_
+  (see PRIMER_PAIR_MISPRIMING_LIBRARY),
+  with related new output tags.  Trivial change
+  in maximum allowable library sequence weight.
+
+  Added an experimental primer position component to
+  the objective function (PRIMER_{IN,OUT}SIDE_PENALTY),
+  with related new output tags.
+
+  Added sequence quality scores as constraints
+  in primer picking (PRIMER_MIN_{,END_}_QUALITY,
+  PRIMER_QUALITY_RANGE_{MIN,MAX}) with related
+  new output tags.
+
+  Added more error reporting to primer3.cgi when primer3
+  exits with a non-0 termination status.
+
+  Fixed bug when non-0, non-1 value was supplied
+  for pick internal oligos.
+
+  Added PRIMER_{LEFT,RIGHT,INTERNAL_OLIGO}_INPUT
+  for checking or for designing around existing primers or
+  internal oligos.
+
+  Added error checking for duplicates of certain
+  tags, such as SEQUENCE.
+
+  Added PRIMER_MAX_END_STABILITY and related changes
+  to output.
+
+release 0.4b   ==================================================
+
+  Corrected bug in parsing of INCLUDED_REGION tag.
+
+release 0.4   ==================================================
+
+  Added optional check of oligos against "mispriming" or
+  "mishyb" libraries  with related changes to formated output
+  and to the contents of primer list files.
+
+  Modified search algorithm to compute complementarity/
+  similarity measures as late as possible.
+
+  Got rid of quotes (") around error and warning strings.
+
+  Fixed numerical overflow on input sequences longer than
+  MAX_SHRT.  (Thanks to Pete Young for finding this one.)
+
+release 0.3   ==================================================
+
+  Changes to dpal to make it substantially faster on the maxgap=1
+  case for local and end-anchored complementarity measures.
+
+  Removed restriction on maximum sequence length (by removing
+  ftar, fexcl, fexcl_int, fnn, fn, fgc arrays, which necessitated
+  internal changes to methods for calculating overlap with
+  excluded regions and targets and to calculate spanning of
+  targets.
+
+  Modified 'primer list' format (clean up and hopefully got rid
+  of spurious regression test discrepancy on some systems due to
+  differences in rounding).
+
+  Exit codes for some errors changed.
+
+  Text of error messages for PRIMER_PRODUCT_SIZE -> PRIMER_PRODUCT_SIZE_RANGE.
+
+  Some errors that should have been global (fatal) were not.
+  These were fixed and error handling rationalized somewhat.
+  
+  An error in the display of the start position of targets, and
+  excluded regions in formated output was corrected.
+
+  An error in which overlapping product size ranges caused
+  primer3 to return duplicate primer pairs was corrected.
+
+  Made regression tests more complete.
+  
+  Made the maximum number of primer pairs to return a 
+  parameter (PRIMER_NUM_RETURN).
+
+  Added optional n-based indexing in input and output
+  (PRIMER_FIRST_BASE_INDEX=n).  Has not been tested
+  for n < 0.
+
+release 0.2b (10/11/96)  ==================================================
+  Added PRIMER_WARNING tag.
+
+  Made it legal for excluded regions and targets to lie outside
+  of included region.  Documentation fixes (especially to
+  PRIMER_DNA_CONC).
+
+release 0.2a ==================================================
+  Tweaks to formated output to make it more complete
+  (included complementarity measures);  adjusted tests.
+
+release 0.2 ==================================================
+  Made 0-length excluded region legal, and adjusted tests.
+  Tweaked error reporting of negative-length excluded regions,
+  internal oligo excluded regions, and target.
+
+
+==============================================================
+==============================================================
+Compared to non-primer3 progenitors:
+
+Compared to primer 0.5
+---------------
+Completely different input format.  
+
+It has been reported the 0.5 deleted Ns when they occurred in
+primers.  
+
+More stringent self-complementarity defaults.
+
+Primer3 selects internal oligos on request (and produces .int
+files if requested).
+
+Compared to both primer 0.5 and primer v2
+---------------------------
+The format of the contents of .for, .rev (and .int) files is
+different.
+
+Primer3 returns a user-specifiable number of primer pairs (or
+triples) sorted by "goodness".
+
+Primer3 will find a primer pair if any acceptable pair exists.
+
+Optional n-based indexing into source sequence.
+
+Use of sequence quality and 3' stability as constraints in primer
+picking.  Optional positional component to objective function.
+
+Compared to primer v2
+-------------
+Tag name changes.  However, primer3 should understand most or
+all Primer v2 input tags, and should produce v2-compatible output
+tag names when the -v2_compat command-line switch is used.
+
+The one exception is that the PRIMER_RECOMMEND tag is no longer
+produced. Instead primer3 produces the PRIMER_x_EXPLAIN output
+tags.  The format of the data in this tags is different from the
+data in v2's PRIMER_RECOMMEND output tag.
+
+Numerous fixes.
+
+Uses the PRIMER_SELF_ANY and PRIMER_SELF_END parameters to govern
+maximum allowable complementarity between left and right primers,
+as well as complementarity between copies of a single oligo or
+within a single oligo.  This behaviour is very close to that of
+primer 0.5; self complementarity calculations in v2 were
+unreliable.
+
+Primer3 produces much more output information, including the TMs
+and self complementarity measures of selected primers.

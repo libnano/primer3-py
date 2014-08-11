@@ -3,7 +3,7 @@
  primer3-py
 ==============================================================================
 
-Primer3-py is a package of *fast*  and easy-to-use Python bindings for the 
+Primer3-py is a package of *fast*  and easy-to-use Python bindings for the
 Primer3 PCR primer design library.
 
 See README.rst for more information and primer3_test.py for usage examples.
@@ -28,31 +28,31 @@ package_path = os.path.join(root_path, 'primer3')
 src_path = pjoin(package_path, 'src')
 primer3_path = pjoin(src_path, 'primer3-2.3.6')
 primer3_src = pjoin(primer3_path, 'src')
-klib_src = pjoin(src_path, 'klib')
+klib_src = pjoin(primer3_src, 'klib')
 
-primer3_srcs = [pjoin(primer3_src, 'thal_mod.c'),
+primer3_srcs = [pjoin(primer3_src, 'thal.c'),
                 pjoin(primer3_src, 'oligotm.c'),
-                pjoin(primer3_src, 'p3_seq_lib_mod.c'),
+                pjoin(primer3_src, 'p3_seq_lib.c'),
                 # pjoin(primer3_src, 'libprimer3_mod.cpp'),
-                pjoin(src_path, 'libprimer3_c.c'),
+                pjoin(primer3_src, 'libprimer3.c'),
                 pjoin(primer3_src, 'dpal.c'),
                 pjoin(src_path, 'primer3_py_helpers.c')]
 
-# Extract the Primer3 source if necessary
-if not os.path.exists(primer3_path):
-    p3fd = tarfile.open(os.path.join(src_path, 'primer3-src-2.3.6.tar.gz'))
-    p3fd.extractall(path=src_path)
-    p3fd.close()
+# # Extract the Primer3 source if necessary
+# if not os.path.exists(primer3_path):
+#     p3fd = tarfile.open(os.path.join(src_path, 'primer3-src-2.3.6.tar.gz'))
+#     p3fd.extractall(path=src_path)
+#     p3fd.close()
 
 # Copy libprimer3_mod.c to libprimer3_mod.ccp (avoids issues w/ hash_map #include)
-shutil.copy(pjoin(primer3_src, 'libprimer3.c'),
-            pjoin(primer3_src, 'libprimer3.cpp'))
+# shutil.copy(pjoin(primer3_src, 'libprimer3.c'),
+#             pjoin(primer3_src, 'libprimer3.cpp'))
 
 # Patch primer3 files w/ code for C api bindings
-print('Patch Primer3 Files'.center(80, '*'))
-patched_files = patchCfiles(pjoin(primer3_path), pjoin(
-                            root_path, 'primer3', 'src', 'primer3_patches.c'))
-print('END Patch Primer3 Files'.center(80, '*'))
+# print('Patch Primer3 Files'.center(80, '*'))
+# patched_files = patchCfiles(pjoin(primer3_path), pjoin(
+#                             root_path, 'primer3', 'src', 'primer3_patches.c'))
+# print('END Patch Primer3 Files'.center(80, '*'))
 
 # Build primer3 for subprocess bindings
 print('Make Primer3'.center(80, '*'))
@@ -64,16 +64,10 @@ print('END Make Primer3'.center(80, '*'))
 p3_files = [rpath(pjoin(root, f), package_path) for root, _, files in
             os.walk(primer3_path) for f in files]
 
-# Temporary fix for OS X / Python compiler flag incompatibilities
-if sys.platform == 'darwin':
-    os.environ['CFLAGS'] = '-Qunused-arguments'
-    os.environ['CCFLAGS'] = '-Qunused-arguments'
 
 primer3_ext = Extension('_primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,
                         include_dirs=[primer3_src, klib_src],
-                        # Necessary to build primer3 w/ Python 3.4 compiler flags
-                        extra_compile_args=["-Wno-error=declaration-after-statement"]
                         )
 
 print('Module Setup'.center(80, '*'))

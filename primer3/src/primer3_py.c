@@ -10,10 +10,12 @@
 #include    <stdio.h>
 #include    <string.h> /* for NULL pointers */
 
+#define PYTHON_BINDING
+
 // Primer 3 includes (_mod includes are generated via patching)
-#include    <thal_mod.h>
+#include    <thal.h>
 #include    <oligotm.h>
-#include    <libprimer3_mod.h>
+#include    <libprimer3.h>
 
 // Helper functions for parameter + output parsing
 #include "primer3_py_helpers.h"
