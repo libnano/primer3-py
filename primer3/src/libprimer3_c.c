@@ -558,6 +558,7 @@ p3_destroy_global_settings(p3_global_settings *a)
     destroy_seq_lib(a->p_args.repeat_lib);
     destroy_seq_lib(a->o_args.repeat_lib);
     free(a);
+    a = NULL;
   }
 }
 
@@ -836,6 +837,7 @@ create_p3retval(void)
       || state->rev.oligo == NULL
       || state->intl.oligo == NULL) {
     free(state);
+    state = NULL;
     return NULL;
   }
 
@@ -913,6 +915,7 @@ destroy_dpal_arg_holder(dpal_arg_holder *h)
     free(h->local_ambig);
     free(h->local_end_ambig);
     free(h);
+    h = NULL;
   }
 }
 
@@ -983,6 +986,7 @@ destroy_thal_arg_holder(thal_arg_holder *h)
     free(h->end2);
     free(h->hairpin_th);
     free(h);
+    h = NULL;
   }
 }
 
@@ -1011,6 +1015,7 @@ destroy_p3retval(p3retval *state)
   destroy_pr_append_str_data(&state->warnings);
 
   free(state);
+  state = NULL;
 }
 
 void 
@@ -1092,6 +1097,7 @@ destroy_seq_args(seq_args *sa)
   free(sa->upcased_seq_r);
   free(sa->sequence_name);
   free(sa);
+  sa = NULL;
 }
 
 /* ============================================================ */
@@ -1113,6 +1119,7 @@ static void free_pair_memory(int rev_num_elem)
 
   if (max_j_seen != NULL) {
     free( max_j_seen );
+    max_j_seen = NULL;
   }
   for (i=0; i < rev_num_elem; i++) {
     hmap = pairs[i];
@@ -1137,6 +1144,7 @@ static void free_pair_memory(int rev_num_elem)
   }
   if (pairs != NULL) {
     free(pairs);
+    pairs = NULL;
   }
 }
 
@@ -1413,6 +1421,7 @@ choose_pair_or_triple(p3retval *retval,
               pp = kh_value(hmap, it);
               if (pp != NULL) {
                 free(pp);
+                kh_value(hmap, it) = NULL;
               }
             }
           }
@@ -1458,6 +1467,7 @@ choose_pair_or_triple(p3retval *retval,
               pp = kh_value(hmap, it);
               if (pp != NULL) {
                 free(pp);
+                kh_value(hmap, it) = NULL;
               }
             }
           }
@@ -1489,6 +1499,7 @@ choose_pair_or_triple(p3retval *retval,
                 pp = kh_value(hmap, it);
                 if (pp != NULL) {
                   free(pp);
+                  kh_value(hmap, it) = NULL;
                 }
               }
             }
@@ -1767,6 +1778,7 @@ choose_pair_or_triple(p3retval *retval,
 
       if (best_pp != NULL) {
         free(best_pp);
+        best_pp = NULL;
       }
       it = kh_get(primer_pair_map, best_hmap, the_best_j);
       if (it == kh_end(best_hmap)) {
@@ -1938,6 +1950,7 @@ add_must_use_warnings(pr_append_str *warning,
     pr_append(warning, " is unacceptable: ");
     pr_append(warning, s.data);
     free(s.data);
+    s.data = NULL;
   }
 }
 
@@ -4598,6 +4611,7 @@ static int
 _set_string(char **loc, const char *new_string) {
   if (*loc) {
     free(*loc);
+    *loc = NULL;
   }
   if (!(*loc = (char *) malloc(strlen(new_string) + 1))) {
     return 1; /* ENOMEM */
@@ -5782,6 +5796,7 @@ destroy_pr_append_str(pr_append_str *str)
   if (str == NULL) { return; }
   destroy_pr_append_str_data(str);
   free(str);
+  str = NULL;
 }
 
 int
@@ -6193,6 +6208,7 @@ fake_a_sequence(seq_args *sa, const p3_global_settings *pa)
   }
   if (rev != NULL) {
     free(rev);
+    rev = NULL;
   }
   return 0;
 }
