@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "khash.h"
 
 #include "dpal.h"
-#include "thal.h"
+#include "thal_mod.h"
 #include "oligotm.h"
 #include "libprimer3.h"
 KHASH_MAP_INIT_INT(primer_pair_map, primer_pair *)
@@ -1111,7 +1111,9 @@ static void free_pair_memory(int rev_num_elem)
   primer_pair *pp = NULL;
   int i;
 
-  free( max_j_seen );
+  if (max_j_seen != NULL) {
+    free( max_j_seen );
+  }
   for (i=0; i < rev_num_elem; i++) {
     hmap = pairs[i];
     if (hmap != NULL) {
@@ -1130,7 +1132,9 @@ static void free_pair_memory(int rev_num_elem)
       kh_destroy(primer_pair_map, hmap);
     }
   }
-  free(pairs);
+  if (pairs != NULL) {
+    free(pairs);
+  }
 }
 
 
@@ -1181,8 +1185,10 @@ choose_primers(const p3_global_settings *pa,
       /* Set per sequence error */
       pr_append_new_chunk(&retval->per_sequence_err, 
         thermodynamic_alignment_length_error_msg);
-      free(thermodynamic_alignment_length_error_msg);
-      thermodynamic_alignment_length_error_msg = NULL;
+      if (thermodynamic_alignment_length_error_msg != NULL) {
+        free(thermodynamic_alignment_length_error_msg);
+        thermodynamic_alignment_length_error_msg = NULL;
+      }
       /* Other necessary cleanup. */
       free_pair_memory(retval->rev.num_elem);
       return retval;
@@ -1191,7 +1197,6 @@ choose_primers(const p3_global_settings *pa,
     destroy_p3retval(retval);
     return NULL;  /* If we get here, that means errno should be ENOMEM. */
   }
-
   /* Change some parameters to fit the task */
   _adjust_seq_args(pa, sa, &retval->per_sequence_err,&retval->warnings);
 
@@ -4611,6 +4616,7 @@ align_thermod(const char *s1,
       s1, s2, r.temp, r.msg, r.align_end_1, r.align_end_2);
   }
   PR_ASSERT(r.temp <= DBL_MAX);
+
   if (r.temp == THAL_ERROR_SCORE) {
     /* There was an error. */
     if (errno == ENOMEM) {
@@ -5599,11 +5605,12 @@ strstr_nocase(char *s1, char *s2) {
       p++;
       continue;
     } else {
-      free(tmp); 
+      if (tmp != NULL) free(tmp); 
       return p;
     }
   }
-  free(tmp); return NULL;
+  if (tmp != NULL) free(tmp);  
+  return NULL;
 }
 
 #define CHECK  if (r > bsize || r < 0) return "Internal error, not enough space for \"explain\" string";  bufp += r; bsize -= r
@@ -5754,8 +5761,10 @@ void
 destroy_pr_append_str_data(pr_append_str *str) 
 {
   if (NULL == str) { return; }
-  free(str->data);
-  str->data = NULL;
+  if (str->data != NULL) {
+    free(str->data);
+    str->data = NULL;
+  }
 }
 
 void
@@ -6173,7 +6182,9 @@ fake_a_sequence(seq_args *sa, const p3_global_settings *pa)
   if (sa->right_input){
     strcat(sa->sequence, rev);
   }
-  free(rev);
+  if (rev != NULL) {
+    free(rev);
+  }
   return 0;
 }
 

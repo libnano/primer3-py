@@ -291,7 +291,7 @@ class TestDesignBindings(unittest.TestCase):
 if __name__ == '__main__':
     # unittest.main(verbosity=2)
     tl = unittest.TestLoader()
-    lowLevelSuite = tl.loadTestsFromTestCase(TestLowLevelBindings)
-    unittest.TextTestRunner(verbosity=2).run(lowLevelSuite)
+    # lowLevelSuite = tl.loadTestsFromTestCase(TestLowLevelBindings)
+    # unittest.TextTestRunner(verbosity=2).run(lowLevelSuite)
     designSuite = tl.loadTestsFromTestCase(TestDesignBindings)
     unittest.TextTestRunner(verbosity=2).run(designSuite)
