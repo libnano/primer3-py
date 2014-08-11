@@ -109,7 +109,7 @@ between Python C API code and primer3 native C code.
                             "Error processing string in %s", k);               \
                     return NULL;                                               \
                 }                                                              \
-            *st = (char *) malloc(ss * sizeof(char));                          \
+            *st = (char *) malloc((ss + 1 ) * sizeof(char));                          \
             if (st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \

@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "dpal.h"
 #include "thal_mod.h"
 #include "oligotm.h"
-#include "libprimer3.h"
+#include "libprimer3_mod.h"
 KHASH_MAP_INIT_INT(primer_pair_map, primer_pair *)
 
 /* #define's */
@@ -514,7 +514,8 @@ p3_create_global_settings()
 {
   p3_global_settings *r;
 
-  if (!(r = (p3_global_settings *) malloc(sizeof(*r)))) {
+  // if (!(r = (p3_global_settings *) malloc(sizeof(*r)))) {
+  if (!(r = (p3_global_settings *) malloc(sizeof(p3_global_settings)))) {
     return NULL;
   }
 
@@ -529,7 +530,8 @@ p3_create_global_settings_default_version_1()
 {
   p3_global_settings *r;
 
-  if (!(r = (p3_global_settings *) malloc(sizeof(*r)))) {
+  // if (!(r = (p3_global_settings *) malloc(sizeof(*r)))) {
+  if (!(r = (p3_global_settings *) malloc(sizeof(p3_global_settings)))) {
     return NULL;
   }
 
@@ -582,7 +584,8 @@ pr_set_default_global_args_2(p3_global_settings *a)
 static void
 pr_set_default_global_args_1(p3_global_settings *a) 
 {
-  memset(a, 0, sizeof(*a));
+  // memset(a, 0, sizeof(*a));
+  memset(a, 0, sizeof(p3_global_settings));
 
   /* Arguments for primers ================================= */
   a->p_args.opt_size          = 20;
@@ -820,19 +823,23 @@ interval_array_t2_get_pair(const interval_array_t2 *array, int i)
 static p3retval *
 create_p3retval(void) 
 {
-  p3retval *state = (p3retval *)malloc(sizeof(*state));
+  // p3retval *state = (p3retval *)malloc(sizeof(*state));
+  p3retval *state = (p3retval *)malloc(sizeof(p3retval));
   if (!state)
     return NULL;
 
+  // state->fwd.oligo
+  //   = (primer_rec *) malloc(sizeof(*state->fwd.oligo)  * INITIAL_LIST_LEN);
   state->fwd.oligo
-    = (primer_rec *) malloc(sizeof(*state->fwd.oligo)  * INITIAL_LIST_LEN);
-
+    = (primer_rec *) malloc(sizeof(primer_rec)  * INITIAL_LIST_LEN);
+  // state->rev.oligo
+  //   = (primer_rec *) malloc(sizeof(*state->rev.oligo)  * INITIAL_LIST_LEN);
   state->rev.oligo
-    = (primer_rec *) malloc(sizeof(*state->rev.oligo)  * INITIAL_LIST_LEN);
-
+    = (primer_rec *) malloc(sizeof(primer_rec)  * INITIAL_LIST_LEN);
+  // state->intl.oligo
+  //   = (primer_rec *) malloc(sizeof(*state->intl.oligo) * INITIAL_LIST_LEN);
   state->intl.oligo
-    = (primer_rec *) malloc(sizeof(*state->intl.oligo) * INITIAL_LIST_LEN);
-
+    = (primer_rec *) malloc(sizeof(primer_rec) * INITIAL_LIST_LEN);
   if (state->fwd.oligo == NULL
       || state->rev.oligo == NULL
       || state->intl.oligo == NULL) {
@@ -881,23 +888,28 @@ create_dpal_arg_holder ()
   dpal_arg_holder *h
     = (dpal_arg_holder *) pr_safe_malloc(sizeof(dpal_arg_holder));
 
-  h->local = (dpal_args *) pr_safe_malloc(sizeof(*h->local));
+  // h->local = (dpal_args *) pr_safe_malloc(sizeof(*h->local));
+  h->local = (dpal_args *) pr_safe_malloc(sizeof(dpal_args));
   set_dpal_args(h->local);
   h->local->flag = DPAL_LOCAL;
 
-  h->end = (dpal_args *) pr_safe_malloc(sizeof(*h->end));
+  // h->end = (dpal_args *) pr_safe_malloc(sizeof(*h->end));
+  h->end = (dpal_args *) pr_safe_malloc(sizeof(dpal_args));
   set_dpal_args(h->end);
   h->end->flag = DPAL_GLOBAL_END;
 
-  h->local_end = (dpal_args *) pr_safe_malloc(sizeof(*h->local_end));
+  // h->local_end = (dpal_args *) pr_safe_malloc(sizeof(*h->local_end));
+  h->local_end = (dpal_args *) pr_safe_malloc(sizeof(dpal_args));
   set_dpal_args(h->local_end);
   h->local_end->flag = DPAL_LOCAL_END;
 
-  h->local_ambig  = (dpal_args *) pr_safe_malloc(sizeof(*h->local_ambig));
+  // h->local_ambig  = (dpal_args *) pr_safe_malloc(sizeof(*h->local_ambig));
+  h->local_ambig  = (dpal_args *) pr_safe_malloc(sizeof(dpal_args));
   *h->local_ambig = *h->local;
   PR_ASSERT(dpal_set_ambiguity_code_matrix(h->local_ambig));
 
-  h->local_end_ambig = (dpal_args *) pr_safe_malloc(sizeof(*h->local_end_ambig));
+  // h->local_end_ambig = (dpal_args *) pr_safe_malloc(sizeof(*h->local_end_ambig));
+  h->local_end_ambig = (dpal_args *) pr_safe_malloc(sizeof(dpal_args));
   *h->local_end_ambig = *h->local_end;
   PR_ASSERT(dpal_set_ambiguity_code_matrix(h->local_end_ambig));
 
@@ -937,41 +949,45 @@ thal_arg_holder *
 create_thal_arg_holder (const args_for_one_oligo_or_primer *po_args)
 {
    
-   thal_arg_holder *h
+  thal_arg_holder *h
      = (thal_arg_holder *) pr_safe_malloc(sizeof(thal_arg_holder));
    
-   h->any = (thal_args *) pr_safe_malloc(sizeof(*h->any));
-   set_thal_default_args(h->any);
-   h->any->type = thal_any;
-   h->any->mv = po_args->salt_conc;
-   h->any->dv = po_args->divalent_conc;
-   h->any->dntp = po_args->dntp_conc;
-   h->any->dna_conc = po_args->dna_conc;
-   
-   h->end1 = (thal_args *) pr_safe_malloc(sizeof(*h->end1));
-   set_thal_default_args(h->end1);
-   h->end1->type = thal_end1;
-   h->end1->mv = po_args->salt_conc;
-   h->end1->dv = po_args->divalent_conc;
-   h->end1->dntp = po_args->dntp_conc;
-   h->end1->dna_conc = po_args->dna_conc;
-   
-   h->end2 = (thal_args *) pr_safe_malloc(sizeof(*h->end2));
-   set_thal_default_args(h->end2);
-   h->end2->type = thal_end2;
-   h->end2->mv = po_args->salt_conc;
-   h->end2->dv = po_args->divalent_conc;
-   h->end2->dntp = po_args->dntp_conc;
-   h->end2->dna_conc = po_args->dna_conc;
-   
-   h->hairpin_th  = (thal_args *) pr_safe_malloc(sizeof(*h->hairpin_th));
-   set_thal_default_args(h->hairpin_th); 
-   h->hairpin_th->type = thal_hairpin;
-   h->hairpin_th->mv = po_args->salt_conc;
-   h->hairpin_th->dv = po_args->divalent_conc;
-   h->hairpin_th->dntp = po_args->dntp_conc;
-   h->hairpin_th->dna_conc = po_args->dna_conc;
-   h->hairpin_th->dimer = 0;
+   // h->any = (thal_args *) pr_safe_malloc(sizeof(*h->any));
+  h->any = (thal_args *) pr_safe_malloc(sizeof(thal_args));
+  set_thal_default_args(h->any);
+  h->any->type = thal_any;
+  h->any->mv = po_args->salt_conc;
+  h->any->dv = po_args->divalent_conc;
+  h->any->dntp = po_args->dntp_conc;
+  h->any->dna_conc = po_args->dna_conc;
+
+  // h->end1 = (thal_args *) pr_safe_malloc(sizeof(*h->end1));
+  h->end1 = (thal_args *) pr_safe_malloc(sizeof(thal_args));
+  set_thal_default_args(h->end1);
+  h->end1->type = thal_end1;
+  h->end1->mv = po_args->salt_conc;
+  h->end1->dv = po_args->divalent_conc;
+  h->end1->dntp = po_args->dntp_conc;
+  h->end1->dna_conc = po_args->dna_conc;
+
+  // h->end2 = (thal_args *) pr_safe_malloc(sizeof(*h->end2));
+  h->end2 = (thal_args *) pr_safe_malloc(sizeof(thal_args));
+  set_thal_default_args(h->end2);
+  h->end2->type = thal_end2;
+  h->end2->mv = po_args->salt_conc;
+  h->end2->dv = po_args->divalent_conc;
+  h->end2->dntp = po_args->dntp_conc;
+  h->end2->dna_conc = po_args->dna_conc;
+
+  // h->hairpin_th  = (thal_args *) pr_safe_malloc(sizeof(*h->hairpin_th));
+  h->hairpin_th  = (thal_args *) pr_safe_malloc(sizeof(thal_args));
+  set_thal_default_args(h->hairpin_th); 
+  h->hairpin_th->type = thal_hairpin;
+  h->hairpin_th->mv = po_args->salt_conc;
+  h->hairpin_th->dv = po_args->divalent_conc;
+  h->hairpin_th->dntp = po_args->dntp_conc;
+  h->hairpin_th->dna_conc = po_args->dna_conc;
+  h->hairpin_th->dimer = 0;
    
    return h;
 }
@@ -1060,9 +1076,11 @@ p3_get_rv_best_pairs(const p3retval *r) {
 seq_args *
 create_seq_arg() 
 {
-  seq_args *r = (seq_args *) malloc(sizeof(*r));
+  // seq_args *r = (seq_args *) malloc(sizeof(*r));
+  seq_args *r = (seq_args *) malloc(sizeof(seq_args));
   if (NULL == r) return NULL; /* Out of memory */
-  memset(r, 0, sizeof(*r));
+  // memset(r, 0, sizeof(*r));
+  memset(r, 0, sizeof(seq_args));
   r->start_codon_pos = PR_DEFAULT_START_CODON_POS;
   r->incl_l = -1; /* Indicates logical NULL. */
 
@@ -1281,20 +1299,23 @@ choose_primers(const p3_global_settings *pa,
   }
 
   if (pa->pick_right_primer &&
-      (pa->primer_task != pick_sequencing_primers))
+      (pa->primer_task != pick_sequencing_primers)) {
     sort_primer_array(&retval->rev);
+  }
 
   if (pa->pick_left_primer &&
-      (pa->primer_task != pick_sequencing_primers))
+      (pa->primer_task != pick_sequencing_primers)) {
     sort_primer_array(&retval->fwd);
+}
 
   /* If we are returning a list of internal oligos, sort them by their
      'goodness'. We do not care if these are sorted if we end up in
      choose_pair_or_triple(), since this calls
      choose_internal_oligo(), which selects the best internal oligo
      for a given primer pair. */
-  if (retval->output_type == primer_list && pa->pick_internal_oligo == 1)
+  if (retval->output_type == primer_list && pa->pick_internal_oligo == 1) {
     sort_primer_array(&retval->intl);
+  }
 
   /* Select primer pairs if needed */
   if (retval->output_type == primer_pairs) {
@@ -2042,17 +2063,24 @@ add_pair(const primer_pair *pair,
      to return */
   if (0 == retpair->storage_size) {
     retpair->storage_size = INITIAL_NUM_RETURN;
+    // retpair->pairs
+    //   = (primer_pair *)
+    //   pr_safe_malloc(retpair->storage_size * sizeof(*retpair->pairs));
     retpair->pairs
       = (primer_pair *)
-      pr_safe_malloc(retpair->storage_size * sizeof(*retpair->pairs));
+      pr_safe_malloc(retpair->storage_size * sizeof(primer_pair));
   } else {
     if (retpair->storage_size == retpair->num_pairs) {
       /* We need more space, so realloc double the space*/
       retpair->storage_size *= 2;
+      // retpair->pairs
+      //   = (primer_pair *)
+      //   pr_safe_realloc(retpair->pairs,
+      //                   retpair->storage_size * sizeof(*retpair->pairs));
       retpair->pairs
         = (primer_pair *)
         pr_safe_realloc(retpair->pairs,
-                        retpair->storage_size * sizeof(*retpair->pairs));
+                        retpair->storage_size * sizeof(primer_pair));
     }
   }
   /* Copy the pair into the storage place */
@@ -2488,17 +2516,24 @@ add_oligo_to_oligo_array(oligo_array *oarray, primer_rec orec) {
   /* Allocate some space for primers if needed */
   if (NULL == oarray->oligo) {
     oarray->storage_size = INITIAL_LIST_LEN;
+    // oarray->oligo
+    //   = (primer_rec *)
+    //   pr_safe_malloc(sizeof(*oarray->oligo) * oarray->storage_size);
     oarray->oligo
       = (primer_rec *)
-      pr_safe_malloc(sizeof(*oarray->oligo) * oarray->storage_size);
+      pr_safe_malloc(sizeof(primer_rec) * oarray->storage_size);
   }
   /* If there is no space on the array, allocate new space */
   if ((oarray->num_elem + 1) >= oarray->storage_size) { /* TO DO, is +1 really needed? */
     oarray->storage_size += (oarray->storage_size >> 1);
+    // oarray->oligo
+    //   = (primer_rec *)
+    //   pr_safe_realloc(oarray->oligo,
+    //                   oarray->storage_size * sizeof(*oarray->oligo));
     oarray->oligo
       = (primer_rec *)
       pr_safe_realloc(oarray->oligo,
-                      oarray->storage_size * sizeof(*oarray->oligo));
+                      oarray->storage_size * sizeof(primer_rec));
   }
   oarray->oligo[oarray->num_elem] = orec;
   oarray->num_elem++;
@@ -3918,8 +3953,11 @@ oligo_max_template_mispriming_thermod(const primer_rec *h) {
 static void
 sort_primer_array(oligo_array *oligo)
 {
-  qsort(&oligo->oligo[0], oligo->num_elem, sizeof(*oligo->oligo),
+  // qsort(&oligo->oligo[0], oligo->num_elem, sizeof(*oligo->oligo),
+  //       primer_rec_comp);
+  qsort(&oligo->oligo[0], oligo->num_elem, sizeof(primer_rec),
         primer_rec_comp);
+  
 }
 
 /* Compare function for sorting primer records. */
@@ -4011,7 +4049,8 @@ characterize_pair(p3retval *retval,
     ? thal_arg_to_use->end1
     : thal_arg_to_use->any;
 
-  memset(ppair, 0, sizeof(*ppair));
+  // memset(ppair, 0, sizeof(*ppair));
+  memset(ppair, 0, sizeof(primer_pair));
 
   ppair->left = &retval->fwd.oligo[m];
   ppair->right = &retval->rev.oligo[n];
@@ -5352,7 +5391,8 @@ primer_must_match(const p3_global_settings *pa, primer_rec *h, oligo_stats *glob
   if (match_five_prime != NULL) {
     seq = input_oligo_seq;
     test = match_five_prime;
-    for (int i = 0; i < 5; i++) {
+    int i;
+    for (i = 0; i < 5; i++) {
       if (!compare_nucleotides(*seq, *test)) {
         global_oligo_stats->must_match_fail++;
         return 1;
@@ -5365,7 +5405,8 @@ primer_must_match(const p3_global_settings *pa, primer_rec *h, oligo_stats *glob
     seq = input_oligo_seq;
     test = match_three_prime;
     seq = seq + length;
-    for (int i = 0; i < 5; i++) {
+    int i;
+    for (i = 0; i < 5; i++) {
       if (!compare_nucleotides(*seq, *test)) {
         global_oligo_stats->must_match_fail++;
         return 1;
@@ -6082,13 +6123,14 @@ _optimize_ok_regions_list(const p3_global_settings *pa,
   int omax = pa->p_args.max_size;
 
   /* Determine min/max product size */
-  for (int i=0; i<pa->num_intervals; i++) {
+  int i;
+  for (i=0; i<pa->num_intervals; i++) {
     if (pa->pr_min[i] < pmin) { pmin = pa->pr_min[i]; }
     if (pa->pr_max[i] > pmax) { pmax = pa->pr_max[i]; }
   }
 
   /* Update each region */
-  for (int i=0; i<sa->ok_regions.count; i++) {
+  for (i=0; i<sa->ok_regions.count; i++) {
     int ls = -1, le = -1, rs = -1, re = -1;
     int new_ls = -1, new_le = -1, new_rs = -1, new_re = -1;
     if (sa->ok_regions.left_pairs[i][0] != -1) {
@@ -7455,16 +7497,21 @@ p3_sa_add_to_quality_array(seq_args *sargs, int quality) {
     sargs->quality_storage_size = 3000;
     sargs->quality
       = (int *)
-      pr_safe_malloc(sizeof(*sargs->quality)
+      // pr_safe_malloc(sizeof(*sargs->quality)
+      //                * sargs->quality_storage_size);
+      pr_safe_malloc(sizeof(int)
                      * sargs->quality_storage_size);
   }
   if (n > sargs->quality_storage_size) {
     sargs->quality_storage_size *= 2;
     sargs->quality
       = (int *)
+      // pr_safe_realloc(sargs->quality,
+      //                 sizeof(*sargs->quality)
+      //                 * sargs->quality_storage_size);
       pr_safe_realloc(sargs->quality,
-                      sizeof(*sargs->quality)
-                      * sargs->quality_storage_size);
+                sizeof(int)
+                * sargs->quality_storage_size);
   }
   sargs->quality[n] = quality;
   sargs->n_quality++;
