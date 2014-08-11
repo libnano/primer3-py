@@ -357,11 +357,7 @@ static PyMethodDef primer3_methods[] = {
 };
 
 MOD_INIT(_primer3){
-/* standard numpy compatible initiation */
-    if (Py_AtExit(&cleanUp) < 0) {
-        // printf("Failed to register cleanUp\n");
-        // fflush(stdout);
-    }
+
 #if PY_MAJOR_VERSION >= 3
     static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
@@ -374,9 +370,12 @@ MOD_INIT(_primer3){
         NULL,               /* m_clear */
         NULL,               /* m_free */
     };
+    Py_AtExit(&cleanUp)
     PyObject* m = PyModule_Create(&moduledef);
     return m;
 #else
+    Py_AtExit(&cleanUp)
     Py_InitModule3("_primer3", primer3_methods, primer3__doc__);
 #endif
+
 }

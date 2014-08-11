@@ -67,8 +67,7 @@ p3_files = [rpath(pjoin(root, f), package_path) for root, _, files in
 
 primer3_ext = Extension('_primer3',
                         sources=['primer3/src/primer3_py.c'] + primer3_srcs,
-                        include_dirs=[primer3_src, klib_src],
-                        extra_compile_args=["-Wno-error=declaration-after-statement"]
+                        include_dirs=[primer3_src, klib_src]
                         )
 
 print('Module Setup'.center(80, '*'))
