@@ -144,7 +144,7 @@ calcThermoTm(PyObject *self, PyObject *args){
     }
 
     thal((const unsigned char *)oligo1, (const unsigned char *)oligo2,
-         (const thal_args *)&thalargs, &thalres);
+         (const thal_args *)&thalargs, &thalres, 0);
 
     return PyFloat_FromDouble(thalres.temp);
 }
@@ -182,7 +182,7 @@ calcThermo(PyObject *self, PyObject *args){
     }
 
     thal((const unsigned char *)oligo1, (const unsigned char *)oligo2,
-         (const thal_args *)&thalargs, &thalres);
+         (const thal_args *)&thalargs, &thalres, 0);
 
     return Py_BuildValue("siddddii", thalres.msg, thalres.no_structure,
                               thalres.temp, thalres.ds, thalres.dh,
@@ -370,11 +370,11 @@ MOD_INIT(_primer3){
         NULL,               /* m_clear */
         NULL,               /* m_free */
     };
-    Py_AtExit(&cleanUp)
+    Py_AtExit(&cleanUp);
     PyObject* m = PyModule_Create(&moduledef);
     return m;
 #else
-    Py_AtExit(&cleanUp)
+    Py_AtExit(&cleanUp);
     Py_InitModule3("_primer3", primer3_methods, primer3__doc__);
 #endif
 
