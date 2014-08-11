@@ -125,7 +125,7 @@ static char *thermodynamic_alignment_length_error_msg = NULL;
 
 /* Variables needed in choose_pair_or_triple, need to be global
    for memory de-allocation reasons. Full description given in the function. */
-static int *max_j_seen;
+static int *max_j_seen = NULL;
 // static std::hash_map<int, primer_pair*> **pairs;
 static khash_t(primer_pair_map) **pairs;
 
@@ -1123,9 +1123,12 @@ static void free_pair_memory(int rev_num_elem)
         // if (pp != NULL) {
         //   // delete pp;
         // }
-        pp = kh_value(hmap, it);
-        if (pp != NULL) {
-            free(pp);
+        if (kh_exist(hmap, it)) { 
+          pp = kh_value(hmap, it);
+          if (pp != NULL) {
+              free(pp);
+              kh_value(hmap, it) = NULL;
+          }
         }
       }
       // delete hmap;
@@ -1406,9 +1409,11 @@ choose_pair_or_triple(p3retval *retval,
             opposed to the 'key'). */
             // pp = it->second;
             // delete pp;{
-            pp = kh_value(hmap, it);
-            if (pp != NULL) {
-              free(pp);
+            if (kh_exist(hmap, it)) { 
+              pp = kh_value(hmap, it);
+              if (pp != NULL) {
+                free(pp);
+              }
             }
           }
           if (hmap == best_hmap) { best_hmap = NULL; }
@@ -1449,9 +1454,11 @@ choose_pair_or_triple(p3retval *retval,
               opposed to the 'key'). */
             // pp = it->second;
             // delete pp;
-            pp = kh_value(hmap, it);
-            if (pp != NULL) {
-              free(pp);
+            if (kh_exist(hmap, it)) { 
+              pp = kh_value(hmap, it);
+              if (pp != NULL) {
+                free(pp);
+              }
             }
           }
           if (hmap == best_hmap) { best_hmap = NULL; }
@@ -1478,9 +1485,11 @@ choose_pair_or_triple(p3retval *retval,
                 opposed to the 'key'). */
               // pp = it->second;
               // delete pp;
-              pp = kh_value(hmap, it);
-              if (pp != NULL) {
-                free(pp);
+              if (kh_exist(hmap, it)) { 
+                pp = kh_value(hmap, it);
+                if (pp != NULL) {
+                  free(pp);
+                }
               }
             }
             if (hmap == best_hmap) { best_hmap = NULL; }

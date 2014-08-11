@@ -234,7 +234,7 @@ setGlobals(PyObject *self, PyObject *args){
         p3_destroy_global_settings(pa);
     }
     // Allocate memory for global settings
-    if (!(pa = (p3_global_settings *) malloc(sizeof(*pa)))) {
+    if ((pa = (p3_global_settings *) malloc(sizeof(p3_global_settings))) == NULL) {
         return NULL;
     }
 
