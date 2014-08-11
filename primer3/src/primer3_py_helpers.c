@@ -86,7 +86,7 @@ between Python C API code and primer3 native C code.
             if (PyString_AsStringAndSize(o, &tc, &ss) == -1) {                 \
                 return NULL;}                                                  \
             *st = (char *) malloc((ss + 1) * sizeof(char));                    \
-            if (st == NULL) {                                                  \
+            if (*st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
@@ -110,7 +110,7 @@ between Python C API code and primer3 native C code.
                     return NULL;                                               \
                 }                                                              \
             *st = (char *) malloc((ss + 1 ) * sizeof(char));                          \
-            if (st == NULL) {                                                  \
+            if (*st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
@@ -147,7 +147,7 @@ between Python C API code and primer3 native C code.
     }                                                                          \
 
 #define DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(o, d, k, st)                       \
-    if (DICT_GET_OBJ(o, d, k)){                                                \
+    if (DICT_GET_OBJ(o, d, k)) {                                               \
         if (!PyList_Check(o)){                                                 \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
@@ -159,7 +159,8 @@ between Python C API code and primer3 native C code.
                             "%s must be linear multiple of 2 in length", k);   \
             return NULL;                                                       \
         }                                                                      \
-        for (i = 0; i < *arr_len / 2; i+2) {                                   \
+        int i;                                                                 \
+        for (i = 0; i < *arr_len / 2; i+=2) {                                  \
             p3_add_to_interval_array(&st,                                      \
                  (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),                 \
                  (int)PyLong_AsLong(PyList_GetItem(p_obj, i+1)));              \
