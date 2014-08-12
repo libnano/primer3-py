@@ -48,7 +48,7 @@ primer3_ext = Extension(
     '_primer3',
     sources=['primer3/src/primer3_py.c'] + libprimer3_paths,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
-    extra_compile_args=["-std=c99"]
+    extra_compile_args=["-Wno-error=declaration-after-statement"]
 )
 
 setup (
