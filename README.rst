@@ -28,7 +28,7 @@ We do not provide any additional abstraction of the Primer3 design engine,
 so we suggest that you refer to the official Primer3 
 `documentation <http://primer3.sourceforge.net/>`_ for assistance.
 
-`cite <http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`:
+`cite <http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`_ :
 
   Untergasser, Andreas, et al. "Primer3—new capabilities and interfaces." 
   Nucleic acids research 40.15 (2012): e115-e115.
