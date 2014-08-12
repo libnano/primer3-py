@@ -144,7 +144,7 @@ contribute to the project, please visit the project's
 Licensing and citations
 -----------------------
 Citations should reference the `lastest Primer3 paper 
-<http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`_ ::
+<http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`_::
 
   Untergasser, Andreas, et al. "Primer3—new capabilities and interfaces." 
   Nucleic acids research 40.15 (2012): e115-e115.
