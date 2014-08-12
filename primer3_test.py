@@ -75,10 +75,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 dna_conc=self.dna_conc,
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
-            if not wrapper_res:
-                self.assertTrue(binding_res == None)
-            else:
-                self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
     def test_calcHomodimer(self):
         for _ in range(25):
@@ -99,10 +96,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 dna_conc=self.dna_conc,
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
-            if not wrapper_res:
-                self.assertTrue(binding_res == None)
-            else:
-                self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
 
     def test_calcHeterodimer(self):
@@ -126,10 +120,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 dna_conc=self.dna_conc,
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
-            if not wrapper_res:
-                self.assertTrue(binding_res == None)
-            else:
-                self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
     def test_correctionMethods(self):
         self.randArgs()

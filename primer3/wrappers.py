@@ -81,17 +81,26 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 _ntthal_re = re.compile(b'dS\s+=\s+(\S+)\s+dH\s+=\s+(\S+)\s+' +
                         b'dG\s+=\s+(\S+)\s+t\s+=\s+(\S+)')
 
-NTTHALRESULT = namedtuple('ntthal_result', ['ds', 'dh', 'dg', 'tm'])
+THERMORESULT = namedtuple('thermoresult', [
+    'result',           # True if a structure is present
+    'ds',               # Entropy (cal/(K*mol))
+    'dh',               # Enthalpy (kcal/mol)
+    'dg',               # Gibbs free energy
+    'tm']               # Melting temperature (deg. Celsius)
+)
+
+NULLTHERMORESULT = THERMORESULT(False, 0, 0, 0, 0)
 
 def _parse_ntthal(ntthal_output):
     ''' Helper method that uses regex to parse ntthal output. '''
     parsed_vals = re.search(_ntthal_re, ntthal_output)
-    return NTTHALRESULT(
+    return THERMORESULT(
+        True,                           # Structure found
         float(parsed_vals.group(1)),    # dS
         float(parsed_vals.group(2)),    # dH
         float(parsed_vals.group(3)),    # dG
         float(parsed_vals.group(4))     # tm
-    ) if parsed_vals else None
+    ) if parsed_vals else NULLTHERMORESULT
 
 
 def calcThermo(seq1, seq2, calc_type='ANY', mv_conc=50, dv_conc=0,

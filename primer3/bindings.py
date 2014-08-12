@@ -113,6 +113,7 @@ def calcHeterodimerTm(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 # Named tuple returned by all low-level bindings (if a structure is not
 # present, the functions simply return `None`)
 THERMORESULT = namedtuple('thermoresult', [
+    'structure_found',  # True if a structure was found
     'tm',               # Melting temperature (deg. Celsius)
     'ds',               # Entropy (cal/(K*mol))
     'dh',               # Enthalpy (kcal/mol)
@@ -121,6 +122,7 @@ THERMORESULT = namedtuple('thermoresult', [
     'align_end_2']      # Last alignment position in the 2nd sequence.
 )
 
+NULLTHERMORESULT = THERMORESULT(False, 0, 0, 0, 0, 0, 0)
 
 def _calcThermo(seq1, seq2, calc_type=0, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                    dna_conc=50, temp_c=37, max_loop=30):
@@ -128,11 +130,11 @@ def _calcThermo(seq1, seq2, calc_type=0, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                                 dntp_conc, dna_conc, temp_c + 273.15,
                                 max_loop, 0, 0)
     if res[1] == 1: # No structure found
-        if res[0] != '':
+        if len(res[0]) > 0:
             raise IOError('Primer3 error: {}'.format(res[0]))
         else:
-            return None
-    return THERMORESULT(*res[2:])
+            return NULLTHERMORESULT
+    return THERMORESULT(True, *res[2:])
 
 
 def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
