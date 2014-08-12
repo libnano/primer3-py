@@ -115,11 +115,11 @@ else
 endif
 
 clean: clean_src
-ifeq ($(TESTOPTS),--windows)
-	cd ..\test & $(WINMAKE) clean TESTOPTS=$(TESTOPTS)
-else
-	cd ../test/; make clean
-endif
+# ifeq ($(TESTOPTS),--windows)
+# 	cd ..\test & $(WINMAKE) clean TESTOPTS=$(TESTOPTS)
+# else
+# 	cd ../test/; make clean
+# endif
 
 $(LIBOLIGOTM): oligotm.o
 	$(AR) rv $@ oligotm.o
@@ -206,14 +206,14 @@ oligotm.o: oligotm.c oligotm.h
 primer3_boulder_main.o: primer3_boulder_main.c libprimer3.h dpal.h thal.h oligotm.h format_output.h print_boulder.h read_boulder.h
 	$(CC) -c $(CFLAGS) $(P_DEFINES) primer3_boulder_main.c
 
-primer_test: test
+# primer_test: test
 
-test: $(PRIMER_EXE) $(NTDPAL_EXE) $(NTTHAL_EXE)
-ifeq ($(TESTOPTS),--windows)
-	cd ..\test & $(WINMAKE) TESTOPTS=$(TESTOPTS)
-else
-	cd ../test; make test
-endif
+# test: $(PRIMER_EXE) $(NTDPAL_EXE) $(NTTHAL_EXE)
+# ifeq ($(TESTOPTS),--windows)
+# 	cd ..\test & $(WINMAKE) TESTOPTS=$(TESTOPTS)
+# else
+# 	cd ../test; make test
+# endif
 
 # ======================================================================
 #
