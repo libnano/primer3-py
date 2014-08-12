@@ -28,18 +28,6 @@ We do not provide any additional abstraction of the Primer3 design engine,
 so we suggest that you refer to the official Primer3 
 `documentation <http://primer3.sourceforge.net/>`_ for assistance.
 
-`cite <http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`_ ::
-
-  Untergasser, Andreas, et al. "Primer3—new capabilities and interfaces." 
-  Nucleic acids research 40.15 (2012): e115-e115.
-  doi: 10.1093/nar/gks596
-
-All project code, including the derivative Primer3 library is licensed 
-under GPLv2. 
-
-Included bindings are Copyright (c) 2014
-Ben Pruitt, Nick Conway; Wyss Institute for Biologically Inspired
-Engineering.
 
 Installation
 ------------
@@ -145,8 +133,24 @@ For more detailed documentation and usage examples, see
 
 Contact and contributions
 -------------------------
+
 We are very grateful for any bug fixes or suggestions that you may have. If
 you would like to report an issue or idea, or if you would like to 
 contribute to the project, please visit the project's 
 `Github page  (http://github.com/benpruitt/primer3-py) 
 <http://github.com/benpruitt/primer3-py>`_
+
+
+Licensing and citations
+-----------------------
+Citations should reference the `lastest Primer3 paper 
+<http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`_ ::
+
+  Untergasser, Andreas, et al. "Primer3—new capabilities and interfaces." 
+  Nucleic acids research 40.15 (2012): e115-e115.
+  doi: 10.1093/nar/gks596
+
+All project code, including the derivative Primer3 library, is licensed 
+under GPLv2. The included Python and Python C API bindings are 
+Copyright (c) 2014 Ben Pruitt, Nick Conway; Wyss Institute for 
+Biologically Inspired Engineering.
