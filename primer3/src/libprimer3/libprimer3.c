@@ -945,6 +945,8 @@ destroy_dpal_arg_holder(dpal_arg_holder *h)
    storage after each call to choose_primers(). */
 static dpal_arg_holder *dpal_arg_to_use = NULL;
 
+dpal_arg_holder *create_dpal_arg_holder(void);
+
 /* ============================================================ */
 /* END functions for dpal_arg_holder                            */
 /* ============================================================ */

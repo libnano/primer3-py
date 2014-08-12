@@ -401,11 +401,7 @@ _setGlobals(PyObject *p3s_dict) {
 
     // Handler primer task
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_TASK", &task_tmp, temp_char, str_size);
-    // if (task_tmp == NULL) {
-    //     PyErr_SetString(PyExc_ValueError, \
-    //         "Primer3 args must include PRIMER_TASK");
-    //     return NULL;
-    // }
+
     // Directly from read_boulder.c
     if (task_tmp != NULL) {
         if (!strcmp_nocase(task_tmp, "pick_pcr_primers")) {
