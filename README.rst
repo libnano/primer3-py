@@ -74,7 +74,7 @@ a namedtuple::
   >>> print(res)
 
   thermoresult(
-  	structure_found=True,
+    structure_found=True,
     tm=39.92795428766294, 
     ds=-370.12644214999796, 
     dh=-127200.0, 
