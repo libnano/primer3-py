@@ -5,7 +5,7 @@
 .. image:: http://img.shields.io/travis/benpruitt/primer3-py.svg
         :target: https://travis-ci.org/benpruitt/primer3-py
 
-..image:: http://img.shields.io/pypi/l/primer3-py.svg
+.. image:: http://img.shields.io/pypi/l/primer3-py.svg
        :target: http://www.gnu.org/licenses/gpl-2.0.html
 
 .. image:: http://img.shields.io/pypi/v/primer3-py.svg
