@@ -290,9 +290,14 @@ class TestDesignBindings(unittest.TestCase):
                                  'memory leak (mem increase: {})'.format(em-sm))
 
 if __name__ == '__main__':
-    # unittest.main(verbosity=2)
+    import sys
+
     tl = unittest.TestLoader()
     lowLevelSuite = tl.loadTestsFromTestCase(TestLowLevelBindings)
-    unittest.TextTestRunner(verbosity=2).run(lowLevelSuite)
-    # designSuite = tl.loadTestsFromTestCase(TestDesignBindings)
-    # unittest.TextTestRunner(verbosity=2).run(designSuite)
+    res1 = unittest.TextTestRunner(verbosity=2).run(lowLevelSuite)
+    designSuite = tl.loadTestsFromTestCase(TestDesignBindings)
+    res2 = unittest.TextTestRunner(verbosity=2).run(designSuite)
+
+    success = res1.wasSuccessful() and res2.wasSuccessful()
+
+    sys.exit(int(not success))  # Exit 0 on success, 1 on failure
