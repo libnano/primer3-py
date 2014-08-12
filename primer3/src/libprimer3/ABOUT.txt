@@ -1,0 +1,6 @@
+The source files in this directory are derived from the Primer 2.3.6
+source and have been modified to make the library more amenable to
+Python bindings.
+
+All modifications and related distribution are performed under the GPLv2
+(see LICENSE.txt).

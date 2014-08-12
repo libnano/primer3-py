@@ -1,6 +1,6 @@
 /******************************************************************************
 ** primer3_py.c
-** 
+**
 ** Python-callable C API bindings for Primer3 (these functions are exposed
 ** to Python via the _primer3 module).
 ******************************************************************************/
@@ -10,10 +10,12 @@
 #include    <stdio.h>
 #include    <string.h> /* for NULL pointers */
 
+#define PYTHON_BINDING
+
 // Primer 3 includes (_mod includes are generated via patching)
-#include    <thal_mod.h>
+#include    <thal.h>
 #include    <oligotm.h>
-#include    <libprimer3_mod.h>
+#include    <libprimer3.h>
 
 // Helper functions for parameter + output parsing
 #include "primer3_py_helpers.h"
@@ -85,6 +87,7 @@ PyDoc_STRVAR(runDesign__doc__,
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HELPER FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+
 static PyObject*
 getThermoParams(PyObject *self, PyObject *args) {
     /* This loads the thermodynamic parameters from the parameter files
@@ -108,6 +111,43 @@ getThermoParams(PyObject *self, PyObject *args) {
     }
 }
 
+/* ~~~~~~~~~~~~ LIGHTWEIGHT LOW-LEVEL BINDINGS (RETURN ONLY TM) ~~~~~~~~~~~~ */
+
+static PyObject*
+calcThermoTm(PyObject *self, PyObject *args){
+    /* Wraps the main thal function in thal.h/thal.c. Arguments are parsed
+     * into a thal_args struct (see thal.h).
+     */
+
+    char                    *oligo1=NULL;
+    char                    *oligo2=NULL;
+    thal_args               thalargs;
+    thal_results            thalres;
+
+    thalargs.dimer = 1;   // this param is used by thal_main.c as a placeholder
+                          // when determining whether the user has provided
+                          // one or two sequences via the command line. if the
+                          // user has only provided 1 sequence, then thal is
+                          // run with the same sequence for oligo1 and oligo2
+
+    // Initialize some thalres values to zero
+    thalres.no_structure = 0;
+    thalres.ds = thalres.dh = thalres.dg = 0.0;
+    thalres.align_end_1 = thalres.align_end_2 = 0;
+
+    if (!PyArg_ParseTuple(args, "ssidddddiii",
+                          &oligo1, &oligo2, &thalargs.type, &thalargs.mv,
+                          &thalargs.dv, &thalargs.dntp, &thalargs.dna_conc,
+                          &thalargs.temp,  &thalargs.maxLoop,
+                          &thalargs.temponly, &thalargs.debug)) {
+        return NULL;
+    }
+
+    thal((const unsigned char *)oligo1, (const unsigned char *)oligo2,
+         (const thal_args *)&thalargs, &thalres, 0);
+
+    return PyFloat_FromDouble(thalres.temp);
+}
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ LOW-LEVEL BINDINGS ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
@@ -142,7 +182,7 @@ calcThermo(PyObject *self, PyObject *args){
     }
 
     thal((const unsigned char *)oligo1, (const unsigned char *)oligo2,
-         (const thal_args *)&thalargs, &thalres);
+         (const thal_args *)&thalargs, &thalres, 0);
 
     return Py_BuildValue("siddddii", thalres.msg, thalres.no_structure,
                               thalres.temp, thalres.ds, thalres.dh,
@@ -171,7 +211,7 @@ calcTm(PyObject *self, PyObject *args){
                  dntp_conc, max_nn_length, (tm_method_type)tm_method,
                  (salt_correction_type)salt_correction_method);
 
-    return Py_BuildValue("d", tm);
+    return PyFloat_FromDouble(tm);
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~ PRIMER / OLIGO DESIGN BINDINGS ~~~~~~~~~~~~~~~~~~~~ */
@@ -182,26 +222,35 @@ seq_args                     *sa=NULL;
 static PyObject*
 setGlobals(PyObject *self, PyObject *args){
     /* Sets the Primer3 global settings from a Python dictionary containing
-    ** key: value pairs that correspond to the documented Primer3 
+    ** key: value pairs that correspond to the documented Primer3
     ** global parameters. Also accepts a mispriming or mishybridization library
-    ** organized as `seq_name`:`seq_value` key:value pairs. 
+    ** organized as `seq_name`:`seq_value` key:value pairs.
     */
 
     PyObject                *global_args=NULL, *misprime_lib=NULL;
     PyObject                *mishyb_lib=NULL;
     seq_lib                 *mp_lib, *mh_lib;
 
+
     if (pa != NULL) {
         // Free memory for previous global settings
         p3_destroy_global_settings(pa);
+        pa = NULL;
     }
+
     // Allocate memory for global settings
-    if (!(pa = (p3_global_settings *) malloc(sizeof(*pa)))) {
+    if ((pa = p3_create_global_settings()) == NULL) {
+        PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
         return NULL;
     }
 
-    if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args, 
+    if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args,
                           &misprime_lib, &mishyb_lib)) {
+        return NULL;
+    }
+
+
+    if ((_setGlobals(pa, global_args)) == NULL) {
         return NULL;
     }
 
@@ -215,19 +264,16 @@ setGlobals(PyObject *self, PyObject *args){
         if ((mh_lib = createSeqLib(mishyb_lib))==NULL) {
             return NULL;
         }
-        pa->p_args.repeat_lib = mh_lib;
+        pa->o_args.repeat_lib = mh_lib;
     }
 
-    if ((pa = _setGlobals(global_args)) == NULL){
-        return NULL;
-    }
     Py_RETURN_NONE;
 }
 
 static PyObject*
 setSeqArgs(PyObject *self, PyObject *args){
     /* Sets the Primer3 sequence args from a Python dictionary containing
-    ** key: value pairs that correspond to the documented Primer3 
+    ** key: value pairs that correspond to the documented Primer3
     ** sequence parameters.
     */
 
@@ -256,7 +302,7 @@ setSeqArgs(PyObject *self, PyObject *args){
 
 static PyObject*
 runDesign(PyObject *self, PyObject *args){
-    /* Wraps the primer design functionality of Primer3. Should be called 
+    /* Wraps the primer design functionality of Primer3. Should be called
     ** after setting the global and sequence-specific Primer3 parameters
     ** (see setGlobals and setSeqArgs, above)
      */
@@ -267,7 +313,7 @@ runDesign(PyObject *self, PyObject *args){
     if (pa == NULL || sa == NULL) {
         PyErr_SetString(PyExc_IOError, "Primer3 global args and sequence\
             args must be set prior to calling runDesign.");
-        return NULL;        
+        return NULL;
     }
 
     retval = choose_primers(pa, sa);
@@ -287,7 +333,7 @@ runDesign(PyObject *self, PyObject *args){
 }
 
 void
-cleanUp(){
+cleanUp(void){
     /* Free any remaining global Primer3 objects */
     if (pa != NULL) {
         // Free memory for previous global settings
@@ -305,6 +351,7 @@ cleanUp(){
 static PyMethodDef primer3_methods[] = {
     { "getThermoParams", getThermoParams, METH_VARARGS, getThermoParams__doc__ },
     { "calcThermo", calcThermo, METH_VARARGS, calcThermo__doc__ },
+    { "calcThermoTm", calcThermoTm, METH_VARARGS, calcThermo__doc__ },
     { "calcTm", calcTm, METH_VARARGS, calcTm__doc__ },
     { "setGlobals", setGlobals,  METH_VARARGS, setGlobals__doc__},
     { "setSeqArgs", setSeqArgs,  METH_VARARGS, setSeqArgs__doc__},
@@ -313,8 +360,8 @@ static PyMethodDef primer3_methods[] = {
 };
 
 MOD_INIT(_primer3){
-/* standard numpy compatible initiation */
 #if PY_MAJOR_VERSION >= 3
+    PyObject* m;
     static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
         "_primer3",           /* m_name */
@@ -326,11 +373,12 @@ MOD_INIT(_primer3){
         NULL,               /* m_clear */
         NULL,               /* m_free */
     };
-    PyObject* m = PyModule_Create(&moduledef);
+    Py_AtExit(&cleanUp);
+    m = PyModule_Create(&moduledef);
     return m;
 #else
+    Py_AtExit(&cleanUp);
     Py_InitModule3("_primer3", primer3_methods, primer3__doc__);
 #endif
 
-Py_AtExit(&cleanUp);
 }

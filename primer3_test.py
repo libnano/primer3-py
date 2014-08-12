@@ -75,10 +75,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 dna_conc=self.dna_conc,
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
-            if not wrapper_res:
-                self.assertTrue(binding_res == None)
-            else:
-                self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
     def test_calcHomodimer(self):
         for _ in range(25):
@@ -99,10 +96,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 dna_conc=self.dna_conc,
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
-            if not wrapper_res:
-                self.assertTrue(binding_res == None)
-            else:
-                self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
 
     def test_calcHeterodimer(self):
@@ -126,10 +120,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                 dna_conc=self.dna_conc,
                                 temp_c=self.temp_c,
                                 max_loop=self.max_loop)
-            if not wrapper_res:
-                self.assertTrue(binding_res == None)
-            else:
-                self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
     def test_correctionMethods(self):
         self.randArgs()
@@ -250,6 +241,7 @@ class TestDesignBindings(unittest.TestCase):
     def test_memoryLeaks(self):
         sm = _getMemUsage()
         for x in range(100):
+            # bindings.runP3Design()
             bindings.designPrimers(
                 {
                     'SEQUENCE_ID': 'MH1000',
@@ -289,9 +281,14 @@ class TestDesignBindings(unittest.TestCase):
                                  'memory leak (mem increase: {})'.format(em-sm))
 
 if __name__ == '__main__':
-    # unittest.main(verbosity=2)
+    import sys
+
     tl = unittest.TestLoader()
     lowLevelSuite = tl.loadTestsFromTestCase(TestLowLevelBindings)
-    unittest.TextTestRunner(verbosity=2).run(lowLevelSuite)
+    res1 = unittest.TextTestRunner(verbosity=2).run(lowLevelSuite)
     designSuite = tl.loadTestsFromTestCase(TestDesignBindings)
-    unittest.TextTestRunner(verbosity=2).run(designSuite)
+    res2 = unittest.TextTestRunner(verbosity=2).run(designSuite)
+
+    success = res1.wasSuccessful() and res2.wasSuccessful()
+
+    sys.exit(int(not success))  # Exit 0 on success, 1 on failure

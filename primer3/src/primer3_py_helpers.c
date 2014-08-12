@@ -19,11 +19,17 @@ between Python C API code and primer3 native C code.
 #include    <string.h>
 #include    <stdio.h>
 #include    <Python.h>
-#include    <libprimer3_mod.h>
+#include    <libprimer3.h>
 
 
 #if PY_MAJOR_VERSION < 3
 /* see http://python3porting.com/cextensions.html */
+    #ifdef PyLong_Check
+        #undef PyLong_Check
+    #endif
+    #ifdef PyLong_AsLong
+        #undef PyLong_AsLong
+    #endif
     #define PyLong_Check PyInt_Check
     #define PyLong_AsLong PyInt_AsLong
 #endif
@@ -86,7 +92,7 @@ between Python C API code and primer3 native C code.
             if (PyString_AsStringAndSize(o, &tc, &ss) == -1) {                 \
                 return NULL;}                                                  \
             *st = (char *) malloc((ss + 1) * sizeof(char));                    \
-            if (st == NULL) {                                                  \
+            if (*st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
@@ -109,8 +115,8 @@ between Python C API code and primer3 native C code.
                             "Error processing string in %s", k);               \
                     return NULL;                                               \
                 }                                                              \
-            *st = (char *) malloc(ss * sizeof(char));                          \
-            if (st == NULL) {                                                  \
+            *st = (char *) malloc((ss + 1 ) * sizeof(char));                          \
+            if (*st == NULL) {                                                  \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
@@ -120,46 +126,54 @@ between Python C API code and primer3 native C code.
 
 #define DICT_GET_AND_COPY_ARRAY(o, d, k, st, arr_len)                          \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
+        int i;                                                                 \
         if (!PyList_Check(o)){                                                 \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
-            return NULL;}                                                      \
-        *arr_len = PyList_Size(o);                                             \
-        int arr[*arr_len];                                                     \
-        int i;                                                                 \
-        for (i=0; i < *arr_len; i++) {                                         \
-            arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
+            return NULL;                                                       \
+        } else {                                                               \
+            int *arr = NULL;                                                   \
+            *arr_len = (int)PyList_Size(o);                                    \
+            arr = (int*) malloc(*arr_len*sizeof(int));                         \
+            if (arr == NULL) {                                                 \
+                PyErr_Format(PyExc_IOError,                                    \
+                            "Could not allocate memory while copying %s", k);  \
+                return NULL;}                                                  \
+            for (i=0; i < *arr_len; i++) {                                     \
+                arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));             \
+            }                                                                  \
+            *st = arr;                                                         \
         }                                                                      \
-        *st = arr;                                                             \
     }                                                                          \
 
 #define DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(o, d, k, st, arr_len)               \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
+        int i;                                                                 \
         if (!PyList_Check(o)){                                                 \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
-        *arr_len = PyList_Size(o);                                             \
-        int i;                                                                 \
+        *arr_len = (int)PyList_Size(o);                                        \
         for (i=0; i < *arr_len; i++) {                                         \
             *st[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
         }                                                                      \
     }                                                                          \
 
 #define DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(o, d, k, st)                       \
-    if (DICT_GET_OBJ(o, d, k)){                                                \
+    if (DICT_GET_OBJ(o, d, k)) {                                               \
+        int i;                                                                 \
         if (!PyList_Check(o)){                                                 \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
         st.count = 0;                                                          \
-        *arr_len = PyList_Size(p_obj);                                         \
+        *arr_len = (int)PyList_Size(p_obj);                                    \
         if (!arr_len % 2) {                                                    \
             PyErr_Format(PyExc_TypeError,                                      \
                             "%s must be linear multiple of 2 in length", k);   \
             return NULL;                                                       \
         }                                                                      \
-        for (i = 0; i < *arr_len / 2; i+2) {                                   \
+        for (i = 0; i < *arr_len / 2; i+=2) {                                  \
             p3_add_to_interval_array(&st,                                      \
                  (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),                 \
                  (int)PyLong_AsLong(PyList_GetItem(p_obj, i+1)));              \
@@ -168,7 +182,7 @@ between Python C API code and primer3 native C code.
 
 
 p3_global_settings*
-_setGlobals(PyObject *p3s_dict) {
+_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     /* Creates a new p3_global_settings struct and initializes it with
      * defaults using p3_create_global_settings() from libprimer3.c.
      * Parses the user-provided settings from p3_settings_dict and
@@ -178,16 +192,17 @@ _setGlobals(PyObject *p3s_dict) {
      * be set and the function will return NULL.
      */
 
-    p3_global_settings      *pa;
+    // p3_global_settings      *pa;
     PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
     int                     i;
     Py_ssize_t              str_size;
     char                    *temp_char, *task_tmp=NULL;
 
-    if (!(pa = p3_create_global_settings())) {
-        PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
-        return NULL;
-    }
+    
+    // if (!(pa = p3_create_global_settings())) {
+    //     PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
+    //     return NULL;
+    // }
 
     /* Note that some of the documented primer3 parameters are ignored in
      * this function. Specifically, any parameters related to file IO (as
@@ -370,7 +385,7 @@ _setGlobals(PyObject *p3s_dict) {
             }
             p_obj3 = PySequence_GetItem(p_obj2, 0);
             p_obj4 = PySequence_GetItem(p_obj2, 1);
-            if ((pa->pr_min[i] = PyLong_AsLong(p_obj3)) == -1) {
+            if ((pa->pr_min[i] = (int)PyLong_AsLong(p_obj3)) == -1) {
                 PyErr_Format(PyExc_TypeError,\
                     "Object 1 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
                 Py_DECREF(p_obj2);
@@ -378,7 +393,7 @@ _setGlobals(PyObject *p3s_dict) {
                 Py_DECREF(p_obj4);
                 return NULL;
             }
-            if ((pa->pr_max[i] = PyLong_AsLong(p_obj4)) == -1) {
+            if ((pa->pr_max[i] = (int)PyLong_AsLong(p_obj4)) == -1) {
                 PyErr_Format(PyExc_TypeError,\
                     "Object 2 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
                 Py_DECREF(p_obj2);
@@ -394,11 +409,7 @@ _setGlobals(PyObject *p3s_dict) {
 
     // Handler primer task
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_TASK", &task_tmp, temp_char, str_size);
-    // if (task_tmp == NULL) {
-    //     PyErr_SetString(PyExc_ValueError, \
-    //         "Primer3 args must include PRIMER_TASK");
-    //     return NULL;
-    // }
+
     // Directly from read_boulder.c
     if (task_tmp != NULL) {
         if (!strcmp_nocase(task_tmp, "pick_pcr_primers")) {
@@ -473,48 +484,48 @@ createSeqLib(PyObject *seq_dict){
 
     pos = 0;
     while (PyDict_Next(seq_dict, &pos, &py_seq_name, &py_seq)) {
-#if PY_MAJOR_VERSION < 3 
-            if (PyString_Check(py_seq_name)) {                                    
-                seq_name = PyString_AsString(py_seq_name);                        
-            } else {                                                              
-                PyErr_SetString(PyExc_TypeError,                                  
-                    "Cannot add seq name with non-String type to seq_lib");       
-                return NULL;                                                      
-            }                                                                  
-            if (PyString_Check(py_seq)) {                                         
-                seq = PyString_AsString(py_seq);                             
-            } else {                                                              
-                PyErr_SetString(PyExc_TypeError,                                  
-                    "Cannot add seq with non-String type to seq_lib");            
-                return NULL;                                                      
-            }                                                                  
-            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) { 
-                PyErr_SetString(PyExc_IOError, errfrag);                          
-                return NULL;         
-            }                                                                                                         
-#else 
-            if (PyUnicode_Check(py_seq_name)) {                                   
+#if PY_MAJOR_VERSION < 3
+            if (PyString_Check(py_seq_name)) {
+                seq_name = PyString_AsString(py_seq_name);
+            } else {
+                PyErr_SetString(PyExc_TypeError,
+                    "Cannot add seq name with non-String type to seq_lib");
+                return NULL;
+            }
+            if (PyString_Check(py_seq)) {
+                seq = PyString_AsString(py_seq);
+            } else {
+                PyErr_SetString(PyExc_TypeError,
+                    "Cannot add seq with non-String type to seq_lib");
+                return NULL;
+            }
+            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
+                PyErr_SetString(PyExc_IOError, errfrag);
+                return NULL;
+            }
+#else
+            if (PyUnicode_Check(py_seq_name)) {
                 seq_name = PyUnicode_AsUTF8(py_seq_name);
-            } else if (PyBytes_Check(py_seq_name)){                               
-                seq_name = PyBytes_AsString(py_seq_name);                         
-            } else {                                                              
-                PyErr_SetString(PyExc_TypeError,                                  
+            } else if (PyBytes_Check(py_seq_name)){
+                seq_name = PyBytes_AsString(py_seq_name);
+            } else {
+                PyErr_SetString(PyExc_TypeError,
                     "Cannot add seq name with non-Unicode/Bytes type to seq_lib");
-                return NULL;                                                      
-            }                                                                     
-            if (PyUnicode_Check(py_seq)) {                                        
-                seq = PyUnicode_AsUTF8(py_seq);          
-            } else if (PyBytes_Check(py_seq)){                                    
-                seq = PyBytes_AsString(py_seq);                                   
-            } else {                                                              
-                PyErr_SetString(PyExc_TypeError,                                  
-                    "Cannot add seq with non-Unicode/Bytes type to seq_lib");     
-                return NULL;                                                      
-            }                                                                     
-            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {    
-                PyErr_SetString(PyExc_IOError, errfrag);                          
-                return NULL;                                                      
-            }                                                                     
+                return NULL;
+            }
+            if (PyUnicode_Check(py_seq)) {
+                seq = PyUnicode_AsUTF8(py_seq);
+            } else if (PyBytes_Check(py_seq)){
+                seq = PyBytes_AsString(py_seq);
+            } else {
+                PyErr_SetString(PyExc_TypeError,
+                    "Cannot add seq with non-Unicode/Bytes type to seq_lib");
+                return NULL;
+            }
+            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
+                PyErr_SetString(PyExc_IOError, errfrag);
+                return NULL;
+            }
 #endif
     }
     return sl;
@@ -533,6 +544,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     char                    *temp_char;
     int                     i, j, len1, len2, *arr_len=NULL, *seq_qual_len=NULL;
     Py_ssize_t              str_size;
+    int overlap_junction_arr_len = 0;
 
     if (!(sa = create_seq_arg())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
@@ -590,8 +602,9 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_EXCLUDED_REGION", sa->excl2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_INTERNAL_EXCLUDED_REGION", sa->excl_internal2);
     // DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(p_obj, sa_dict,  "SEQUENCE_OVERLAP_JUNCTION_LIST", &sa->primer_overlap_junctions, overlap_junction_len);
-    int overlap_junction_arr_len = 0;
+    
     if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_OVERLAP_JUNCTION_LIST")) {
+        int *poj_arr;
         if (!PyList_Check(p_obj)){
             PyErr_Format(PyExc_TypeError,
                             "Value of 'SEQUENCE_OVERLAP_JUNCTION_LIST' is not of type list");
@@ -603,7 +616,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
             return NULL;
         }
         sa->primer_overlap_junctions_count = overlap_junction_arr_len;
-        int *poj_arr = &sa->primer_overlap_junctions[0];
+        poj_arr = &sa->primer_overlap_junctions[0];
         for (i=0; i < overlap_junction_arr_len; i++, poj_arr++) {
             *poj_arr = (int)PyLong_AsLong(PyList_GetItem(p_obj, i));
         }
@@ -623,8 +636,8 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                 "\"SEQUENCE_INCLUDED_REGION\" contains non-int value");
             return NULL;
         }
-        sa->incl_s = PyLong_AsLong(PyList_GetItem(p_obj, 0));
-        sa->incl_l = PyLong_AsLong(PyList_GetItem(p_obj, 1));
+        sa->incl_s = (int)PyLong_AsLong(PyList_GetItem(p_obj, 0));
+        sa->incl_l = (int)PyLong_AsLong(PyList_GetItem(p_obj, 1));
     }
 
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_START_CODON_POSITION", sa->start_codon_pos);
@@ -748,13 +761,8 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
 PyObject*
 p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
                const p3retval *retval) {
-    PyObject *output_dict = PyDict_New();
-    PyObject *obj_ptr=NULL;
-
-    if (output_dict == NULL) {
-        PyErr_SetString(PyExc_IOError, "Could not create Primer3 output dict");
-        return NULL;
-    }
+    PyObject *output_dict;
+    PyObject *obj_ptr = NULL;
 
     /* The pointers to warning tag */
     char *warning;
@@ -794,11 +802,17 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     const char *new_oligo_name = "INTERNAL";
     char *int_oligo = (char*) new_oligo_name;
 
+    output_dict = PyDict_New();
+    if (output_dict == NULL) {
+        PyErr_SetString(PyExc_IOError, "Could not create Primer3 output dict");
+        return NULL;
+    }
+
     /* Check if there are warnings and print them */
     if ((warning = p3_get_rv_and_gs_warnings(retval, pa)) != NULL) {
-    SET_DICT_KEY_TO_STR(output_dict, "PRIMER_WARNING", warning, obj_ptr);
-    // printf("PRIMER_WARNING=%s\n", warning);
-    free(warning);
+        SET_DICT_KEY_TO_STR(output_dict, "PRIMER_WARNING", warning, obj_ptr);
+        // printf("PRIMER_WARNING=%s\n", warning);
+        free(warning);
     }
 
     combined_retval_err = create_pr_append_str();
