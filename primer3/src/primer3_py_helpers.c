@@ -130,13 +130,20 @@ between Python C API code and primer3 native C code.
         if (!PyList_Check(o)){                                                 \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
-            return NULL;}                                                      \
-        *arr_len = (int)PyList_Size(o);                                        \
-        int arr[*arr_len];                                                     \
-        for (i=0; i < *arr_len; i++) {                                         \
-            arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
+            return NULL;                                                       \
+        } else {                                                               \
+            int *arr = NULL;                                                   \
+            *arr_len = (int)PyList_Size(o);                                    \
+            arr = (int*) malloc(*arr_len*sizeof(int));                         \
+            if (arr == NULL) {                                                 \
+                PyErr_Format(PyExc_IOError,                                    \
+                            "Could not allocate memory while copying %s", k);  \
+                return NULL;}                                                  \
+            for (i=0; i < *arr_len; i++) {                                     \
+                arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));             \
+            }                                                                  \
+            *st = arr;                                                         \
         }                                                                      \
-        *st = arr;                                                             \
     }                                                                          \
 
 #define DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(o, d, k, st, arr_len)               \
@@ -537,6 +544,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     char                    *temp_char;
     int                     i, j, len1, len2, *arr_len=NULL, *seq_qual_len=NULL;
     Py_ssize_t              str_size;
+    int overlap_junction_arr_len = 0;
 
     if (!(sa = create_seq_arg())) {
         PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
@@ -594,8 +602,9 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_EXCLUDED_REGION", sa->excl2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_INTERNAL_EXCLUDED_REGION", sa->excl_internal2);
     // DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(p_obj, sa_dict,  "SEQUENCE_OVERLAP_JUNCTION_LIST", &sa->primer_overlap_junctions, overlap_junction_len);
-    int overlap_junction_arr_len = 0;
+    
     if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_OVERLAP_JUNCTION_LIST")) {
+        int *poj_arr;
         if (!PyList_Check(p_obj)){
             PyErr_Format(PyExc_TypeError,
                             "Value of 'SEQUENCE_OVERLAP_JUNCTION_LIST' is not of type list");
@@ -607,7 +616,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
             return NULL;
         }
         sa->primer_overlap_junctions_count = overlap_junction_arr_len;
-        int *poj_arr = &sa->primer_overlap_junctions[0];
+        poj_arr = &sa->primer_overlap_junctions[0];
         for (i=0; i < overlap_junction_arr_len; i++, poj_arr++) {
             *poj_arr = (int)PyLong_AsLong(PyList_GetItem(p_obj, i));
         }
@@ -752,13 +761,8 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
 PyObject*
 p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
                const p3retval *retval) {
-    PyObject *output_dict = PyDict_New();
-    PyObject *obj_ptr=NULL;
-
-    if (output_dict == NULL) {
-        PyErr_SetString(PyExc_IOError, "Could not create Primer3 output dict");
-        return NULL;
-    }
+    PyObject *output_dict;
+    PyObject *obj_ptr = NULL;
 
     /* The pointers to warning tag */
     char *warning;
@@ -798,11 +802,17 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
     const char *new_oligo_name = "INTERNAL";
     char *int_oligo = (char*) new_oligo_name;
 
+    output_dict = PyDict_New();
+    if (output_dict == NULL) {
+        PyErr_SetString(PyExc_IOError, "Could not create Primer3 output dict");
+        return NULL;
+    }
+
     /* Check if there are warnings and print them */
     if ((warning = p3_get_rv_and_gs_warnings(retval, pa)) != NULL) {
-    SET_DICT_KEY_TO_STR(output_dict, "PRIMER_WARNING", warning, obj_ptr);
-    // printf("PRIMER_WARNING=%s\n", warning);
-    free(warning);
+        SET_DICT_KEY_TO_STR(output_dict, "PRIMER_WARNING", warning, obj_ptr);
+        // printf("PRIMER_WARNING=%s\n", warning);
+        free(warning);
     }
 
     combined_retval_err = create_pr_append_str();

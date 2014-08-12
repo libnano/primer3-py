@@ -5407,9 +5407,9 @@ primer_must_match(const p3_global_settings *pa, primer_rec *h, oligo_stats *glob
   char *test;
   int length = h->length - 5;
   if (match_five_prime != NULL) {
+    int i;
     seq = input_oligo_seq;
     test = match_five_prime;
-    int i;
     for (i = 0; i < 5; i++) {
       if (!compare_nucleotides(*seq, *test)) {
         global_oligo_stats->must_match_fail++;
@@ -5420,10 +5420,10 @@ primer_must_match(const p3_global_settings *pa, primer_rec *h, oligo_stats *glob
     }
   }
   if (match_three_prime != NULL) {
+    int i;
     seq = input_oligo_seq;
     test = match_three_prime;
     seq = seq + length;
-    int i;
     for (i = 0; i < 5; i++) {
       if (!compare_nucleotides(*seq, *test)) {
         global_oligo_stats->must_match_fail++;
@@ -6124,6 +6124,12 @@ static void
 _optimize_ok_regions_list(const p3_global_settings *pa,
         seq_args *sa)
 {
+  int pmin = INT_MAX;
+  int pmax = 0;
+  int omin = pa->p_args.min_size;
+  int omax = pa->p_args.max_size;
+  int i;
+
   /* We do this only if we enabled the optimization and
    * the primers were NOT specified. */
   if (!OPTIMIZE_OK_REGIONS || (sa->left_input) || (sa->right_input)) {
@@ -6135,14 +6141,9 @@ _optimize_ok_regions_list(const p3_global_settings *pa,
     return;
   }
 
-  int pmin = INT_MAX;
-  int pmax = 0;
-  int omin = pa->p_args.min_size;
-  int omax = pa->p_args.max_size;
-
   /* Determine min/max product size */
-  int i;
-  for (i=0; i<pa->num_intervals; i++) {
+  
+  for (i=0; i < pa->num_intervals; i++) {
     if (pa->pr_min[i] < pmin) { pmin = pa->pr_min[i]; }
     if (pa->pr_max[i] > pmax) { pmax = pa->pr_max[i]; }
   }
