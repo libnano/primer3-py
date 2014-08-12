@@ -2,7 +2,7 @@
  primer3-py: simple oligo analysis and primer design
 =====================================================
 
-.. image:: http://img.shields.io/travis/benpruitt/primer3-py.svg
+.. image:: https://secure.travis-ci.org/benpruitt/primer3-py.png
         :target: https://travis-ci.org/benpruitt/primer3-py
 
 .. image:: http://img.shields.io/pypi/l/primer3-py.svg
@@ -34,8 +34,10 @@ so we suggest that you refer to the official Primer3
   Nucleic acids research 40.15 (2012): e115-e115.
   doi: 10.1093/nar/gks596
 
-License is GPLv2
-Modifications to Primer3 and the bindings are Copyright (c) 2014
+All project code, including the derivative Primer3 library is licensed 
+under GPLv2. 
+
+Included bindings are Copyright (c) 2014
 Ben Pruitt, Nick Conway; Wyss Institute for Biologically Inspired
 Engineering.
 
@@ -67,7 +69,7 @@ tests using the ``primer3_tests.py`` module::
 
   $ python primer3_tests.py
 
-or for memory checking with valgrind:
+or for memory checking with valgrind::
 
   $ valgrind --tool=memcheck --suppressions=valgrind-python.supp --leak-check=full python primer3_test.py
 
