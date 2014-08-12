@@ -3,10 +3,27 @@
  primer3-py: fast primer design and thermodynamic analysis
 ===========================================================
 
-Primer3-py is a package of *fast* and easy-to-use Python bindings for the
-Primer3 PCR primer design library.
+``primer3-py`` is a collection of Python bindings for a derivative of the
+popular Primer3 C library (version 2.3.6).
 
 See README.rst for more information and primer3_test.py for usage examples.
+
+Installation
+------------
+
+``primer3-py`` has no external library dependencies and should compile on
+most linux and OS X systems that are running Python 2.7, 3.3, or 3.4.
+
+To build ``primer3-py`` within the package directory run::
+
+  $ python setup.py build_ext --inplace
+
+If you would like to install primer3-py in your local Python environment
+you may do so using either pip or the setup.py script::
+
+  $ pip install primer3-py
+            or
+  $ python setup.py install
 
 '''
 
@@ -53,7 +70,7 @@ primer3_ext = Extension(
 
 setup (
     name='primer3-py',
-    version='0.2.5',
+    version='0.3.0',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',
@@ -63,7 +80,7 @@ setup (
     classifiers=[
         'Programming Language :: C',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Development Status :: 4 - Beta',
