@@ -548,7 +548,9 @@ thal(const unsigned char *oligo_f,
     free(oligo1);
     free(oligo2);
     return;
-  } else if(a->type!=4) { /* Hybridization of two moleculs */
+  } else if(a->type!=4) { /* Hybridization of two molecules */
+    int *ps1, *ps2;
+    double dH, dS;
     len3 = len2;
     enthalpyDPT = safe_recalloc(enthalpyDPT, len1, len2, o); /* dyn. programming table for dS and dH */
     entropyDPT = safe_recalloc(entropyDPT, len1, len2, o); /* enthalpyDPT is 3D array represented as 1D array */
@@ -558,22 +560,22 @@ thal(const unsigned char *oligo_f,
     SH = (double*) safe_malloc(2 * sizeof(double), o);
     /* calculate terminal basepairs */
     bestI = bestJ = 0;
-    if(a->type==1)
-    for (i = 1; i <= len1; i++) {
-      for (j = 1; j <= len2; j++) {
-        RSH(i, j, SH);
-        SH[0] = SH[0]+SMALL_NON_ZERO; /* this adding is done for compiler, optimization -O2 vs -O0 */
-        SH[1] = SH[1]+SMALL_NON_ZERO;
-        T1 = ((EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) / ((EntropyDPT(i, j)) + SH[0] +
-              dplx_init_S + RC)) - ABSOLUTE_ZERO;
-        if (T1 > SHleft  && ((EntropyDPT(i, j) + SH[0])<0 && (SH[1] + EnthalpyDPT(i, j))<0)) {
-          SHleft = T1;
-          bestI = i;
-          bestJ = j;
+    if(a->type==1) {
+      for (i = 1; i <= len1; i++) {
+        for (j = 1; j <= len2; j++) {
+          RSH(i, j, SH);
+          SH[0] = SH[0]+SMALL_NON_ZERO; /* this adding is done for compiler, optimization -O2 vs -O0 */
+          SH[1] = SH[1]+SMALL_NON_ZERO;
+          T1 = ((EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) / ((EntropyDPT(i, j)) + SH[0] +
+                dplx_init_S + RC)) - ABSOLUTE_ZERO;
+          if (T1 > SHleft  && ((EntropyDPT(i, j) + SH[0])<0 && (SH[1] + EnthalpyDPT(i, j))<0)) {
+            SHleft = T1;
+            bestI = i;
+            bestJ = j;
+          }
         }
       }
     }
-    int *ps1, *ps2;
     ps1 = (int*) safe_calloc(len1, sizeof(int), o);
     ps2 = (int*) safe_calloc(len2, sizeof(int), o);
     for (i = 0; i < len1; ++i)
@@ -599,8 +601,7 @@ thal(const unsigned char *oligo_f,
         }
       }
     }
-    if (!isFinite(SHleft)) bestI = bestJ = 1;
-    double dH, dS;
+    if (!isFinite(SHleft)) { bestI = bestJ = 1; }
     RSH(bestI, bestJ, SH);
     dH = EnthalpyDPT(bestI, bestJ)+ SH[1] + dplx_init_H;
     dS = (EntropyDPT(bestI, bestJ) + SH[0] + dplx_init_S);
@@ -888,9 +889,10 @@ readLoop(FILE *file, double *v1, double *v2, double *v3, thal_results *o)
 static int
 readTLoop(FILE *file, char *s, double *v, int triloop, thal_results *o)
 {
-  char *line = p3_read_line(file, o);
+  char *line; char *p; char *q;
+  line = p3_read_line(file, o);
   if (!line) return -1;
-  char *p = line, *q;
+  p = line;
   /* skip first spaces */
   while (isspace(*p)) p++;
   /* read the string */
@@ -2129,6 +2131,8 @@ static void
 calc_terminal_bp(double temp) { /* compute exterior loop */
    int i;
    int max;
+   double T1, T2, T3, T4, T5;
+   double G;
    SEND5(0) = SEND5(1) = -1.0;
    HEND5(0) = HEND5(1) = _INFINITY;
    for(i = 2; i<=(len1); i++) {
@@ -2136,9 +2140,8 @@ calc_terminal_bp(double temp) { /* compute exterior loop */
       HEND5(i) = 0;
    }
 
-   double T1, T2, T3, T4, T5;
    T1 = T2 = T3 = T4 = T5 = -_INFINITY;
-   double G;
+   
    /* adding terminal penalties to 3' end and to 5' end */
    for(i = 2; i <= len1; ++i) {
       max = 0;
@@ -2465,8 +2468,7 @@ length_unsig_char(const unsigned char * str)
 static void
 tracebacku(int* bp, int maxLoop,thal_results* o) /* traceback for unimolecular structure */
 {
-   int i, j;
-   i = j = 0;
+   int i = 0, j = 0;
    int ii, jj, k;
    struct tracer *top, *stack = NULL;
    double* SH1;
@@ -2634,8 +2636,7 @@ traceback(int i, int j, double RT, int* ps1, int* ps2, int maxLoop, thal_results
 static void
 calcHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o)
 {
-    int i, N;
-    N = 0;
+    int i, N = 0;
     double mg, t;
     if (!isFinite(ms) || !isFinite(mh)) {
         if(temponly == 0) {
@@ -2714,9 +2715,9 @@ static void
 drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o)
 {
    /* Plain text */
-   int i, N;
-   N = 0;
+   int i, N = 0;
    double mg, t;
+   char* asciiRow;
    if (!isFinite(ms) || !isFinite(mh)) {
       if(temponly == 0) {
      printf("0\tdS = %g\tdH = %g\tinf\tinf\n", (double) ms,(double) mh);
@@ -2750,7 +2751,6 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
       }
    }
    /* plain-text output */
-   char* asciiRow;
    asciiRow = (char*) safe_malloc(len1, o);
    for(i = 0; i < len1; ++i) asciiRow[i] = '0';
    for(i = 1; i < len1+1; ++i) {

@@ -1397,7 +1397,6 @@ choose_pair_or_triple(p3retval *retval,
 
   // std::hash_map<int, primer_pair*> *hmap, *best_hmap = NULL;
   khash_t(primer_pair_map) *hmap = NULL;
-  kh_clear(primer_pair_map, hmap);   // only to avoid compiler warning for unused function
 
   khash_t(primer_pair_map) *best_hmap = NULL;
   /* hmap and best_hmap will be pointers to hash maps also pointed to
@@ -1409,6 +1408,8 @@ choose_pair_or_triple(p3retval *retval,
   primer_pair *pp = NULL;
   primer_pair *best_pp = NULL;
   int pair_found = 0;
+
+  kh_clear(primer_pair_map, hmap);   // only to avoid compiler warning for unused function
 
   // pairs =
   //   (std::hash_map<int, primer_pair*>**)
@@ -1521,7 +1522,8 @@ choose_pair_or_triple(p3retval *retval,
 
       /* Loop over forward primers */
       for (j = 0; j < retval->fwd.num_elem; j++) {
-
+        int must_use;
+        double product_size;
         /* We check the reverse oligo again, because we may
            have determined that it is "not ok", even though
            (as a far as we knew), it was ok above. */
@@ -1599,7 +1601,7 @@ choose_pair_or_triple(p3retval *retval,
         }
 
         /* Some simple checks first, before searching the hashmap */
-        int must_use = 0;
+        must_use = 0;
         if ((pa->primer_task == check_primers) ||
             ((retval->fwd.oligo[j].must_use != 0) &&
              (retval->rev.oligo[i].must_use != 0))) {
@@ -1621,7 +1623,7 @@ choose_pair_or_triple(p3retval *retval,
         }
 
         /* Check product size now */
-        double product_size
+        product_size
           = retval->rev.oligo[i].start - retval->fwd.oligo[j].start+1;
 
         if (product_size < pa->pr_min[product_size_range_index] ||
