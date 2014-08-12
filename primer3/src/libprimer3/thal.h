@@ -139,7 +139,7 @@ void set_thal_oligo_default_args(thal_args *a);
 #endif
 int  get_thermodynamic_values(const char* path, thal_results *o);
 
-void destroy_thal_structures();
+void destroy_thal_structures(void);
 
 /* Central method for finding the best alignment.  On error, o->temp
    is set to THAL_ERROR_SCORE and a message is put in o->msg.  The

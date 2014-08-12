@@ -869,7 +869,7 @@ typedef struct p3retval {
 /* Deallocate a primer3 state */
 void destroy_p3retval(p3retval *);
 
-void destroy_dpal_thal_arg_holder();
+void destroy_dpal_thal_arg_holder(void);
 
 /* get elements of p3retval */
 const pair_array_t *p3_get_rv_best_pairs(const p3retval *r);
@@ -910,7 +910,7 @@ const  primer_rec *p3_get_oa_i(const oligo_array *x, int i);
    primer_rec */
 
 /* Functions for seq_args -- create, destroy, set, set slots */
-seq_args *create_seq_arg();
+seq_args *create_seq_arg(void);
 void destroy_seq_args(seq_args *);
 int p3_set_sa_sequence(seq_args *sargs, const char *sequence);
 void p3_set_sa_primer_sequence_quality(seq_args *sargs, int quality);
@@ -969,10 +969,10 @@ int p3_set_sa_upcased_sequence(seq_args *sargs, const char *upcased_sequencd);
 /* ============================================================ */
 
 /* Use this for -default_version=2 (up-to-date defaults) */
-p3_global_settings *p3_create_global_settings();
+p3_global_settings *p3_create_global_settings(void);
 
 /* Use this for -default_version=1 (old defaults) */
-p3_global_settings *p3_create_global_settings_default_version_1();
+p3_global_settings *p3_create_global_settings_default_version_1(void);
 
 void p3_destroy_global_settings(p3_global_settings *);
 
@@ -1178,7 +1178,7 @@ char  *pr_oligo_sequence(const seq_args *, const primer_rec *);
 char  *pr_oligo_rev_c_sequence(const seq_args *, const primer_rec *);
 
 /* Return NULL on ENOMEM */
-pr_append_str *create_pr_append_str();
+pr_append_str *create_pr_append_str(void);
 void          init_pr_append_str(pr_append_str *s);
 
 void          pr_set_empty(pr_append_str *);
