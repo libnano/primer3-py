@@ -28,7 +28,7 @@ We do not provide any additional abstraction of the Primer3 design engine,
 so we suggest that you refer to the official Primer3 
 `documentation <http://primer3.sourceforge.net/>`_ for assistance.
 
-`cite <http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`_ :
+`cite <http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`_ ::
 
   Untergasser, Andreas, et al. "Primer3—new capabilities and interfaces." 
   Nucleic acids research 40.15 (2012): e115-e115.
@@ -67,7 +67,7 @@ tests using the ``primer3_tests.py`` module::
 
   $ python primer3_tests.py
 
-or for memory checking with valgrind
+or for memory checking with valgrind:
 
   $ valgrind --tool=memcheck --suppressions=valgrind-python.supp --leak-check=full python primer3_test.py
 
