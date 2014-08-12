@@ -238,6 +238,14 @@ void          compute_position_penalty(const p3_global_settings *,
                                        const seq_args *,
                                        primer_rec *, oligo_type);
 
+dpal_arg_holder *create_dpal_arg_holder(void);
+
+void destroy_dpal_arg_holder(dpal_arg_holder *h);
+
+thal_arg_holder *create_thal_arg_holder(const args_for_one_oligo_or_primer *po_args);
+
+void destroy_thal_arg_holder(thal_arg_holder *h);
+
 static p3retval *create_p3retval(void);
 
 static char   dna_to_upper(char *, int);
@@ -944,8 +952,6 @@ destroy_dpal_arg_holder(dpal_arg_holder *h)
    'file' scope, we do not have to remember to free the associated
    storage after each call to choose_primers(). */
 static dpal_arg_holder *dpal_arg_to_use = NULL;
-
-dpal_arg_holder *create_dpal_arg_holder(void);
 
 /* ============================================================ */
 /* END functions for dpal_arg_holder                            */

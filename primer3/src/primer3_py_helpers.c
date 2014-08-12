@@ -126,13 +126,13 @@ between Python C API code and primer3 native C code.
 
 #define DICT_GET_AND_COPY_ARRAY(o, d, k, st, arr_len)                          \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
+        int i;                                                                 \
         if (!PyList_Check(o)){                                                 \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
-        *arr_len = (int)PyList_Size(o);                                             \
+        *arr_len = (int)PyList_Size(o);                                        \
         int arr[*arr_len];                                                     \
-        int i;                                                                 \
         for (i=0; i < *arr_len; i++) {                                         \
             arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
         }                                                                      \
@@ -141,12 +141,12 @@ between Python C API code and primer3 native C code.
 
 #define DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(o, d, k, st, arr_len)               \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
+        int i;                                                                 \
         if (!PyList_Check(o)){                                                 \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
-        *arr_len = (int)PyList_Size(o);                                             \
-        int i;                                                                 \
+        *arr_len = (int)PyList_Size(o);                                        \
         for (i=0; i < *arr_len; i++) {                                         \
             *st[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
         }                                                                      \
@@ -154,18 +154,18 @@ between Python C API code and primer3 native C code.
 
 #define DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(o, d, k, st)                       \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
+        int i;                                                                 \
         if (!PyList_Check(o)){                                                 \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
         st.count = 0;                                                          \
-        *arr_len = (int)PyList_Size(p_obj);                                         \
+        *arr_len = (int)PyList_Size(p_obj);                                    \
         if (!arr_len % 2) {                                                    \
             PyErr_Format(PyExc_TypeError,                                      \
                             "%s must be linear multiple of 2 in length", k);   \
             return NULL;                                                       \
         }                                                                      \
-        int i;                                                                 \
         for (i = 0; i < *arr_len / 2; i+=2) {                                  \
             p3_add_to_interval_array(&st,                                      \
                  (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),                 \
