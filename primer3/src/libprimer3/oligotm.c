@@ -308,24 +308,27 @@ oligotm(const  char *s,
      tm_method_type  tm_method,
      salt_correction_type salt_corrections)
 {
-   register int dh = 0, ds = 0;
+  register int dh = 0, ds = 0;
   register char c;
   double delta_H, delta_S;
   double Tm; /* Melting temperature */
   double correction;
   int len, sym;
   const char* seq = s;
-   if(divalent_to_monovalent(divalent_conc, dntp_conc) == OLIGOTM_ERROR)
-     return OLIGOTM_ERROR;
+  if(divalent_to_monovalent(divalent_conc, dntp_conc) == OLIGOTM_ERROR) {
+    return OLIGOTM_ERROR;
+  }
 
   /** K_mM = K_mM + divalent_to_monovalent(divalent_conc, dntp_conc); **/
   if (tm_method != breslauer_auto
-      && tm_method != santalucia_auto)
+      && tm_method != santalucia_auto) {
     return OLIGOTM_ERROR;
+  }
   if (salt_corrections != schildkraut
       && salt_corrections != santalucia
-      && salt_corrections != owczarzy)
+      && salt_corrections != owczarzy) {
     return OLIGOTM_ERROR;
+  }
 
   len = ((int)strlen(s)-1);
 
@@ -435,7 +438,7 @@ oligotm(const  char *s,
 
     for(i = 0; i <= len && seq != NULL && seq != '\0';) {
       if(*seq == 'C' || *seq == 'G') {
-         gcPercent++;
+        gcPercent++;
       }
       seq++;
       i++;
@@ -445,56 +448,56 @@ oligotm(const  char *s,
     if(dntp_conc >= divalent_conc) {
       free_divalent = 0.00000000001; /* to not to get log(0) */
     } else {
-        free_divalent = (divalent_conc - dntp_conc)/1000.0;
-     }
+      free_divalent = (divalent_conc - dntp_conc)/1000.0;
+    }
      
-      if(K_mM==0) {
-   div_monov_ratio = 6.0;
-      } else {
-   div_monov_ratio = (sqrt(free_divalent))/(K_mM/1000); /* if conc of monov cations is provided
+    if(K_mM==0) {
+      div_monov_ratio = 6.0;
+    } else {
+      div_monov_ratio = (sqrt(free_divalent))/(K_mM/1000); /* if conc of monov cations is provided
                     a ratio is calculated to further calculate
                     the _correct_ correction */
+    }
+    if (div_monov_ratio < crossover_point) {
+      /* use only monovalent salt correction, Eq 22 (Owczarzy et al., 2004) */
+      correction
+        = (((4.29 * gcPercent) - 3.95) * pow(10,-5) * log(K_mM / 1000.0))
+          + (9.40 * pow(10,-6) * (pow(log(K_mM / 1000.0),2)));
+    } else {
+      /* magnesium effects are dominant, Eq 16 (Owczarzy et al., 2008) is used */
+      b =- 9.11 * pow(10,-6);
+      c = 6.26 * pow(10,-5);
+      e =- 4.82 * pow(10,-4);
+      f = 5.25 * pow(10,-4);
+      a = 3.92 * pow(10,-5);
+      d = 1.42 * pow(10,-5);
+      g = 8.31 * pow(10,-5);
+      if(div_monov_ratio < 6.0) {
+        /* in particular ratio of conc of monov and div cations
+        *             some parameters of Eq 16 must be corrected (a,d,g) */
+        a = 3.92 * pow(10,-5) * (0.843 - (0.352 * sqrt(K_mM/1000.0) * log(K_mM/1000.0)));
+        d = 1.42 * pow(10,-5) * (1.279 - 4.03 * pow(10,-3) * log(K_mM/1000.0) - 8.03 * pow(10,-3) * pow(log(K_mM/1000.0),2));
+        g = 8.31 * pow(10,-5) * (0.486 - 0.258 * log(K_mM/1000.0) + 5.25 * pow(10,-3) * pow(log(K_mM/1000.0),3));
       }
-     if (div_monov_ratio < crossover_point) {
-  /* use only monovalent salt correction, Eq 22 (Owczarzy et al., 2004) */
-  correction
-    = (((4.29 * gcPercent) - 3.95) * pow(10,-5) * log(K_mM / 1000.0))
-      + (9.40 * pow(10,-6) * (pow(log(K_mM / 1000.0),2)));
-     } else {
-  /* magnesium effects are dominant, Eq 16 (Owczarzy et al., 2008) is used */
-  b =- 9.11 * pow(10,-6);
-  c = 6.26 * pow(10,-5);
-  e =- 4.82 * pow(10,-4);
-  f = 5.25 * pow(10,-4);
-  a = 3.92 * pow(10,-5);
-  d = 1.42 * pow(10,-5);
-  g = 8.31 * pow(10,-5);
-  if(div_monov_ratio < 6.0) {
-     /* in particular ratio of conc of monov and div cations
-      *             some parameters of Eq 16 must be corrected (a,d,g) */
-     a = 3.92 * pow(10,-5) * (0.843 - (0.352 * sqrt(K_mM/1000.0) * log(K_mM/1000.0)));
-     d = 1.42 * pow(10,-5) * (1.279 - 4.03 * pow(10,-3) * log(K_mM/1000.0) - 8.03 * pow(10,-3) * pow(log(K_mM/1000.0),2));
-     g = 8.31 * pow(10,-5) * (0.486 - 0.258 * log(K_mM/1000.0) + 5.25 * pow(10,-3) * pow(log(K_mM/1000.0),3));
-  }
 
-  correction = a + (b * log(free_divalent))
-    + gcPercent * (c + (d * log(free_divalent)))
-      + (1/(2 * (len - 1))) * (e + (f * log(free_divalent))
-             + g * (pow((log(free_divalent)),2)));
-     }
-     /**** END: UPDATED SALT BY OWCZARZY *****/
-     if (sym == 1) {
-     /* primer is symmetrical */
-  /* Equation A */
-  Tm = 1/((1/(delta_H
-        /
-        (delta_S + 1.9872 * log(DNA_nM/1000000000.0)))) + correction) - T_KELVIN;
-     } else {
-  /* Equation B */
-  Tm = 1/((1/(delta_H
-        /
+      correction = a + (b * log(free_divalent))
+                  + gcPercent * (c + (d * log(free_divalent)))
+                  + (1/(2 * (len - 1))) * (e + (f * log(free_divalent))
+                  + g * (pow((log(free_divalent)),2)));
+    }
+    /**** END: UPDATED SALT BY OWCZARZY *****/
+    if (sym == 1) {
+      /* primer is symmetrical */
+      /* Equation A */
+      Tm = 1/((1/(delta_H
+                    /
+              (delta_S + 1.9872 * log(DNA_nM/1000000000.0)))) + correction) - T_KELVIN;
+    } else {
+      /* Equation B */
+      Tm = 1/((1/(delta_H
+          /
         (delta_S + 1.9872 * log(DNA_nM/4000000000.0)))) + correction) - T_KELVIN;
-     }
+    }
   } /* END else if (salt_corrections == owczarzy) { */
 
 

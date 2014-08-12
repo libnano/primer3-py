@@ -360,8 +360,8 @@ static PyMethodDef primer3_methods[] = {
 };
 
 MOD_INIT(_primer3){
-
 #if PY_MAJOR_VERSION >= 3
+    PyObject* m;
     static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
         "_primer3",           /* m_name */
@@ -374,7 +374,7 @@ MOD_INIT(_primer3){
         NULL,               /* m_free */
     };
     Py_AtExit(&cleanUp);
-    PyObject* m = PyModule_Create(&moduledef);
+    m = PyModule_Create(&moduledef);
     return m;
 #else
     Py_AtExit(&cleanUp);
