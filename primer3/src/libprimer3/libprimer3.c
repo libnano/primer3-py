@@ -5286,12 +5286,12 @@ find_stop_codon(const char* s,
     if ('A' == *q || 'a' == *q) {
       q++;
       if  ('G' == *q || 'g' == *q || 'A' == *q || 'a' == *q) {
-        return p - &s[0];
+        return (int)(p - &s[0]);
       }
     } else if ('G' == *q || 'g' == *q) {
       q++;
       if ('A' == *q || 'a' == *q) {
-        return p - &s[0];
+        return (int)(p - &s[0]);
       }
     }
   }
@@ -6144,7 +6144,7 @@ _optimize_ok_regions_list(const p3_global_settings *pa,
   }
 
   /* Determine min/max product size */
-  
+
   for (i=0; i < pa->num_intervals; i++) {
     if (pa->pr_min[i] < pmin) { pmin = pa->pr_min[i]; }
     if (pa->pr_max[i] > pmax) { pmax = pa->pr_max[i]; }
@@ -7388,7 +7388,7 @@ p3_read_line(FILE *file)
   p = s;
   remaining_size = ssz;
   while (1) {
-    if (fgets(p, remaining_size, file) == NULL) { /* End of file. */
+    if (fgets(p, (int)remaining_size, file) == NULL) { /* End of file. */
       return p == s ? NULL : s;
     }
 
