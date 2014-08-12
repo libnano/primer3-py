@@ -39,7 +39,7 @@ libprimer3_paths = [pjoin(LIBPRIMER3_PATH, 'thal.c'),
 p3build = subprocess.Popen(['make'], shell=True, cwd=LIBPRIMER3_PATH)
 p3build.wait()
 
-# Find all primer3 data files
+# Find all primer3 data files to include with the package
 p3_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
             os.walk(LIBPRIMER3_PATH) for f in files]
 

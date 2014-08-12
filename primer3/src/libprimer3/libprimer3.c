@@ -1,4 +1,11 @@
 /*
+Copyright (c) 2014
+Ben Pruitt, Nick Conway; Wyss Institute for Biologically Inspired
+Engineering.
+
+This work is a derivative of the original Primer3 library, also
+covered under the GPLv2:
+
 Copyright (c) 1996,1997,1998,1999,2000,2001,2004,2006,2007,2008,2009,
               2010,2011,2012
 Whitehead Institute for Biomedical Research, Steve Rozen
@@ -1663,6 +1670,8 @@ choose_pair_or_triple(p3retval *retval,
           hmap = kh_init(primer_pair_map);
           if (!hmap) {
             longjmp(_jmp_buf, 1);
+          } else {
+            kh_clear_primer_pair_map(hmap);
           }
           pairs[i] = hmap;
         }
