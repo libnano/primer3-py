@@ -2,6 +2,13 @@
 
 # C extensions
 *.so
+*.o
+*.a
+long_seq_tm_test
+ntdpal
+ntthal
+oligotm
+primer3_core
 
 # Packages
 *.egg
@@ -38,6 +45,3 @@ nosetests.xml
 # OS X
 .DS_Store
 
-# Primer3 library build files
-primer3/libprimer3/*.a
-primer3/libprimer3/*.o

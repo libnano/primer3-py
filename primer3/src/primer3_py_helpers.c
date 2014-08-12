@@ -175,7 +175,7 @@ between Python C API code and primer3 native C code.
 
 
 p3_global_settings*
-_setGlobals(PyObject *p3s_dict) {
+_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     /* Creates a new p3_global_settings struct and initializes it with
      * defaults using p3_create_global_settings() from libprimer3.c.
      * Parses the user-provided settings from p3_settings_dict and
@@ -185,16 +185,17 @@ _setGlobals(PyObject *p3s_dict) {
      * be set and the function will return NULL.
      */
 
-    p3_global_settings      *pa;
+    // p3_global_settings      *pa;
     PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
     int                     i;
     Py_ssize_t              str_size;
     char                    *temp_char, *task_tmp=NULL;
 
-    if (!(pa = p3_create_global_settings())) {
-        PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
-        return NULL;
-    }
+    
+    // if (!(pa = p3_create_global_settings())) {
+    //     PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
+    //     return NULL;
+    // }
 
     /* Note that some of the documented primer3 parameters are ignored in
      * this function. Specifically, any parameters related to file IO (as

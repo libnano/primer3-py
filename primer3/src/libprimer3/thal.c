@@ -203,9 +203,9 @@ static int comp3loop(const void*, const void*); /* checks if sequnece consists o
 
 static int comp4loop(const void*, const void*); /* checks if sequnece consists of specific tetraloop */
 
-static void initMatrix(); /* initiates thermodynamic parameter tables of entropy and enthalpy for dimer */
+static void initMatrix(void); /* initiates thermodynamic parameter tables of entropy and enthalpy for dimer */
 
-static void initMatrix2(); /* initiates thermodynamic parameter tables of entropy and enthalpy for monomer */
+static void initMatrix2(void); /* initiates thermodynamic parameter tables of entropy and enthalpy for monomer */
 
 static void fillMatrix(int maxLoop, thal_results* o); /* calc-s thermod values into dynamic progr table (dimer) */
 
@@ -1262,7 +1262,7 @@ comp4loop(const void* loop1, const void* loop2)
 
 
 static void
-initMatrix()
+initMatrix(void)
 {
    int i, j;
    for (i = 1; i <= len1; ++i) {
@@ -1279,7 +1279,7 @@ initMatrix()
 }
 
 static void
-initMatrix2()
+initMatrix2(void)
 {
    int i, j;
    for (i = 1; i <= len1; ++i)

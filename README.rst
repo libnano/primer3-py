@@ -16,9 +16,9 @@
 
 
 ``primer3-py`` is a collection of Python bindings for a derivative of the 
-popular Primer3 C library. The package provides a simple API for low-level
-thermodynamic calculations pertinent to oligonucleotide design (e.g., 
-melting temperature) as well as a simple interface to the Primer3 design 
+popular Primer3 version 2.3.6 C library. The package provides a simple API 
+for low-level thermodynamic calculations pertinent to oligonucleotide design 
+(e.g., melting temperature) as well as a simple interface to the Primer3 design 
 engine for a more holistic approach to primer design. All of the bindings
 are implemented using the Python C API, which means that they are 
 highly efficient but do require initial compilation (see ``Installation``,
@@ -26,8 +26,18 @@ below).
 
 We do not provide any additional abstraction of the Primer3 design engine, 
 so we suggest that you refer to the official Primer3 
-`documentation <http://primer3.sourceforge.net/>`_ for assistence.
+`documentation <http://primer3.sourceforge.net/>`_ for assistance.
 
+`cite <http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`:
+
+  Untergasser, Andreas, et al. "Primer3—new capabilities and interfaces." 
+  Nucleic acids research 40.15 (2012): e115-e115.
+  doi: 10.1093/nar/gks596
+
+License is GPLv2
+Modifications to Primer3 and the bindings are Copyright (c) 2014
+Ben Pruitt, Nick Conway; Wyss Institute for Biologically Inspired
+Engineering.
 
 Installation
 ------------
@@ -56,6 +66,10 @@ building and (optionally) installing ``primer3-py`` you can run the
 tests using the ``primer3_tests.py`` module::
 
   $ python primer3_tests.py
+
+or for memory checking with valgrind
+
+  $ valgrind --tool=memcheck --suppressions=valgrind-python.supp --leak-check=full python primer3_test.py
 
 
 API - low-level thermodynamics

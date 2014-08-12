@@ -20,7 +20,7 @@ Python C API code and primer3 native C code.
  *      PRIMER_THERMODYNAMIC_PARAMETERS_PATH
  */
 p3_global_settings*
-_setGlobals(PyObject *p3_settings_dict);
+_setGlobals(p3_global_settings *pa, PyObject *p3_settings_dict);
 
 /* Create a sequence library from a dictionary of key: value pairs in
  * createSeqLib (key = seq name, value = seq)

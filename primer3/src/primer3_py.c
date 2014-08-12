@@ -231,15 +231,13 @@ setGlobals(PyObject *self, PyObject *args){
     PyObject                *mishyb_lib=NULL;
     seq_lib                 *mp_lib, *mh_lib;
 
-    if (pa != NULL) {
-        // Free memory for previous global settings
-        p3_destroy_global_settings(pa);
-        pa = NULL;
+    if (pa == NULL) {
+        // Allocate memory for global settings
+        if ((pa = p3_create_global_settings()) == NULL) {
+            PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
+            return NULL;
+        }
     }
-    // // Allocate memory for global settings
-    // if ((pa = (p3_global_settings *) malloc(sizeof(p3_global_settings))) == NULL) {
-    //     return NULL;
-    // }
 
     if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args,
                           &misprime_lib, &mishyb_lib)) {
@@ -247,7 +245,7 @@ setGlobals(PyObject *self, PyObject *args){
     }
 
 
-    if ((pa = _setGlobals(global_args)) == NULL) {
+    if ((_setGlobals(pa, global_args)) == NULL) {
         return NULL;
     }
 
@@ -330,7 +328,7 @@ runDesign(PyObject *self, PyObject *args){
 }
 
 void
-cleanUp(){
+cleanUp(void){
     /* Free any remaining global Primer3 objects */
     if (pa != NULL) {
         // Free memory for previous global settings

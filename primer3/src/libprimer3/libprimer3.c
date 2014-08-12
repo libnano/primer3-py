@@ -526,12 +526,12 @@ p3_set_program_name(const char *pname)
 
 /* Allocate space for global settings and fill in defaults */
 p3_global_settings *
-p3_create_global_settings()
+p3_create_global_settings(void)
 {
   p3_global_settings *r;
 
   // if (!(r = (p3_global_settings *) malloc(sizeof(*r)))) {
-  if (!(r = (p3_global_settings *) malloc(sizeof(p3_global_settings)))) {
+  if ( (r = (p3_global_settings *) malloc(sizeof(p3_global_settings))) == NULL) {
     return NULL;
   }
 
@@ -542,12 +542,12 @@ p3_create_global_settings()
 
 /* Allocate space for global settings and fill in defaults */
 p3_global_settings *
-p3_create_global_settings_default_version_1()
+p3_create_global_settings_default_version_1(void)
 {
   p3_global_settings *r;
 
   // if (!(r = (p3_global_settings *) malloc(sizeof(*r)))) {
-  if (!(r = (p3_global_settings *) malloc(sizeof(p3_global_settings)))) {
+  if ((r = (p3_global_settings *) malloc(sizeof(p3_global_settings))) == NULL) {
     return NULL;
   }
 
@@ -1397,6 +1397,8 @@ choose_pair_or_triple(p3retval *retval,
 
   // std::hash_map<int, primer_pair*> *hmap, *best_hmap = NULL;
   khash_t(primer_pair_map) *hmap = NULL;
+  kh_clear(primer_pair_map, hmap);   // only to avoid compiler warning for unused function
+
   khash_t(primer_pair_map) *best_hmap = NULL;
   /* hmap and best_hmap will be pointers to hash maps also pointed to
      by elements of pairs. */
@@ -1678,8 +1680,6 @@ choose_pair_or_triple(p3retval *retval,
           hmap = kh_init(primer_pair_map);
           if (!hmap) {
             longjmp(_jmp_buf, 1);
-          } else {
-            kh_clear_primer_pair_map(hmap);
           }
           pairs[i] = hmap;
         }
