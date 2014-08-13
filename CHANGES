@@ -52,3 +52,7 @@ Version 0.3.0                                                   August 12, 2014
 -[POTENTIALL BREAKING CHANGE] Refactored thermodynamic alignment bindings to
  always return a thermoresult namedtuple (in the previous embodiment, if no
  structure was found, the return value was `None`)
+
+Version 0.3.1                                                   August 12, 2014
+-------------------------------------------------------------------------------
+-Fix README badge rendering on PyPI

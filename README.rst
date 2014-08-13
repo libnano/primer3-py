@@ -3,16 +3,16 @@
 =====================================================
 
 .. image:: https://secure.travis-ci.org/benpruitt/primer3-py.png
-        :target: https://travis-ci.org/benpruitt/primer3-py
+   :target: https://travis-ci.org/benpruitt/primer3-py
 
 .. image:: http://img.shields.io/pypi/l/primer3-py.svg
-       :target: http://www.gnu.org/licenses/gpl-2.0.html
+   :target: http://www.gnu.org/licenses/gpl-2.0.html
 
 .. image:: http://img.shields.io/pypi/v/primer3-py.svg
-        :target: https://pypi.python.org/pypi/primer3-py
+   :target: https://pypi.python.org/pypi/primer3-py
 
 .. image:: http://img.shields.io/pypi/dm/primer3-py.svg
-        :target: https://pypi.python.org/pypi/primer3-py
+   :target: https://pypi.python.org/pypi/primer3-py
 
 
 ``primer3-py`` is a collection of Python bindings for a derivative of the 
