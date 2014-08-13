@@ -93,10 +93,10 @@ LIBRARIES       = $(LIBPRIMER3) $(LIBDPAL) $(LIBTHAL) $(LIBOLIGOTM)
 DYNLIBS         = $(LIBPRIMER3_DYN) $(LIBDPAL_DYN) $(LIBTHAL_DYN) $(LIBOLIGOTM_DYN)
 RANLIB          = ranlib
 
-PRIMER_OBJECTS1=primer3_boulder_main.o\
+PRIMER_OBJECTS1=print_boulder.o\
                 format_output.o\
                 read_boulder.o\
-                print_boulder.o
+                primer3_boulder_main.o
 
 PRIMER_OBJECTS=$(PRIMER_OBJECTS1) $(LIBRARIES)
 PRIMER_DYN_OBJECTS=$(PRIMER_OBJECTS1) $(DYNLIBS)
