@@ -27,13 +27,13 @@
     #define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
 #endif
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 /* module doc string */
 PyDoc_STRVAR(primer3__doc__, "Python C API bindings for Primer3\n");
 
 /* function doc strings */
-PyDoc_STRVAR(getThermoParams__doc__,
+PyDoc_STRVAR(loadThermoParams__doc__,
 "Load the Primer3 thermodynamic parameters into memory.\n\n"
 "Should only need to be called once on module import\n"
 "path: path to the parameter directory"
@@ -89,7 +89,7 @@ PyDoc_STRVAR(runDesign__doc__,
 
 
 static PyObject*
-getThermoParams(PyObject *self, PyObject *args) {
+loadThermoParams(PyObject *self, PyObject *args) {
     /* This loads the thermodynamic parameters from the parameter files
      * found at the provided path and should only need to be called once
      * prior to running thermodynamic calculations. Returns boolean indicating
@@ -97,14 +97,14 @@ getThermoParams(PyObject *self, PyObject *args) {
      */
 
     char            *param_path=NULL;
-    thal_results    o;
+    thal_results    thalres;
 
     if (!PyArg_ParseTuple(args, "s", &param_path)) {
         return NULL;
     }
 
-    if (get_thermodynamic_values(param_path, &o)){
-        PyErr_SetString(PyExc_IOError, o.msg);
+    if (get_thermodynamic_values(param_path, &thalres)){
+        PyErr_SetString(PyExc_IOError, thalres.msg);
         return NULL;
     } else {
         Py_RETURN_TRUE;
@@ -119,9 +119,8 @@ calcThermoTm(PyObject *self, PyObject *args){
      * into a thal_args struct (see thal.h).
      */
 
-    char                    *oligo1=NULL;
-    int oligo1_len, oligo2_len;
-    char                    *oligo2=NULL;
+    char                    *oligo1=NULL, *oligo2=NULL;
+    int                     oligo1_len, oligo2_len;
     thal_args               thalargs;
     thal_results            thalres;
 
@@ -137,8 +136,9 @@ calcThermoTm(PyObject *self, PyObject *args){
     thalres.align_end_1 = thalres.align_end_2 = 0;
 
     if (!PyArg_ParseTuple(args, "s#s#idddddiii",
-                          &oligo1, &oligo1_len, &oligo2, &oligo2_len, &thalargs.type, &thalargs.mv,
-                          &thalargs.dv, &thalargs.dntp, &thalargs.dna_conc,
+                          &oligo1, &oligo1_len, &oligo2, &oligo2_len, 
+                          &thalargs.type, &thalargs.mv, &thalargs.dv, 
+                          &thalargs.dntp, &thalargs.dna_conc,
                           &thalargs.temp,  &thalargs.maxLoop,
                           &thalargs.temponly, &thalargs.debug)) {
         return NULL;
@@ -158,9 +158,8 @@ calcThermo(PyObject *self, PyObject *args){
      * into a thal_args struct (see thal.h).
      */
 
-    char                    *oligo1=NULL;
-    int oligo1_len, oligo2_len;
-    char                    *oligo2=NULL;
+    char                    *oligo1=NULL, *oligo2=NULL;
+    int                     oligo1_len, oligo2_len;
     thal_args               thalargs;
     thal_results            thalres;
 
@@ -176,8 +175,9 @@ calcThermo(PyObject *self, PyObject *args){
     thalres.align_end_1 = thalres.align_end_2 = 0;
 
     if (!PyArg_ParseTuple(args, "s#s#idddddiii",
-                          &oligo1, &oligo1_len, &oligo2, &oligo2_len, &thalargs.type, &thalargs.mv,
-                          &thalargs.dv, &thalargs.dntp, &thalargs.dna_conc,
+                          &oligo1, &oligo1_len, &oligo2, &oligo2_len, 
+                          &thalargs.type, &thalargs.mv, &thalargs.dv, 
+                          &thalargs.dntp, &thalargs.dna_conc,
                           &thalargs.temp,  &thalargs.maxLoop,
                           &thalargs.temponly, &thalargs.debug)) {
         return NULL;
@@ -199,13 +199,13 @@ calcTm(PyObject *self, PyObject *args){
      */
 
     char            *oligo=NULL;
-    int oligo_len;
     double          dna_conc, mv_conc, dv_conc, dntp_conc, tm;
-    int             max_nn_length, tm_method, salt_correction_method;
+    int             oligo_len, max_nn_length, tm_method;
+    int             salt_correction_method;
 
     if (!PyArg_ParseTuple(args, "s#ddddiii",
-                          &oligo, &oligo_len, &mv_conc, &dv_conc, &dntp_conc, &dna_conc,
-                          &max_nn_length, &tm_method,
+                          &oligo, &oligo_len, &mv_conc, &dv_conc, &dntp_conc, 
+                          &dna_conc, &max_nn_length, &tm_method,
                           &salt_correction_method)) {
         return NULL;
     }
@@ -219,8 +219,8 @@ calcTm(PyObject *self, PyObject *args){
 
 /* ~~~~~~~~~~~~~~~~~~~~~ PRIMER / OLIGO DESIGN BINDINGS ~~~~~~~~~~~~~~~~~~~~ */
 
-p3_global_settings           *pa=NULL;
-seq_args                     *sa=NULL;
+p3_global_settings          *pa=NULL;
+seq_args                    *sa=NULL;
 
 static PyObject*
 setGlobals(PyObject *self, PyObject *args){
@@ -230,9 +230,9 @@ setGlobals(PyObject *self, PyObject *args){
     ** organized as `seq_name`:`seq_value` key:value pairs.
     */
 
-    PyObject                *global_args=NULL, *misprime_lib=NULL;
-    PyObject                *mishyb_lib=NULL;
-    seq_lib                 *mp_lib, *mh_lib;
+    PyObject        *global_args=NULL, *misprime_lib=NULL;
+    PyObject        *mishyb_lib=NULL;
+    seq_lib         *mp_lib, *mh_lib;
 
 
     if (pa != NULL) {
@@ -243,7 +243,8 @@ setGlobals(PyObject *self, PyObject *args){
 
     // Allocate memory for global settings
     if ((pa = p3_create_global_settings()) == NULL) {
-        PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
+        PyErr_SetString(PyExc_IOError, 
+                        "Could not allocate memory for p3 globals");
         return NULL;
     }
 
@@ -280,7 +281,7 @@ setSeqArgs(PyObject *self, PyObject *args){
     ** sequence parameters.
     */
 
-    PyObject                *seq_args=NULL;
+    PyObject        *seq_args=NULL;
 
     if (pa == NULL) {
         PyErr_SetString(PyExc_IOError, "Primer3 global args must be \
@@ -310,8 +311,8 @@ runDesign(PyObject *self, PyObject *args){
     ** (see setGlobals and setSeqArgs, above)
      */
 
-    PyObject                *results=NULL;
-    p3retval                *retval=NULL;
+    PyObject        *results=NULL;
+    p3retval        *retval=NULL;
 
     if (pa == NULL || sa == NULL) {
         PyErr_SetString(PyExc_IOError, "Primer3 global args and sequence\
@@ -352,7 +353,8 @@ cleanUp(void){
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 static PyMethodDef primer3_methods[] = {
-    { "getThermoParams", getThermoParams, METH_VARARGS, getThermoParams__doc__ },
+    { "loadThermoParams", loadThermoParams, METH_VARARGS, 
+     loadThermoParams__doc__ },
     { "calcThermo", calcThermo, METH_VARARGS, calcThermo__doc__ },
     { "calcThermoTm", calcThermoTm, METH_VARARGS, calcThermo__doc__ },
     { "calcTm", calcTm, METH_VARARGS, calcTm__doc__ },

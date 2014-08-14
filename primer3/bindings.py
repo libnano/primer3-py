@@ -28,7 +28,7 @@ PRIMER3_HOME = os.environ.get('PRIMER3HOME')
 
 # ~~~~~~~~~~~~~~~~ Load thermodynamic parameters into memory ~~~~~~~~~~~~~~~~ #
 
-_primer3.getThermoParams(pjoin(PRIMER3_HOME, 'primer3_config/'))
+_primer3.loadThermoParams(pjoin(PRIMER3_HOME, 'primer3_config/'))
 
 
 # ~~~~~~~~~~~~~ Lightweight low level bindings (return only Tm) ~~~~~~~~~~~~~ #
