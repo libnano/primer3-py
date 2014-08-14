@@ -120,6 +120,7 @@ calcThermoTm(PyObject *self, PyObject *args){
      */
 
     char                    *oligo1=NULL;
+    int oligo1_len, oligo2_len;
     char                    *oligo2=NULL;
     thal_args               thalargs;
     thal_results            thalres;
@@ -135,8 +136,8 @@ calcThermoTm(PyObject *self, PyObject *args){
     thalres.ds = thalres.dh = thalres.dg = 0.0;
     thalres.align_end_1 = thalres.align_end_2 = 0;
 
-    if (!PyArg_ParseTuple(args, "ssidddddiii",
-                          &oligo1, &oligo2, &thalargs.type, &thalargs.mv,
+    if (!PyArg_ParseTuple(args, "s#s#idddddiii",
+                          &oligo1, &oligo1_len, &oligo2, &oligo2_len, &thalargs.type, &thalargs.mv,
                           &thalargs.dv, &thalargs.dntp, &thalargs.dna_conc,
                           &thalargs.temp,  &thalargs.maxLoop,
                           &thalargs.temponly, &thalargs.debug)) {
@@ -158,6 +159,7 @@ calcThermo(PyObject *self, PyObject *args){
      */
 
     char                    *oligo1=NULL;
+    int oligo1_len, oligo2_len;
     char                    *oligo2=NULL;
     thal_args               thalargs;
     thal_results            thalres;
@@ -173,8 +175,8 @@ calcThermo(PyObject *self, PyObject *args){
     thalres.ds = thalres.dh = thalres.dg = 0.0;
     thalres.align_end_1 = thalres.align_end_2 = 0;
 
-    if (!PyArg_ParseTuple(args, "ssidddddiii",
-                          &oligo1, &oligo2, &thalargs.type, &thalargs.mv,
+    if (!PyArg_ParseTuple(args, "s#s#idddddiii",
+                          &oligo1, &oligo1_len, &oligo2, &oligo2_len, &thalargs.type, &thalargs.mv,
                           &thalargs.dv, &thalargs.dntp, &thalargs.dna_conc,
                           &thalargs.temp,  &thalargs.maxLoop,
                           &thalargs.temponly, &thalargs.debug)) {
@@ -197,11 +199,12 @@ calcTm(PyObject *self, PyObject *args){
      */
 
     char            *oligo=NULL;
+    int oligo_len;
     double          dna_conc, mv_conc, dv_conc, dntp_conc, tm;
     int             max_nn_length, tm_method, salt_correction_method;
 
-    if (!PyArg_ParseTuple(args, "sddddiii",
-                          &oligo, &mv_conc, &dv_conc, &dntp_conc, &dna_conc,
+    if (!PyArg_ParseTuple(args, "s#ddddiii",
+                          &oligo, &oligo_len, &mv_conc, &dv_conc, &dntp_conc, &dna_conc,
                           &max_nn_length, &tm_method,
                           &salt_correction_method)) {
         return NULL;
