@@ -144,6 +144,13 @@ calcThermoTm(PyObject *self, PyObject *args){
         return NULL;
     }
 
+    if (oligo1_len > 60 && oligo2_len > 60) { 
+        return PyErr_Format(PyExc_ValueError, 
+                            "Only one input sequence may have a length > 60 "
+                            "(lengths are %d and %d, respectively", oligo1_len,
+                            oligo2_len);
+    }
+
     thal((const unsigned char *)oligo1, (const unsigned char *)oligo2,
          (const thal_args *)&thalargs, &thalres, 0);
 
@@ -181,6 +188,13 @@ calcThermo(PyObject *self, PyObject *args){
                           &thalargs.temp,  &thalargs.maxLoop,
                           &thalargs.temponly, &thalargs.debug)) {
         return NULL;
+    }
+
+    if (oligo1_len > 60 && oligo2_len > 60) { 
+        return PyErr_Format(PyExc_ValueError, 
+                            "Only one input sequence may have a length > 60 "
+                            "(lengths are %d and %d, respectively)", oligo1_len,
+                            oligo2_len);
     }
 
     thal((const unsigned char *)oligo1, (const unsigned char *)oligo2,
