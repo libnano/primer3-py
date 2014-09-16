@@ -345,7 +345,7 @@ runDesign(PyObject *self, PyObject *args){
     destroy_p3retval(retval);
     // Commented out for now (causes "malloc: *** error for object 0x101a03e20:
     // pointer being freed was not allocated") error
-    // destroy_dpal_thal_arg_holder();
+    destroy_dpal_thal_arg_holder();
 
     return results;
 }

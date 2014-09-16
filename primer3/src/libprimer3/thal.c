@@ -287,6 +287,9 @@ static void* safe_malloc(size_t, thal_results* o);
 static void* safe_realloc(void*, size_t, thal_results* o);
 static double* safe_recalloc(double* ptr, int m, int n, thal_results* o);
 
+// added NC
+static char* p3_read_line(FILE *file, thal_results* o);
+
 static char* parampath = NULL; /* path to parameter files */
 static int numTriloops; /* hairpin triloop penalties */
 static int numTetraloops; /* hairpin tetraloop penalties */
@@ -359,6 +362,7 @@ get_thermodynamic_values(const char* path, thal_results *o)
   tableStartATS(AT_S, atpS);
   tableStartATH(AT_H, atpH);
 
+  p3_read_line((FILE*) NULL, (thal_results*) NULL); // free static memory in function
   return 0;
 }
 
@@ -641,7 +645,7 @@ thal(const unsigned char *oligo_f,
 void
 set_thal_default_args(thal_args *a)
 {
-   memset(a, 0, sizeof(*a));
+   memset(a, 0, sizeof(thal_args));
    a->debug = 0;
    a->type = thal_any; /* thal_alignment_type THAL_ANY */
    a->maxLoop = MAX_LOOP;
@@ -658,7 +662,7 @@ set_thal_default_args(thal_args *a)
 void
 set_thal_oligo_default_args(thal_args *a)
 {
-   memset(a, 0, sizeof(*a));
+   memset(a, 0, sizeof(thal_args));
    a->debug = 0;
    a->type = thal_any; /* thal_alignment_type THAL_ANY */
    a->maxLoop = MAX_LOOP;
@@ -700,7 +704,7 @@ static void*
 safe_calloc(size_t m, size_t n, thal_results *o)
 {
    void* ptr;
-   if (!(ptr = calloc(m, n))) {
+   if ((ptr = calloc(m, n)) == NULL) {
 #ifdef DEBUG
       fputs("Error in calloc()\n", stderr);
 #endif
@@ -713,7 +717,7 @@ static void*
 safe_malloc(size_t n, thal_results *o)
 {
    void* ptr;
-   if (!(ptr = malloc(n))) {
+   if ((ptr = malloc(n)) == NULL) {
 #ifdef DEBUG
       fputs("Error in malloc()\n", stderr);
 #endif
@@ -810,16 +814,27 @@ p3_read_line(FILE *file, thal_results* o)
   size_t remaining_size;
   char *p, *n;
 
-  if (NULL == s) {
+  // added NC, s was never freed, so free every time
+  // since s get's resized, we can't 
+  if ((o == NULL) && (file == NULL)) {
+    if (s != NULL) {
+      free(s);
+      s = NULL;
+    }
+    return NULL;
+  }
+
+  if (s == NULL) {
     ssz = INIT_BUF_SIZE;
     s = (char *) safe_malloc(ssz, o);
   }
+
   p = s;
   remaining_size = ssz;
   while (1) {
-    if (fgets(p, (int)remaining_size, file) == NULL) /* End of file. */
+    if (fgets(p, (int)remaining_size, file) == NULL)  {/* End of file. */
       return p == s ? NULL : s;
-
+    }
     if ((n = strchr(p, '\n')) != NULL) {
       *n = '\0';
       return s;
@@ -827,9 +842,9 @@ p3_read_line(FILE *file, thal_results* o)
 
     /* We did not get the whole line. */
 
-    if (ssz >= INT_MAX / 2)
+    if (ssz >= INT_MAX / 2) {
       ssz = INT_MAX;
-    else {
+    } else {
       ssz *= 2;
     }
     s = (char *) safe_realloc(s, ssz, o);

@@ -76,11 +76,11 @@ add_seq_to_seq_lib(seq_lib *sl,
   if (i >= ss) {
     ss += INIT_LIB_SIZE;
     sl->storage_size = ss;
-    sl->names = (char**) p3sl_safe_realloc(sl->names, ss*sizeof(*sl->names));
-    sl->seqs  = (char**) p3sl_safe_realloc(sl->seqs , ss*sizeof(*sl->seqs));
-    /* sl->rev_compl_seqs  = p3sl_safe_realloc(sl->seqs , ss*sizeof(*sl->rev_compl_seqs)); */
-    sl->weight= (double*) p3sl_safe_realloc(sl->weight,
-				   ss*sizeof(*sl->weight));
+    sl->names = (char**) p3sl_safe_realloc(sl->names, ss*sizeof(char*));
+    sl->seqs  = (char**) p3sl_safe_realloc(sl->seqs , ss*sizeof(char*));
+    // was commented out
+    sl->rev_compl_seqs  = p3sl_safe_realloc(sl->rev_compl_seqs , ss*sizeof(char*));
+    sl->weight= (double*) p3sl_safe_realloc(sl->weight, ss*sizeof(double));
   }
   sl->seq_num = i + 1;
 
@@ -156,15 +156,16 @@ create_empty_seq_lib() {
     return NULL; /* If we get here, there was an error in
 		    p3sl_safe_malloc or p3sl_safe_realloc. */
 
-  lib =  (seq_lib*) p3sl_safe_malloc(sizeof(* lib));
+  lib =  (seq_lib*) p3sl_safe_malloc(sizeof(seq_lib));
 
-  memset(lib, 0, sizeof(*lib));
+  memset(lib, 0, sizeof(seq_lib));
   lib->repeat_file    = NULL;
-  lib->names          = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->names));
-  lib->seqs           = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->seqs));
+  lib->names          = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
+  lib->seqs           = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
   /* FIX ME Can we get rid of rev_compl_seqs? */
-  /* lib->rev_compl_seqs = p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->seqs)); */
-  lib->weight         = (double*) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->weight));
+  lib->rev_compl_seqs = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*)); 
+  
+  lib->weight         = (double*) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(double));
   lib->seq_num        = 0;
   lib->storage_size   = INIT_LIB_SIZE;
   return lib;
@@ -308,36 +309,53 @@ destroy_seq_lib(seq_lib *p)
   if (NULL == p) return;
 
   free(p->repeat_file);
-  if (NULL != p->seqs) {
-    for(i = 0; i < p->seq_num; i++)
-      if (NULL != p->seqs[i]) free(p->seqs[i]);
-    free(p->seqs);
+  if (p->seqs != NULL) {
+    for(i = 0; i < p->seq_num; i++) {
+      if (p->seqs[i] != NULL) {
+        free(p->seqs[i]);
+      }
+      free(p->seqs);
+    }
   }
-  if (NULL != p->names) {
-    for(i = 0; i < p->seq_num; i++)
-      if (NULL != p->names[i]) free(p->names[i]);
+  if (p->names != NULL) {
+    for(i = 0; i < p->seq_num; i++) {
+      if (p->names[i] != NULL) {
+        free(p->names[i]);
+      }
+    }
     free(p->names);
   }
+  // added NC
+  if (p->rev_compl_seqs != NULL) {
+    for(i = 0; i < p->seq_num; i++) {
+      if (p->rev_compl_seqs[i] != NULL) {
+        free(p->rev_compl_seqs[i]);
+      }
+    }
+    free(p->rev_compl_seqs);
+  } // end added NC
+
   free(p->weight);
   free(p->error.data);
   free(p->warning.data);
-  free(p->rev_compl_seqs);
+  // free(p->rev_compl_seqs);
   free(p);
 }
 
 static void
 reverse_complement_seq_lib(seq_lib  *lib)
 {
-    int i, n, k;
-    if((n = lib->seq_num) == 0) return;
-    else {
-	lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(*lib->names));
-	lib->seqs = (char**) p3sl_safe_realloc(lib->seqs, 2*n*sizeof(*lib->seqs));
-	lib->weight = (double*) p3sl_safe_realloc(lib->weight, 2*n*sizeof(*lib->weight));
-	lib->rev_compl_seqs = (char**) p3sl_safe_malloc(2*n*sizeof(*lib->seqs));
+  int i, n, k;
+  if((n = lib->seq_num) == 0) {
+    return;
+  } else {
+    lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(char*));
+    lib->seqs = (char**) p3sl_safe_realloc(lib->seqs, 2*n*sizeof(char*));
+    lib->weight = (double*) p3sl_safe_realloc(lib->weight, 2*n*sizeof(double));
+    lib->rev_compl_seqs = (char**) p3sl_safe_malloc(2*n*sizeof(char*));
 
-	lib->seq_num *= 2;
-	for(i=n; i<lib->seq_num; i++){
+    lib->seq_num *= 2;
+    for(i = n; i < lib->seq_num; i++) {
 	    k = (int)strlen(lib->names[i-n]);
 	    lib->names[i] = (char*) p3sl_safe_malloc(k + 9);
 	    strcpy(lib->names[i], "reverse ");
@@ -347,9 +365,9 @@ reverse_complement_seq_lib(seq_lib  *lib)
 	    lib->weight[i] = lib->weight[i-n];
 	    lib->rev_compl_seqs[i-n] = lib->seqs[i];
 	    lib->rev_compl_seqs[i] = lib->seqs[i-n];
-       }
     }
-    return;
+  }
+  return;
 }
 
 int

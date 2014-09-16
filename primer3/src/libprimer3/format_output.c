@@ -378,8 +378,8 @@ print_seq(FILE *f,
       p = best_pairs->pairs + num;
     }
     len = strlen(sa->sequence);
-    if (!(notes = (int*) malloc(sizeof(*notes) * len))) return 1;
-    memset(notes, 0, sizeof(*notes) * len);
+    if (!(notes = (int*) malloc(sizeof(int) * len))) return 1;
+    memset(notes, 0, sizeof(int) * len);
     if (!(notestr = (char*) malloc(len + 1))) { free(notes); return 1; }
     memset(notestr, ' ', len);
     notestr[len] = '\0';
@@ -541,11 +541,11 @@ print_seq_lines(FILE *f, const char *s, const char *n, int seq_size,
     int i = 0;
     while (seq_size > line_size) {
         fprintf(f, "%5d ", i + pa->first_base_index);
-        fwrite(s, sizeof(*s), line_size, f);
+        fwrite(s, sizeof(char), line_size, f);
         fputc('\n', f);
         if (something_found) {
             fprintf(f, "      ");
-            fwrite(n, sizeof(*n), line_size, f);
+            fwrite(n, sizeof(char), line_size, f);
             fprintf(f, "\n\n");
         }
         seq_size -= line_size;

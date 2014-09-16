@@ -114,20 +114,24 @@ void
 set_dpal_args(dpal_args *a) {
   unsigned int i, j;
 
-  memset(a, 0, sizeof(*a));
-  for (i = 0; i <= UCHAR_MAX; i++)
-    for (j = 0; j <= UCHAR_MAX; j++)
+  memset(a, 0, sizeof(dpal_args));
+  for (i = 0; i <= UCHAR_MAX; i++) {
+    for (j = 0; j <= UCHAR_MAX; j++) {
       if (('A' == i || 'C' == i || 'G' == i || 'T' == i || 'N' == i)
           && ('A' == j || 'C' == j || 'G' == j || 'T' == j
               || 'N' == j)) {
-        if (i == 'N' || j == 'N')
+        if (i == 'N' || j == 'N') {
           a->ssm[i][j] = -25;
-        else if (i == j)
+        } else if (i == j) {
           a->ssm[i][j] = 100;
-        else
+        } else {
           a->ssm[i][j] = -100;
-      } else
+        }
+      } else {
         a->ssm[i][j] = INT_MIN;
+      }
+    }
+  }
 
   a->gap                = -200;
   a->gapl               = -200;
@@ -607,12 +611,12 @@ _dpal_long_nopath_generic(const unsigned char *X,
     out->path_length = 0;
     out->msg = NULL;
 
-    P = (int **) malloc(sizeof(*S)*(max_gap+2));
+    P = (int **) malloc(sizeof(int*)*(max_gap+2));
     if (!P) { DPAL_OOM_ERROR; }
-    S = (int **) malloc(sizeof(*S)*(max_gap+2));
+    S = (int **) malloc(sizeof(int*)*(max_gap+2));
     if (!S) { DPAL_OOM_ERROR; }
     for(i=0; i<max_gap+2; i++){
-      P[i] = (int *) malloc(sizeof(SI)*xlen);
+      P[i] = (int *) malloc(sizeof(int)*xlen);
       if (!P[i]) { DPAL_OOM_ERROR; }
       S[i] = P[i];
     }

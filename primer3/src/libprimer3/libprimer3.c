@@ -968,7 +968,7 @@ create_thal_arg_holder (const args_for_one_oligo_or_primer *po_args)
   thal_arg_holder *h
      = (thal_arg_holder *) pr_safe_malloc(sizeof(thal_arg_holder));
 
-   // h->any = (thal_args *) pr_safe_malloc(sizeof(*h->any));
+  // h->any = (thal_args *) pr_safe_malloc(sizeof(*h->any));
   h->any = (thal_args *) pr_safe_malloc(sizeof(thal_args));
   set_thal_default_args(h->any);
   h->any->type = thal_any;
@@ -1005,14 +1005,14 @@ create_thal_arg_holder (const args_for_one_oligo_or_primer *po_args)
   h->hairpin_th->dna_conc = po_args->dna_conc;
   h->hairpin_th->dimer = 0;
 
-   return h;
+  return h;
 }
 
 /* Free the thal arg holder */
 void
 destroy_thal_arg_holder(thal_arg_holder *h)
 {
-  if (NULL != h) {
+  if (h != NULL) {
     free(h->any);
     free(h->end1);
     free(h->end2);
@@ -1052,12 +1052,18 @@ destroy_p3retval(p3retval *state)
 
 void
 destroy_dpal_thal_arg_holder() {
-   if(dpal_arg_to_use)
+  if(dpal_arg_to_use != NULL) {
      destroy_dpal_arg_holder(dpal_arg_to_use);
-   if(thal_arg_to_use)
-     destroy_thal_arg_holder(thal_arg_to_use);
-   if(thal_oligo_arg_to_use)
-     destroy_thal_arg_holder(thal_oligo_arg_to_use);
+     dpal_arg_to_use = NULL;
+  }
+  if(thal_arg_to_use != NULL) {
+    destroy_thal_arg_holder(thal_arg_to_use);
+    thal_arg_to_use = NULL;
+  }
+  if(thal_oligo_arg_to_use != NULL) {
+    destroy_thal_arg_holder(thal_oligo_arg_to_use);
+    thal_oligo_arg_to_use = NULL;
+  }
 }
 
 const oligo_array *
@@ -1274,29 +1280,30 @@ choose_primers(const p3_global_settings *pa,
   /* Set the parameters for alignment functions
      if dpal_arg_to_use, a static variable that has 'file'
      scope, has not yet been initialized. */
-  if (dpal_arg_to_use == NULL)
+  if (dpal_arg_to_use == NULL) {
     dpal_arg_to_use = create_dpal_arg_holder();
-   if(thal_arg_to_use == NULL) {
-      thal_arg_to_use = create_thal_arg_holder(&pa->p_args);
-   } else {
-      destroy_thal_arg_holder(thal_arg_to_use);
-      thal_arg_to_use = create_thal_arg_holder(&pa->p_args);
-   }
-   if(thal_oligo_arg_to_use == NULL) {
-      thal_oligo_arg_to_use = create_thal_arg_holder(&pa->o_args);
-   } else {
-      destroy_thal_arg_holder(thal_oligo_arg_to_use);
-      thal_oligo_arg_to_use = create_thal_arg_holder(&pa->o_args);
-   }
+  }
+  if(thal_arg_to_use == NULL) {
+    thal_arg_to_use = create_thal_arg_holder(&pa->p_args);
+  } else {
+    destroy_thal_arg_holder(thal_arg_to_use);
+    thal_arg_to_use = create_thal_arg_holder(&pa->p_args);
+  }
+  if(thal_oligo_arg_to_use == NULL) {
+    thal_oligo_arg_to_use = create_thal_arg_holder(&pa->o_args);
+  } else {
+    destroy_thal_arg_holder(thal_oligo_arg_to_use);
+    thal_oligo_arg_to_use = create_thal_arg_holder(&pa->o_args);
+  }
   if (pa->primer_task == pick_primer_list) {
     make_complete_primer_lists(retval, pa, sa,
-                               dpal_arg_to_use,thal_arg_to_use,thal_oligo_arg_to_use);
+                             dpal_arg_to_use,thal_arg_to_use,thal_oligo_arg_to_use);
   } else if (pa->primer_task == pick_sequencing_primers) {
     pick_sequencing_primer_list(retval, pa, sa,
-                                dpal_arg_to_use,thal_arg_to_use);
+                              dpal_arg_to_use,thal_arg_to_use);
   } else if (pa->primer_task == check_primers) {
     add_primers_to_check(retval, pa, sa,
-                         dpal_arg_to_use, thal_arg_to_use, thal_oligo_arg_to_use);
+                       dpal_arg_to_use, thal_arg_to_use, thal_oligo_arg_to_use);
   } else { /* The general way to pick primers */
     /* Populate the forward and reverse primer lists */
     if (make_detection_primer_lists(retval, pa, sa,
@@ -1322,7 +1329,7 @@ choose_primers(const p3_global_settings *pa,
   if (pa->pick_left_primer &&
       (pa->primer_task != pick_sequencing_primers)) {
     sort_primer_array(&retval->fwd);
-}
+  }
 
   /* If we are returning a list of internal oligos, sort them by their
      'goodness'. We do not care if these are sorted if we end up in

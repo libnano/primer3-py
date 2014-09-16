@@ -40,6 +40,39 @@
    fun:Py_ADDRESS_IN_RANGE
 }
 
+{
+   Malloc from dictresize to insertdict leak suppress
+   Memcheck:Leak
+   fun:malloc
+   fun:dictresize
+   fun:insertdict
+}
+
+{
+   Malloc from PyStructSequence_InitType
+   Memcheck:Leak
+   fun:malloc
+   fun:PyStructSequence_InitType
+}
+
+{
+   Malloc from _PyObject_GC_Malloc
+   Memcheck:Leak
+   fun:malloc
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+}
+
+{
+   Malloc from dictresize to merge
+   Memcheck:Leak
+   fun:malloc
+   fun:dictresize
+   fun:PyDict_Merge
+}
+
+
+
 #
 # Leaks (including possible leaks)
 #    Hmmm, I wonder if this masks some real leaks.  I think it does.
