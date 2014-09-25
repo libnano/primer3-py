@@ -542,7 +542,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     seq_args                *sa;
     PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
     char                    *temp_char;
-    int                     i, j, len1, len2, *arr_len=NULL, *seq_qual_len=NULL;
+    int                     i, j, len1, len2, *arr_len=NULL;
     Py_ssize_t              str_size;
     int overlap_junction_arr_len = 0;
 
@@ -555,10 +555,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER", &sa->left_input, temp_char, str_size);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER_REVCOMP", &sa->right_input, temp_char, str_size);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_INTERNAL_OLIGO", &sa->internal_input, temp_char, str_size);
-    DICT_GET_AND_COPY_ARRAY(p_obj, sa_dict, "SEQUENCE_QUALITY", &sa->quality, seq_qual_len);
-    if (seq_qual_len != NULL && sa->quality != NULL) {
-        sa->n_quality = *arr_len;
-    }
+    DICT_GET_AND_COPY_ARRAY(p_obj, sa_dict, "SEQUENCE_QUALITY", &sa->quality, &sa->n_quality);
     if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST")){
         if ((p_obj2 = PySequence_Fast(p_obj, "Value of 'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' "
                                    "must support the seqeunce protocol.")) == NULL){

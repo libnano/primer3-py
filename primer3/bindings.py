@@ -290,6 +290,7 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
     if global_args:
         _primer3.setGlobals(global_args, misprime_lib, mishyb_lib)
     _primer3.setGlobals(global_args, misprime_lib, mishyb_lib)
+    import sys
     _primer3.setSeqArgs(seq_args)
     return _primer3.runDesign()
 
