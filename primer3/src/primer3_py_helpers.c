@@ -166,6 +166,8 @@ between Python C API code and primer3 native C code.
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type list", k);             \
             return NULL;}                                                      \
+	PyErr_WarnEx(PyExc_UserWarning,					\
+		       "DEBUG: DICT_GET_AND_COPY_TO_INTERVALARRAY() called", 4);	\
         st.count = 0;                                                          \
         *arr_len = (int)PyList_Size(p_obj);                                    \
         if (!arr_len % 2) {                                                    \
@@ -173,11 +175,14 @@ between Python C API code and primer3 native C code.
                             "%s must be linear multiple of 2 in length", k);   \
             return NULL;                                                       \
         }                                                                      \
+	PyErr_WarnEx(PyExc_UserWarning, "gonna copy", 2);			\
         for (i = 0; i < *arr_len / 2; i+=2) {                                  \
+	    PyErr_WarnEx(PyExc_UserWarning, "gonna p3_add_to_interval_array()", 2); \
             p3_add_to_interval_array(&st,                                      \
                  (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),                 \
                  (int)PyLong_AsLong(PyList_GetItem(p_obj, i+1)));              \
         }                                                                      \
+      PyErr_WarnEx(PyExc_UserWarning, "leaving", 2);				\
     }                                                                          \
 
 
