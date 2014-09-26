@@ -15,6 +15,7 @@ from primer3.bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
 							  setP3SeqArgs, runP3Design, designPrimers)
 
 import primer3.bindings as bindings
+import primer3.simulated_bindings as simulatedBindings
 import primer3.wrappers as wrappers
 
 __all__ = [

@@ -14,7 +14,7 @@ import unittest
 
 from time import sleep
 
-from primer3 import bindings, wrappers, simulated_bindings
+from primer3 import bindings, wrappers, simulatedBindings
 
 
 def _getMemUsage():
@@ -206,7 +206,7 @@ class TestDesignBindings(unittest.TestCase):
             'PRIMER_PAIR_MAX_COMPL_END': 8,
             'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
         }
-        simulated_binding_res = simulated_bindings.designPrimers(seq_args, global_args)
+        simulated_binding_res = simulatedBindings.designPrimers(seq_args, global_args)
         binding_res = bindings.designPrimers(seq_args, global_args)
         wrapper_res = wrappers.designPrimers(
             {
@@ -276,7 +276,7 @@ class TestDesignBindings(unittest.TestCase):
             'PRIMER_PAIR_MAX_COMPL_END': 8,
             'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
         }
-        simulated_binding_res = simulated_bindings.designPrimers(seq_args, global_args)
+        simulated_binding_res = simulatedBindings.designPrimers(seq_args, global_args)
         binding_res = bindings.designPrimers(seq_args, global_args)
         keys_in_sim = set(simulated_binding_res)
         keys_in_binding = set(binding_res)
