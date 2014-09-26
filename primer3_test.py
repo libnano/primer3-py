@@ -14,7 +14,7 @@ import unittest
 
 from time import sleep
 
-from primer3 import bindings, wrappers
+from primer3 import bindings, wrappers, simulated_bindings
 
 
 def _getMemUsage():
@@ -178,36 +178,36 @@ class TestDesignBindings(unittest.TestCase):
     def testHuman(self):
         sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
         quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
-        binding_res = bindings.designPrimers(
-            {
-                'SEQUENCE_ID': 'MH1000',
-                'SEQUENCE_TEMPLATE': sequence_template,
-                'SEQUENCE_QUALITY': quality_list,
-                'SEQUENCE_INCLUDED_REGION': [36,342]
-            },
-            {
-                'PRIMER_OPT_SIZE': 20,
-                'PRIMER_PICK_INTERNAL_OLIGO': 1,
-                'PRIMER_INTERNAL_MAX_SELF_END': 8,
-                'PRIMER_MIN_SIZE': 18,
-                'PRIMER_MAX_SIZE': 25,
-                'PRIMER_OPT_TM': 60.0,
-                'PRIMER_MIN_TM': 57.0,
-                'PRIMER_MAX_TM': 63.0,
-                'PRIMER_MIN_GC': 20.0,
-                'PRIMER_MAX_GC': 80.0,
-                'PRIMER_MAX_POLY_X': 100,
-                'PRIMER_INTERNAL_MAX_POLY_X': 100,
-                'PRIMER_SALT_MONOVALENT': 50.0,
-                'PRIMER_DNA_CONC': 50.0,
-                'PRIMER_MAX_NS_ACCEPTED': 0,
-                'PRIMER_MAX_SELF_ANY': 12,
-                'PRIMER_MAX_SELF_END': 8,
-                'PRIMER_PAIR_MAX_COMPL_ANY': 12,
-                'PRIMER_PAIR_MAX_COMPL_END': 8,
-                'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
-            }
-        )
+        seq_args = {
+            'SEQUENCE_ID': 'MH1000',
+            'SEQUENCE_TEMPLATE': sequence_template,
+            'SEQUENCE_QUALITY': quality_list,
+            'SEQUENCE_INCLUDED_REGION': [36,342]
+        }
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_PICK_INTERNAL_OLIGO': 1,
+            'PRIMER_INTERNAL_MAX_SELF_END': 8,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 25,
+            'PRIMER_OPT_TM': 60.0,
+            'PRIMER_MIN_TM': 57.0,
+            'PRIMER_MAX_TM': 63.0,
+            'PRIMER_MIN_GC': 20.0,
+            'PRIMER_MAX_GC': 80.0,
+            'PRIMER_MAX_POLY_X': 100,
+            'PRIMER_INTERNAL_MAX_POLY_X': 100,
+            'PRIMER_SALT_MONOVALENT': 50.0,
+            'PRIMER_DNA_CONC': 50.0,
+            'PRIMER_MAX_NS_ACCEPTED': 0,
+            'PRIMER_MAX_SELF_ANY': 12,
+            'PRIMER_MAX_SELF_END': 8,
+            'PRIMER_PAIR_MAX_COMPL_ANY': 12,
+            'PRIMER_PAIR_MAX_COMPL_END': 8,
+            'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
+        }
+        simulated_binding_res = simulated_bindings.designPrimers(seq_args, global_args)
+        binding_res = bindings.designPrimers(seq_args, global_args)
         wrapper_res = wrappers.designPrimers(
             {
                 'PRIMER_OPT_SIZE': 20,
@@ -236,10 +236,14 @@ class TestDesignBindings(unittest.TestCase):
                 'SEQUENCE_INCLUDED_REGION': '36,342'
             }
         )
-        print('\n\n\n{:<30} {:<25} {:<25}'.format('Output Key', 'Wrapper Result', 'Binding Result'))
+        print('\n\n\n{:<30} {:<25} {:<25} {:<25}'.format('Output Key', 'Wrapper Result', 'SimBinding Result', 'Binding Result'))
         print('-'*80)
         for k, v in binding_res.items():
-            print('{:<30} {:<25} {:<25}'.format(k, repr(wrapper_res.get(k)), repr(v)))
+            print('{:<30} {:<25} {:<25} {:<25}'.format(k,
+                                                       repr(wrapper_res.get(k)),
+                                                       repr(simulated_binding_res.get(k)),
+                                                       repr(v)))
+
 
     def test_memoryLeaks(self):
         sm = _getMemUsage()
