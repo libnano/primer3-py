@@ -46,6 +46,24 @@ def wrap(t):
         rv = v
     return k, rv
 
+def unwrap(t):
+    k,v = t
+    try:
+        rv = int(v)
+    except ValueError:
+        try:
+            rv = float(v)
+        except ValueError:
+            try:
+                rv = tuple(int(s) for s in v.split(','))
+            except ValueError:
+                try:
+                    rv = map(int, v.split())
+                except ValueError:
+                    rv = v
+    return k,rv
+
+
 def setGlobals(global_args, misprime_lib, mishyb_lib):
     p3_args.update(dict(map(wrap, global_args.iteritems())))
 
@@ -53,7 +71,7 @@ def setSeqArgs(seq_args):
     p3_args.update(dict(map(wrap, seq_args.iteritems())))
 
 def convertResult(result):
-    return result
+    return dict(map(unwrap, result.iteritems()))
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -85,7 +103,5 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
     '''
     setGlobals(global_args, misprime_lib, mishyb_lib)
     setSeqArgs(seq_args)
-    import pdb
-    pdb.set_trace()
     result = wrappers.designPrimers(p3_args)
     return convertResult(result)

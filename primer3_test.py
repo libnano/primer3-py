@@ -245,6 +245,78 @@ class TestDesignBindings(unittest.TestCase):
                                                        repr(v)))
 
 
+    def testCompareSim(self):
+        sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
+        quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
+        seq_args = {
+            'SEQUENCE_ID': 'MH1000',
+            'SEQUENCE_TEMPLATE': sequence_template,
+            'SEQUENCE_QUALITY': quality_list,
+            'SEQUENCE_INCLUDED_REGION': [36,342]
+        }
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_PICK_INTERNAL_OLIGO': 1,
+            'PRIMER_INTERNAL_MAX_SELF_END': 8,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 25,
+            'PRIMER_OPT_TM': 60.0,
+            'PRIMER_MIN_TM': 57.0,
+            'PRIMER_MAX_TM': 63.0,
+            'PRIMER_MIN_GC': 20.0,
+            'PRIMER_MAX_GC': 80.0,
+            'PRIMER_MAX_POLY_X': 100,
+            'PRIMER_INTERNAL_MAX_POLY_X': 100,
+            'PRIMER_SALT_MONOVALENT': 50.0,
+            'PRIMER_DNA_CONC': 50.0,
+            'PRIMER_MAX_NS_ACCEPTED': 0,
+            'PRIMER_MAX_SELF_ANY': 12,
+            'PRIMER_MAX_SELF_END': 8,
+            'PRIMER_PAIR_MAX_COMPL_ANY': 12,
+            'PRIMER_PAIR_MAX_COMPL_END': 8,
+            'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
+        }
+        simulated_binding_res = simulated_bindings.designPrimers(seq_args, global_args)
+        binding_res = bindings.designPrimers(seq_args, global_args)
+        keys_in_sim = set(simulated_binding_res)
+        keys_in_binding = set(binding_res)
+
+        if keys_in_sim - keys_in_binding:
+            print('\n\n\nIn wrapper simulation result but missing from binding:')
+            fmt = '{:<30} {:<50}'
+            print(fmt.format('Output Key', 'SimBinding Result'))
+            print('-'*80)
+            for k in sorted(keys_in_sim - keys_in_binding):
+                print(fmt.format(k, repr(simulated_binding_res[k])))
+
+        if keys_in_binding - keys_in_sim:
+            print('\n\n\nIn binding result but missing from wrapper simulation:')
+            fmt = '{:<30} {:<50}'
+            print(fmt.format('Output Key', 'Binding Result'))
+            print('-'*80)
+            for k in sorted(keys_in_binding - keys_in_sim):
+                print(fmt.format(k, repr(binding_res[k])))
+
+        allowable_relative_difference = 0.005
+        disagree = set(k for k in keys_in_binding & keys_in_sim
+                       if simulated_binding_res[k] != binding_res[k]
+                       and (isinstance(binding_res[k], float)
+                            and abs((binding_res[k] - simulated_binding_res[k])
+                                    / binding_res[k]) > allowable_relative_difference) )
+        if disagree:
+            print('\n\n\nResults disagree:')
+            fmt = '{:<30} {:<25} {:<25}'
+            print(fmt.format('Output Key', 'SimBinding Result', 'Binding Result'))
+            print('-'*80)
+            for k in sorted(disagree):
+                print(fmt.format(k,
+                                 repr(simulated_binding_res[k]),
+                                 repr(binding_res[k])))
+
+        else:
+            print('\n\n\nAll the results in common agree to within {:.2%}'
+                  .format(allowable_relative_difference))
+
     def test_memoryLeaks(self):
         sm = _getMemUsage()
         for x in range(100):
