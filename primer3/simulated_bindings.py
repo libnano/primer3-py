@@ -1,4 +1,4 @@
-import wrappers
+import primer3.wrappers as wrappers
 
 p3_args = {}
 
