@@ -58,21 +58,20 @@ def unwrap(t):
                 rv = tuple(int(s) for s in v.split(','))
             except ValueError:
                 try:
-                    rv = map(int, v.split())
+                    rv = [int(x) for x in v.split()]
                 except ValueError:
                     rv = v
     return k,rv
 
 
 def setGlobals(global_args, misprime_lib, mishyb_lib):
-    p3_args.update(dict(map(wrap, global_args.iteritems())))
+    p3_args.update(dict(wrap(v) for v in global_args.items()))
 
 def setSeqArgs(seq_args):
-    p3_args.update(dict(map(wrap, seq_args.iteritems())))
+    p3_args.update(dict(wrap(v) for v in  seq_args.items()))
 
 def convertResult(result):
-    return dict(map(unwrap, result.iteritems()))
-
+    return dict(unwrap(v) for v in result.items())
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
