@@ -77,7 +77,7 @@ def convertResult(result):
 
 
 def designPrimers(seq_args, global_args=None, misprime_lib=None,
-                  mishyb_lib=None):
+                  mishyb_lib=None, input_log=None, output_log=None, err_log=None):
     ''' Run the Primer3 design process, with the same interface as the bindings,
     using the wrapped subprocess of primer3_core to do the work. 
 
@@ -102,5 +102,8 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
     '''
     setGlobals(global_args, misprime_lib, mishyb_lib)
     setSeqArgs(seq_args)
-    result = wrappers.designPrimers(p3_args)
+    result = wrappers.designPrimers(p3_args,
+                                    input_log=input_log,
+                                    output_log=output_log,
+                                    err_log=err_log)
     return convertResult(result)
