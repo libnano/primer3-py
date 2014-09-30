@@ -16,7 +16,6 @@ from primer3.bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
 
 import primer3.bindings as bindings
 import primer3.wrappers as wrappers
-from primer3.analysis import Analysis
 
 __all__ = [
     # Low-level Tm-only bindings
@@ -27,4 +26,4 @@ __all__ = [
     'setP3Globals', 'setP3SeqArgs', 'runP3Design', 'designPrimers', 
     # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
     'bindings', 'wrappers', 
-    'Analysis']
+    ]

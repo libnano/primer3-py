@@ -9,10 +9,10 @@
 // Primer 3 includes (_mod includes are generated via patching)
 #include    <thal.h>
 #include    <oligotm.h>
-#include    <libprimer3.h>
 
 // Helper functions for parameter + output parsing
 #include "primer3_py_helpers.h"
+#include "thermoresult_py.h"
 
 #if PY_MAJOR_VERSION >= 3
 /* see http://python3porting.com/cextensions.html */
@@ -41,21 +41,21 @@ typedef struct {
     int tm_method;
     int salt_correction_method;
 
-} Analysis;
+} ThermoAnalysis;
 
 static void
-Analysis_dealloc(Analysis* self) {
+ThermoAnalysis_dealloc(ThermoAnalysis* self) {
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
-Analysis_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-    Analysis *self;
-    self = (Analysis *)type->tp_alloc(type, 0);
+ThermoAnalysis_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+    ThermoAnalysis *self;
+    self = (ThermoAnalysis *)type->tp_alloc(type, 0);
     return (PyObject *)self;
 }
 
-static int Analyis_setParameters(Analysis *self, PyObject *args, PyObject *kwds) {
+static int Analyis_setParameters(ThermoAnalysis *self, PyObject *args, PyObject *kwds) {
 
     static char *kwlist[] = {   "type",
                                 "mv_conc",
@@ -85,7 +85,7 @@ static int Analyis_setParameters(Analysis *self, PyObject *args, PyObject *kwds)
 }
 
 static int
-Analysis_init(Analysis *self, PyObject *args, PyObject *kwds) {
+ThermoAnalysis_init(ThermoAnalysis *self, PyObject *args, PyObject *kwds) {
     if (self == NULL) {
         return -1;
     }
@@ -132,14 +132,18 @@ PyDoc_STRVAR(heterodimer__doc__,
               "heterodimer\n");
 
 static PyObject*
-Analysis_heterodimer(Analysis *self, PyObject *args) {
+ThermoAnalysis_heterodimer(ThermoAnalysis *self, PyObject *args) {
     /* Wraps the main thal function in thal.h/thal.c. Arguments are parsed
      * into a thal_args struct (see thal.h).
      */
 
     char                    *oligo1=NULL, *oligo2=NULL;
     int                     oligo1_len, oligo2_len;
-    thal_results            thalres;
+    ThermoResult *tr_obj = NULL;
+    tr_obj = PyObject_New(ThermoResult, &ThermoResultType);
+    if (tr_obj == NULL) {
+        return NULL;
+    }
 
     self->thalargs.dimer = 1;   // this param is used by thal_main.c as a placeholder
                                 // when determining whether the user has provided
@@ -147,11 +151,6 @@ Analysis_heterodimer(Analysis *self, PyObject *args) {
                                 // user has only provided 1 sequence, then thal is
                                 // run with the same sequence for oligo1 and oligo2
     self->thalargs.type = 1;    // ANY
-
-    // Initialize some thalres values to zero
-    thalres.no_structure = 0;
-    thalres.ds = thalres.dh = thalres.dg = 0.0;
-    thalres.align_end_1 = thalres.align_end_2 = 0;
 
     if (!PyArg_ParseTuple(args, "s#s#",
                           &oligo1, &oligo1_len, &oligo2, &oligo2_len)) {
@@ -166,26 +165,28 @@ Analysis_heterodimer(Analysis *self, PyObject *args) {
     }
 
     thal((const unsigned char *) oligo1, (const unsigned char *) oligo2,
-         (const thal_args *) &(self->thalargs), &thalres, 0);
+         (const thal_args *) &(self->thalargs), &(tr_obj->thalres), 0);
 
-    return Py_BuildValue("siddddii", thalres.msg, thalres.no_structure,
-                              thalres.temp, thalres.ds, thalres.dh,
-                              thalres.dg, thalres.align_end_1,
-                              thalres.align_end_2);
+    return (PyObject*) tr_obj;
 }
+
 
 PyDoc_STRVAR(homodimer__doc__,
               "homodimer\n");
 
 static PyObject*
-Analysis_homodimer(Analysis *self, PyObject *args) {
+ThermoAnalysis_homodimer(ThermoAnalysis *self, PyObject *args) {
     /* Wraps the main thal function in thal.h/thal.c. Arguments are parsed
      * into a thal_args struct (see thal.h).
      */
 
     char                    *oligo1=NULL;
     int                     oligo1_len;
-    thal_results            thalres;
+    ThermoResult *tr_obj = NULL;
+    tr_obj = PyObject_New(ThermoResult, &ThermoResultType);
+    if (tr_obj == NULL) {
+        return NULL;
+    }
 
     self->thalargs.dimer = 1;   // this param is used by thal_main.c as a placeholder
                                 // when determining whether the user has provided
@@ -194,12 +195,6 @@ Analysis_homodimer(Analysis *self, PyObject *args) {
                                 // run with the same sequence for oligo1 and oligo2
     self->thalargs.type = 1;    // ANY
 
-
-    // Initialize some thalres values to zero
-    thalres.no_structure = 0;
-    thalres.ds = thalres.dh = thalres.dg = 0.0;
-    thalres.align_end_1 = thalres.align_end_2 = 0;
-
     if (!PyArg_ParseTuple(args, "s#",
                           &oligo1, &oligo1_len)) {
         return NULL;
@@ -212,26 +207,27 @@ Analysis_homodimer(Analysis *self, PyObject *args) {
     }
 
     thal((const unsigned char *) oligo1, (const unsigned char *) oligo1,
-         (const thal_args *) &(self->thalargs), &thalres, 0);
+         (const thal_args *) &(self->thalargs), &(tr_obj->thalres), 0);
 
-    return Py_BuildValue("siddddii", thalres.msg, thalres.no_structure,
-                              thalres.temp, thalres.ds, thalres.dh,
-                              thalres.dg, thalres.align_end_1,
-                              thalres.align_end_2);
+    return (PyObject*) tr_obj;
 }
 
 PyDoc_STRVAR(hairpin__doc__,
               "hairpin\n");
 
 static PyObject*
-Analysis_hairpin(Analysis *self, PyObject *args) {
+ThermoAnalysis_hairpin(ThermoAnalysis *self, PyObject *args) {
     /* Wraps the main thal function in thal.h/thal.c. Arguments are parsed
      * into a thal_args struct (see thal.h).
      */
 
     char                    *oligo1=NULL;
     int                     oligo1_len;
-    thal_results            thalres;
+    ThermoResult *tr_obj = NULL;
+    tr_obj = PyObject_New(ThermoResult, &ThermoResultType);
+    if (tr_obj == NULL) {
+        return NULL;
+    }
 
     self->thalargs.dimer = 1;   // this param is used by thal_main.c as a placeholder
                                 // when determining whether the user has provided
@@ -240,11 +236,6 @@ Analysis_hairpin(Analysis *self, PyObject *args) {
                                 // run with the same sequence for oligo1 and oligo2
     self->thalargs.type = 4;    // THAL_HAIRPIN
 
-    // Initialize some thalres values to zero
-    thalres.no_structure = 0;
-    thalres.ds = thalres.dh = thalres.dg = 0.0;
-    thalres.align_end_1 = thalres.align_end_2 = 0;
-
     if (!PyArg_ParseTuple(args, "s#",
                           &oligo1, &oligo1_len)) {
         return NULL;
@@ -257,19 +248,16 @@ Analysis_hairpin(Analysis *self, PyObject *args) {
     }
 
     thal((const unsigned char *) oligo1, (const unsigned char *) oligo1,
-         (const thal_args *) &(self->thalargs), &thalres, 0);
+     (const thal_args *) &(self->thalargs), &(tr_obj->thalres), 0);
 
-    return Py_BuildValue("siddddii", thalres.msg, thalres.no_structure,
-                              thalres.temp, thalres.ds, thalres.dh,
-                              thalres.dg, thalres.align_end_1,
-                              thalres.align_end_2);
+    return (PyObject*) tr_obj;
 }
 
 PyDoc_STRVAR(meltingTemp__doc__,
               "meltingTemp\n");
 
 static PyObject*
-Analysis_meltingTemp(Analysis *self, PyObject *args) {
+ThermoAnalysis_meltingTemp(ThermoAnalysis *self, PyObject *args) {
     /* Wraps the seq function in oligotm.c/oligotm.h, which is used to
      * calculate the tm of a short sequence.
      */
@@ -291,64 +279,64 @@ Analysis_meltingTemp(Analysis *self, PyObject *args) {
     return PyFloat_FromDouble(tm);
 }
 
-static PyMemberDef Analysis_members[] = {
+static PyMemberDef ThermoAnalysis_members[] = {
     { "debug", T_INT, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, debug),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, debug),
          0, "debug"},
     { "type", T_INT, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, type),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, type),
         0, "alignment type"},
     { "max_loop", T_INT, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, maxLoop),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, maxLoop),
         0, "max loop"},
     { "mv_conc", T_DOUBLE, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, mv),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, mv),
         0, "mv concentration"},
     { "dv_conc", T_DOUBLE, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, dv),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, dv),
         0, "dv_ concentration"},
     { "dntp_conc", T_DOUBLE, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, dntp),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, dntp),
         0, "dntp concentration"},
     { "dna_conc", T_DOUBLE, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, dna_conc),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, dna_conc),
         0, "dna concentration"},
     { "temp", T_DOUBLE, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, temp),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, temp),
         0, "temperature"},
     { "dimer", T_INT, 
-        offsetof(Analysis, thalargs) + offsetof(thal_args, dimer),
+        offsetof(ThermoAnalysis, thalargs) + offsetof(thal_args, dimer),
         0, "dimer"},
     { "max_nn_length", T_INT, 
-        offsetof(Analysis, max_nn_length),
+        offsetof(ThermoAnalysis, max_nn_length),
         0, "max_nn_length"},
     { "tm_method", T_INT, 
-        offsetof(Analysis, tm_method),
+        offsetof(ThermoAnalysis, tm_method),
         0, "tm_method"},
     { "salt_correction_method", T_INT, 
-        offsetof(Analysis, salt_correction_method),
+        offsetof(ThermoAnalysis, salt_correction_method),
         0, "salt_correction_method"},
     {NULL}  /* Sentinel */
 };
 
-static PyGetSetDef Analysis_getsetters[] = {
+static PyGetSetDef ThermoAnalysis_getsetters[] = {
     {NULL}  /* Sentinel */
 };
 
-static PyMethodDef Analysis_methods[] = {
-    { "heterodimer", (PyCFunction) Analysis_heterodimer, METH_VARARGS, heterodimer__doc__ },
-    { "homodimer", (PyCFunction) Analysis_homodimer, METH_VARARGS, homodimer__doc__ },
-    { "hairpin", (PyCFunction) Analysis_hairpin, METH_VARARGS, hairpin__doc__ },
-    { "meltingTemp", (PyCFunction) Analysis_meltingTemp, METH_VARARGS, meltingTemp__doc__ },
+static PyMethodDef ThermoAnalysis_methods[] = {
+    { "heterodimer", (PyCFunction) ThermoAnalysis_heterodimer, METH_VARARGS, heterodimer__doc__ },
+    { "homodimer", (PyCFunction) ThermoAnalysis_homodimer, METH_VARARGS, homodimer__doc__ },
+    { "hairpin", (PyCFunction) ThermoAnalysis_hairpin, METH_VARARGS, hairpin__doc__ },
+    { "meltingTemp", (PyCFunction) ThermoAnalysis_meltingTemp, METH_VARARGS, meltingTemp__doc__ },
     {NULL}  /* Sentinel */
 };
 
-static PyTypeObject AnalysisType = {
+static PyTypeObject ThermoAnalysisType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "analysis.Analysis",            /*tp_name*/
-    sizeof(Analysis),               /*tp_basicsize*/
+    "analysis.ThermoAnalysis",            /*tp_name*/
+    sizeof(ThermoAnalysis),               /*tp_basicsize*/
     0,                              /*tp_itemsize*/
-    (destructor)Analysis_dealloc,   /*tp_dealloc*/
+    (destructor)ThermoAnalysis_dealloc,   /*tp_dealloc*/
     0,                              /*tp_print*/
     0,                              /*tp_getattr*/
     0,                              /*tp_setattr*/
@@ -364,24 +352,24 @@ static PyTypeObject AnalysisType = {
     0,                              /*tp_setattro*/
     0,                              /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
-    "Analysis objects",             /* tp_doc */
+    "ThermoAnalysis objects",             /* tp_doc */
     0,                              /* tp_traverse */
     0,                              /* tp_clear */
     0,                              /* tp_richcompare */
     0,                              /* tp_weaklistoffset */
     0,                              /* tp_iter */
     0,                              /* tp_iternext */
-    Analysis_methods,               /* tp_methods */
-    Analysis_members,               /* tp_members */
-    Analysis_getsetters,            /* tp_getset */
+    ThermoAnalysis_methods,               /* tp_methods */
+    ThermoAnalysis_members,               /* tp_members */
+    ThermoAnalysis_getsetters,            /* tp_getset */
     0,                              /* tp_base */
     0,                              /* tp_dict */
     0,                              /* tp_descr_get */
     0,                              /* tp_descr_set */
     0,                              /* tp_dictoffset */
-    (initproc)Analysis_init,        /* tp_init */
+    (initproc)ThermoAnalysis_init,        /* tp_init */
     0,                              /* tp_alloc */
-    Analysis_new,                   /* tp_new */
+    ThermoAnalysis_new,                   /* tp_new */
 };
 
 static PyMethodDef analysis_mod_methods[] = {
@@ -435,15 +423,28 @@ static PyObject *setUp(void) {
 // }
 
 MOD_INIT(analysis) {
-    if (PyType_Ready(&AnalysisType) < 0) {
+    if (PyType_Ready(&ThermoAnalysisType) < 0) {
     #if PY_MAJOR_VERSION >= 3
         return NULL;
     #else
         return;
     #endif
     }
-    if (setUp() == NULL) {
+
+    if (PyType_Ready(&ThermoResultType) < 0) {
+    #if PY_MAJOR_VERSION >= 3
         return NULL;
+    #else
+        return;
+    #endif
+    }
+
+    if (setUp() == NULL) {
+    #if PY_MAJOR_VERSION >= 3
+        return NULL;
+    #else
+        return;
+    #endif
     }
     #if PY_MAJOR_VERSION >= 3
         static struct PyModuleDef moduledef = {
@@ -461,8 +462,11 @@ MOD_INIT(analysis) {
         import_array();
         if (m == NULL) { return NULL; }
 
-        Py_INCREF(&AnalysisType);
-        PyModule_AddObject(m, "Analysis", (PyObject *)&AnalysisType);
+        Py_INCREF(&ThermoAnalysisType);
+        PyModule_AddObject(m, "ThermoAnalysis", (PyObject *)&ThermoAnalysisType);
+
+        Py_INCREF(&ThermoResultType);
+        PyModule_AddObject(m, "ThermoResult", (PyObject *)&ThermoResultType);
         // Py_AtExit(&cleanUp);
         return m;
     #else
@@ -470,8 +474,12 @@ MOD_INIT(analysis) {
         PyObject* m = Py_InitModule3("analysis", analysis_mod_methods, analysis__doc__);
         if (m == NULL) { return; }
         import_array();
-        Py_INCREF(&AnalysisType);
-        PyModule_AddObject(m, "Analysis", (PyObject *)&AnalysisType);
+        
+        Py_INCREF(&ThermoAnalysisType);
+        PyModule_AddObject(m, "ThermoAnalysis", (PyObject *)&ThermoAnalysisType);
+
+        Py_INCREF(&ThermoResultType);
+        PyModule_AddObject(m, "ThermoResult", (PyObject *)&ThermoResultType);
     #endif
 };
 
