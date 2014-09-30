@@ -3,15 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> /* for NULL pointers */
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <numpy/arrayobject.h>
+// #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+// #include <numpy/arrayobject.h>
 
 // Primer 3 includes (_mod includes are generated via patching)
 #include    <thal.h>
 #include    <oligotm.h>
 
 // Helper functions for parameter + output parsing
-#include "primer3_py_helpers.h"
+// #include "primer3_py_helpers.h"
 #include "thermoresult_py.h"
 
 #if PY_MAJOR_VERSION >= 3
@@ -19,12 +19,6 @@
     #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
 #else
     #define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
-#endif
-
-#if PY_MAJOR_VERSION >= 3
-#define PYSTR_GET_STR_AND_SIZE(obj, buf, len) buf = PyUnicode_AsUTF8AndSize(obj, (&len))
-#else
-#define PYSTR_GET_STR_AND_SIZE(obj, buf, len) buf = PyString_AsString(obj)
 #endif
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ C API functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -466,7 +460,7 @@ MOD_INIT(analysis) {
             NULL,                   /* m_free */
         };
         PyObject* m = PyModule_Create(&moduledef);
-        import_array();
+        // import_array();
         if (m == NULL) { return NULL; }
 
         Py_INCREF(&ThermoAnalysisType);
@@ -480,7 +474,7 @@ MOD_INIT(analysis) {
         // Py_AtExit(&cleanUp);
         PyObject* m = Py_InitModule3("analysis", analysis_mod_methods, analysis__doc__);
         if (m == NULL) { return; }
-        import_array();
+        // import_array();
         
         Py_INCREF(&ThermoAnalysisType);
         PyModule_AddObject(m, "ThermoAnalysis", (PyObject *)&ThermoAnalysisType);
