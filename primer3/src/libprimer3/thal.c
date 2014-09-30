@@ -63,24 +63,24 @@
 
 /* table where bp-s enthalpies, that retrieve to the most stable Tm, are saved */
 #ifdef EnthalpyDPT
-# undef EnthalpyDPT
+#undef EnthalpyDPT
 #endif
 #define EnthalpyDPT(i, j) enthalpyDPT[(j) + ((i-1)*len3) - (1)]
 
 /* table where bp-s entropies, that retrieve to the most stable Tm, are saved */
 #ifdef EntropyDPT
-# undef EntropyDPT
+#undef EntropyDPT
 #endif
 #define EntropyDPT(i, j) entropyDPT[(j) + ((i-1)*len3) - (1)]
 
 /* entropies of most stable hairpin terminal bp */
 #ifndef SEND5
-# define SEND5(i) send5[i]
+#define SEND5(i) send5[i]
 #endif
 
 /* enthalpies of most stable hairpin terminal bp */
 #ifndef HEND5
-# define HEND5(i) hend5[i]
+#define HEND5(i) hend5[i]
 #endif
 
 #define CHECK_ERROR(COND,MSG) if (COND) { strcpy(o->msg, MSG); errno = 0; longjmp(_jmp_buf, 1); }
@@ -99,23 +99,23 @@
 #define DBL_EQ(X,Y) (((X) - (Y)) < (SMALL_NON_ZERO) ? (1) : (2)) /* 1 when numbers are equal */
 
 #ifdef INTEGER
-# define isFinite(x) (x < _INFINITY / 2)
+#define isFinite(x) (x < _INFINITY / 2)
 #else
-# define isFinite(x) isfinite(x)
+#define isFinite(x) isfinite(x)
 #endif
 
 #define isPositive(x) ((x) > 0 ? (1) : (0))
 
 /*** BEGIN CONSTANTS ***/
-# ifdef INTEGER
+#ifdef INTEGER
 const double _INFINITY = 999999.0;
-# else
-# ifdef INFINITY
+#else
+#ifdef INFINITY
 const double _INFINITY = INFINITY;
-# else
+#else
 const double _INFINITY = 1.0 / 0.0;
-# endif
-# endif
+#endif
+#endif
 
 static const double R = 1.9872; /* cal/Kmol */
 static const double ILAS = (-300 / 310.15); /* Internal Loop Entropy ASymmetry correction -0.3kcal/mol*/
@@ -425,7 +425,7 @@ thal(const unsigned char *oligo_f,
               LONG_SEQ_ERR_STR(THAL_MAX_SEQ) " (2)");
 
   CHECK_ERROR(NULL == a,  "NULL 'in' pointer");
-  if (NULL == o) return; /* Leave it to the caller to crash */
+  if (NULL == o) { return; } /* Leave it to the caller to crash */
   CHECK_ERROR(a->type != thal_any
               && a->type != thal_end1
               && a->type != thal_end2
@@ -451,48 +451,48 @@ thal(const unsigned char *oligo_f,
     o->temp = 0.0;
     return;
   }
-  if(a->type!=3) {
+  if (a->type != 3) {
     oligo1 = (unsigned char*) safe_malloc((len_f + 1) * sizeof(unsigned char), o);
     oligo2 = (unsigned char*) safe_malloc((len_r + 1) * sizeof(unsigned char), o);
-    strcpy((char*)oligo1,(const char*)oligo_f);
-    strcpy((char*)oligo2,(const char*)oligo_r);
-  } else  {
+    strcpy((char*)oligo1, (const char*)oligo_f);
+    strcpy((char*)oligo2, (const char*)oligo_r);
+  } else {
     oligo1 = (unsigned char*) safe_malloc((len_r + 1) * sizeof(unsigned char), o);
     oligo2 = (unsigned char*) safe_malloc((len_f + 1) * sizeof(unsigned char), o);
-    strcpy((char*)oligo1,(const char*)oligo_r);
-    strcpy((char*)oligo2,(const char*)oligo_f);
+    strcpy((char*)oligo1, (const char*)oligo_r);
+    strcpy((char*)oligo2, (const char*)oligo_f);
   }
   /*** INIT values for unimolecular and bimolecular structures ***/
-  if (a->type==4) { /* unimolecular folding */
+  if (a->type == 4) { /* unimolecular folding */
     len2 = length_unsig_char(oligo2);
     len3 = len2 -1;
     dplx_init_H = 0.0;
     dplx_init_S = -0.00000000001;
-    RC=0;
-   } else if(a->type!=4) {
+    RC = 0;
+  } else if (a->type != 4) {
     /* hybridization of two oligos */
     dplx_init_H = 200;
     dplx_init_S = -5.7;
     if(symmetry_thermo(oligo1) && symmetry_thermo(oligo2)) {
-      RC = R  * log(a->dna_conc/1000000000.0);
+      RC = R  * log(a->dna_conc / 1000000000.0);
     } else {
-      RC = R  * log(a->dna_conc/4000000000.0);
+      RC = R  * log(a->dna_conc / 4000000000.0);
     }
-    if(a->type!=3) {
+    if(a->type != 3) {
       oligo2_rev = (unsigned char*) safe_malloc((length_unsig_char(oligo_r) + 1) * sizeof(unsigned char), o);
-      strcpy((char*)oligo2_rev,(const char*)oligo_r);
+      strcpy((char*) oligo2_rev, (const char*) oligo_r);
     } else {
       oligo2_rev = (unsigned char*) safe_malloc((length_unsig_char(oligo_f) + 1) * sizeof(unsigned char), o);
-      strcpy((char*)oligo2_rev,(const char*)oligo_f);
+      strcpy((char*) oligo2_rev, (const char*) oligo_f);
     }
     reverse(oligo2_rev); /* REVERSE oligo2, so it goes to dpt 3'->5' direction */
     free(oligo2);
-    oligo2=NULL;
-    oligo2=&oligo2_rev[0];
+    oligo2 = NULL;
+    oligo2 = &oligo2_rev[0];
   } else {
     strcpy(o->msg, "Wrong alignment type!");
     o->temp = THAL_ERROR_SCORE;
-    errno=0;
+    errno = 0;
 #ifdef DEBUG
     fprintf(stderr, o->msg);
 #endif
@@ -505,19 +505,19 @@ thal(const unsigned char *oligo_f,
   numSeq2 = (unsigned char*) safe_realloc(numSeq2, len2 + 2, o);
 
   /*** Calc part of the salt correction ***/
-  saltCorrection=saltCorrectS(a->mv,a->dv,a->dntp); /* salt correction for entropy, must be multiplied with N, which is
+  saltCorrection = saltCorrectS(a->mv,a->dv,a->dntp); /* salt correction for entropy, must be multiplied with N, which is
                                                        the total number of phosphates in the duplex divided by 2; 8bp dplx N=7 */
-  if(a->type == 4){ /* monomer */
+  if(a->type == 4) { /* monomer */
     /* terminal basepairs */
     send5 = (double*) safe_realloc(send5, (len1 + 1) * sizeof(double), o);
     hend5 = (double*) safe_realloc(hend5, (len1 + 1) * sizeof(double), o);
   }
-  for(i = 0; i < len1; i++) oligo1[i] = toupper(oligo1[i]);
-  for(i = 0; i < len2; i++) oligo2[i] = toupper(oligo2[i]);
-  for(i = 1; i <= len1; ++i) numSeq1[i] = str2int(oligo1[i - 1]);
-  for(i = 1; i <= len2; ++i) numSeq2[i] = str2int(oligo2[i - 1]);
+  for(i = 0; i < len1; i++) { oligo1[i] = toupper(oligo1[i]); }
+  for(i = 0; i < len2; i++) { oligo2[i] = toupper(oligo2[i]); }
+  for(i = 1; i <= len1; ++i) { numSeq1[i] = str2int(oligo1[i - 1]); }
+  for(i = 1; i <= len2; ++i) { numSeq2[i] = str2int(oligo2[i - 1]); }
   numSeq1[0] = numSeq1[len1 + 1] = numSeq2[0] = numSeq2[len2 + 1] = 4; /* mark as N-s */
-  if (a->type==4) { /* calculate structure of monomer */
+  if (a->type == 4) { /* calculate structure of monomer */
     enthalpyDPT = safe_recalloc(enthalpyDPT, len1, len2, o);
     entropyDPT = safe_recalloc(entropyDPT, len1, len2, o);
     initMatrix2();
@@ -528,7 +528,7 @@ thal(const unsigned char *oligo_f,
     o->align_end_1 = (int) mh;
     o->align_end_2 = (int) ms;
     bp = (int*) safe_calloc(len1, sizeof(int), o);
-    for (k = 0; k < len1; ++k) bp[k] = 0;
+    for (k = 0; k < len1; ++k) { bp[k] = 0; }
     if(isFinite(mh)) {
       tracebacku(bp, a->maxLoop, o);
       /* traceback for unimolecular structure */
@@ -538,10 +538,10 @@ thal(const unsigned char *oligo_f,
         calcHairpin(bp, mh, ms, a->temponly,a->temp, o);
       }
       /* if temponly=1 then return after printing basic therm data */
-    } else if(a->temponly==0) {
+    } else if (a->temponly == 0) {
       o->no_structure = 1;
     }
-    if(o->temp==-_INFINITY && (!strcmp(o->msg, ""))) o->temp=0.0;
+    if(o->temp == -_INFINITY && (!strcmp(o->msg, ""))) o->temp=0.0;
     free(bp);
     free(enthalpyDPT);
     free(entropyDPT);
@@ -552,7 +552,7 @@ thal(const unsigned char *oligo_f,
     free(oligo1);
     free(oligo2);
     return;
-  } else if(a->type!=4) { /* Hybridization of two molecules */
+  } else if (a->type != 4) { /* Hybridization of two molecules */
     int *ps1, *ps2;
     double dH, dS;
     len3 = len2;
@@ -564,7 +564,7 @@ thal(const unsigned char *oligo_f,
     SH = (double*) safe_malloc(2 * sizeof(double), o);
     /* calculate terminal basepairs */
     bestI = bestJ = 0;
-    if(a->type==1) {
+    if (a->type == 1) {
       for (i = 1; i <= len1; i++) {
         for (j = 1; j <= len2; j++) {
           RSH(i, j, SH);
@@ -582,11 +582,13 @@ thal(const unsigned char *oligo_f,
     }
     ps1 = (int*) safe_calloc(len1, sizeof(int), o);
     ps2 = (int*) safe_calloc(len2, sizeof(int), o);
-    for (i = 0; i < len1; ++i)
+    for (i = 0; i < len1; ++i) {
       ps1[i] = 0;
-    for (j = 0; j < len2; ++j)
+    }
+    for (j = 0; j < len2; ++j) {
       ps2[j] = 0;
-    if(a->type == 2 || a->type == 3)  {
+    }
+    if (a->type == 2 || a->type == 3) {
       /* THAL_END1 */
       bestI = bestJ = 0;
       bestI = len1;
@@ -599,7 +601,7 @@ thal(const unsigned char *oligo_f,
         SH[1] = SH[1]+SMALL_NON_ZERO;
         T1 = ((EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) / ((EntropyDPT(i, j)) + SH[0] +
               dplx_init_S + RC)) - ABSOLUTE_ZERO;
-        if (T1 > SHleft && ((SH[0] + EntropyDPT(i, j))<0 && (SH[1] + EnthalpyDPT(i, j))<0)) {
+        if (T1 > SHleft && ((SH[0] + EntropyDPT(i, j)) < 0 && (SH[1] + EnthalpyDPT(i, j)) < 0)) {
           SHleft = T1;
           bestJ = j;
         }
@@ -610,20 +612,22 @@ thal(const unsigned char *oligo_f,
     dH = EnthalpyDPT(bestI, bestJ)+ SH[1] + dplx_init_H;
     dS = (EntropyDPT(bestI, bestJ) + SH[0] + dplx_init_S);
     /* tracebacking */
-    for (i = 0; i < len1; ++i)
+    for (i = 0; i < len1; ++i) {
       ps1[i] = 0;
-    for (j = 0; j < len2; ++j)
+    }
+    for (j = 0; j < len2; ++j) {
       ps2[j] = 0;
-    if(isFinite(EnthalpyDPT(bestI, bestJ))){
+    }
+    if (isFinite(EnthalpyDPT(bestI, bestJ))) {
       traceback(bestI, bestJ, RC, ps1, ps2, a->maxLoop, o);
       if (print_output) {
-        drawDimer(ps1, ps2, SHleft, dH, dS, a->temponly,a->temp, o);
+        drawDimer(ps1, ps2, SHleft, dH, dS, a->temponly, a->temp, o);
       } else {
-        calcDimer(ps1, ps2, SHleft, dH, dS, a->temponly,a->temp, o);
+        calcDimer(ps1, ps2, SHleft, dH, dS, a->temponly, a->temp, o);
       }
-      o->align_end_1=bestI;
-      o->align_end_2=bestJ;
-    } else  {
+      o->align_end_1 = bestI;
+      o->align_end_2 = bestJ;
+    } else {
       o->temp = 0.0;
     }
     free(ps1);
@@ -637,7 +641,7 @@ thal(const unsigned char *oligo_f,
     free(oligo1);
     return;
   }
-   return;
+  return;
 }
 /*** END thal() ***/
 
@@ -645,41 +649,41 @@ thal(const unsigned char *oligo_f,
 void
 set_thal_default_args(thal_args *a)
 {
-   memset(a, 0, sizeof(thal_args));
-   a->debug = 0;
-   a->type = thal_any; /* thal_alignment_type THAL_ANY */
-   a->maxLoop = MAX_LOOP;
-   a->mv = 50; /* mM */
-   a->dv = 0.0; /* mM */
-   a->dntp = 0.8; /* mM */
-   a->dna_conc = 50; /* nM */
-   a->temp = 310.15; /* Kelvin */
-   a->temponly = 1; /* return only melting temperature of predicted structure */
-   a->dimer = 1; /* by default dimer structure is calculated */
+  memset(a, 0, sizeof(thal_args));
+  a->debug = 0;
+  a->type = thal_any; /* thal_alignment_type THAL_ANY */
+  a->maxLoop = MAX_LOOP;
+  a->mv = 50; /* mM */
+  a->dv = 0.0; /* mM */
+  a->dntp = 0.8; /* mM */
+  a->dna_conc = 50; /* nM */
+  a->temp = 310.15; /* Kelvin */
+  a->temponly = 1; /* return only melting temperature of predicted structure */
+  a->dimer = 1; /* by default dimer structure is calculated */
 }
 
 /* Set default args for oligo */
 void
 set_thal_oligo_default_args(thal_args *a)
 {
-   memset(a, 0, sizeof(thal_args));
-   a->debug = 0;
-   a->type = thal_any; /* thal_alignment_type THAL_ANY */
-   a->maxLoop = MAX_LOOP;
-   a->mv = 50; /* mM */
-   a->dv = 0.0; /* mM */
-   a->dntp = 0.0; /* mM */
-   a->dna_conc = 50; /* nM */
-   a->temp = 310.15; /* Kelvin */
-   a->temponly = 1; /* return only melting temperature of predicted structure */
-   a->dimer = 1; /* by default dimer structure is calculated */
+  memset(a, 0, sizeof(thal_args));
+  a->debug = 0;
+  a->type = thal_any; /* thal_alignment_type THAL_ANY */
+  a->maxLoop = MAX_LOOP;
+  a->mv = 50; /* mM */
+  a->dv = 0.0; /* mM */
+  a->dntp = 0.0; /* mM */
+  a->dna_conc = 50; /* nM */
+  a->temp = 310.15; /* Kelvin */
+  a->temponly = 1; /* return only melting temperature of predicted structure */
+  a->dimer = 1; /* by default dimer structure is calculated */
 }
 
 
 static unsigned char
 str2int(char c)
 {
-   switch (c) {
+  switch (c) {
     case 'A': case '0':
       return 0;
     case 'C': case '1':
@@ -688,8 +692,8 @@ str2int(char c)
       return 2;
     case 'T': case '3':
       return 3;
-   }
-   return 4;
+  }
+  return 4;
 }
 
 /* memory stuff */
@@ -697,68 +701,68 @@ str2int(char c)
 static double*
 safe_recalloc(double* ptr, int m, int n, thal_results* o)
 {
-   return (double*) safe_realloc(ptr, m * n * sizeof(double), o);
+  return (double*) safe_realloc(ptr, m * n * sizeof(double), o);
 }
 
 static void*
 safe_calloc(size_t m, size_t n, thal_results *o)
 {
-   void* ptr;
-   if ((ptr = calloc(m, n)) == NULL) {
+  void* ptr;
+  if ((ptr = calloc(m, n)) == NULL) {
 #ifdef DEBUG
-      fputs("Error in calloc()\n", stderr);
+    fputs("Error in calloc()\n", stderr);
 #endif
-      THAL_OOM_ERROR;
-   }
-   return ptr;
+    THAL_OOM_ERROR;
+  }
+  return ptr;
 }
 
 static void*
 safe_malloc(size_t n, thal_results *o)
 {
-   void* ptr;
-   if ((ptr = malloc(n)) == NULL) {
+  void* ptr;
+  if ((ptr = malloc(n)) == NULL) {
 #ifdef DEBUG
-      fputs("Error in malloc()\n", stderr);
+    fputs("Error in malloc()\n", stderr);
 #endif
-      THAL_OOM_ERROR;
-   }
-   return ptr;
+    THAL_OOM_ERROR;
+  }
+  return ptr;
 }
 
 static void*
 safe_realloc(void* ptr, size_t n, thal_results *o)
 {
-   ptr = realloc(ptr, n);
-   if (ptr == NULL) {
+  ptr = realloc(ptr, n);
+  if (ptr == NULL) {
 #ifdef DEBUG
-      fputs("Error in realloc()\n", stderr);
+    fputs("Error in realloc()\n", stderr);
 #endif
-      THAL_OOM_ERROR;
-   }
-   return ptr;
+    THAL_OOM_ERROR;
+  }
+  return ptr;
 }
 
 static int
 max5(double a, double b, double c, double d, double e)
 {
-   if(a > b && a > c && a > d && a > e) return 1;
-   else if(b > c && b > d && b > e) return 2;
-   else if(c > d && c > e) return 3;
-   else if(d > e) return 4;
-   else return 5;
+  if(a > b && a > c && a > d && a > e) return 1;
+  else if(b > c && b > d && b > e) return 2;
+  else if(c > d && c > e) return 3;
+  else if(d > e) return 4;
+  else return 5;
 }
 
 static void
 push(struct tracer** stack, int i, int j, int mtrx, thal_results* o)
 {
-   struct tracer* new_top;
-   new_top = (struct tracer*) safe_malloc(sizeof(struct tracer), o);
-   new_top->i = i;
-   new_top->j = j;
-   new_top->mtrx = mtrx;
-   new_top->next = *stack;
-   *stack = new_top;
+  struct tracer* new_top;
+  new_top = (struct tracer*) safe_malloc(sizeof(struct tracer), o);
+  new_top->i = i;
+  new_top->j = j;
+  new_top->mtrx = mtrx;
+  new_top->next = *stack;
+  *stack = new_top;
 }
 
 static void
@@ -776,30 +780,30 @@ reverse(unsigned char *s)
 static FILE*
 openParamFile(const char* fname, thal_results* o)
 {
-   FILE* file;
-   char* paramdir;
-   file = fopen(fname, "rt");
-   if (!file) {
-      paramdir = (char*) safe_malloc(strlen(parampath) + strlen(fname) + 1, o);
-      strcpy(paramdir, parampath);
-      strcat(paramdir, fname);
-      if (!(file = fopen(paramdir, "rt"))) {
+  FILE* file;
+  char* paramdir;
+  file = fopen(fname, "rt");
+  if (!file) {
+    paramdir = (char*) safe_malloc(strlen(parampath) + strlen(fname) + 1, o);
+    strcpy(paramdir, parampath);
+    strcat(paramdir, fname);
+    if (!(file = fopen(paramdir, "rt"))) {
 #ifdef DEBUG
-     perror(paramdir);
+      perror(paramdir);
 #endif
-     THAL_IO_ERROR(paramdir);
-     free(paramdir);
-      }
+      THAL_IO_ERROR(paramdir);
       free(paramdir);
-   }
-   return file;
+    }
+    free(paramdir);
+  }
+  return file;
 }
 
 static double
 saltCorrectS (double mv, double dv, double dntp)
 {
-   if(dv<=0) dntp=dv;
-   return 0.368*((log((mv+120*(sqrt(fmax(0.0, dv-dntp))))/1000)));
+  if(dv <= 0) dntp = dv;
+  return 0.368*((log((mv + 120*(sqrt(fmax(0.0, dv - dntp)))) / 1000)));
 }
 
 
@@ -2497,16 +2501,16 @@ symmetry_thermo(const unsigned char* seq)
     i++;
     s = toupper(*seq);
     e = toupper(*seq_end);
-    if ((s=='A' && e!='T')
-        || (s=='T' && e!='A')
-        || (e=='A' && s!='T')
-        || (e=='T' && s!='A')) {
+    if ((s == 'A' && e != 'T')
+        || (s == 'T' && e != 'A')
+        || (e == 'A' && s != 'T')
+        || (e == 'T' && s != 'A')) {
       return 0;
     }
-    if ((s=='C' && e!='G')
-        || (s=='G' && e!='C')
-        || (e=='C' && s!='G')
-        || (e=='G' && s!='C')) {
+    if ((s == 'C' && e != 'G')
+        || (s == 'G' && e != 'C')
+        || (e == 'C' && s !=' G')
+        || (e == 'G' && s != 'C')) {
       return 0;
     }
     seq++;
