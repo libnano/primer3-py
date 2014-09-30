@@ -2488,7 +2488,7 @@ symmetry_thermo(const unsigned char* seq)
 {
   register char s;
   register char e;
-  const unsigned char *seq_end=seq;
+  const unsigned char *seq_end = seq;
   int i = 0;
   int seq_len = length_unsig_char(seq);
   int mp = seq_len / 2;
@@ -2509,7 +2509,7 @@ symmetry_thermo(const unsigned char* seq)
     }
     if ((s == 'C' && e != 'G')
         || (s == 'G' && e != 'C')
-        || (e == 'C' && s !=' G')
+        || (e == 'C' && s !='G')
         || (e == 'G' && s != 'C')) {
       return 0;
     }

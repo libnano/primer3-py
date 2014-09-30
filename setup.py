@@ -68,6 +68,13 @@ primer3_ext = Extension(
     extra_compile_args=["-Wno-error=declaration-after-statement"]
 )
 
+analysis_ext = Extension(
+    'primer3.analysis',
+    sources=['primer3/src/analysis_py.c'] + libprimer3_paths,
+    include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
+    extra_compile_args=["-Wno-error=declaration-after-statement"]
+)
+
 setup (
     name='primer3-py',
     version='0.3.1',
@@ -89,6 +96,6 @@ setup (
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)'
     ],
     packages=['primer3'],
-    ext_modules=[primer3_ext],
+    ext_modules=[primer3_ext, analysis_ext],
     package_data={'primer3': p3_files},
 )
