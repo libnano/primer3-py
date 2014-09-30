@@ -11,20 +11,43 @@ interval_list_tags = ['SEQUENCE_INCLUDED_REGION',
 semi_quad_tags = ['SEQUENCE_PRIMER_PAIR_OK_REGION_LIST']
 
 
+def wrapListOfQuads(v):
+    ''' Wrap a list of ordered quads, potentially containing None's
+    Produces a string 'list of semicolon separated list of integer "quadruples"'
+    Used for SEQUENCE_PRIMER_PAIR_OK_REGION_LIST
+
+    >>> wrapListOfQuads([1,2,3,4])
+    '1,2,3,4'
+
+    >>> wrapListOfQuads([(1,2,3,4)])
+    '1,2,3,4'
+
+    >>> wrapListOfQuads([[1,2,3,4]])
+    '1,2,3,4'
+
+    >>> wrapListOfQuads([[1,2,3,4], [5,6,7,8]])
+    '1,2,3,4 ; 5,6,7,8'
+
+    >>> wrapListOfQuads(((1,2,3,4), [5,6,7,8]))
+    '1,2,3,4 ; 5,6,7,8'
+
+    '''
+    try:
+        rv = ' ; '.join(
+            ','.join(x and str(x) or ''
+                     for x in quad)
+            for quad in v)
+    except TypeError:
+        rv = ','.join(x and str(x) or '' for x in v)
+    return rv
+
+
 def wrapListWithFormat(v, fmt, sep = ' '):
     try:
         rv = fmt % tuple(v)
     except TypeError:
         rv = sep.join(fmt % tuple(x) for x in v)
     return rv
-
-def wrapListOfQuads(v):
-    rv = ' ; '.join(
-        ','.join(x and str(x) or ''
-                 for x in quad)
-        for quad in v)
-    return rv
-
 
 def wrap(t):
     k,v = t
