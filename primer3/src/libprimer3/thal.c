@@ -541,7 +541,7 @@ thal(const unsigned char *oligo_f,
     } else if (a->temponly == 0) {
       o->no_structure = 1;
     }
-    if(o->temp == -_INFINITY && (!strcmp(o->msg, ""))) o->temp=0.0;
+    if(o->temp == -_INFINITY && (!strcmp(o->msg, ""))) { o->temp=0.0; }
     free(bp);
     free(enthalpyDPT);
     free(entropyDPT);
@@ -568,11 +568,11 @@ thal(const unsigned char *oligo_f,
       for (i = 1; i <= len1; i++) {
         for (j = 1; j <= len2; j++) {
           RSH(i, j, SH);
-          SH[0] = SH[0]+SMALL_NON_ZERO; /* this adding is done for compiler, optimization -O2 vs -O0 */
-          SH[1] = SH[1]+SMALL_NON_ZERO;
+          SH[0] = SH[0] + SMALL_NON_ZERO; /* this adding is done for compiler, optimization -O2 vs -O0 */
+          SH[1] = SH[1] + SMALL_NON_ZERO;
           T1 = ((EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) / ((EntropyDPT(i, j)) + SH[0] +
                 dplx_init_S + RC)) - ABSOLUTE_ZERO;
-          if (T1 > SHleft  && ((EntropyDPT(i, j) + SH[0])<0 && (SH[1] + EnthalpyDPT(i, j))<0)) {
+          if (T1 > SHleft  && ((EntropyDPT(i, j) + SH[0]) < 0 && (SH[1] + EnthalpyDPT(i, j)) < 0)) {
             SHleft = T1;
             bestI = i;
             bestJ = j;
