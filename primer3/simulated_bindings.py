@@ -2,10 +2,12 @@ import primer3.wrappers as wrappers
 
 p3_args = {}
 
-interval_list_tags = ['SEQUENCE_INCLUDED_REGION',
+interval_list_tags = set(['SEQUENCE_INCLUDED_REGION',
                       'SEQUENCE_TARGET',
                       'SEQUENCE_EXCLUDED_REGION',
-                      'SEQUENCE_INTERNAL_EXCLUDED_REGION']
+                      'SEQUENCE_INTERNAL_EXCLUDED_REGION'])
+
+size_range_list_tags = set(['PRIMER_PRODUCT_SIZE_RANGE'])
 
 #  (semicolon separated list of integer "quadruples"; default empty)
 semi_quad_tags = ['SEQUENCE_PRIMER_PAIR_OK_REGION_LIST']
@@ -50,8 +52,27 @@ def wrapListWithFormat(v, fmt, sep = ' '):
     return rv
 
 def wrap(t):
+    '''Convert a primer3 input in python-friendly bindings-style form
+    to a string form for use by the process wrapper
+
+    >>> wrap(('SEQUENCE_TEMPLATE', 'ATCG'))
+    ('SEQUENCE_TEMPLATE', 'ATCG')
+
+    >>> wrap(('SEQUENCE_QUALITY', range(5)))
+    ('SEQUENCE_QUALITY', '0 1 2 3 4')
+
+    >>> wrap(('SEQUENCE_EXCLUDED_REGION', (5,7)))
+    ('SEQUENCE_EXCLUDED_REGION', '5,7')
+
+    >>> wrap(('SEQUENCE_EXCLUDED_REGION', [(5,7), (11,13)]))
+    ('SEQUENCE_EXCLUDED_REGION', '5,7 11,13')
+
+    >>> wrap(('PRIMER_PRODUCT_SIZE_RANGE', (7,11)))
+    ('PRIMER_PRODUCT_SIZE_RANGE', '7-11')
+    '''
     k,v = t
-    if isinstance(v, list):
+
+    if isinstance(v, (list, tuple)):
         if len(v) == 0:
             rv = ""
         else:
@@ -59,7 +80,9 @@ def wrap(t):
                 rv = wrapListOfQuads(v)
             elif k in interval_list_tags:
                 rv = wrapListWithFormat(v, '%d,%d')
-            elif isinstance(v[0], list):
+            elif k in size_range_list_tags:
+                rv = wrapListWithFormat(v, '%d-%d')
+            elif isinstance(v[0], (list, tuple)):
                 rv = wrapListWithFormat(v, '%d-%d')
             elif isinstance(v[0], int):
                 rv = ' '.join(map(str, v))
