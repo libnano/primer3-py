@@ -66,18 +66,25 @@ static int Analyis_setParameters(ThermoAnalysis *self, PyObject *args, PyObject 
                                 "max_loop",
                                 "temp_only",
                                 "debug",
+                                "max_nn_length",
+                                "tm_method",
+                                "salt_correction_method",
                                 NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|idddddiii", kwlist, 
-                          &(self->thalargs.type),
-                          &(self->thalargs.mv),
-                          &(self->thalargs.dv),
-                          &(self->thalargs.dntp),
-                          &(self->thalargs.dna_conc),
-                          &(self->thalargs.temp),
-                          &(self->thalargs.maxLoop),
-                          &(self->thalargs.temponly),
-                          &(self->thalargs.debug) )) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|idddddiiiiii", kwlist, 
+                            &(self->thalargs.type),
+                            &(self->thalargs.mv),
+                            &(self->thalargs.dv),
+                            &(self->thalargs.dntp),
+                            &(self->thalargs.dna_conc),
+                            &(self->thalargs.temp),
+                            &(self->thalargs.maxLoop),
+                            &(self->thalargs.temponly),
+                            &(self->thalargs.debug),
+                            &(self->max_nn_length),
+                            &(self->tm_method),
+                            &(self->salt_correction_method)
+                            )) {
         return -1;
     } else {
         return 0;
