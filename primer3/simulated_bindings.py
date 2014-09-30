@@ -47,7 +47,48 @@ def wrap(t):
     return k, rv
 
 def unwrap(t):
+    '''convert a wrapper result into the intended form of the
+    bindings result
+
+    >>> unwrap(('A_FLOAT', '1.23'))
+    ('A_FLOAT', 1.23)
+
+    >>> unwrap(('AN_INT', '42'))
+    ('AN_INT', 42)
+
+    >>> unwrap(('A_SIZE_RANGE', '2020-2520'))
+    ('A_SIZE_RANGE', (2020, 2520))
+
+    >>> unwrap(('AN_INTERVAL', '7,11'))
+    ('AN_INTERVAL', (7, 11))
+
+    >>> unwrap(('MULTI_SIZE_RANGE', '1-2 3-5 7-11'))
+    ('MULTI_SIZE_RANGE', ((1, 2), (3, 5), (7, 11)))
+
+    >>> unwrap(('MULTIPLE_INTS', '2 3 5 7 11 13'))
+    ('MULTIPLE_INTS', (2, 3, 5, 7, 11, 13))
+
+    >>> unwrap(('A_SEQUENCE', 'ATCG'))
+    ('A_SEQUENCE', 'ATCG')
+    '''
     k,v = t
+    rv = v
+    for lam in [lambda x: int(x),
+                lambda x: float(x),
+                lambda x: tuple(int(s) for s in x.split(' ')),
+                lambda x: tuple(int(s) for s in x.split('-')),
+                lambda x: tuple(int(s) for s in x.split(',')),
+                lambda x: tuple(tuple(int(ss) for ss in s.split('-')) for s in x.split(' ')),
+                lambda x: tuple(tuple(int(ss) for ss in s.split(',')) for s in x.split(' '))
+    ]:
+        try:
+            rv = lam(v)
+        except:
+            pass
+        else:
+            break
+    """
+
     try:
         rv = int(v)
     except ValueError:
@@ -61,6 +102,7 @@ def unwrap(t):
                     rv = [int(x) for x in v.split()]
                 except ValueError:
                     rv = v
+"""
     return k,rv
 
 
@@ -107,3 +149,7 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
                                     output_log=output_log,
                                     err_log=err_log)
     return convertResult(result)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
