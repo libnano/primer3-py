@@ -36,8 +36,39 @@ cdef extern from "libprimer3/thal.h":
 
     int get_thermodynamic_values(const char*, thal_results *)
 
+from cpython.version cimport PY_MAJOR_VERSION
+
+cdef bytes _bytes(s):
+    if PY_MAJOR_VERSION > 2 and isinstance(s, str):
+        # encode to the specific encoding used inside of the module
+        s = (<str>s).encode('utf8')
+        return s
+    else:
+        return <bytes>s
+
+def loadThermoParams():
+    cdef char*           param_path
+    cdef thal_results    thalres
+    import os
+    PRIMER3_HOME = os.environ.get('PRIMER3HOME')
+    ppath = os.path.join(PRIMER3_HOME, 'primer3_config/')
+    ppath = ppath.encode('utf-8')
+    param_path = ppath
+    if get_thermodynamic_values(param_path, &thalres) != 0:
+        raise IOError("couldn't load config  file")
+loadThermoParams()
+
 cdef class ThermoResult:
     cdef thal_results thalres
+
+    property temp:
+        def __get__(self):
+            return self.thalres.temp
+
+    property dg:
+        def __get__(self):
+            return self.thalres.dg
+
 
     def __init__(self):
         self.thalres.no_structure = 0;
@@ -92,10 +123,8 @@ cdef class ThermoAnalysis:
         self.salt_correction_method = salt_correction_method
     # end def
 
-    cpdef heterodimer(self, oligo1, oligo2):
-        cdef char* s1 = oligo1
-        cdef char* s2 = oligo2
-        tr_obj = ThermoResult()
+    cdef inline heterodimer_c(ThermoAnalysis self, char* s1, char* s2):
+        cdef ThermoResult tr_obj = ThermoResult()
 
         self.thalargs.dimer = 1 
         """
@@ -109,4 +138,14 @@ cdef class ThermoAnalysis:
         thal(<const unsigned char*> s1, <const unsigned char*> s2,
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
         return tr_obj
+    # end def
+
+    def heterodimer(self, oligo1, oligo2):
+        oligo1 = _bytes(oligo1)
+        oligo2 = _bytes(oligo2)
+        print("oligo1:", type(oligo1))
+        print("oligo2:", type(oligo2))
+        cdef char* s1 = oligo1
+        cdef char* s2 = oligo2
+        return ThermoAnalysis.heterodimer_c(<ThermoAnalysis> self, s1, s2)
     # end def

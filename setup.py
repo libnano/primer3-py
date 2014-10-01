@@ -106,7 +106,7 @@ setup (
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)'
     ],
     packages=['primer3'],
-    ext_modules=[primer3_ext, analysis_ext],
+    ext_modules=[primer3_ext],
     # ext_modules=[primer3_ext] + a2_list,
     package_data={'primer3': p3_files},
 )

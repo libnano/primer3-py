@@ -16,13 +16,6 @@ import _primer3
 
 # ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
 
-LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
-
-if not os.environ.get('PRIMER3HOME'):
-    try:
-        os.environ['PRIMER3HOME'] = pjoin(LOCAL_DIR, 'src/libprimer3')
-    except:
-        raise ImportError('PRIMER3HOME environmental variable is not set.')
 PRIMER3_HOME = os.environ.get('PRIMER3HOME')
 
 

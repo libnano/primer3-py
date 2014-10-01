@@ -8,6 +8,15 @@ Current Primer3 version included in package: 2.3.6
 Support for both Python 2.7.x and Python 3.x.x
 
 '''
+import os
+LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
+
+if not os.environ.get('PRIMER3HOME'):
+    try:
+        os.environ['PRIMER3HOME'] = os.path.join(LOCAL_DIR, 'src/libprimer3')
+    except:
+        raise ImportError('PRIMER3HOME environmental variable is not set.')
+
 
 from primer3.bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
                               calcHairpinTm, calcHomodimerTm,
