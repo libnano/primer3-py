@@ -75,6 +75,16 @@ analysis_ext = Extension(
     extra_compile_args=["-Wno-error=declaration-after-statement"]
 )
 
+# from Cython.Build import cythonize
+# a2_ext = Extension(
+#     'primer3.analysis2',
+#     sources=['primer3/src/analysis2.pyx'] + libprimer3_paths,
+#     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
+#     extra_compile_args=['-Wno-error=declaration-after-statement', 
+#                         '-Wno-unused-function']
+#     )
+# a2_list = cythonize([a2_ext])
+
 setup (
     name='primer3-py',
     version='0.3.1',
@@ -97,5 +107,6 @@ setup (
     ],
     packages=['primer3'],
     ext_modules=[primer3_ext, analysis_ext],
+    # ext_modules=[primer3_ext] + a2_list,
     package_data={'primer3': p3_files},
 )
