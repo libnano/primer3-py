@@ -118,4 +118,4 @@ setup (
 )
 
 # delete extra pxd
-os.remove(dest_pxd)
+# os.remove(dest_pxd)
