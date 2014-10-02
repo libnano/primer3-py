@@ -77,13 +77,19 @@ analysis_ext = Extension(
 
 # from Cython.Build import cythonize
 # a2_ext = Extension(
-#     'primer3.analysis2',
-#     sources=['primer3/src/analysis2.pyx'] + libprimer3_paths,
+#     'primer3.thermoanalysis',
+#     sources=['primer3/src/thermoanalysis.pyx'] + libprimer3_paths,
 #     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
 #     extra_compile_args=['-Wno-error=declaration-after-statement', 
 #                         '-Wno-unused-function']
 #     )
 # a2_list = cythonize([a2_ext])
+# # include the pyd in the install
+# src_pxd = pjoin(MODULE_PATH, 'src', 'thermoanalysis.pxd')
+# dest_pxd = pjoin(MODULE_PATH, 'thermoanalysis.pxd')
+# import shutil
+# shutil.copyfile(src_pxd, dest_pxd)
+# p3_files.append('thermoanalysis.pxd')
 
 setup (
     name='primer3-py',
@@ -110,3 +116,6 @@ setup (
     # ext_modules=[primer3_ext] + a2_list,
     package_data={'primer3': p3_files},
 )
+
+# delete extra pxd
+os.remove(dest_pxd)

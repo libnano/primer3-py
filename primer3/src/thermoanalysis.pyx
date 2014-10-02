@@ -1,40 +1,43 @@
 
-cdef extern from "libprimer3/thal.h":
-    ctypedef enum thal_alignment_type:
-        thal_any = 1
-        thal_end1 = 2
-        thal_end2 = 3
-        thal_hairpin = 4
+#cdef extern from "libprimer3/thal.h":
+#    ctypedef enum thal_alignment_type:
+#        thal_any = 1
+#        thal_end1 = 2
+#        thal_end2 = 3
+#        thal_hairpin = 4
 
-    ctypedef struct thal_args:
-        int debug # if non zero, print debugging info to stderr */
-        thal_alignment_type type
-        int maxLoop # maximum size of loop to consider; longer than 30 bp are not allowed */
-        double mv # concentration of monovalent cations */
-        double dv # concentration of divalent cations */
-        double dntp # concentration of dNTP-s */
-        double dna_conc # concentration of oligonucleotides */
-        double temp # temperature from which hairpin structures will be calculated */
-        int temponly # if non zero, print only temperature to stderr
-        int dimer   # if non zero, dimer structure is calculated
+#    ctypedef struct thal_args:
+#        int debug # if non zero, print debugging info to stderr */
+#        thal_alignment_type type
+#        int maxLoop # maximum size of loop to consider; longer than 30 bp are not allowed */
+#        double mv # concentration of monovalent cations */
+#        double dv # concentration of divalent cations */
+#        double dntp # concentration of dNTP-s */
+#        double dna_conc # concentration of oligonucleotides */
+#        double temp # temperature from which hairpin structures will be calculated */
+#        int temponly # if non zero, print only temperature to stderr
+#        int dimer   # if non zero, dimer structure is calculated
     
-    ctypedef struct thal_results:
-        char msg[255]
-        int no_structure # Added no structure (1 if no structure found)
-        double temp
-        double ds # Added entropy value
-        double dh # Added enthalpy value
-        double dg # Added gibbs free energy value
-        int align_end_1
-        int align_end_2
+#    ctypedef struct thal_results:
+#        char msg[255]
+#        int no_structure # Added no structure (1 if no structure found)
+#        double temp
+#        double ds # Added entropy value
+#        double dh # Added enthalpy value
+#        double dg # Added gibbs free energy value
+#        int align_end_1
+#        int align_end_2
 
-    void thal(  const unsigned char*,
-                const unsigned char*,
-                const thal_args*,
-                thal_results*,
-                const int)
 
-    int get_thermodynamic_values(const char*, thal_results *)
+
+#    void thal(  const unsigned char*,
+#                const unsigned char*,
+#                const thal_args*,
+#                thal_results*,
+#                const int)
+
+#    int get_thermodynamic_values(const char*, thal_results *)
+
 
 cdef extern from "libprimer3/oligotm.h":
     ctypedef enum tm_method_type:
@@ -58,7 +61,6 @@ cdef extern from "libprimer3/oligotm.h":
 
 
 from cpython.version cimport PY_MAJOR_VERSION
-
 
 cdef unsigned char[:] _chars(s):
     cdef unsigned char[:] o
@@ -88,7 +90,7 @@ def loadThermoParams():
 loadThermoParams()
 
 cdef class ThermoResult:
-    cdef thal_results thalres
+    #cdef thal_results thalres
 
     property temp:
         def __get__(self):
@@ -114,12 +116,12 @@ cdef class ThermoResult:
 
 
 cdef class ThermoAnalysis:
-    cdef thal_args thalargs
+    #cdef thal_args thalargs
     
     # for melting temperature
-    cdef public int max_nn_length
-    cdef public int tm_method
-    cdef public int salt_correction_method
+    #cdef public int max_nn_length
+    #cdef public int tm_method
+    #cdef public int salt_correction_method
 
     def __cinit__(self, thal_type=1,
                     mv_conc=50,

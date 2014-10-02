@@ -26,6 +26,10 @@ from primer3.bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
 import primer3.bindings as bindings
 import primer3.wrappers as wrappers
 
+def includes():
+    return [LOCAL_DIR, os.environ['PRIMER3HOME']]
+
+
 __all__ = [
     # Low-level Tm-only bindings
     'calcHairpinTm', 'calcHomodimerTm', 'calcHeterodimerTm',
@@ -34,5 +38,5 @@ __all__ = [
     # Primer3 design bindings
     'setP3Globals', 'setP3SeqArgs', 'runP3Design', 'designPrimers', 
     # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
-    'bindings', 'wrappers', 
+    'bindings', 'wrappers', 'thermoanalyis', 
     ]
