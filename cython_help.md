@@ -2,6 +2,7 @@
 
 Write your code like this below:
 
+
 ```python
 # this works with a file named thermoanalysis.pxd in the primer3 repo
 cimport primer3.thermoanalysis as thermoanalysis
@@ -21,7 +22,8 @@ print("MAX NN LENGTH", a.max_nn_length)
 cdef char * foo = "ACGTACGT"
 
 print("TM:", a.meltingTemp_c(foo))
-```python
+```
+
 
 and to build/install using a standard `setup.py` add the lines (fill in the ...s)
 
