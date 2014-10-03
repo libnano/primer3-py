@@ -1128,15 +1128,15 @@ p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
 
      /* Print primer hairpin */
     if (go_fwd == 1 && pa->thermodynamic_oligo_alignment==1) {
-        sprintf(outbuff, "PRIMER_LEFT%s_SELF_HAIRPIN_TH", suffix);
+        sprintf(outbuff, "PRIMER_LEFT%s_HAIRPIN_TH", suffix);
         SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, fwd->hairpin_th, obj_ptr);
     }
     if (go_rev == 1 && pa->thermodynamic_oligo_alignment==1) {
-        sprintf(outbuff, "PRIMER_RIGHT%s_SELF_HAIRPIN_TH", suffix);
+        sprintf(outbuff, "PRIMER_RIGHT%s_HAIRPIN_TH", suffix);
         SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, rev->hairpin_th, obj_ptr);
     }
     if (go_int == 1 && pa->thermodynamic_oligo_alignment==1) {
-        sprintf(outbuff, "PRIMER_%s%s_SELF_HAIRPIN_TH", int_oligo, suffix);
+        sprintf(outbuff, "PRIMER_%s%s_HAIRPIN_TH", int_oligo, suffix);
         SET_DICT_KEY_TO_DOUBLE(output_dict, outbuff, intl->hairpin_th, obj_ptr);
     }
 

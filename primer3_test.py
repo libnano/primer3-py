@@ -238,11 +238,11 @@ class TestDesignBindings(unittest.TestCase):
         )
         print('\n\n\n{:<30} {:<25} {:<25} {:<25}'.format('Output Key', 'Wrapper Result', 'SimBinding Result', 'Binding Result'))
         print('-'*80)
-        for k, v in binding_res.items():
-            print('{:<30} {:<25} {:<25} {:<25}'.format(k,
-                                                       repr(wrapper_res.get(k)),
-                                                       repr(simulated_binding_res.get(k)),
-                                                       repr(v)))
+        for result_field in sorted(binding_res.keys()):
+            print('{:<30} {:<25} {:<25} {:<25}'.format(result_field,
+                                                       repr(wrapper_res.get(result_field)),
+                                                       repr(simulated_binding_res.get(result_field)),
+                                                       repr(binding_res[result_field])))
 
 
     def testCompareSim(self):
