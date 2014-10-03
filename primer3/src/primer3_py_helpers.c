@@ -85,62 +85,83 @@ between Python C API code and primer3 native C code.
 #if PY_MAJOR_VERSION < 3
     #define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
         if (DICT_GET_OBJ(o, d, k)) {                                           \
+            int from_int = 0;                                                  \
             if (!PyString_Check(o)){                                           \
-                PyErr_Format(PyExc_TypeError,                                  \
-                             "Value of %s is not of type string", k);          \
+                if (PyLong_Check(o)) {                                         \
+                    *st = (char *) malloc(20 * sizeof(char));                  \
+                    sprintf(*st, "%d", (int)PyLong_AsLong(o));                 \
+                    from_int = 1;                                              \
+                } else {                                                       \
+                    PyErr_Format(PyExc_TypeError,                              \
+                                 "Value of %s is not of type string", k);      \
                 return NULL;}                                                  \
-            if (PyString_AsStringAndSize(o, &tc, &ss) == -1) {                 \
-                return NULL;}                                                  \
-            *st = (char *) malloc((ss + 1) * sizeof(char));                    \
-            if (*st == NULL) {                                                  \
-                PyErr_Format(PyExc_IOError,                                    \
-                            "Could not allocate memory while copying %s", k);  \
-                return NULL;}                                                  \
-            memcpy(*st, tc, (int)(ss + 1));                                    \
-        }
+            }                                                                  \
+            if (!from_int){                                                    \
+                if (PyString_AsStringAndSize(o, &tc, &ss) == -1) {             \
+                    return NULL;}                                              \
+                *st = (char *) malloc((ss + 1) * sizeof(char));                \
+                if (*st == NULL) {                                             \
+                    PyErr_Format(PyExc_IOError,                                \
+                        "Could not allocate memory while copying %s", k);      \
+                    return NULL;}                                              \
+                memcpy(*st, tc, (int)(ss + 1));                                \
+            }                                                                  \
+        }                                                                      
 #else
     #define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
         if (DICT_GET_OBJ(o, d, k)) {                                           \
+            int from_int = 0;                                                  \
             if (PyUnicode_Check(o)) {                                          \
                 tc = PyUnicode_AsUTF8AndSize(o, &ss);                          \
             } else if (PyBytes_Check(o)){                                      \
                 if (PyBytes_AsStringAndSize(o, &tc, &ss) == -1) {              \
                     return NULL;}                                              \
             } else {                                                           \
-                PyErr_Format(PyExc_TypeError,                                  \
-                            "Value of %s is not of type unicode or bytes", k); \
-                return NULL;}                                                  \
+                if (PyLong_Check(o)) {                                         \
+                    *st = (char *) malloc(20 * sizeof(char));                  \
+                    sprintf(*st, "%d", (int)PyLong_AsLong(o));                 \
+                    from_int = 1;                                              \
+                } else {                                                       \
+                    PyErr_Format(PyExc_TypeError,                              \
+                        "Value of %s is not of type unicode or bytes", k);     \
+                    return NULL;}                                              \
+            }                                                                  \
             if (tc == NULL){                                                   \
                     PyErr_Format(PyExc_TypeError,                              \
                             "Error processing string in %s", k);               \
                     return NULL;                                               \
                 }                                                              \
-            *st = (char *) malloc((ss + 1 ) * sizeof(char));                          \
-            if (*st == NULL) {                                                  \
-                PyErr_Format(PyExc_IOError,                                    \
-                            "Could not allocate memory while copying %s", k);  \
-                return NULL;}                                                  \
-            memcpy(*st, tc, (int)(ss + 1));                                    \
+            if (!from_int) {                                                   \
+                *st = (char *) malloc((ss + 1 ) * sizeof(char));               \
+                if (*st == NULL) {                                             \
+                    PyErr_Format(PyExc_IOError,                                \
+                        "Could not allocate memory while copying %s", k);      \
+                    return NULL;}                                              \
+                memcpy(*st, tc, (int)(ss + 1));                                \
+            }                                                                  \
         }
 #endif
 
 #define DICT_GET_AND_COPY_ARRAY(o, d, k, st, arr_len)                          \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
         int i;                                                                 \
-        if (!PyList_Check(o)){                                                 \
+        if (!PySequence_Check(o)){                                             \
             PyErr_Format(PyExc_TypeError,                                      \
-                            "Value of %s is not of type list", k);             \
+                            "Value of %s is not a sequence object", k);        \
             return NULL;                                                       \
         } else {                                                               \
             int *arr = NULL;                                                   \
-            *arr_len = (int)PyList_Size(o);                                    \
+            PyObject *seq_item;                                                \
+            *arr_len = (int)PySequence_Size(o);                                \
             arr = (int*) malloc(*arr_len*sizeof(int));                         \
             if (arr == NULL) {                                                 \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
                 return NULL;}                                                  \
             for (i=0; i < *arr_len; i++) {                                     \
-                arr[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));             \
+                seq_item = PySequence_GetItem(o, i);                           \
+                arr[i] = (int)PyLong_AsLong(seq_item);                         \
+                Py_DECREF(seq_item);                                           \
             }                                                                  \
             *st = arr;                                                         \
         }                                                                      \
@@ -149,34 +170,65 @@ between Python C API code and primer3 native C code.
 #define DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(o, d, k, st, arr_len)               \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
         int i;                                                                 \
-        if (!PyList_Check(o)){                                                 \
+        PyObject *seq_item;                                                    \
+        if (!PySequence_Check(o)){                                             \
             PyErr_Format(PyExc_TypeError,                                      \
-                            "Value of %s is not of type list", k);             \
-            return NULL;}                                                      \
-        *arr_len = (int)PyList_Size(o);                                        \
+                            "Value of %s is not a sequence object", k);        \
+            return NULL;                                                       \
+        *arr_len = (int)PySequence_Size(o);                                    \
         for (i=0; i < *arr_len; i++) {                                         \
-            *st[i] = (int)PyLong_AsLong(PyList_GetItem(o, i));                 \
+            seq_item = PySequence_GetItem(o, i);                               \
+            *st[i] = (int)PyLong_AsLong(seq_item);                             \
+            Py_DECREF(seq_item);                                               \
         }                                                                      \
     }                                                                          \
 
 #define DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(o, d, k, st)                       \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
-        int i;                                                                 \
-        if (!PyList_Check(o)){                                                 \
+        int i, arr_len, flat_list=0;                                           \
+        PyObject *sub_seq, *seq_item1, *seq_item2;                             \
+        if (!PySequence_Check(o)){                                             \
             PyErr_Format(PyExc_TypeError,                                      \
-                            "Value of %s is not of type list", k);             \
-            return NULL;}                                                      \
-        st.count = 0;                                                          \
-        *arr_len = (int)PyList_Size(p_obj);                                    \
-        if (!arr_len % 2) {                                                    \
-            PyErr_Format(PyExc_TypeError,                                      \
-                            "%s must be linear multiple of 2 in length", k);   \
+                            "Value of %s is not a sequence object", k);        \
             return NULL;                                                       \
         }                                                                      \
-        for (i = 0; i < *arr_len / 2; i+=2) {                                  \
-            p3_add_to_interval_array(&st,                                      \
-                 (int)PyLong_AsLong(PyList_GetItem(p_obj, i)),                 \
-                 (int)PyLong_AsLong(PyList_GetItem(p_obj, i+1)));              \
+        st.count = 0;                                                          \
+        arr_len = (int)PySequence_Size(o);                                     \
+        if (arr_len == 2) {                                                    \
+            seq_item1 = PySequence_GetItem(o, 0);                              \
+            seq_item2 = PySequence_GetItem(o, 1);                              \
+            if (PyLong_Check(seq_item1) || PyLong_Check(seq_item2)) {          \
+                p3_add_to_interval_array(&st,                                  \
+                     (int)PyLong_AsLong(seq_item1),                            \
+                     (int)PyLong_AsLong(seq_item2));                           \
+                flat_list = 1;                                                 \
+            } else if (!PyLong_Check(seq_item1) || !PyLong_Check(seq_item2)) { \
+                PyErr_Format(PyExc_TypeError,                                  \
+                                "Value of %s is a mixture of integers"         \
+                                " and other objects", k);                      \
+                Py_DECREF(seq_item1);                                          \
+                Py_DECREF(seq_item1);                                          \
+                return NULL;                                                   \
+            }                                                                  \
+        }                                                                      \
+        if (!flat_list) {                                                      \
+            for (i = 0; i < arr_len - 1; i++) {                                \
+                sub_seq = PySequence_GetItem(o, i);                            \
+                seq_item1 = PySequence_GetItem(sub_seq, 0);                    \
+                seq_item2 = PySequence_GetItem(sub_seq, 1);                    \
+                if (!PyLong_Check(seq_item1) || !PyLong_Check(seq_item2)) {    \
+                    PyErr_Format(PyExc_TypeError,                              \
+                                    "Value of %s is not a sequence object"     \
+                                    " comprised of two integers", k);          \
+                    return NULL;                                               \
+                }                                                              \
+                p3_add_to_interval_array(&st,                                  \
+                     (int)PyLong_AsLong(seq_item1),                            \
+                     (int)PyLong_AsLong(seq_item2));                           \
+                Py_DECREF(seq_item1);                                          \
+                Py_DECREF(seq_item2);                                          \
+                Py_DECREF(sub_seq);                                            \
+            }                                                                  \
         }                                                                      \
     }                                                                          \
 
@@ -196,7 +248,7 @@ _setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
     int                     i;
     Py_ssize_t              str_size;
-    char                    *temp_char, *task_tmp=NULL;
+    char                    *temp_char=NULL, *task_tmp=NULL;
 
     
     // if (!(pa = p3_create_global_settings())) {
@@ -366,44 +418,67 @@ _setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_WT_TEMPLATE_MISPRIMING_TH", pa->pr_pair_weights.template_mispriming_th);
 
     if DICT_GET_OBJ(p_obj, p3s_dict, "PRIMER_PRODUCT_SIZE_RANGE") {
+        int flat_list = 0;
+        int product_size_range_list_length = (int)PySequence_Length(p_obj);
         if (!PySequence_Check(p_obj)) {
             PyErr_SetString(PyExc_TypeError,\
                 "Value of \"PRIMER_PRODUCT_SIZE_RANGE\" is not a list or tuple");
             return NULL;
         }
-        for (i=0; i < (int)PySequence_Length(p_obj); i++){
-            p_obj2 = PySequence_GetItem(p_obj, i);
-            if (!PySequence_Check(p_obj2)){
-                PyErr_Format(PyExc_TypeError,\
-                    "Object at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not a list or tuple", i);
-                return NULL;
-            }
-            if (PySequence_Length(p_obj2) != 2) {
-                PyErr_Format(PyExc_TypeError,\
-                    "Object at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not of length 2", i);
-                return NULL;
-            }
-            p_obj3 = PySequence_GetItem(p_obj2, 0);
-            p_obj4 = PySequence_GetItem(p_obj2, 1);
-            if ((pa->pr_min[i] = (int)PyLong_AsLong(p_obj3)) == -1) {
-                PyErr_Format(PyExc_TypeError,\
-                    "Object 1 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
-                Py_DECREF(p_obj2);
-                Py_DECREF(p_obj3);
-                Py_DECREF(p_obj4);
-                return NULL;
-            }
-            if ((pa->pr_max[i] = (int)PyLong_AsLong(p_obj4)) == -1) {
-                PyErr_Format(PyExc_TypeError,\
-                    "Object 2 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
-                Py_DECREF(p_obj2);
-                Py_DECREF(p_obj3);
-                Py_DECREF(p_obj4);
-                return NULL;
+        if (product_size_range_list_length == 2) {
+            p_obj2 = PySequence_GetItem(p_obj, 0);
+            p_obj3 = PySequence_GetItem(p_obj, 1);
+            if (PyLong_Check(p_obj2)) {
+                pa->pr_min[0] = (int)PyLong_AsLong(p_obj2);
+                if (PyLong_Check(p_obj3)) {
+                    pa->pr_max[0] = (int)PyLong_AsLong(p_obj3);
+                    flat_list = 1;
+                } else {
+                    PyErr_Format(PyExc_TypeError,\
+                        "\"PRIMER_PRODUCT_SIZE_RANGE\" contains mixed sequence objects and integers"); 
+                    Py_DECREF(p_obj2);
+                    Py_DECREF(p_obj3);  
+                    return NULL;                 
+                }
             }
             Py_DECREF(p_obj2);
-            Py_DECREF(p_obj3);
-            Py_DECREF(p_obj4);
+            Py_DECREF(p_obj3); 
+        }
+        if (!flat_list) {
+            for (i=0; i < product_size_range_list_length; i++){
+                p_obj2 = PySequence_GetItem(p_obj, i);
+                if (!PySequence_Check(p_obj2)){
+                    PyErr_Format(PyExc_TypeError,\
+                        "Object at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not a list or tuple", i);
+                    return NULL;
+                }
+                if (PySequence_Length(p_obj2) != 2) {
+                    PyErr_Format(PyExc_TypeError,\
+                        "Object at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not of length 2", i);
+                    return NULL;
+                }
+                p_obj3 = PySequence_GetItem(p_obj2, 0);
+                p_obj4 = PySequence_GetItem(p_obj2, 1);
+                if ((pa->pr_min[i] = (int)PyLong_AsLong(p_obj3)) == -1) {
+                    PyErr_Format(PyExc_TypeError,\
+                        "Object 1 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
+                    Py_DECREF(p_obj2);
+                    Py_DECREF(p_obj3);
+                    Py_DECREF(p_obj4);
+                    return NULL;
+                }
+                if ((pa->pr_max[i] = (int)PyLong_AsLong(p_obj4)) == -1) {
+                    PyErr_Format(PyExc_TypeError,\
+                        "Object 2 at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not an integer", i);
+                    Py_DECREF(p_obj2);
+                    Py_DECREF(p_obj3);
+                    Py_DECREF(p_obj4);
+                    return NULL;
+                }
+                Py_DECREF(p_obj2);
+                Py_DECREF(p_obj3);
+                Py_DECREF(p_obj4);
+            }
         }
     }
 
@@ -540,9 +615,9 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
      */
 
     seq_args                *sa;
-    PyObject                *p_obj, *p_obj2, *p_obj3, *p_obj4;
-    char                    *temp_char;
-    int                     i, j, len1, len2, *arr_len=NULL;
+    PyObject                *p_obj, *p_obj2, *p_obj3;
+    char                    *temp_char=NULL;
+    int                     i, j, len1, len2;
     Py_ssize_t              str_size;
     int overlap_junction_arr_len = 0;
 
@@ -557,43 +632,71 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_INTERNAL_OLIGO", &sa->internal_input, temp_char, str_size);
     DICT_GET_AND_COPY_ARRAY(p_obj, sa_dict, "SEQUENCE_QUALITY", &sa->quality, &sa->n_quality);
     if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST")){
-        if ((p_obj2 = PySequence_Fast(p_obj, "Value of 'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' "
-                                   "must support the seqeunce protocol.")) == NULL){
-            return NULL;}
+        int ii[4], flat_list = 0;
+        if (!PySequence_Check(p_obj)){
+            PyErr_SetString(PyExc_IOError, "Value of 'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' " 
+                            "must support the seqeunce protocol.");
+            return NULL;
+        }
         sa->ok_regions.count = 0;
         sa->ok_regions.any_pair = 0;
         sa->ok_regions.any_left = sa->ok_regions.any_right = 0;
-        len1 = (int)PySequence_Fast_GET_SIZE(p_obj2);
-        for (i = 0; i < len1; i++) {
-            p_obj3 = PySequence_Fast_GET_ITEM(p_obj, (Py_ssize_t)i);
-            if ((p_obj4 = PySequence_Fast(p_obj3, "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must support "
-                                                  "the sequence protocol and be comprised of items "
-                                                  "that support the sequence protocol (e.g., it must be "
-                                                  "a list of lists, tuple of tuples or some combination "
-                                                  "of the two).")) == NULL){
-                return NULL;
+        len1 = (int)PySequence_Size(p_obj);
+        if (len1 == 4){
+            p_obj2 = PySequence_GetItem(p_obj, 0);
+            if (PyLong_Check(p_obj2)) {
+                ii[0] = (int)PyLong_AsLong(p_obj2);
+                Py_DECREF(p_obj2);
+                for (j = 1; j < 4; j++) {
+                    p_obj2 = PySequence_GetItem(p_obj, j);
+                    if (PyLong_Check(p_obj2)) {
+                        ii[j] = (int)PyLong_AsLong(p_obj2);
+                    } else {
+                        PyErr_SetString(PyExc_IOError, "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must"
+                                                       " be a sequence object of four integers or"
+                                                       " must be comprised of sequence objects"
+                                                       " comprised of four integers.");
+                        Py_DECREF(p_obj2);
+                        return NULL;
+                    }
+                }
+                flat_list = 1;
             }
-            len2 = (int)PySequence_Fast_GET_SIZE(p_obj4);
-            if (!len2 == 4) {
-                PyErr_Format(PyExc_TypeError, "Sub-list/tuple #%d of "
-                             "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
-                             "of length 4", i);
-                return NULL;
-            }
-            for (j = 0; j < 4; j++) {
-                if (!PyLong_Check(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)j))) {
-                    PyErr_Format(PyExc_TypeError, "Object #%d of sub-list/tuple %d"
-                         "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
-                         "be an integer or long", j, i);
+        }
+        if (!flat_list) {
+            for (i = 0; i < len1; i++) {
+                p_obj2 = PySequence_GetItem(p_obj, i);
+                if (!PySequence_Check(p_obj2)) {
+                    PyErr_SetString(PyExc_IOError, "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must support "
+                                                      "the sequence protocol and be comprised of items "
+                                                      "that support the sequence protocol (e.g., it must be "
+                                                      "a list of lists, tuple of tuples or some combination "
+                                                      "of the two).");
                     return NULL;
                 }
+                len2 = (int)PySequence_Size(p_obj2);
+                if (!len2 == 4) {
+                    PyErr_Format(PyExc_TypeError, "Sub-list/tuple #%d of "
+                                 "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
+                                 "of length 4", i);
+                    Py_DECREF(p_obj2);
+                    return NULL;
+                }
+                for (j = 0; j < 4; j++) {
+                    p_obj3 = PySequence_GetItem(p_obj2, j);
+                    if (!PyLong_Check(p_obj3)) {
+                        PyErr_Format(PyExc_TypeError, "Object #%d of sub-list/tuple %d"
+                             "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
+                             "be an integer or long", j, i);
+                        Py_DECREF(p_obj3);
+                        return NULL;
+                    }
+                    ii[j] = (int)PyLong_AsLong(p_obj3);
+                    Py_DECREF(p_obj3);
+                }
             }
-            p3_add_to_2_interval_array(&sa->ok_regions,
-                   (int)PyLong_AsLong(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)0)),
-                   (int)PyLong_AsLong(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)1)),
-                   (int)PyLong_AsLong(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)2)),
-                   (int)PyLong_AsLong(PySequence_Fast_GET_ITEM(p_obj4, (Py_ssize_t)3)));
         }
+        p3_add_to_2_interval_array(&sa->ok_regions, ii[0], ii[1], ii[2], ii[3]);
     }
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_TARGET", sa->tar2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_EXCLUDED_REGION", sa->excl2);
@@ -602,11 +705,12 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     
     if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_OVERLAP_JUNCTION_LIST")) {
         int *poj_arr;
-        if (!PyList_Check(p_obj)){
+        PyObject *arr_item;
+        if (!PySequence_Check(p_obj)){
             PyErr_Format(PyExc_TypeError,
-                            "Value of 'SEQUENCE_OVERLAP_JUNCTION_LIST' is not of type list");
+                            "Value of 'SEQUENCE_OVERLAP_JUNCTION_LIST' is not a sequence object");
             return NULL;}
-        overlap_junction_arr_len = (int)PyList_Size(p_obj);
+        overlap_junction_arr_len = (int)PySequence_Size(p_obj);
         if (overlap_junction_arr_len > 200) {
             PyErr_Format(PyExc_TypeError,
                             "'SEQUENCE_OVERLAP_JUNCTION_LIST' cannot have over 200 values");
@@ -615,26 +719,41 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
         sa->primer_overlap_junctions_count = overlap_junction_arr_len;
         poj_arr = &sa->primer_overlap_junctions[0];
         for (i=0; i < overlap_junction_arr_len; i++, poj_arr++) {
-            *poj_arr = (int)PyLong_AsLong(PyList_GetItem(p_obj, i));
+            arr_item = PySequence_GetItem(p_obj, i);
+            if (!PyLong_Check(arr_item)) {
+                PyErr_Format(PyExc_TypeError,
+                            "'SEQUENCE_OVERLAP_JUNCTION_LIST' must contain only integers");
+            }
+            *poj_arr = (int)PyLong_AsLong(arr_item);
+            Py_DECREF(arr_item);
         }
     }
     if DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_INCLUDED_REGION") {
-        if (!PyList_Check(p_obj)) {
+        PyObject *seq_item1, *seq_item2;
+        if (!PySequence_Check(p_obj)) {
             PyErr_SetString(PyExc_TypeError,\
-                "Value of \"SEQUENCE_INCLUDED_REGION\" is not of type list");
+                "Value of \"SEQUENCE_INCLUDED_REGION\" is not a sequence object");
             return NULL;
-        } else if (PyList_Size(p_obj) != 2) {
+        } else if (PySequence_Size(p_obj) != 2) {
             PyErr_SetString(PyExc_ValueError,\
-                "Length of \"SEQUENCE_INCLUDED_REGION\" is not 2");
+                "Length of \"SEQUENCE_INCLUDED_REGION\" is not of length 2");
             return NULL;
-        } else if (!PyLong_Check(PyList_GetItem(p_obj, 0)) || \
-                   !PyLong_Check(PyList_GetItem(p_obj, 1))) {
-            PyErr_SetString(PyExc_TypeError,\
-                "\"SEQUENCE_INCLUDED_REGION\" contains non-int value");
-            return NULL;
+        } else {
+            seq_item1 = PySequence_GetItem(p_obj, 0);
+            seq_item2 = PySequence_GetItem(p_obj, 1);
+            if (!PyLong_Check(seq_item1) || !PyLong_Check(seq_item2)) {
+                PyErr_SetString(PyExc_TypeError,\
+                    "\"SEQUENCE_INCLUDED_REGION\" contains non-int value");
+                Py_DECREF(seq_item1);
+                Py_DECREF(seq_item2);
+                return NULL;                
+            }
+            sa->incl_s = (int)PyLong_AsLong(seq_item1);
+            sa->incl_l = (int)PyLong_AsLong(seq_item2);
+            Py_DECREF(seq_item1);
+            Py_DECREF(seq_item2);
         }
-        sa->incl_s = (int)PyLong_AsLong(PyList_GetItem(p_obj, 0));
-        sa->incl_l = (int)PyLong_AsLong(PyList_GetItem(p_obj, 1));
+
     }
 
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_START_CODON_POSITION", sa->start_codon_pos);

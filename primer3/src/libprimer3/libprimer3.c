@@ -6483,6 +6483,7 @@ _pr_data_control(const p3_global_settings *pa,
   /* The product must fit in the included region */
   if (sa->incl_l < pr_min && pa->pick_left_primer == 1
       && pa->pick_right_primer == 1) {
+    printf("incl_l %d, %d\n", sa->incl_l, pr_min);
     if (pa->primer_task == check_primers) {
       pr_append_new_chunk(warning,
                           "SEQUENCE_INCLUDED_REGION length < min PRIMER_PRODUCT_SIZE_RANGE");

@@ -8,6 +8,7 @@ Unit tests for the primer3-py package.
 
 from __future__ import print_function
 
+import os
 import random
 import resource
 import unittest
@@ -15,6 +16,9 @@ import unittest
 from time import sleep
 
 from primer3 import bindings, wrappers, simulatedBindings
+
+
+LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def _getMemUsage():
@@ -175,6 +179,77 @@ class TestLowLevelBindings(unittest.TestCase):
                                  'memory leak (mem increase: {})'.format(em-sm))
 
 class TestDesignBindings(unittest.TestCase):
+
+    def _compareResults(self, binding_res, simulated_binding_res, 
+                        verbose=False):
+        keys_in_sim = set(simulated_binding_res)
+        keys_in_binding = set(binding_res)
+
+        if keys_in_sim - keys_in_binding:
+            if verbose:
+                print('\n\n\nIn wrapper simulation result but missing'
+                      ' from binding:')
+                fmt = '{:<30} {:<50}'
+                print(fmt.format('Output Key', 'SimBinding Result'))
+                print('-'*80)
+                for k in sorted(keys_in_sim - keys_in_binding):
+                    print(fmt.format(k, repr(simulated_binding_res[k])))
+
+        if keys_in_binding - keys_in_sim:
+            if verbose:
+                print('\n\n\nIn binding result but missing from wrapper '
+                      'simulation:')
+                fmt = '{:<30} {:<50}'
+                print(fmt.format('Output Key', 'Binding Result'))
+                print('-'*80)
+                for k in sorted(keys_in_binding - keys_in_sim):
+                    print(fmt.format(k, repr(binding_res[k])))
+
+        allowable_relative_difference = 0.005
+        disagree = set(k for k in keys_in_binding & keys_in_sim
+                       if simulated_binding_res[k] != binding_res[k]
+                       and (isinstance(binding_res[k], float)
+                       and (binding_res[k] != 0)
+                            and abs((binding_res[k] - simulated_binding_res[k])
+                                    / binding_res[k]) > 
+                                    allowable_relative_difference) )
+        if disagree:
+            fmt = '{:<30} {:<25} {:<25}'
+            disagreements = '\n'.join([fmt.format(k,
+                                        repr(simulated_binding_res[k]),
+                                        repr(binding_res[k])) for k in
+                                        sorted(disagree)])
+            if verbose:
+                print('\n\n\nResults disagree:')
+                print(fmt.format('Output Key', 'SimBinding Result', 
+                                 'Binding Result'))
+                print('-'*80)
+                print(disagreements)
+            raise RuntimeError('Results between binary output and binding '
+                               'output disagree: \n' + disagreements)
+
+        else:
+            if verbose:
+                print('\n\n\nAll the results in common ({}) agree to within '
+                      '{:.2%}'.format(len(keys_in_binding & keys_in_sim),
+                                      allowable_relative_difference))
+
+    def _convertBoulderInput(self, boulder_str):
+        ''' Convert a boulder IO-style input dictionary into bindings /
+        simulated-bindings-friendly dictionaries.
+        '''
+        boulder_dicts = wrappers._parseMultiRecordBoulderIO(boulder_str)
+        input_dicts = []
+        for bd in boulder_dicts:
+            converted_input = [simulatedBindings.unwrap(arg) for arg in 
+                               bd.items()]
+            global_args = dict(filter(lambda arg: "SEQUENCE" not in arg[0], 
+                                      converted_input))
+            seq_args = dict(filter(lambda arg: "SEQUENCE" in arg[0], 
+                                    converted_input))
+            input_dicts.append((global_args, seq_args))
+        return input_dicts
+
     def testHuman(self):
         sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
         quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
@@ -278,44 +353,40 @@ class TestDesignBindings(unittest.TestCase):
         }
         simulated_binding_res = simulatedBindings.designPrimers(seq_args, global_args)
         binding_res = bindings.designPrimers(seq_args, global_args)
-        keys_in_sim = set(simulated_binding_res)
-        keys_in_binding = set(binding_res)
+        self._compareResults(binding_res, simulated_binding_res, verbose=True)
 
-        if keys_in_sim - keys_in_binding:
-            print('\n\n\nIn wrapper simulation result but missing from binding:')
-            fmt = '{:<30} {:<50}'
-            print(fmt.format('Output Key', 'SimBinding Result'))
-            print('-'*80)
-            for k in sorted(keys_in_sim - keys_in_binding):
-                print(fmt.format(k, repr(simulated_binding_res[k])))
+    def test_fileBased(self):
+        test_file_roots = [
+            'primer_internal',
+            'primer_internal1',
+            'primer_ok_regions',
+            'primer_tm_lc_masking',
+            'primer_task',
+            'primer_renewed_tasks',
+        ]
+        for fn_root in test_file_roots:
+            base_fp = os.path.join(LOCAL_DIR, 'test_files', fn_root)
+            input_fp = base_fp + '_input'
+            # output_fp = base_fp + '_output'
+            with open(input_fp) as input_fd:
+                input_raw = input_fd.read()
+            input_dicts = self._convertBoulderInput(input_raw)
+            # with open(output_fp) as output_fd:
+            #     output_dict = output_fd.read()
+            print('Testing {}'.format(fn_root))
+            current_global_args = {}
+            i = 0
+            for global_args, seq_args in input_dicts:
+                if i == 2:
+                    break
+                current_global_args.update(global_args)
+                simulated_binding_res = simulatedBindings.designPrimers(
+                                            seq_args, current_global_args)
+                binding_res = bindings.designPrimers(seq_args, 
+                                                     current_global_args)
+                self._compareResults(binding_res, simulated_binding_res)
 
-        if keys_in_binding - keys_in_sim:
-            print('\n\n\nIn binding result but missing from wrapper simulation:')
-            fmt = '{:<30} {:<50}'
-            print(fmt.format('Output Key', 'Binding Result'))
-            print('-'*80)
-            for k in sorted(keys_in_binding - keys_in_sim):
-                print(fmt.format(k, repr(binding_res[k])))
 
-        allowable_relative_difference = 0.005
-        disagree = set(k for k in keys_in_binding & keys_in_sim
-                       if simulated_binding_res[k] != binding_res[k]
-                       and (isinstance(binding_res[k], float)
-                            and abs((binding_res[k] - simulated_binding_res[k])
-                                    / binding_res[k]) > allowable_relative_difference) )
-        if disagree:
-            print('\n\n\nResults disagree:')
-            fmt = '{:<30} {:<25} {:<25}'
-            print(fmt.format('Output Key', 'SimBinding Result', 'Binding Result'))
-            print('-'*80)
-            for k in sorted(disagree):
-                print(fmt.format(k,
-                                 repr(simulated_binding_res[k]),
-                                 repr(binding_res[k])))
-
-        else:
-            print('\n\n\nAll the results in common agree to within {:.2%}'
-                  .format(allowable_relative_difference))
 
     def test_memoryLeaks(self):
         sm = _getMemUsage()

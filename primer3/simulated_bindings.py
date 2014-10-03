@@ -119,13 +119,18 @@ def unwrap(t):
     '''
     k,v = t
     rv = v
+    condInt = lambda s: int(s) if s != '' else -1
     for lam in [lambda x: int(x),
                 lambda x: float(x),
                 lambda x: tuple(int(s) for s in x.split(' ')),
                 lambda x: tuple(int(s) for s in x.split('-')),
                 lambda x: tuple(int(s) for s in x.split(',')),
-                lambda x: tuple(tuple(int(ss) for ss in s.split('-')) for s in x.split(' ')),
-                lambda x: tuple(tuple(int(ss) for ss in s.split(',')) for s in x.split(' '))
+                lambda x: tuple(tuple(int(ss) for ss in s.split('-')) 
+                                for s in x.split(' ')),
+                lambda x: tuple(tuple(condInt(ss) for ss in s.split(',')) 
+                                for s in x.split(' ')),
+                lambda x: tuple(tuple(condInt(ss) for ss in 
+                                s.strip().split(',')) for s in x.split(';'))
     ]:
         try:
             rv = lam(v)
@@ -164,8 +169,9 @@ def convertResult(result):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
-def designPrimers(seq_args, global_args=None, misprime_lib=None,
-                  mishyb_lib=None, input_log=None, output_log=None, err_log=None):
+def designPrimers(seq_args, global_args=None, reset_args=True,
+                  misprime_lib=None, mishyb_lib=None, input_log=None, 
+                  output_log=None, err_log=None):
     ''' Run the Primer3 design process, with the same interface as the bindings,
     using the wrapped subprocess of primer3_core to do the work. 
 
@@ -188,6 +194,8 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
         BoulderIO output from primer3_main)
 
     '''
+    if reset_args:
+        p3_args.clear()
     setGlobals(global_args, misprime_lib, mishyb_lib)
     setSeqArgs(seq_args)
     result = wrappers.designPrimers(p3_args,

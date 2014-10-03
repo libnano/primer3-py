@@ -196,6 +196,21 @@ if sys.version_info[0] > 2:
                 pass
         return data_dict
 
+    def _parseMultiRecordBoulderIO(boulder_str):
+        data_dicts = []
+        for record in re.split('=\r?\n', boulder_str):
+            if record == '':
+                continue
+            data_dict = OrderedDict()
+            for line in record.split('\n'):
+                try:
+                    k,v = line.strip().split('=')
+                    data_dict[k] = v
+                except:
+                    pass
+            data_dicts.append(data_dict)
+        return data_dicts
+
 else:
 
     def _formatBoulderIO(p3_args):
@@ -213,6 +228,21 @@ else:
             except:
                 pass
         return data_dict
+
+    def _parseMultiRecordBoulderIO(boulder_str):
+        data_dicts = []
+        for record in re.split('=\r?\n', boulder_str):
+            if record == '':
+                continue
+            data_dict = OrderedDict()
+            for line in record.split('\n'):
+                try:
+                    k,v = line.strip().split('=')
+                    data_dict[k] = v
+                except:
+                    pass
+            data_dicts.append(data_dict)
+        return data_dicts
 
 
 def designPrimers(p3_args, input_log=None, output_log=None, err_log=None):
@@ -233,7 +263,7 @@ def designPrimers(p3_args, input_log=None, output_log=None, err_log=None):
     if output_log:
         output_log.write(out_str)
         output_log.flush()
-    if err_log:
+    if err_log and err_str is not None:
         err_log.write(err_str)
         err_log.flush()
     return _parseBoulderIO(out_str)
