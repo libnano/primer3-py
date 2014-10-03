@@ -188,7 +188,7 @@ if sys.version_info[0] > 2:
 
     def _parseBoulderIO(boulder_str):
         data_dict = OrderedDict()
-        for line in boulder_str[0].decode("utf-8").split('\n'):
+        for line in boulder_str.decode("utf-8").split('\n'):
             try:
                 k,v = line.strip().split('=')
                 data_dict[k] = v
@@ -206,7 +206,7 @@ else:
 
     def _parseBoulderIO(boulder_str):
         data_dict = OrderedDict()
-        for line in boulder_str[0].split('\n'):
+        for line in boulder_str.split('\n'):
             try:
                 k,v = line.strip().split('=')
                 data_dict[k] = v
@@ -215,7 +215,7 @@ else:
         return data_dict
 
 
-def designPrimers(p3_args):
+def designPrimers(p3_args, input_log=None, output_log=None, err_log=None):
     ''' Return the raw primer3_core output for the provided primer3 args.
 
     Returns an ordered dict of the boulderIO-format primer3 output file
@@ -226,5 +226,14 @@ def designPrimers(p3_args):
     p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH',
                        pjoin(PRIMER3_HOME, 'primer3_config/'))
     in_str = _formatBoulderIO(p3_args)
-    out_str = sp.communicate(input=in_str)
+    if input_log:
+        input_log.write(in_str)
+        input_log.flush()
+    out_str, err_str = sp.communicate(input=in_str)
+    if output_log:
+        output_log.write(out_str)
+        output_log.flush()
+    if err_log:
+        err_log.write(err_str)
+        err_log.flush()
     return _parseBoulderIO(out_str)
