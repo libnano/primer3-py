@@ -1,7 +1,18 @@
 The original Primer3 source was developed at Whitehead Institute and Howard 
-Hughes Medical Institute by Steve Rozen and Helen Skaletsky. 
+Hughes Medical Institute by Steve Rozen, Andreas Untergasser, Maido Remm, 
+Triinu Koressaar, Helen Skaletsky and many others (please let us know if
+we missed you):
+
+Untergrasser A, Cutcutache I, Koressaar T, Ye J, Faircloth BC, Remm M, 
+Rozen SG. 2012. Primer3 - new capabilities and interfaces. 
+Nucleic Acids Research 40(15):e115
+
+Koressaar T, Remm M. 2007. Enhancements and modifications of primer 
+design program Primer3. Bioinformatics 23(10):1289-91 
 
 See http://primer3.sourceforge.net/history.php for more information.
+
+-------------------------------------------------------------------------------
 
 The included Primer3 source incorporates modifications and optimizations
 intended to streamline performance and facilitate Python integration. 
