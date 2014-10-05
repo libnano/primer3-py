@@ -628,6 +628,7 @@ thal(const unsigned char *oligo_f,
       o->align_end_1 = bestI;
       o->align_end_2 = bestJ;
     } else {
+      o->no_structure = 1;
       o->temp = 0.0;
     }
     free(ps1);

@@ -1,20 +1,11 @@
 /******************************************************************************
-** primer3_py_helpers.c
+** primerdesign_helpers.c
 ** ~~~~~~~~~~~~~~~~~~~~
 **
 ** Helper functions to facilitate information passing between the Python C API
 ** and the Primer3 library.
 ******************************************************************************/
 
-/*
-
-primer3_py_helpers.c
-~~~~~~~~~~~~~~~~~~~~
-
-This file defines macros and helper functions that facilitate interaction
-between Python C API code and primer3 native C code.
-
-*/
 
 #include    <string.h>
 #include    <stdio.h>
@@ -234,7 +225,7 @@ between Python C API code and primer3 native C code.
 
 
 p3_global_settings*
-_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
+pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     /* Creates a new p3_global_settings struct and initializes it with
      * defaults using p3_create_global_settings() from libprimer3.c.
      * Parses the user-provided settings from p3_settings_dict and
@@ -608,7 +599,7 @@ createSeqLib(PyObject *seq_dict){
 
 
 seq_args*
-_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
+pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     /* Creates a sequence args object that defines a DNA/RNA sequence for
      * which you want to design primers / oligos. Returns NULL and sets the
      * Python error string on failure.
@@ -875,7 +866,7 @@ _setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
 
 
 PyObject*
-p3OutputToDict(const p3_global_settings *pa, const seq_args *sa,
+pdh_outputToDict(const p3_global_settings *pa, const seq_args *sa,
                const p3retval *retval) {
     PyObject *output_dict;
     PyObject *obj_ptr = NULL;

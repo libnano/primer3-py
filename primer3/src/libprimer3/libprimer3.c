@@ -9057,6 +9057,20 @@ p3_print_args(const p3_global_settings *p, seq_args *s)
        printf("ok_regions \n");
     */
 
+    printf("sequence_primer_pair_ok_regions %i\n",
+           s->ok_regions.count);
+
+    if (s->ok_regions.count) {
+      printf("sequence_primer_pair_ok_regions_list [\n");
+      for (i = 0; i < s->ok_regions.count; i++) {
+        printf("   %i\n", s->ok_regions.left_pairs[i][0]);
+        printf("   %i\n", s->ok_regions.left_pairs[i][1]);
+        printf("   %i\n", s->ok_regions.right_pairs[i][0]);
+        printf("   %i\n", s->ok_regions.right_pairs[i][1]);
+      }
+      printf("]\n");
+    }
+
     if (s->primer_overlap_junctions_count > 0) {
       printf("primer_overlap_junctions_count %i\n",
              s->primer_overlap_junctions_count);

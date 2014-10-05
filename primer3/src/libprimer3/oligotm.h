@@ -162,7 +162,7 @@ double oligotm(const  char *seq,     /* The sequence. */
 */
 double seqtm(const  char *seq,  /* The sequence. */
              double dna_conc,   /* DNA concentration (nanomolar). */
-             double salt_conc,  /* Concentration of divalent cations (millimolar). */
+             double salt_conc,  /* Concentration of monovalent cations (millimolar). */
              double divalent_conc, /* Concentration of divalent cations (millimolar) */
              double dntp_conc,     /* Concentration of dNTPs (millimolar) */
              int    nn_max_len,  /* The maximum sequence length for

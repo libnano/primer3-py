@@ -49,10 +49,10 @@ libprimer3_paths = [pjoin(LIBPRIMER3_PATH, 'thal.c'),
                     pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.c'),
                     pjoin(LIBPRIMER3_PATH, 'libprimer3.c'),
                     pjoin(LIBPRIMER3_PATH, 'dpal.c'),
-                    pjoin(SRC_PATH, 'primer3_py_helpers.c')]
+                    pjoin(SRC_PATH, 'primerdesign_helpers.c')]
 
 
-# Build primer3 for subprocess bindings
+# Build primer3 for subprocess wrappers
 p3build = subprocess.Popen(['make'], shell=True, cwd=LIBPRIMER3_PATH)
 p3build.wait()
 
@@ -60,30 +60,23 @@ p3build.wait()
 p3_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
             os.walk(LIBPRIMER3_PATH) for f in files]
 
-
-primer3_ext = Extension(
-    '_primer3',
-    sources=['primer3/src/primer3_py.c'] + libprimer3_paths,
+primerdesign_ext = Extension(
+    'primer3.primerdesign',
+    sources=['primer3/src/primerdesign_py.c'] + libprimer3_paths,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
     extra_compile_args=["-Wno-error=declaration-after-statement"]
 )
 
-analysis_ext = Extension(
-    'primer3.analysis',
-    sources=['primer3/src/analysis_py.c'] + libprimer3_paths,
+from Cython.Build import cythonize
+a2_ext = Extension(
+    'primer3.thermoanalysis',
+    sources=['primer3/src/thermoanalysis.pyx'] + libprimer3_paths,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
-    extra_compile_args=["-Wno-error=declaration-after-statement"]
-)
+    extra_compile_args=['-Wno-error=declaration-after-statement', 
+                        '-Wno-unused-function']
+    )
 
-# from Cython.Build import cythonize
-# a2_ext = Extension(
-#     'primer3.thermoanalysis',
-#     sources=['primer3/src/thermoanalysis.pyx'] + libprimer3_paths,
-#     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
-#     extra_compile_args=['-Wno-error=declaration-after-statement', 
-#                         '-Wno-unused-function']
-#     )
-# a2_list = cythonize([a2_ext])
+a2_list = cythonize([a2_ext])
 # # include the pyd in the install
 # src_pxd = pjoin(MODULE_PATH, 'src', 'thermoanalysis.pxd')
 # dest_pxd = pjoin(MODULE_PATH, 'thermoanalysis.pxd')
@@ -112,8 +105,8 @@ setup (
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)'
     ],
     packages=['primer3'],
-    ext_modules=[primer3_ext],
-    # ext_modules=[primer3_ext] + a2_list,
+    # ext_modules=[primer3_ext],
+    ext_modules=[primerdesign_ext] + a2_list,
     package_data={'primer3': p3_files},
 )
 

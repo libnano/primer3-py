@@ -66,10 +66,10 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
                          salt_corrections_method))
     # For whatever reason mv_conc and dna_conc have to be ints
     args = [pjoin(PRIMER3_HOME, 'oligotm'),
-            '-mv',  str(int(mv_conc)),
+            '-mv',  str(mv_conc),
             '-dv',  str(dv_conc),
             '-n',   str(dntp_conc),
-            '-d',   str(int(dna_conc)),
+            '-d',   str(dna_conc),
             '-tp',  str(tm_meth),
             '-sc',  str(salt_meth),
             seq]
@@ -138,7 +138,7 @@ def calcHairpin(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
     '''
     return calcThermo(seq, seq, 'HAIRPIN', mv_conc, dv_conc, dntp_conc,
-                        dna_conc, temp_c, max_loop, temp_only)
+                      dna_conc, temp_c, max_loop, temp_only)
 
 
 def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
@@ -149,7 +149,7 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 
     '''
     return calcThermo(seq1, seq2, 'ANY', mv_conc, dv_conc, dntp_conc,
-                        dna_conc, temp_c, max_loop, temp_only)
+                      dna_conc, temp_c, max_loop, temp_only)
 
 
 def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,

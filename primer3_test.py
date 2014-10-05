@@ -43,21 +43,18 @@ class TestLowLevelBindings(unittest.TestCase):
     def test_calcTm(self):
         for x in range(25):
             self.randArgs()
-            # The oligotm executable requires mv_conc and dna_conc to be ints
-            # (technically longs... see oligotm_main.c vs. oligotm.c
-            # discrepency)
             binding_tm = bindings.calcTm(
                                 seq=self.seq1,
-                                mv_conc=int(self.mv_conc),
+                                mv_conc=self.mv_conc,
                                 dv_conc=self.dv_conc,
                                 dntp_conc=self.dntp_conc,
-                                dna_conc=int(self.dna_conc))
+                                dna_conc=self.dna_conc)
             wrapper_tm = wrappers.calcTm(
                                 seq=self.seq1,
-                                mv_conc=int(self.mv_conc),
+                                mv_conc=self.mv_conc,
                                 dv_conc=self.dv_conc,
                                 dntp_conc=self.dntp_conc,
-                                dna_conc=int(self.dna_conc))
+                                dna_conc=self.dna_conc)
             self.assertEqual(int(binding_tm), int(wrapper_tm))
 
     def test_calcHairpin(self):
@@ -178,6 +175,7 @@ class TestLowLevelBindings(unittest.TestCase):
                                  'calcHeterodimer > 500 bytes -- potential \n\t'
                                  'memory leak (mem increase: {})'.format(em-sm))
 
+
 class TestDesignBindings(unittest.TestCase):
 
     def _compareResults(self, binding_res, simulated_binding_res, 
@@ -205,29 +203,33 @@ class TestDesignBindings(unittest.TestCase):
                 for k in sorted(keys_in_binding - keys_in_sim):
                     print(fmt.format(k, repr(binding_res[k])))
 
-        allowable_relative_difference = 0.005
-        disagree = set(k for k in keys_in_binding & keys_in_sim
-                       if simulated_binding_res[k] != binding_res[k]
-                       and (isinstance(binding_res[k], float)
-                       and (binding_res[k] != 0)
-                            and abs((binding_res[k] - simulated_binding_res[k])
-                                    / binding_res[k]) > 
-                                    allowable_relative_difference) )
-        if disagree:
+        allowable_relative_difference = 0.05
+        discrepencies = [k for k in keys_in_binding & keys_in_sim
+                         if simulated_binding_res[k] != binding_res[k]]
+        disagreements = []
+        for ds in discrepencies:
+            if (isinstance(binding_res[ds], (float, int)) and 
+                    binding_res[ds] != 0):
+                percent_diff = abs((binding_res[ds] - simulated_binding_res[ds])
+                                    / binding_res[ds])
+                if percent_diff > allowable_relative_difference:
+                    if simulated_binding_res[ds] == 0.0 and binding_res[ds] < 0:
+                        pass
+                    else:
+                        disagreements.append(ds)
+
+        if len(disagreements):
             fmt = '{:<30} {:<25} {:<25}'
             disagreements = '\n'.join([fmt.format(k,
                                         repr(simulated_binding_res[k]),
                                         repr(binding_res[k])) for k in
-                                        sorted(disagree)])
+                                        sorted(disagreements)])
             if verbose:
                 print('\n\n\nResults disagree:')
                 print(fmt.format('Output Key', 'SimBinding Result', 
                                  'Binding Result'))
                 print('-'*80)
-                print(disagreements)
-            raise RuntimeError('Results between binary output and binding '
-                               'output disagree: \n' + disagreements)
-
+            return disagreements
         else:
             if verbose:
                 print('\n\n\nAll the results in common ({}) agree to within '
@@ -243,81 +245,83 @@ class TestDesignBindings(unittest.TestCase):
         for bd in boulder_dicts:
             converted_input = [simulatedBindings.unwrap(arg) for arg in 
                                bd.items()]
-            global_args = dict(filter(lambda arg: "SEQUENCE" not in arg[0], 
+            global_args = dict(filter(lambda arg: "PRIMER_" == arg[0][:7], 
                                       converted_input))
-            seq_args = dict(filter(lambda arg: "SEQUENCE" in arg[0], 
+            seq_args = dict(filter(lambda arg: "SEQUENCE_" == arg[0][:9], 
                                     converted_input))
-            input_dicts.append((global_args, seq_args))
+            p3_args = dict(filter(lambda arg: "P3_" == arg[0][:3], 
+                                    converted_input))
+            input_dicts.append((global_args, seq_args, p3_args))
         return input_dicts
 
-    def testHuman(self):
-        sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
-        quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
-        seq_args = {
-            'SEQUENCE_ID': 'MH1000',
-            'SEQUENCE_TEMPLATE': sequence_template,
-            'SEQUENCE_QUALITY': quality_list,
-            'SEQUENCE_INCLUDED_REGION': [36,342]
-        }
-        global_args = {
-            'PRIMER_OPT_SIZE': 20,
-            'PRIMER_PICK_INTERNAL_OLIGO': 1,
-            'PRIMER_INTERNAL_MAX_SELF_END': 8,
-            'PRIMER_MIN_SIZE': 18,
-            'PRIMER_MAX_SIZE': 25,
-            'PRIMER_OPT_TM': 60.0,
-            'PRIMER_MIN_TM': 57.0,
-            'PRIMER_MAX_TM': 63.0,
-            'PRIMER_MIN_GC': 20.0,
-            'PRIMER_MAX_GC': 80.0,
-            'PRIMER_MAX_POLY_X': 100,
-            'PRIMER_INTERNAL_MAX_POLY_X': 100,
-            'PRIMER_SALT_MONOVALENT': 50.0,
-            'PRIMER_DNA_CONC': 50.0,
-            'PRIMER_MAX_NS_ACCEPTED': 0,
-            'PRIMER_MAX_SELF_ANY': 12,
-            'PRIMER_MAX_SELF_END': 8,
-            'PRIMER_PAIR_MAX_COMPL_ANY': 12,
-            'PRIMER_PAIR_MAX_COMPL_END': 8,
-            'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
-        }
-        simulated_binding_res = simulatedBindings.designPrimers(seq_args, global_args)
-        binding_res = bindings.designPrimers(seq_args, global_args)
-        wrapper_res = wrappers.designPrimers(
-            {
-                'PRIMER_OPT_SIZE': 20,
-                'PRIMER_PICK_INTERNAL_OLIGO': 1,
-                'PRIMER_INTERNAL_MAX_SELF_END': 8,
-                'PRIMER_MIN_SIZE': 18,
-                'PRIMER_MAX_SIZE': 25,
-                'PRIMER_OPT_TM': 60.0,
-                'PRIMER_MIN_TM': 57.0,
-                'PRIMER_MAX_TM': 63.0,
-                'PRIMER_MIN_GC': 20.0,
-                'PRIMER_MAX_GC': 80.0,
-                'PRIMER_MAX_POLY_X': 100,
-                'PRIMER_INTERNAL_MAX_POLY_X': 100,
-                'PRIMER_SALT_MONOVALENT': 50.0,
-                'PRIMER_DNA_CONC': 50.0,
-                'PRIMER_MAX_NS_ACCEPTED': 0,
-                'PRIMER_MAX_SELF_ANY': 12,
-                'PRIMER_MAX_SELF_END': 8,
-                'PRIMER_PAIR_MAX_COMPL_ANY': 12,
-                'PRIMER_PAIR_MAX_COMPL_END': 8,
-                'PRIMER_PRODUCT_SIZE_RANGE': '75-100 100-125 125-150 150-175 175-200 200-225',
-                'SEQUENCE_ID': 'MH1000',
-                'SEQUENCE_TEMPLATE': sequence_template,
-                'SEQUENCE_QUALITY': ' '.join(map(str, quality_list)),
-                'SEQUENCE_INCLUDED_REGION': '36,342'
-            }
-        )
-        print('\n\n\n{:<30} {:<25} {:<25} {:<25}'.format('Output Key', 'Wrapper Result', 'SimBinding Result', 'Binding Result'))
-        print('-'*80)
-        for result_field in sorted(binding_res.keys()):
-            print('{:<30} {:<25} {:<25} {:<25}'.format(result_field,
-                                                       repr(wrapper_res.get(result_field)),
-                                                       repr(simulated_binding_res.get(result_field)),
-                                                       repr(binding_res[result_field])))
+    # def testHuman(self):
+    #     sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
+    #     quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
+    #     seq_args = {
+    #         'SEQUENCE_ID': 'MH1000',
+    #         'SEQUENCE_TEMPLATE': sequence_template,
+    #         'SEQUENCE_QUALITY': quality_list,
+    #         'SEQUENCE_INCLUDED_REGION': [36,342]
+    #     }
+    #     global_args = {
+    #         'PRIMER_OPT_SIZE': 20,
+    #         'PRIMER_PICK_INTERNAL_OLIGO': 1,
+    #         'PRIMER_INTERNAL_MAX_SELF_END': 8,
+    #         'PRIMER_MIN_SIZE': 18,
+    #         'PRIMER_MAX_SIZE': 25,
+    #         'PRIMER_OPT_TM': 60.0,
+    #         'PRIMER_MIN_TM': 57.0,
+    #         'PRIMER_MAX_TM': 63.0,
+    #         'PRIMER_MIN_GC': 20.0,
+    #         'PRIMER_MAX_GC': 80.0,
+    #         'PRIMER_MAX_POLY_X': 100,
+    #         'PRIMER_INTERNAL_MAX_POLY_X': 100,
+    #         'PRIMER_SALT_MONOVALENT': 50.0,
+    #         'PRIMER_DNA_CONC': 50.0,
+    #         'PRIMER_MAX_NS_ACCEPTED': 0,
+    #         'PRIMER_MAX_SELF_ANY': 12,
+    #         'PRIMER_MAX_SELF_END': 8,
+    #         'PRIMER_PAIR_MAX_COMPL_ANY': 12,
+    #         'PRIMER_PAIR_MAX_COMPL_END': 8,
+    #         'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
+    #     }
+    #     simulated_binding_res = simulatedBindings.designPrimers(seq_args, global_args)
+    #     binding_res = bindings.designPrimers(seq_args, global_args)
+    #     wrapper_res = wrappers.designPrimers(
+    #         {
+    #             'PRIMER_OPT_SIZE': 20,
+    #             'PRIMER_PICK_INTERNAL_OLIGO': 1,
+    #             'PRIMER_INTERNAL_MAX_SELF_END': 8,
+    #             'PRIMER_MIN_SIZE': 18,
+    #             'PRIMER_MAX_SIZE': 25,
+    #             'PRIMER_OPT_TM': 60.0,
+    #             'PRIMER_MIN_TM': 57.0,
+    #             'PRIMER_MAX_TM': 63.0,
+    #             'PRIMER_MIN_GC': 20.0,
+    #             'PRIMER_MAX_GC': 80.0,
+    #             'PRIMER_MAX_POLY_X': 100,
+    #             'PRIMER_INTERNAL_MAX_POLY_X': 100,
+    #             'PRIMER_SALT_MONOVALENT': 50.0,
+    #             'PRIMER_DNA_CONC': 50.0,
+    #             'PRIMER_MAX_NS_ACCEPTED': 0,
+    #             'PRIMER_MAX_SELF_ANY': 12,
+    #             'PRIMER_MAX_SELF_END': 8,
+    #             'PRIMER_PAIR_MAX_COMPL_ANY': 12,
+    #             'PRIMER_PAIR_MAX_COMPL_END': 8,
+    #             'PRIMER_PRODUCT_SIZE_RANGE': '75-100 100-125 125-150 150-175 175-200 200-225',
+    #             'SEQUENCE_ID': 'MH1000',
+    #             'SEQUENCE_TEMPLATE': sequence_template,
+    #             'SEQUENCE_QUALITY': ' '.join(map(str, quality_list)),
+    #             'SEQUENCE_INCLUDED_REGION': '36,342'
+    #         }
+    #     )
+    #     print('\n\n\n{:<30} {:<25} {:<25} {:<25}'.format('Output Key', 'Wrapper Result', 'SimBinding Result', 'Binding Result'))
+    #     print('-'*80)
+    #     for result_field in sorted(binding_res.keys()):
+    #         print('{:<30} {:<25} {:<25} {:<25}'.format(result_field,
+    #                                                    repr(wrapper_res.get(result_field)),
+    #                                                    repr(simulated_binding_res.get(result_field)),
+    #                                                    repr(binding_res[result_field])))
 
 
     def testCompareSim(self):
@@ -353,40 +357,78 @@ class TestDesignBindings(unittest.TestCase):
         }
         simulated_binding_res = simulatedBindings.designPrimers(seq_args, global_args)
         binding_res = bindings.designPrimers(seq_args, global_args)
-        self._compareResults(binding_res, simulated_binding_res, verbose=True)
+        self._compareResults(binding_res, simulated_binding_res)
 
     def test_fileBased(self):
         test_file_roots = [
+            'primer_must_use_th',
+            'primer_task_th',
+            'primer_thal_args',
+            'primer_thal_max_seq_error',
+            'primer_first_base_index',
+            'test_compl_error',
+            'test_left_to_right_of_right',
+            'dv_conc_vs_dntp_conc',
+            'dv_conc_vs_dntp_conc',
             'primer_internal',
-            'primer_internal1',
-            'primer_ok_regions',
             'primer_tm_lc_masking',
+            'primer_ok_regions',
+            'primer_start_codon',
             'primer_task',
             'primer_renewed_tasks',
+            'primer_must_overlap_point',
+            'primer_overlap_junction',
+            'primer_all_settingsfiles',
+            'primer_high_tm_load_set',
+            'primer_high_gc_load_set',
+            'primer_gc_end',
+            'primer_num_best',
+            'primer_check',
+            'primer_end_pathology',
+            'primer_num_best',
+            'long_seq',
+            'p3-tmpl-mispriming'
         ]
+        print()
+        failures = []
         for fn_root in test_file_roots:
             base_fp = os.path.join(LOCAL_DIR, 'test_files', fn_root)
             input_fp = base_fp + '_input'
-            # output_fp = base_fp + '_output'
+
             with open(input_fp) as input_fd:
                 input_raw = input_fd.read()
             input_dicts = self._convertBoulderInput(input_raw)
-            # with open(output_fp) as output_fd:
-            #     output_dict = output_fd.read()
-            print('Testing {}'.format(fn_root))
+
+            print('->Testing file {:<40}'.format(fn_root), end='\r')
             current_global_args = {}
-            i = 0
-            for global_args, seq_args in input_dicts:
-                if i == 2:
-                    break
+            for global_args, seq_args, p3_args in input_dicts:
+                test_id = str(seq_args.get('SEQUENCE_ID', ''))
                 current_global_args.update(global_args)
                 simulated_binding_res = simulatedBindings.designPrimers(
                                             seq_args, current_global_args)
-                binding_res = bindings.designPrimers(seq_args, 
-                                                     current_global_args)
-                self._compareResults(binding_res, simulated_binding_res)
-
-
+                wrapper_error = simulated_binding_res.get('PRIMER_ERROR')
+                if wrapper_error is not None:
+                    with self.assertRaises(IOError):
+                        binding_res = bindings.designPrimers(seq_args, 
+                                                            current_global_args)                   
+                else:
+                    try:
+                        binding_res = bindings.designPrimers(seq_args, 
+                                                            current_global_args)
+                    except IOError:
+                        if max([x in p3_args.get('P3_COMMENT', '') for x in 
+                                ('complain', 'fail')]):
+                            pass
+                    disagreements = self._compareResults(binding_res, 
+                                                         simulated_binding_res)
+                    if disagreements is not None:
+                        failures.append((fn_root, test_id, disagreements))
+        print(' '* 60, end='\r')
+        if len(failures):
+            err_msg = ('Failures occured during file testing:\n' +
+                      '\n'.join(['->{}\t{}\n{}'.format(*f) for f in 
+                                 failures]))
+            raise RuntimeError(err_msg)
 
     def test_memoryLeaks(self):
         sm = _getMemUsage()
@@ -429,6 +471,7 @@ class TestDesignBindings(unittest.TestCase):
             raise AssertionError('Memory usage increase after 1k runs of \n\t'
                                  'designPrimers > 1000 bytes -- potential \n\t'
                                  'memory leak (mem increase: {})'.format(em-sm))
+
 
 if __name__ == '__main__':
     import sys

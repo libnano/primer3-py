@@ -34,10 +34,10 @@ def wrapListOfQuads(v):
     '1,2,3,4 ; 5,6,7,8'
 
     '''
+    int_to_str = lambda i: str(i) if i > -1 else ''
     try:
-        rv = ' ; '.join(
-            ','.join(x and str(x) or ''
-                     for x in quad)
+        rv = ';'.join(
+            ','.join(map(int_to_str, quad))
             for quad in v)
     except TypeError:
         rv = ','.join(x and str(x) or '' for x in v)

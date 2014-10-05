@@ -17,7 +17,6 @@ if not os.environ.get('PRIMER3HOME'):
     except:
         raise ImportError('PRIMER3HOME environmental variable is not set.')
 
-
 from primer3.bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
                               calcHairpinTm, calcHomodimerTm,
                               calcHeterodimerTm, calcTm, setP3Globals, 
