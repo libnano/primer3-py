@@ -4,6 +4,6 @@ python:
   - "3.3"
   - "2.7"
 
-install: python setup.py install
+install: python setup.py install  -r requirements.txt
 # command to run tests, e.g. python setup.py test
 script: python primer3_test.py
