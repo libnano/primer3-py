@@ -6,6 +6,6 @@ python:
 
 install: 
   - "pip install -r requirements.txt"
-  - "python setup.py install"
+  - "python setup.py build_ext --inplace"
 # command to run tests, e.g. python setup.py test
 script: python primer3_test.py
