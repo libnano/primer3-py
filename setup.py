@@ -79,6 +79,7 @@ def p3Build():
                                cwd=LIBPRIMER3_PATH)
     p3build.wait()
 
+P3_BUILT = False
 
 # Find all necessary primer3 binaries / data files to include with the package
 p3_binaries = ['oligotm', 'ntthal', 'primer3_core']
@@ -101,13 +102,19 @@ def makeExecutable(fp):
 class CustomInstallLib(install_lib.install_lib):
 
     def run(self):
+        global P3_BUILT
         install_lib.install_lib.run(self)
         # Copy binary files over to build directory and make executable
-        new_p3_binary_fps = [pjoin(self.install_dir, 'primer3', 'src', 
-                             'libprimer3', fn) for fn in p3_binaries]
-        [shutil.copyfile(o, d) for o, d in zip(p3_binary_fps, 
-                                               new_p3_binary_fps)]
-        map(makeExecutable, [fn for fn in new_p3_binary_fps])        
+        if not self.dry_run:
+            if not P3_BUILT:
+                p3Clean()
+                p3Build()
+                P3_BUILT = True
+            new_p3_binary_fps = [pjoin(self.install_dir, 'primer3', 'src', 
+                                 'libprimer3', fn) for fn in p3_binaries]
+            [shutil.copyfile(o, d) for o, d in zip(p3_binary_fps, 
+                                                   new_p3_binary_fps)]
+            list(map(makeExecutable, new_p3_binary_fps))   
 
 
 class CustomSdist(sdist.sdist):
@@ -115,22 +122,19 @@ class CustomSdist(sdist.sdist):
     def run(self):
         # Clean up the primer3 build prior to sdist command to remove
         # binaries and object/library files
-        p3clean = subprocess.Popen(['make clean'], shell=True, 
-                                   cwd=LIBPRIMER3_PATH)
-        p3clean.wait()
+        p3Clean()
         sdist.sdist.run(self)
 
 
 class CustomBuildExt(build_ext.build_ext):
 
-    P3_BUILT = False
-
     def run(self):
+        global P3_BUILT
         # Build primer3 prior to building the extension, if not already built
-        if not self.dry_run and not CustomBuildExt.P3_BUILT:
+        if not self.dry_run and not P3_BUILT:
             p3Clean()
             p3Build()
-            CustomBuildExt.P3_BUILT = True
+            P3_BUILT = True
         build_ext.build_ext.run(self)
 
 
