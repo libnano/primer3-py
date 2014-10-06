@@ -93,7 +93,7 @@ p3_files = thermo_files
 def makeExecutable(fp):
     ''' Adds the executable bit to the file at filepath `fp`
     '''
-    mode = ((os.stat(fp).st_mode) | 0555) & 07777
+    mode = ((os.stat(fp).st_mode) | 0o555) & 0o7777
     setup_log.info("Adding executable bit to %s (mode is now %o)", fp, mode)
     os.chmod(fp, mode)
 

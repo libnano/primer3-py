@@ -9,4 +9,4 @@ install:
   - "python setup.py install"
 
 # Run the tests
-script: python setup.py test
+script: python primer3/test_primer3.py
