@@ -11,6 +11,7 @@ from __future__ import print_function
 import os
 import random
 import resource
+import sys
 import unittest
 
 from time import sleep
@@ -330,7 +331,8 @@ class TestDesignBindings(unittest.TestCase):
                 input_raw = input_fd.read()
             input_dicts = self._convertBoulderInput(input_raw)
 
-            print('->Testing file {:<40}'.format(fn_root), end='\r')
+            sys.stdout.write('->Testing file {:<40}\r'.format(fn_root))
+            sys.stdout.flush()
             current_global_args = {}
             for global_args, seq_args, p3_args in input_dicts:
                 test_id = str(seq_args.get('SEQUENCE_ID', ''))
