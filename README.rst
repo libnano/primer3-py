@@ -50,9 +50,9 @@ Testing
 We have included a comprehensive test suite to compare the output of
 the Python bindings with the output of the Primer3 binaries. After
 building and (optionally) installing ``primer3-py`` you can run the 
-tests using the ``primer3_tests.py`` module::
+tests using the ``primer3/test_primer3.py`` module::
 
-  $ python primer3_tests.py
+  $ python primer3/test_primer3.py
 
 or for memory checking with valgrind::
 
