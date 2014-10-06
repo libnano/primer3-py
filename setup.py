@@ -30,6 +30,7 @@ you may do so using either pip or the setup.py script::
 import os
 import shutil
 import subprocess
+import sys
 
 try:
     from setuptools import setup, Extension
@@ -120,9 +121,11 @@ class CustomInstallLib(install_lib.install_lib):
 class CustomSdist(sdist.sdist):
 
     def run(self):
+        global P3_BUILT
         # Clean up the primer3 build prior to sdist command to remove
         # binaries and object/library files
         p3Clean()
+        P3_BUILT = False
         sdist.sdist.run(self)
 
 
@@ -155,6 +158,10 @@ thermoanalysis_ext = Extension(
                         '-Wno-unused-function']
     )
 
+if ('build_ext' in sys.argv or 'install' in sys.argv) and not P3_BUILT:
+    p3Clean()
+    p3Build()
+    P3_BUILT = True
 
 thermoanalysis_ext_list = cythonize([thermoanalysis_ext])
 

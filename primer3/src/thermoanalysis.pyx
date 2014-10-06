@@ -323,6 +323,27 @@ cdef class ThermoAnalysis:
                      self.tm_method,
                      <salt_correction_type> self.salt_correction_method)
 
+    cdef inline ThermoResult calcEndStability_c(ThermoAnalysis self,
+                                               unsigned char *s1,
+                                               unsigned char *s2):
+        cdef ThermoResult tr_obj = ThermoResult()
+
+        self.thalargs.dimer = 1 
+        self.thalargs.type = <thal_alignment_type> 2
+        thal(<const unsigned char*> s1, <const unsigned char*> s2,
+         <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
+        return tr_obj
+
+    def calcEndStability(ThermoAnalysis self, oligo1, oligo2):
+        # first convert any unicode to a byte string and then
+        # cooerce to a unsigned char *
+        # see http://docs.cython.org/src/tutorial/strings.html#encoding-text-to-bytes
+        py_s1 = <bytes> _bytes(oligo1)
+        cdef unsigned char* s1 = py_s1
+        py_s2 = <bytes> _bytes(oligo2)
+        cdef unsigned char* s2 = py_s2
+        return ThermoAnalysis.calcEndStability_c(<ThermoAnalysis> self, s1, s2)
+
     def calcTm(ThermoAnalysis self, oligo1):
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *

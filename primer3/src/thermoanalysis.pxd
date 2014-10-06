@@ -57,11 +57,15 @@ cdef class ThermoAnalysis:
     cdef public int _salt_correction_method
 
     cdef inline ThermoResult calcHeterodimer_c(ThermoAnalysis self,
-                                unsigned char*s1,
-                                unsigned char* s2)
+                                               unsigned char*s1,
+                                               unsigned char* s2)
 
     cdef inline ThermoResult calcHomodimer_c(ThermoAnalysis self, unsigned char*s1)
 
     cdef inline ThermoResult calcHairpin_c(ThermoAnalysis self, unsigned char*s1)
+
+    cdef inline ThermoResult calcEndStability_c(ThermoAnalysis self,
+                                                unsigned char*s1,
+                                                unsigned char* s2)
 
     cdef inline double calcTm_c(ThermoAnalysis self, char* s1)

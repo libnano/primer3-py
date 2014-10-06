@@ -57,8 +57,8 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
         max_loop(int)           : Maximum size of loops in the structure
 
     Returns:
-        A `thermoresult` named tuple of thermodynamic characteristics of the
-        hairpin formation. If no hairpin is formed, returns `None`.
+        A `ThermoResult` object with thermodynamic characteristics of the
+        hairpin formation.
 
     '''
     _setThermoArgs(**locals())
@@ -82,8 +82,8 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
         max_loop (int)          : Maximum size of loops in the structure
 
     Returns:
-        A `thermoresult` named tuple of thermodynamic characteristics of the
-        homodimer interaction. If no interaction is present, returns `None`.
+        A `ThermoResult` object with thermodynamic characteristics of the
+        homodimer interaction. 
 
     '''
     _setThermoArgs(**locals())
@@ -109,12 +109,41 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
         max_loop(int)           : Maximum size of loops in the structure
 
     Returns:
-        A `thermoresult` named tuple of thermodynamic characteristics of the
-        heterodimer interaction. If no interaction is present, returns `None`.
+        A `ThermoResult` object with thermodynamic characteristics of the
+        heterodimer interaction. 
 
     '''
     _setThermoArgs(**locals())
     return _THERMO_ANALYSIS.calcHeterodimer(seq1, seq2)
+
+
+def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+                     dna_conc=50, temp_c=37, max_loop=30):
+    ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA 
+    sequence `seq2`.
+
+    Args:
+        seq1 (str)              : DNA sequence to analyze for 3' end
+                                  hybridization against the target sequence
+        seq2 (str)              : Target DNA sequence to analyze for
+                                  seq1 3' end hybridization
+
+    Kwargs:
+        mv_conc (float/int)     : Monovalent cation concentration (mM)
+        dv_conc (float/int)     : Divalent cation concentration (mM)
+        dntp_conc (float/int)   : dNTP concentration (mM)
+        dna_conc (float/int)    : DNA concentration (nM)
+        temp_c (int)            : Simulation temperature for dG (Celsius)
+        max_loop(int)           : Maximum size of loops in the structure
+
+    Returns:
+        A `ThermoResult` object with thermodynamic characteristics of the
+        3' hybridization interaction. 
+
+    '''
+    _setThermoArgs(**locals())
+    return _THERMO_ANALYSIS.calcEndStability(seq1, seq2)
+
 
 def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
            max_nn_length=60, tm_method='santalucia',
