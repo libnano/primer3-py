@@ -50,9 +50,9 @@ Testing
 We have included a comprehensive test suite to compare the output of
 the Python bindings with the output of the Primer3 binaries. After
 building and (optionally) installing ``primer3-py`` you can run the 
-tests using the ``primer3_tests.py`` module::
+tests using the ``primer3/test_primer3.py`` module::
 
-  $ python primer3_tests.py
+  $ python primer3/test_primer3.py
 
 or for memory checking with valgrind::
 
@@ -95,7 +95,7 @@ return a ThermoResult object::
   >>> print res.tm
   39.92795428766294
 
-** Performance Note: **
+**Performance Note:**
 Under the hood, thermodynamic calculations are performed by calls to instance
 methods of an instantiated ``ThermoAnalysis`` object from the 
 ``thermoanalysis`` module. Users interested in performance optimization should 
