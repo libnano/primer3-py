@@ -15,7 +15,7 @@ import unittest
 
 from time import sleep
 
-from primer3 import bindings, wrappers, simulatedBindings
+from primer3 import bindings, wrappers, simulatedbindings
 
 
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -243,7 +243,7 @@ class TestDesignBindings(unittest.TestCase):
         boulder_dicts = wrappers._parseMultiRecordBoulderIO(boulder_str)
         input_dicts = []
         for bd in boulder_dicts:
-            converted_input = [simulatedBindings.unwrap(arg) for arg in 
+            converted_input = [simulatedbindings.unwrap(arg) for arg in 
                                bd.items()]
             global_args = dict(filter(lambda arg: "PRIMER_" == arg[0][:7], 
                                       converted_input))
@@ -253,75 +253,6 @@ class TestDesignBindings(unittest.TestCase):
                                     converted_input))
             input_dicts.append((global_args, seq_args, p3_args))
         return input_dicts
-
-    # def testHuman(self):
-    #     sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
-    #     quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
-    #     seq_args = {
-    #         'SEQUENCE_ID': 'MH1000',
-    #         'SEQUENCE_TEMPLATE': sequence_template,
-    #         'SEQUENCE_QUALITY': quality_list,
-    #         'SEQUENCE_INCLUDED_REGION': [36,342]
-    #     }
-    #     global_args = {
-    #         'PRIMER_OPT_SIZE': 20,
-    #         'PRIMER_PICK_INTERNAL_OLIGO': 1,
-    #         'PRIMER_INTERNAL_MAX_SELF_END': 8,
-    #         'PRIMER_MIN_SIZE': 18,
-    #         'PRIMER_MAX_SIZE': 25,
-    #         'PRIMER_OPT_TM': 60.0,
-    #         'PRIMER_MIN_TM': 57.0,
-    #         'PRIMER_MAX_TM': 63.0,
-    #         'PRIMER_MIN_GC': 20.0,
-    #         'PRIMER_MAX_GC': 80.0,
-    #         'PRIMER_MAX_POLY_X': 100,
-    #         'PRIMER_INTERNAL_MAX_POLY_X': 100,
-    #         'PRIMER_SALT_MONOVALENT': 50.0,
-    #         'PRIMER_DNA_CONC': 50.0,
-    #         'PRIMER_MAX_NS_ACCEPTED': 0,
-    #         'PRIMER_MAX_SELF_ANY': 12,
-    #         'PRIMER_MAX_SELF_END': 8,
-    #         'PRIMER_PAIR_MAX_COMPL_ANY': 12,
-    #         'PRIMER_PAIR_MAX_COMPL_END': 8,
-    #         'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
-    #     }
-    #     simulated_binding_res = simulatedBindings.designPrimers(seq_args, global_args)
-    #     binding_res = bindings.designPrimers(seq_args, global_args)
-    #     wrapper_res = wrappers.designPrimers(
-    #         {
-    #             'PRIMER_OPT_SIZE': 20,
-    #             'PRIMER_PICK_INTERNAL_OLIGO': 1,
-    #             'PRIMER_INTERNAL_MAX_SELF_END': 8,
-    #             'PRIMER_MIN_SIZE': 18,
-    #             'PRIMER_MAX_SIZE': 25,
-    #             'PRIMER_OPT_TM': 60.0,
-    #             'PRIMER_MIN_TM': 57.0,
-    #             'PRIMER_MAX_TM': 63.0,
-    #             'PRIMER_MIN_GC': 20.0,
-    #             'PRIMER_MAX_GC': 80.0,
-    #             'PRIMER_MAX_POLY_X': 100,
-    #             'PRIMER_INTERNAL_MAX_POLY_X': 100,
-    #             'PRIMER_SALT_MONOVALENT': 50.0,
-    #             'PRIMER_DNA_CONC': 50.0,
-    #             'PRIMER_MAX_NS_ACCEPTED': 0,
-    #             'PRIMER_MAX_SELF_ANY': 12,
-    #             'PRIMER_MAX_SELF_END': 8,
-    #             'PRIMER_PAIR_MAX_COMPL_ANY': 12,
-    #             'PRIMER_PAIR_MAX_COMPL_END': 8,
-    #             'PRIMER_PRODUCT_SIZE_RANGE': '75-100 100-125 125-150 150-175 175-200 200-225',
-    #             'SEQUENCE_ID': 'MH1000',
-    #             'SEQUENCE_TEMPLATE': sequence_template,
-    #             'SEQUENCE_QUALITY': ' '.join(map(str, quality_list)),
-    #             'SEQUENCE_INCLUDED_REGION': '36,342'
-    #         }
-    #     )
-    #     print('\n\n\n{:<30} {:<25} {:<25} {:<25}'.format('Output Key', 'Wrapper Result', 'SimBinding Result', 'Binding Result'))
-    #     print('-'*80)
-    #     for result_field in sorted(binding_res.keys()):
-    #         print('{:<30} {:<25} {:<25} {:<25}'.format(result_field,
-    #                                                    repr(wrapper_res.get(result_field)),
-    #                                                    repr(simulated_binding_res.get(result_field)),
-    #                                                    repr(binding_res[result_field])))
 
 
     def testCompareSim(self):
@@ -355,7 +286,7 @@ class TestDesignBindings(unittest.TestCase):
             'PRIMER_PAIR_MAX_COMPL_END': 8,
             'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
         }
-        simulated_binding_res = simulatedBindings.designPrimers(seq_args, global_args)
+        simulated_binding_res = simulatedbindings.designPrimers(seq_args, global_args)
         binding_res = bindings.designPrimers(seq_args, global_args)
         self._compareResults(binding_res, simulated_binding_res)
 
@@ -404,7 +335,7 @@ class TestDesignBindings(unittest.TestCase):
             for global_args, seq_args, p3_args in input_dicts:
                 test_id = str(seq_args.get('SEQUENCE_ID', ''))
                 current_global_args.update(global_args)
-                simulated_binding_res = simulatedBindings.designPrimers(
+                simulated_binding_res = simulatedbindings.designPrimers(
                                             seq_args, current_global_args)
                 wrapper_error = simulated_binding_res.get('PRIMER_ERROR')
                 if wrapper_error is not None:

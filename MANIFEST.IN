@@ -1,4 +1,5 @@
-include primer3_test.py README.rst LICENSE CHANGES
-include primer3/src/primer3_py_helpers.*
-include primer3/src/primer3-src-2.3.6.tar.gz
+include README.rst LICENSE CHANGES
 include valgrind-python.supp
+include primer3/src/*.pxd primer3/src/*.pyx primer3/src/*.h primer3/src/*.c
+recursive-include primer3/test_files *
+recursive-include primer3/src/libprimer3 *

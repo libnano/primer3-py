@@ -716,7 +716,7 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
         PyObject *arr_item;
         if (!PySequence_Check(p_obj)){
             if (PyLong_Check(p_obj)) {
-                sa->primer_overlap_junctions[0] = PyLong_AsLong(p_obj);
+                sa->primer_overlap_junctions[0] = (int)PyLong_AsLong(p_obj);
                 sa->primer_overlap_junctions_count++;
                 single_value = 1;
             } else {
