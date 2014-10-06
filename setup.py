@@ -183,6 +183,7 @@ setup(
     long_description=LONG_DESCRIPTION,
     classifiers=[
         'Programming Language :: C',
+        'Programming Language :: Cython',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',

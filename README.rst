@@ -17,8 +17,8 @@ popular Primer3 version 2.3.6 C library. The package provides a simple API
 for low-level thermodynamic calculations pertinent to oligonucleotide design 
 (e.g., melting temperature) as well as a simple interface to the Primer3 design 
 engine for a more holistic approach to primer design. All of the bindings
-are implemented using the Python C API, which means that they are 
-highly efficient but do require initial compilation (see ``Installation``,
+are implemented using either the Python C API or Cython, which means that they 
+are highly efficient but do require initial compilation (see ``Installation``,
 below).
 
 We do not provide any additional abstraction of the Primer3 design engine, 

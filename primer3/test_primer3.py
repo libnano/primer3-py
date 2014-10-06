@@ -429,7 +429,6 @@ class TestDesignBindings(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    import sys
 
     tl = unittest.TestLoader()
     lowLevelSuite = tl.loadTestsFromTestCase(TestLowLevelBindings)
