@@ -100,7 +100,6 @@ class TestLowLevelBindings(unittest.TestCase):
                                 max_loop=self.max_loop)
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
-
     def test_calcHeterodimer(self):
         for _ in range(25):
             self.randArgs()
@@ -124,33 +123,56 @@ class TestLowLevelBindings(unittest.TestCase):
                                 max_loop=self.max_loop)
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
+    def test_calcEndStability(self):
+        for _ in range(25):
+            self.randArgs()
+            binding_res = bindings.calcEndStability(
+                                seq1=self.seq1,
+                                seq2=self.seq2,
+                                mv_conc=self.mv_conc,
+                                dv_conc=self.dv_conc,
+                                dntp_conc=self.dntp_conc,
+                                dna_conc=self.dna_conc,
+                                temp_c=self.temp_c,
+                                max_loop=self.max_loop)
+            wrapper_res = wrappers.calcEndStability(
+                                seq1=self.seq1,
+                                seq2=self.seq2,
+                                mv_conc=self.mv_conc,
+                                dv_conc=self.dv_conc,
+                                dntp_conc=self.dntp_conc,
+                                dna_conc=self.dna_conc,
+                                temp_c=self.temp_c,
+                                max_loop=self.max_loop)
+            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+
     def test_correctionMethods(self):
         self.randArgs()
         for sc_method in ['schildkraut', 'santalucia', 'owczarzy']:
             for tm_method in ['breslauer', 'santalucia']:
                 binding_tm = bindings.calcTm(
                                     seq=self.seq1,
-                                    mv_conc=int(self.mv_conc),
+                                    mv_conc=self.mv_conc,
                                     dv_conc=self.dv_conc,
                                     dntp_conc=self.dntp_conc,
-                                    dna_conc=int(self.dna_conc),
+                                    dna_conc=self.dna_conc,
                                     tm_method=tm_method,
                                     salt_corrections_method=sc_method)
                 wrapper_tm = wrappers.calcTm(
                                     seq=self.seq1,
-                                    mv_conc=int(self.mv_conc),
+                                    mv_conc=self.mv_conc,
                                     dv_conc=self.dv_conc,
                                     dntp_conc=self.dntp_conc,
-                                    dna_conc=int(self.dna_conc),
+                                    dna_conc=self.dna_conc,
                                     tm_method=tm_method,
                                     salt_corrections_method=sc_method)
                 self.assertEqual(int(binding_tm), int(wrapper_tm))
         self.assertRaises(ValueError, bindings.calcTm,
                                     seq=self.seq1,
-                                    mv_conc=int(self.mv_conc),
+                                    mv_conc=self.mv_conc,
                                     dv_conc=self.dv_conc,
                                     dntp_conc=self.dntp_conc,
-                                    dna_conc=int(self.dna_conc),
+                                    dna_conc=self.dna_conc,
                                     tm_method='not_a_tm_method')
 
     def test_memoryLeaks(self):

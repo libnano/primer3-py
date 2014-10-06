@@ -74,23 +74,21 @@ sequence::
   57.02235387653167
 
 Higher-level thermodynamic functions include ``calcHairpin``, 
-``calcHomodimer``, and ``calcHeterodimer``. These functions perform a
-thermodynamic alignment to determine the characteristics (dH, dS, dG, Tm)
-of a secondary / multi-stranded structure. All three functions return
-a namedtuple::
+``calcHomodimer``, ``calcHeterodimer``, and ``calcEndStability``. These 
+functions perform a thermodynamic alignment to determine the characteristics 
+(dH, dS, dG, Tm) of a secondary / multi-stranded structure. All four functions 
+return a ThermoResult object::
 
   >>> from primer3 import calcHeterodimer
   >>> res = calcHeterodimer('CCGACCCTATGGGACC', 'TTGGTCCCATAAGGGTCGG')
   >>> print(res)
 
-  thermoresult(
+  ThermoResult(
     structure_found=True,
     tm=39.92795428766294, 
     ds=-370.12644214999796, 
     dh=-127200.0, 
     dg=-12405.28396717814, 
-    align_end_1=16, 
-    align_end_2=17
   )
 
   >>> print res.tm

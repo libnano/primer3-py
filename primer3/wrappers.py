@@ -133,9 +133,6 @@ def calcHairpin(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
                  temp_c=37, max_loop=30, temp_only=False):
     ''' Return a namedtuple of the dS, dH, dG, and Tm of any hairpin struct
     present.
-
-    Returns None if the sequence does not form a hairpin.
-
     '''
     return calcThermo(seq, seq, 'HAIRPIN', mv_conc, dv_conc, dntp_conc,
                       dna_conc, temp_c, max_loop, temp_only)
@@ -144,9 +141,6 @@ def calcHairpin(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                      dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
-
-    Returns None if the sequences do not form a heterodimer.
-
     '''
     return calcThermo(seq1, seq2, 'ANY', mv_conc, dv_conc, dntp_conc,
                       dna_conc, temp_c, max_loop, temp_only)
@@ -155,11 +149,16 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                    dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted homodimer.
-
-    Returns None if the sequence does not form a homodimer.
-
     '''
     return calcThermo(seq, seq, 'ANY', mv_conc, dv_conc, dntp_conc,
+                      dna_conc, temp_c, max_loop, temp_only)
+
+
+def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+                     dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
+    ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
+    '''
+    return calcThermo(seq1, seq2, 'END1', mv_conc, dv_conc, dntp_conc,
                       dna_conc, temp_c, max_loop, temp_only)
 
 
