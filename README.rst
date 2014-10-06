@@ -95,7 +95,7 @@ return a ThermoResult object::
   >>> print res.tm
   39.92795428766294
 
-** Performance Note: **
+**Performance Note:**
 Under the hood, thermodynamic calculations are performed by calls to instance
 methods of an instantiated ``ThermoAnalysis`` object from the 
 ``thermoanalysis`` module. Users interested in performance optimization should 
