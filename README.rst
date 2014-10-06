@@ -56,7 +56,8 @@ tests using the ``primer3_tests.py`` module::
 
 or for memory checking with valgrind::
 
-  $ valgrind --tool=memcheck --suppressions=valgrind-python.supp --leak-check=full python primer3_test.py
+  $ valgrind --tool=memcheck --suppressions=valgrind-python.supp 
+    --leak-check=full python primer3_test.py
 
 
 API - low-level thermodynamics
@@ -93,6 +94,16 @@ return a ThermoResult object::
 
   >>> print res.tm
   39.92795428766294
+
+** Performance Note: **
+Under the hood, thermodynamic calculations are performed by calls to instance
+methods of an instantiated ``ThermoAnalysis`` object from the 
+``thermoanalysis`` module. Users interested in performance optimization should 
+examine the way in which the ``bindings.py`` module is structured. For the best
+performance, you should instantiate a single ThermoAnalysis object, set
+the thermodynamic parameters once, and then call the respective instance
+methods with your oligo sequences to avoid the overhead of per-call
+parameter parsing/setting.
 
 For more detailed documentation and usage examples, see 
 ``primer3/bindings.py`` and ``primer3_test.py``.
