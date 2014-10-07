@@ -167,7 +167,7 @@ if ('build_ext' in sys.argv or 'install' in sys.argv) and not P3_BUILT:
     p3Build()
     P3_BUILT = True
 
-is_py_3 = int(sys.version_info[0] > 3)
+is_py_3 = int(sys.version_info[0] > 2)
 thermoanalysis_ext_list = cythonize([thermoanalysis_ext], 
     compile_time_env={'IS_PY_THREE': is_py_3} )
 

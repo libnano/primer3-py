@@ -369,11 +369,26 @@ get_thermodynamic_values(const char* path, thal_results *o)
 void
 destroy_thal_structures()
 {
-  free(parampath);
-  free(triloopEntropies);
-  free(triloopEnthalpies);
-  free(tetraloopEntropies);
-  free(tetraloopEnthalpies);
+  if (parampath != NULL) {
+    free(parampath);
+    parampath = NULL;
+  }
+  if (triloopEntropies != NULL) {
+    free(triloopEntropies);
+    triloopEntropies = NULL;
+  }
+  if (triloopEnthalpies != NULL) {
+    free(triloopEnthalpies);
+    triloopEnthalpies = NULL;
+  }
+  if (tetraloopEntropies != NULL) {
+    free(tetraloopEntropies);
+    tetraloopEntropies = NULL;
+  }
+  if (tetraloopEnthalpies != NULL) {
+    free(tetraloopEnthalpies);
+    tetraloopEnthalpies = NULL;
+  }
 }
 
 /* central method: execute all sub-methods for calculating secondary

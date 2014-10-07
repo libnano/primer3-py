@@ -25,6 +25,7 @@ Calculations are performed under the following paradigm:
 '''
 
 from cpython.version cimport PY_MAJOR_VERSION
+import atexit
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ External C declarations ~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -83,6 +84,9 @@ def loadThermoParams():
         raise IOError("Could not load thermodynamic config file %s" % ppath)
 loadThermoParams()
 
+def cleanup():
+    destroy_thal_structures()
+atexit.register(cleanup)
 
 # ~~~~~~~~~~~~~~ Thermodynamic calculations class declarations ~~~~~~~~~~~~~~ #
 

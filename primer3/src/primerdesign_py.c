@@ -225,6 +225,7 @@ cleanUp(void){
         // Free memory for previous seq args
         destroy_seq_args(sa);
     }
+    destroy_thal_structures();
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

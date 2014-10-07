@@ -46,6 +46,8 @@ cdef extern from "thal.h":
 
     int get_thermodynamic_values(const char*, thal_results *)
 
+    void destroy_thal_structures()
+
 
 cdef class ThermoResult:
     cdef thal_results thalres
