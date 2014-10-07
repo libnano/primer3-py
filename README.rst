@@ -48,11 +48,12 @@ Testing
 -------
 
 We have included a comprehensive test suite to compare the output of
-the Python bindings with the output of the Primer3 binaries. After
-building and (optionally) installing ``primer3-py`` you can run the 
-tests using the ``primer3/test_primer3.py`` module::
+the Python bindings with the output of the Primer3 binaries. To run
+the tests, run the following command from the package root::
 
-  $ python primer3/test_primer3.py
+  $ python setup.py tests
+            or
+  $ nosetests
 
 or for memory checking with valgrind::
 

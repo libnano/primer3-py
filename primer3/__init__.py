@@ -4,10 +4,8 @@ primer3-py
 
 Python bindings for Primer3.
 
-Current Primer3 version included in package: 2.3.6
-Support for both Python 2.7.x and Python 3.x.x
-
 '''
+
 import os
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -22,9 +20,8 @@ from primer3.bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
                               calcHeterodimerTm, calcTm, setP3Globals, 
                               setP3SeqArgs, runP3Design, designPrimers)
 
-import primer3.bindings as bindings
-import primer3.simulatedbindings as simulatedbindings
-import primer3.wrappers as wrappers
+from primer3 import bindings, wrappers, simulatedbindings, tests
+
 
 def includes():
     return [LOCAL_DIR, os.environ['PRIMER3HOME']]
@@ -38,5 +35,7 @@ __all__ = [
     # Primer3 design bindings
     'setP3Globals', 'setP3SeqArgs', 'runP3Design', 'designPrimers', 
     # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
-    'bindings', 'wrappers', 'thermoanalyis', 'simulatedbindings'
+    'bindings', 'wrappers', 'thermoanalyis', 'simulatedbindings',
+    # Unit tests
+    'tests'
     ]
