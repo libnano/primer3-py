@@ -59,13 +59,15 @@ cdef unsigned char[:] _chars(s):
         return o
     return memoryview(s)
 
-cdef bytes _bytes(s):
-    if PY_MAJOR_VERSION > 2 and isinstance(s, str):
-        # encode to the specific encoding used inside of the module
-        return (<str>s).encode('utf8')
-    else:
+cdef inline bytes _bytes(s):
+    IF IS_PY_THREE:
+        if isinstance(s, str):
+            # encode to the specific encoding used inside of the module
+            return (<str>s).encode('utf8')
+        else:
+            return s
+    ELSE:
         return s
-
 
 # ~~~~~~~~~ Load base thermodynamic parameters into memory from file ~~~~~~~~ #
 
