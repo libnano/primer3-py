@@ -204,8 +204,8 @@ setup(
     package_data={'primer3': p3_files},
     cmdclass={'install_lib': CustomInstallLib, 'sdist': CustomSdist,
               'build_ext': CustomBuildExt},
-    test_suite= "primer3.tests",
-    zip_safe=False
+    test_suite= "tests"
+    # zip_safe=False
 )
 
 # Remove the extra pxd file

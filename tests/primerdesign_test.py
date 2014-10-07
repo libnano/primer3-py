@@ -105,7 +105,7 @@ class TestDesignBindings(unittest.TestCase):
         return input_dicts
 
 
-    def testCompareSim(self):
+    def test_CompareSim(self):
         sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
         quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
         seq_args = {
@@ -251,3 +251,12 @@ class TestDesignBindings(unittest.TestCase):
                                  'designPrimers > 1000 bytes -- potential \n\t'
                                  'memory leak (mem increase: {})'.format(em-sm))
 
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(TestDesignBindings())
+    return suite
+
+if __name__ == '__main__':
+    runner = unittest.TextTestRunner()
+    test_suite = suite()
+    runner.run(test_suite)

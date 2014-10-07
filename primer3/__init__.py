@@ -20,7 +20,7 @@ from primer3.bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
                               calcHeterodimerTm, calcTm, setP3Globals, 
                               setP3SeqArgs, runP3Design, designPrimers)
 
-from primer3 import bindings, wrappers, simulatedbindings, tests
+from primer3 import bindings, wrappers, simulatedbindings
 
 
 def includes():

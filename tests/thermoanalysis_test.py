@@ -192,3 +192,14 @@ class TestLowLevelBindings(unittest.TestCase):
             raise AssertionError('Memory usage increase after 1k runs of \n\t'
                                  'calcHeterodimer > 500 bytes -- potential \n\t'
                                  'memory leak (mem increase: {})'.format(em-sm))
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(TestLowLevelBindings())
+    return suite
+
+if __name__ == '__main__':
+    runner = unittest.TextTestRunner()
+    test_suite = suite()
+    runner.run(test_suite)

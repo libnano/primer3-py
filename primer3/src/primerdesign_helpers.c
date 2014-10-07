@@ -97,11 +97,11 @@ between Python C API code and primer3 native C code.
                                  "Value of %s is not of type string", k);      \
                 return -1;}                                                    \
             }                                                                  \
-            if (!from_int){                                                    \
+            if (from_int == 0) {                                               \
                 if (PyString_AsStringAndSize(o, &tc, &ss) == -1) {             \
                     return -1;}                                                \
                 *st = (char *) malloc((ss + 1) * sizeof(char));                \
-                if (*st == -1) {                                               \
+                if (*st == NULL) {                                             \
                     PyErr_Format(PyExc_IOError,                                \
                         "Could not allocate memory while copying %s", k);      \
                     return -1;}                                                \
@@ -132,7 +132,7 @@ between Python C API code and primer3 native C code.
                             "Error processing string in %s", k);               \
                     return -1;                                                 \
                 }                                                              \
-            if (!from_int) {                                                   \
+            if (from_int == 0) {                                               \
                 *st = (char *) malloc((ss + 1 ) * sizeof(char));               \
                 if (*st == NULL) {                                             \
                     PyErr_Format(PyExc_IOError,                                \
