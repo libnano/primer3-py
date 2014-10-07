@@ -6,6 +6,6 @@ python:
 
 install: 
   - "pip install -r requirements.txt"
-
+  - python setup.py install
 # Run the tests
-script: python setup.py test
+script: python primer3/tests
