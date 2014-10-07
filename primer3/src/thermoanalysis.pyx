@@ -60,7 +60,7 @@ cdef unsigned char[:] _chars(s):
     return memoryview(s)
 
 cdef inline bytes _bytes(s):
-    IF IS_PY_THREE:
+    IF IS_PY_THREE == 1:
         if isinstance(s, str):
             # encode to the specific encoding used inside of the module
             return (<str>s).encode('utf8')
