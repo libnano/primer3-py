@@ -169,7 +169,7 @@ if ('build_ext' in sys.argv or 'install' in sys.argv) and not P3_BUILT:
 
 is_py_3 = int(sys.version_info[0] > 3)
 thermoanalysis_ext_list = cythonize([thermoanalysis_ext], 
-    compile_time_env={'IS_PY_THREE': 1} )
+    compile_time_env={'IS_PY_THREE': is_py_3} )
 
 # Include the pyd header filein the install
 src_pxd = pjoin(MODULE_PATH, 'src', 'thermoanalysis.pxd')
