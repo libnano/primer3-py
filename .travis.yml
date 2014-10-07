@@ -8,4 +8,4 @@ install:
   - "pip install -r requirements.txt"
   - python setup.py install
 # Run the tests
-script: python primer3/tests
+script: nosetests
