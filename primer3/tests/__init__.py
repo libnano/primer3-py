@@ -15,8 +15,8 @@ import test_primerdesign
 def runTests():
     tl = unittest.TestLoader()
     lowLevelSuite = tl.loadTestsFromTestCase(
-    					test_lowlevel.TestLowLevelBindings)
+                        test_lowlevel.TestLowLevelBindings)
     unittest.TextTestRunner(verbosity=2).run(lowLevelSuite)
     designSuite = tl.loadTestsFromTestCase(
-    				test_primerdesign.TestDesignBindings)
+                    test_primerdesign.TestDesignBindings)
     unittest.TextTestRunner(verbosity=2).run(designSuite)

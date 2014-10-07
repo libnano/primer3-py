@@ -29,8 +29,8 @@ so we suggest that you refer to the official Primer3
 Installation
 ------------
 
-``primer3-py`` has no external library dependencies and should compile on 
-most linux and OS X systems that are running Python 2.7, 3.3, or 3.4. 
+``primer3-py`` requires Python 2.7, 3.3, or 3.4 as well as a Cython 
+installation in your system path.
 
 To build ``primer3-py`` within the package directory run::
    
@@ -49,16 +49,19 @@ Testing
 
 We have included a comprehensive test suite to compare the output of
 the Python bindings with the output of the Primer3 binaries. To run
-the tests, run the following command from the package root::
+the tests from within the package call::
 
   $ python setup.py tests
-            or
-  $ nosetests
 
-or for memory checking with valgrind::
+If you'd like to run the tests after installing ``primer3-py``, call the
+runTests function after importing ``primer3``::
 
-  $ valgrind --tool=memcheck --suppressions=valgrind-python.supp 
-    --leak-check=full python primer3_test.py
+  >>> import primer3
+  >>> primer3.tests.runTests()
+
+You can also check for memory leaks/performance with valgrind::
+
+  $ valgrind --tool=memcheck --suppressions=valgrind-python.supp --leak-check=full python primer3/tests
 
 
 API - low-level thermodynamics
