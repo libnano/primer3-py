@@ -6,6 +6,6 @@ python:
 
 install: 
   - "pip install -r requirements.txt"
-  - python setup.py install
+  - "python setup.py install"
 # Run the tests
-script: nosetests
+script: "python setup.py develop && nosetests -w tests/"
