@@ -55,6 +55,7 @@ with open('README.rst') as fd:
 PACKAGE_PATH =          os.path.abspath(os.path.dirname(__file__))
 MODULE_PATH =           pjoin(PACKAGE_PATH, 'primer3')
 SRC_PATH =              pjoin(MODULE_PATH, 'src')
+TESTS_PATH =              pjoin(MODULE_PATH, 'tests')
 LIBPRIMER3_PATH =       pjoin(SRC_PATH, 'libprimer3')
 THERMO_PARAMS_PATH =    pjoin(LIBPRIMER3_PATH, 'primer3_config')
 KLIB_PATH =             pjoin(LIBPRIMER3_PATH, 'klib')
@@ -89,7 +90,10 @@ p3_binary_fps = [pjoin(LIBPRIMER3_PATH, fn) for fn in p3_binaries]
 thermo_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
                 os.walk(THERMO_PARAMS_PATH) for f in files]
 
-p3_files = thermo_files
+test_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
+                os.walk(TESTS_PATH) for f in files]
+
+p3_files = thermo_files + test_files
 
 # Insure that the copied binaries are executable
 def makeExecutable(fp):
@@ -200,7 +204,7 @@ setup(
     package_data={'primer3': p3_files},
     cmdclass={'install_lib': CustomInstallLib, 'sdist': CustomSdist,
               'build_ext': CustomBuildExt},
-    test_suite= "primer3.test_primer3",
+    test_suite= "primer3.tests",
     zip_safe=False
 )
 
