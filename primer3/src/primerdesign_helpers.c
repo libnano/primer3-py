@@ -47,7 +47,7 @@ between Python C API code and primer3 native C code.
         if (!PyLong_Check(o)) {                                                \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not an integer.", k);              \
-            return NULL;                                                       \
+            return -1;                                                         \
         }                                                                      \
         st = (int)PyLong_AsLong(o);                                            \
     }
@@ -59,7 +59,7 @@ between Python C API code and primer3 native C code.
         if (!PyLong_Check(o)) {                                                \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type integer.", k);         \
-            return NULL;                                                       \
+            return -1;                                                         \
         }                                                                      \
         st = (t)PyLong_AsLong(o);                                              \
     }
@@ -71,7 +71,7 @@ between Python C API code and primer3 native C code.
         if (!PyFloat_Check(o) && !PyLong_Check(o)) {                           \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not of type float or integer.", k);\
-            return NULL;                                                       \
+            return -1;                                                         \
         }                                                                      \
         st = PyFloat_AsDouble(o);                                              \
     }
@@ -95,16 +95,16 @@ between Python C API code and primer3 native C code.
                 } else {                                                       \
                     PyErr_Format(PyExc_TypeError,                              \
                                  "Value of %s is not of type string", k);      \
-                return NULL;}                                                  \
+                return -1;}                                                    \
             }                                                                  \
             if (!from_int){                                                    \
                 if (PyString_AsStringAndSize(o, &tc, &ss) == -1) {             \
-                    return NULL;}                                              \
+                    return -1;}                                                \
                 *st = (char *) malloc((ss + 1) * sizeof(char));                \
-                if (*st == NULL) {                                             \
+                if (*st == -1) {                                               \
                     PyErr_Format(PyExc_IOError,                                \
                         "Could not allocate memory while copying %s", k);      \
-                    return NULL;}                                              \
+                    return -1;}                                                \
                 memcpy(*st, tc, (int)(ss + 1));                                \
             }                                                                  \
         }                                                                      
@@ -116,7 +116,7 @@ between Python C API code and primer3 native C code.
                 tc = PyUnicode_AsUTF8AndSize(o, &ss);                          \
             } else if (PyBytes_Check(o)){                                      \
                 if (PyBytes_AsStringAndSize(o, &tc, &ss) == -1) {              \
-                    return NULL;}                                              \
+                    return -1;}                                                \
             } else {                                                           \
                 if (PyLong_Check(o)) {                                         \
                     *st = (char *) malloc(20 * sizeof(char));                  \
@@ -125,19 +125,19 @@ between Python C API code and primer3 native C code.
                 } else {                                                       \
                     PyErr_Format(PyExc_TypeError,                              \
                         "Value of %s is not of type unicode or bytes", k);     \
-                    return NULL;}                                              \
+                    return -1;}                                                \
             }                                                                  \
             if (tc == NULL){                                                   \
                     PyErr_Format(PyExc_TypeError,                              \
                             "Error processing string in %s", k);               \
-                    return NULL;                                               \
+                    return -1;                                                 \
                 }                                                              \
             if (!from_int) {                                                   \
                 *st = (char *) malloc((ss + 1 ) * sizeof(char));               \
                 if (*st == NULL) {                                             \
                     PyErr_Format(PyExc_IOError,                                \
                         "Could not allocate memory while copying %s", k);      \
-                    return NULL;}                                              \
+                    return -1;}                                                \
                 memcpy(*st, tc, (int)(ss + 1));                                \
             }                                                                  \
         }
@@ -149,7 +149,7 @@ between Python C API code and primer3 native C code.
         if (!PySequence_Check(o)){                                             \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not a sequence object", k);        \
-            return NULL;                                                       \
+            return -1;                                                         \
         } else {                                                               \
             int *arr = NULL;                                                   \
             PyObject *seq_item;                                                \
@@ -158,7 +158,7 @@ between Python C API code and primer3 native C code.
             if (arr == NULL) {                                                 \
                 PyErr_Format(PyExc_IOError,                                    \
                             "Could not allocate memory while copying %s", k);  \
-                return NULL;}                                                  \
+                return -1;}                                                    \
             for (i=0; i < *arr_len; i++) {                                     \
                 seq_item = PySequence_GetItem(o, i);                           \
                 arr[i] = (int)PyLong_AsLong(seq_item);                         \
@@ -175,7 +175,7 @@ between Python C API code and primer3 native C code.
         if (!PySequence_Check(o)){                                             \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not a sequence object", k);        \
-            return NULL;                                                       \
+            return -1;                                                         \
         *arr_len = (int)PySequence_Size(o);                                    \
         for (i=0; i < *arr_len; i++) {                                         \
             seq_item = PySequence_GetItem(o, i);                               \
@@ -191,7 +191,7 @@ between Python C API code and primer3 native C code.
         if (!PySequence_Check(o)){                                             \
             PyErr_Format(PyExc_TypeError,                                      \
                             "Value of %s is not a sequence object", k);        \
-            return NULL;                                                       \
+            return -1;                                                         \
         }                                                                      \
         st.count = 0;                                                          \
         arr_len = (int)PySequence_Size(o);                                     \
@@ -210,7 +210,7 @@ between Python C API code and primer3 native C code.
                                 " and other objects", k);                      \
                 Py_DECREF(seq_item1);                                          \
                 Py_DECREF(seq_item1);                                          \
-                return NULL;                                                   \
+                return -1;                                                     \
             }                                                                  \
         }                                                                      \
         if (!flat_list) {                                                      \
@@ -222,7 +222,7 @@ between Python C API code and primer3 native C code.
                     PyErr_Format(PyExc_TypeError,                              \
                                     "Value of %s is not a sequence object"     \
                                     " comprised of two integers", k);          \
-                    return NULL;                                               \
+                    return -1;                                                 \
                 }                                                              \
                 too_long = p3_add_to_interval_array(&st,                       \
                      (int)PyLong_AsLong(seq_item1),                            \
@@ -230,7 +230,7 @@ between Python C API code and primer3 native C code.
                 if (too_long) {                                                \
                     PyErr_Format(PyExc_IOError, "Too many elements for tag "   \
                                                 "%s", k);                      \
-                    return NULL;                                               \
+                    return -1;                                                 \
                 }                                                              \
                 Py_DECREF(seq_item1);                                          \
                 Py_DECREF(seq_item2);                                          \
@@ -240,7 +240,7 @@ between Python C API code and primer3 native C code.
     }                                                                          \
 
 
-p3_global_settings*
+int
 pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     /* Creates a new p3_global_settings struct and initializes it with
      * defaults using p3_create_global_settings() from libprimer3.c.
@@ -430,7 +430,7 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
         if (!PySequence_Check(p_obj)) {
             PyErr_SetString(PyExc_TypeError,\
                 "Value of \"PRIMER_PRODUCT_SIZE_RANGE\" is not a list or tuple");
-            return NULL;
+            return -1;
         }
         if (product_size_range_list_length == 2) {
             p_obj2 = PySequence_GetItem(p_obj, 0);
@@ -445,7 +445,7 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
                         "\"PRIMER_PRODUCT_SIZE_RANGE\" contains mixed sequence objects and integers"); 
                     Py_DECREF(p_obj2);
                     Py_DECREF(p_obj3);  
-                    return NULL;                 
+                    return -1;                 
                 }
             }
             Py_DECREF(p_obj2);
@@ -457,12 +457,12 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
                 if (!PySequence_Check(p_obj2)){
                     PyErr_Format(PyExc_TypeError,\
                         "Object at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not a list or tuple", i);
-                    return NULL;
+                    return -1;
                 }
                 if (PySequence_Length(p_obj2) != 2) {
                     PyErr_Format(PyExc_TypeError,\
                         "Object at index %d of \"PRIMER_PRODUCT_SIZE_RANGE\" is not of length 2", i);
-                    return NULL;
+                    return -1;
                 }
                 p_obj3 = PySequence_GetItem(p_obj2, 0);
                 p_obj4 = PySequence_GetItem(p_obj2, 1);
@@ -472,7 +472,7 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
                     Py_DECREF(p_obj2);
                     Py_DECREF(p_obj3);
                     Py_DECREF(p_obj4);
-                    return NULL;
+                    return -1;
                 }
                 if ((pa->pr_max[i] = (int)PyLong_AsLong(p_obj4)) == -1) {
                     PyErr_Format(PyExc_TypeError,\
@@ -480,7 +480,7 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
                     Py_DECREF(p_obj2);
                     Py_DECREF(p_obj3);
                     Py_DECREF(p_obj4);
-                    return NULL;
+                    return -1;
                 }
                 Py_DECREF(p_obj2);
                 Py_DECREF(p_obj3);
@@ -539,12 +539,12 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
             PyErr_Format(PyExc_ValueError, "%s is not a valid PRIMER_TASK",\
                          task_tmp);
             free(task_tmp);
-            return NULL;
+            return -1;
         }
         free(task_tmp);
     }
 
-    return pa;
+    return 0;
 }
 
 seq_lib*
@@ -572,18 +572,18 @@ pdh_createSeqLib(PyObject *seq_dict){
             } else {
                 PyErr_SetString(PyExc_TypeError,
                     "Cannot add seq name with non-String type to seq_lib");
-                return NULL;
+                goto err_create_seq_lib;
             }
             if (PyString_Check(py_seq)) {
                 seq = PyString_AsString(py_seq);
             } else {
                 PyErr_SetString(PyExc_TypeError,
                     "Cannot add seq with non-String type to seq_lib");
-                return NULL;
+                goto err_create_seq_lib;
             }
             if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
                 PyErr_SetString(PyExc_IOError, errfrag);
-                return NULL;
+                goto err_create_seq_lib;
             }
 #else
             if (PyUnicode_Check(py_seq_name)) {
@@ -593,7 +593,7 @@ pdh_createSeqLib(PyObject *seq_dict){
             } else {
                 PyErr_SetString(PyExc_TypeError,
                     "Cannot add seq name with non-Unicode/Bytes type to seq_lib");
-                return NULL;
+                goto err_create_seq_lib;
             }
             if (PyUnicode_Check(py_seq)) {
                 seq = PyUnicode_AsUTF8(py_seq);
@@ -602,36 +602,35 @@ pdh_createSeqLib(PyObject *seq_dict){
             } else {
                 PyErr_SetString(PyExc_TypeError,
                     "Cannot add seq with non-Unicode/Bytes type to seq_lib");
-                return NULL;
+                goto err_create_seq_lib;
             }
             if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
                 PyErr_SetString(PyExc_IOError, errfrag);
-                return NULL;
+                goto err_create_seq_lib;
             }
 #endif
     }
     return sl;
+err_create_seq_lib:
+    destroy_seq_lib(sl);
+    return NULL;
 }
 
 
-seq_args*
-pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
+int
+pdh_setSeqArgs(PyObject *sa_dict, seq_args *sa) {
     /* Creates a sequence args object that defines a DNA/RNA sequence for
      * which you want to design primers / oligos. Returns NULL and sets the
      * Python error string on failure.
      */
 
-    seq_args                *sa;
     PyObject                *p_obj, *p_obj2, *p_obj3;
     char                    *temp_char=NULL;
     int                     i, j, len1, len2;
     Py_ssize_t              str_size;
     int overlap_junction_arr_len = 0;
 
-    if (!(sa = create_seq_arg())) {
-        PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
-        return NULL;
-    }
+    // only allocate the seq args once since seq_args are a global parameter
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_TEMPLATE", &sa->sequence, temp_char, str_size);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_ID", &sa->sequence_name, temp_char, str_size);
     DICT_GET_AND_COPY_STR(p_obj, sa_dict, "SEQUENCE_PRIMER", &sa->left_input, temp_char, str_size);
@@ -643,7 +642,7 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
         if (!PySequence_Check(p_obj)){
             PyErr_SetString(PyExc_IOError, "Value of 'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' " 
                             "must support the seqeunce protocol.");
-            return NULL;
+            return -1;
         }
         sa->ok_regions.count = 0;
         sa->ok_regions.any_pair = 0;
@@ -664,7 +663,7 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                                                        " must be comprised of sequence objects"
                                                        " comprised of four integers.");
                         Py_DECREF(p_obj2);
-                        return NULL;
+                        return -1;
                     }
                 }
                 p3_add_to_2_interval_array(&sa->ok_regions, ii[0], ii[1], ii[2], ii[3]);
@@ -680,7 +679,7 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                                                       "that support the sequence protocol (e.g., it must be "
                                                       "a list of lists, tuple of tuples or some combination "
                                                       "of the two).");
-                    return NULL;
+                    return -1;
                 }
                 len2 = (int)PySequence_Size(p_obj2);
                 if (!len2 == 4) {
@@ -688,7 +687,7 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                                  "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
                                  "of length 4", i);
                     Py_DECREF(p_obj2);
-                    return NULL;
+                    return -1;
                 }
                 for (j = 0; j < 4; j++) {
                     p_obj3 = PySequence_GetItem(p_obj2, j);
@@ -697,7 +696,7 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                              "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
                              "be an integer or long", j, i);
                         Py_DECREF(p_obj3);
-                        return NULL;
+                        return -1;
                     }
                     ii[j] = (int)PyLong_AsLong(p_obj3);
                     Py_DECREF(p_obj3);
@@ -722,14 +721,14 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
             } else {
             PyErr_Format(PyExc_TypeError,
                             "Value of 'SEQUENCE_OVERLAP_JUNCTION_LIST' is not a sequence object");
-            return NULL;}
+            return -1;}
         }
         if (!single_value) {
             overlap_junction_arr_len = (int)PySequence_Size(p_obj);
             if (overlap_junction_arr_len > 200) {
                 PyErr_Format(PyExc_TypeError,
                                 "'SEQUENCE_OVERLAP_JUNCTION_LIST' cannot have over 200 values");
-                return NULL;
+                return -1;
             }
             sa->primer_overlap_junctions_count = overlap_junction_arr_len;
             poj_arr = &sa->primer_overlap_junctions[0];
@@ -749,11 +748,11 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
         if (!PySequence_Check(p_obj)) {
             PyErr_SetString(PyExc_TypeError,\
                 "Value of \"SEQUENCE_INCLUDED_REGION\" is not a sequence object");
-            return NULL;
+            return -1;
         } else if (PySequence_Size(p_obj) != 2) {
             PyErr_SetString(PyExc_ValueError,\
                 "Length of \"SEQUENCE_INCLUDED_REGION\" is not of length 2");
-            return NULL;
+            return -1;
         } else {
             seq_item1 = PySequence_GetItem(p_obj, 0);
             seq_item2 = PySequence_GetItem(p_obj, 1);
@@ -762,7 +761,7 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
                     "\"SEQUENCE_INCLUDED_REGION\" contains non-int value");
                 Py_DECREF(seq_item1);
                 Py_DECREF(seq_item2);
-                return NULL;                
+                return -1;                
             }
             sa->incl_s = (int)PyLong_AsLong(seq_item1);
             sa->incl_l = (int)PyLong_AsLong(seq_item2);
@@ -778,7 +777,7 @@ pdh_setSeqArgs(PyObject *sa_dict, p3_global_settings *pa){
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_RIGHT_START", sa->force_right_start);
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_RIGHT_END", sa->force_right_end);
 
-    return sa;
+    return 0;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

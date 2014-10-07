@@ -118,28 +118,33 @@ setGlobals(PyObject *self, PyObject *args){
 
     if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args,
                           &misprime_lib, &mishyb_lib)) {
-        return NULL;
+        goto err_set_global;
     }
 
 
-    if ((pdh_setGlobals(pa, global_args)) == NULL) {
-        return NULL;
+    if ((pdh_setGlobals(pa, global_args)) != 0) {
+        goto err_set_global;
     }
 
-    if (misprime_lib != NULL && misprime_lib != Py_None) {
+    if ((misprime_lib != NULL) && (misprime_lib != Py_None)) {
         if ((mp_lib = pdh_createSeqLib(misprime_lib)) == NULL) {
-            return NULL;
+            goto err_set_global;
         }
         pa->p_args.repeat_lib = mp_lib;
     }
-    if (mishyb_lib != NULL && mishyb_lib != Py_None) {
+    if ((mishyb_lib != NULL) && (mishyb_lib != Py_None)) {
         if ((mh_lib = pdh_createSeqLib(mishyb_lib))==NULL) {
-            return NULL;
+            goto err_set_global;
         }
         pa->o_args.repeat_lib = mh_lib;
     }
 
     Py_RETURN_NONE;
+
+err_set_global:
+    p3_destroy_global_settings(pa);
+    pa = NULL;
+    return NULL;
 }
 
 static PyObject*
@@ -157,18 +162,28 @@ setSeqArgs(PyObject *self, PyObject *args){
         return NULL;
     }
 
-    if (sa != NULL) {
-        // Free memory for previous seq args
-        destroy_seq_args(sa);
-    }
-
     if (!PyArg_ParseTuple(args, "O!", &PyDict_Type, &seq_args)) {
         return NULL;
     }
 
-    if ((sa = pdh_setSeqArgs(seq_args, pa))==NULL) {
+
+    if (sa != NULL) {
+        // Free memory for previous seq args
+        destroy_seq_args(sa);
+        sa = NULL;
+    }
+
+    if ((sa = create_seq_arg()) == NULL) {
+        PyErr_SetString(PyExc_IOError, "Could not allocate memory for seq_args");
         return NULL;
     }
+
+    if (pdh_setSeqArgs(seq_args, sa) != 0) {
+        destroy_seq_args(sa);
+        sa = NULL;
+        return NULL;
+    }
+
     Py_RETURN_NONE;
 }
 
@@ -206,6 +221,7 @@ runDesign(PyObject *self, PyObject *args){
     }
 
     destroy_p3retval(retval);
+    retval = NULL;
     // Commented out for now (causes "malloc: *** error for object 0x101a03e20:
     // pointer being freed was not allocated") error
     destroy_dpal_thal_arg_holder();
@@ -219,11 +235,13 @@ cleanUp(void){
     if (pa != NULL) {
         // Free memory for previous global settings
         p3_destroy_global_settings(pa);
+        pa = NULL;
     }
 
     if (sa != NULL) {
         // Free memory for previous seq args
         destroy_seq_args(sa);
+        sa = NULL;
     }
     destroy_thal_structures();
 }

@@ -13,7 +13,6 @@ designSuite = tl.loadTestsFromTestCase(
                 test_primerdesign.TestDesignBindings)
 res2 = unittest.TextTestRunner(verbosity=2).run(designSuite)
 
-
 success = res1.wasSuccessful() and res2.wasSuccessful()
 
 sys.exit(int(not success))  # Exit 0 on success, 1 on failure

@@ -1100,8 +1100,7 @@ create_seq_arg()
 {
   // seq_args *r = (seq_args *) malloc(sizeof(*r));
   seq_args *r = (seq_args *) malloc(sizeof(seq_args));
-  if (NULL == r) return NULL; /* Out of memory */
-  // memset(r, 0, sizeof(*r));
+  if (r == NULL) return NULL; /* Out of memory */
   memset(r, 0, sizeof(seq_args));
   r->start_codon_pos = PR_DEFAULT_START_CODON_POS;
   r->incl_l = -1; /* Indicates logical NULL. */
@@ -1118,11 +1117,12 @@ create_seq_arg()
   return r;
 }
 
+
 /* Free a seq_arg data structure */
 void
 destroy_seq_args(seq_args *sa)
 {
-  if (NULL == sa) return;
+  if (sa == NULL) return;
   free(sa->internal_input);
   free(sa->left_input);
   free(sa->right_input);
