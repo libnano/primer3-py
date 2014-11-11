@@ -29,7 +29,7 @@ install:
   - python setup.py build_ext --inplace
 
 script:
-  coverage run --source=primer3-py setup.py test
+  coverage run --source=primer3 setup.py test
 
 after success:
   coveralls
