@@ -27,13 +27,10 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION cython setuptools coverage
   - source activate test-environment
   - pip install coveralls
-  - source deactivate
-  - source activate test-environment
-  - which coverage
   - python setup.py build_ext --inplace
 
 script:
   coverage run --source=primer3 setup.py test
 
-after success:
+after_success:
   coveralls
