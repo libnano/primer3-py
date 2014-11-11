@@ -15,12 +15,12 @@ if not os.environ.get('PRIMER3HOME'):
     except:
         raise ImportError('PRIMER3HOME environmental variable is not set.')
 
-from primer3.bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
-                              calcHairpinTm, calcHomodimerTm,
-                              calcHeterodimerTm, calcTm, setP3Globals, 
-                              setP3SeqArgs, runP3Design, designPrimers)
+from .bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
+                       calcHairpinTm, calcHomodimerTm, calcHeterodimerTm, 
+                       calcTm, setP3Globals, setP3SeqArgs, runP3Design, 
+                       designPrimers)
 
-from primer3 import bindings, wrappers, simulatedbindings
+from . import bindings, wrappers
 
 
 def includes():
@@ -35,7 +35,5 @@ __all__ = [
     # Primer3 design bindings
     'setP3Globals', 'setP3SeqArgs', 'runP3Design', 'designPrimers', 
     # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
-    'bindings', 'wrappers', 'thermoanalyis', 'simulatedbindings',
-    # Unit tests
-    'tests'
+    'bindings', 'wrappers', 'thermoanalyis'
     ]

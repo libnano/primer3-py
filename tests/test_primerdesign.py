@@ -1,6 +1,6 @@
 '''
-primer3.tests.test_primerdesign 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test_primerdesign 
+~~~~~~~~~~~~~~~~~
 
 Unit tests for the primer3-py primer design bindings.
 
@@ -16,7 +16,9 @@ import unittest
 
 from time import sleep
 
-from primer3 import bindings, wrappers, simulatedbindings
+from primer3 import bindings, wrappers
+
+from . import _simulatedbindings as simulatedbindings
 
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 

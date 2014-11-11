@@ -10,8 +10,8 @@ import os
 
 from os.path import join as pjoin
 
-import primer3.thermoanalysis as thermoanalysis
-import primer3.primerdesign as primerdesign
+from . import thermoanalysis
+from . import primerdesign 
 
 
 # ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #

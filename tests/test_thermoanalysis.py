@@ -1,6 +1,6 @@
 '''
-primer3.tests.test_primerdesign 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test_thermoanalysis
+~~~~~~~~~~~~~~~~~~~
 
 Unit tests for the primer3-py low level thermodynamic calculation bindings.
 
