@@ -149,6 +149,7 @@ class CustomBuildExt(build_ext.build_ext):
 primerdesign_ext = Extension(
     'primer3.primerdesign',
     sources=['primer3/src/primerdesign_py.c'] + libprimer3_paths,
+    define_macros=[('CYTHON_TRACE', '1')],
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
     extra_compile_args=["-Wno-error=declaration-after-statement"]
 )
@@ -157,10 +158,11 @@ primerdesign_ext = Extension(
 thermoanalysis_ext = Extension(
     'primer3.thermoanalysis',
     sources=['primer3/src/thermoanalysis.pyx'] + libprimer3_paths,
+    define_macros=[('CYTHON_TRACE', '1')],
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
     extra_compile_args=['-Wno-error=declaration-after-statement', 
                         '-Wno-unused-function']
-    )
+)
 
 if ('build_ext' in sys.argv or 'install' in sys.argv) and not P3_BUILT:
     p3Clean()
