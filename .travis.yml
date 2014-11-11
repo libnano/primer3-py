@@ -26,7 +26,10 @@ install:
 
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION cython
   - source activate test-environment
-  - python setup.py build_ext --inplace
+  - pip install setuptools coveralls
 
 script:
-  nosetests -w tests/
+  coverage --source=primer3-py setup.py test
+
+after success:
+  coveralls
