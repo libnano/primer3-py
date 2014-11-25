@@ -55,7 +55,7 @@ with open('README.rst') as fd:
 PACKAGE_PATH =          os.path.abspath(os.path.dirname(__file__))
 MODULE_PATH =           pjoin(PACKAGE_PATH, 'primer3')
 SRC_PATH =              pjoin(MODULE_PATH, 'src')
-TESTS_PATH =              pjoin(MODULE_PATH, 'tests')
+TESTS_PATH =            pjoin(MODULE_PATH, 'tests')
 LIBPRIMER3_PATH =       pjoin(SRC_PATH, 'libprimer3')
 THERMO_PARAMS_PATH =    pjoin(LIBPRIMER3_PATH, 'primer3_config')
 KLIB_PATH =             pjoin(LIBPRIMER3_PATH, 'klib')
@@ -83,6 +83,7 @@ def p3Build():
 
 P3_BUILT = False
 
+
 # Find all necessary primer3 binaries / data files to include with the package
 p3_binaries = ['oligotm', 'ntthal', 'primer3_core']
 p3_binary_fps = [pjoin(LIBPRIMER3_PATH, fn) for fn in p3_binaries]
@@ -93,7 +94,8 @@ thermo_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
 test_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
                 os.walk(TESTS_PATH) for f in files]
 
-p3_files = thermo_files + test_files
+p3_files = thermo_files + test_files + ['thermoanalysis.pxd']
+
 
 # Insure that the copied binaries are executable
 def makeExecutable(fp):
@@ -149,7 +151,6 @@ class CustomBuildExt(build_ext.build_ext):
 primerdesign_ext = Extension(
     'primer3.primerdesign',
     sources=['primer3/src/primerdesign_py.c'] + libprimer3_paths,
-    define_macros=[('CYTHON_TRACE', '1')],
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
     extra_compile_args=["-Wno-error=declaration-after-statement"]
 )
@@ -157,27 +158,22 @@ primerdesign_ext = Extension(
 
 thermoanalysis_ext = Extension(
     'primer3.thermoanalysis',
-    sources=['primer3/src/thermoanalysis.pyx'] + libprimer3_paths,
-    define_macros=[('CYTHON_TRACE', '1')],
+    sources=['primer3/thermoanalysis.pyx'] + libprimer3_paths,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
     extra_compile_args=['-Wno-error=declaration-after-statement', 
                         '-Wno-unused-function']
 )
+
 
 if ('build_ext' in sys.argv or 'install' in sys.argv) and not P3_BUILT:
     p3Clean()
     p3Build()
     P3_BUILT = True
 
+
 is_py_3 = int(sys.version_info[0] > 2)
 thermoanalysis_ext_list = cythonize([thermoanalysis_ext], 
     compile_time_env={'IS_PY_THREE': is_py_3} )
-
-# Include the pyd header filein the install
-src_pxd = pjoin(MODULE_PATH, 'src', 'thermoanalysis.pxd')
-dest_pxd = pjoin(MODULE_PATH, 'thermoanalysis.pxd')
-shutil.copyfile(src_pxd, dest_pxd)
-p3_files.append('thermoanalysis.pxd')
 
 
 setup(
@@ -209,6 +205,3 @@ setup(
     test_suite= "tests"
     # zip_safe=False
 )
-
-# Remove the extra pxd file
-os.remove(dest_pxd)

@@ -1,9 +1,14 @@
-/******************************************************************************
-** primer3_py.c
-**
-** Python-callable C API bindings for Primer3 (these functions are exposed
-** to Python via the _primer3 module).
-******************************************************************************/
+/*
+primer3.primerdesign | primer3_py.c
+
+Python-callable C API bindings for the Primer3 primer design engine.
+
+These functions are wrapped in ``primer3.bindings`` to provide better
+abstraction / function signatures, but may be used directly if the additional
+function call overhead is of concern.
+
+*/
+
 
 #include    <Python.h>
 

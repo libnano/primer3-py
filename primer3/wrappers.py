@@ -1,10 +1,10 @@
 '''
-primer3.wrappers | wrappers.py
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+primer3.wrappers
+~~~~~~~~~~~~~~~~
 
 Simple subprocess wrappers for Primer3 executables. These functions closely
 mirror the functions found in bindings.py, but are much slower and should
-only be used for testing / comparative purposes.
+only be used for testing / comparison purposes.
 
 '''
 

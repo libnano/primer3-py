@@ -1,6 +1,6 @@
 '''
-primer3.thermoanalysis | thermoanalysis.pyx
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+primer3.thermoanalysis
+~~~~~~~~~~~~~~~~~~~~~~
 
 Contains Cython functions and classes that enable repeated thermodynamic
 calculations using common calculation parameters.
@@ -29,7 +29,7 @@ import atexit
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ External C declarations ~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
-cdef extern from "libprimer3/oligotm.h":
+cdef extern from "oligotm.h":
     ctypedef enum tm_method_type:
         breslauer_auto      = 0
         santalucia_auto     = 1

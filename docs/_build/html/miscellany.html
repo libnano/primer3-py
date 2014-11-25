@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Miscellany &mdash; primer3-py 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="primer3-py 0.4.0 documentation" href="index.html" />
+    <link rel="prev" title="Low-level thermodynamic analysis" href="api/thermoanalysis.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api/thermoanalysis.html" title="Low-level thermodynamic analysis"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">primer3-py 0.4.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="miscellany">
+<h1>Miscellany<a class="headerlink" href="#miscellany" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>Primer3 is a very mature and widely used primer design platform; however,
+integrating it into more complex pipelines has historically required obtuse
+subprocess wrappers and inefficient file IO. We hope that this Python API will
+allow for cleaner and more efficient integration of the Primer3 core
+functionalities into your projects and applications.</p>
+</div>
+<div class="section" id="derivative-work">
+<h2>Derivative work<a class="headerlink" href="#derivative-work" title="Permalink to this headline">¶</a></h2>
+<p>The included <code class="docutils literal"><span class="pre">libprimer3</span></code> source is a dervative of the Primer3 v2.3.6
+library that includes a number of optimizations and improvements to make it
+more amenable to Python C API / Cython bindings. Every effort has been made
+to insure that the underlying algorithms and calculations deterministically
+product the same results as the vanilla 2.3.6 Primer3 library.</p>
+</div>
+<div class="section" id="future-work">
+<h2>Future work<a class="headerlink" href="#future-work" title="Permalink to this headline">¶</a></h2>
+<p>We are happy with the current state of <strong>Primer3-py</strong> and have no intention of
+making any major changes to the API or underlying code base in the near future.
+We will provide support for bug fixes and compatibility improvements, and will
+consider incorporating any changes included in major releases of the main
+Primer3 project.</p>
+</div>
+<div class="section" id="contributions">
+<h2>Contributions<a class="headerlink" href="#contributions" title="Permalink to this headline">¶</a></h2>
+<p>We welcome any contributions that improve the stability, compatibility or
+test coverage (shoutout to pramasoul (<a class="reference external" href="https://github.com/pramasoul">https://github.com/pramasoul</a>) for his
+help with the testing framework). The best way to interface with the
+project and dev team is through Github
+(<a class="reference external" href="https://github.com/benpruitt/primer3-py">https://github.com/benpruitt/primer3-py</a>).</p>
+</div>
+<div class="section" id="licensing">
+<h2>Licensing<a class="headerlink" href="#licensing" title="Permalink to this headline">¶</a></h2>
+<p>Primer3 and this derivative work are licensed under the GPLv2 license.</p>
+<p>Copyright (C) 2014. Ben Pruitt &amp; Nick Conway
+See LICENSE for full GPLv2 license.</p>
+<p>This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Miscellany</a><ul>
+<li><a class="reference internal" href="#motivation">Motivation</a></li>
+<li><a class="reference internal" href="#derivative-work">Derivative work</a></li>
+<li><a class="reference internal" href="#future-work">Future work</a></li>
+<li><a class="reference internal" href="#contributions">Contributions</a></li>
+<li><a class="reference internal" href="#licensing">Licensing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="api/thermoanalysis.html"
+                        title="previous chapter">Low-level thermodynamic analysis</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/miscellany.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api/thermoanalysis.html" title="Low-level thermodynamic analysis"
+             >previous</a> |</li>
+        <li><a href="index.html">primer3-py 0.4.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2014, Ben Pruitt, Nick Conway; Wyss Institute.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b1.
+    </div>
+  </body>
+</html>

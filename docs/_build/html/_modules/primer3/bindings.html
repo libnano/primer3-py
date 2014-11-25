@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>primer3.bindings &mdash; primer3-py 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="primer3-py 0.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">primer3-py 0.4.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for primer3.bindings</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">primer3.bindings</span>
+<span class="sd">~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">This module provides a simple API for the Primer3 primer design / thermodynamic </span>
+<span class="sd">calculations library.</span>
+
+<span class="sd">These are direct bindings to an optimized version of the Primer3 C library, </span>
+<span class="sd">as opposed to the more commonly used subprocess-based wrappers (we provide a</span>
+<span class="sd">set of wrappers for comparison / testing purposes as well).</span>
+
+<span class="sd">Note that this module effectively abstracts the C API / Cython bindings for </span>
+<span class="sd">the primer design and thermodynamic analysis functionality of Primer3. This is</span>
+<span class="sd">done primarly to provide a clean, consistent interface. For applications with </span>
+<span class="sd">stringent performance requirments, you should consider using the C API </span>
+<span class="sd">and/or Cython modules directly. See the docs for more details.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pjoin</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">thermoanalysis</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">primerdesign</span> 
+
+
+<span class="c"># ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #</span>
+
+<span class="n">PRIMER3_HOME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;PRIMER3HOME&#39;</span><span class="p">]</span>
+
+<span class="c"># ~~~~~~~~~~~~~~~~ Load thermodynamic parameters into memory ~~~~~~~~~~~~~~~~ #</span>
+
+<span class="n">primerdesign</span><span class="o">.</span><span class="n">loadThermoParams</span><span class="p">(</span><span class="n">pjoin</span><span class="p">(</span><span class="n">PRIMER3_HOME</span><span class="p">,</span> <span class="s">&#39;primer3_config/&#39;</span><span class="p">))</span>
+
+<span class="c"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Low level bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
+
+
+<span class="n">_THERMO_ANALYSIS</span> <span class="o">=</span> <span class="n">thermoanalysis</span><span class="o">.</span><span class="n">ThermoAnalysis</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">_setThermoArgs</span><span class="p">(</span><span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> 
+                   <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">tm_method</span><span class="o">=</span><span class="s">&#39;santalucia&#39;</span><span class="p">,</span> 
+                   <span class="n">salt_corrections_method</span><span class="o">=</span><span class="s">&#39;santalucia&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">mv_conc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mv_conc</span><span class="p">)</span>
+    <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">dv_conc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dv_conc</span><span class="p">)</span>
+    <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">dntp_conc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dntp_conc</span><span class="p">)</span>
+    <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">dna_conc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dna_conc</span><span class="p">)</span>
+    <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp_c</span><span class="p">)</span>
+    <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">max_loop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_loop</span><span class="p">)</span>
+    <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">tm_method</span> <span class="o">=</span> <span class="n">tm_method</span>
+    <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">salt_correction_method</span> <span class="o">=</span> <span class="n">salt_corrections_method</span>
+
+
+<div class="viewcode-block" id="calcHairpin"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHairpin">[docs]</a><span class="k">def</span> <span class="nf">calcHairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">dna_conc</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
+                <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Calculate the hairpin formation thermodynamics of a DNA sequence.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seq (str): DNA sequence to analyze for hairpin formation</span>
+
+<span class="sd">        mv_conc (float/int, optional): Monovalent cation conc. (mM)</span>
+<span class="sd">        dv_conc (float/int, optional): Divalent cation conc. (mM)</span>
+<span class="sd">        dntp_conc (float/int, optional): dNTP conc. (mM)</span>
+<span class="sd">        dna_conc (float/int, optional): DNA conc. (nM)</span>
+<span class="sd">        temp_c (int, optional): Simulation temperature for dG (Celsius)</span>
+<span class="sd">        max_loop(int, optional): Maximum size of loops in the structure</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A `ThermoResult` object with thermodynamic characteristics of the</span>
+<span class="sd">        hairpin formation.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="calcHomodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHomodimer">[docs]</a><span class="k">def</span> <span class="nf">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                  <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Calculate the homodimerization thermodynamics of a DNA sequence.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seq (str)                       : DNA sequence to analyze for homodimer </span>
+<span class="sd">                                          formation calculations</span>
+
+<span class="sd">        mv_conc (float/int, optional)   : Monovalent cation conc. (mM)</span>
+<span class="sd">        dv_conc (float/int, optional)   : Divalent cation conc. (mM)</span>
+<span class="sd">        dntp_conc (float/int, optional) : dNTP conc. (mM)</span>
+<span class="sd">        dna_conc (float/int, optional)  : DNA conc. (nM)</span>
+<span class="sd">        temp_c (int, optional)          : Simulation temperature for dG (C)</span>
+<span class="sd">        max_loop (int, optional)        : Maximum size of loops in the </span>
+<span class="sd">                                          structure</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A `ThermoResult` object with thermodynamic characteristics of the</span>
+<span class="sd">        homodimer interaction. </span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="calcHeterodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHeterodimer">[docs]</a><span class="k">def</span> <span class="nf">calcHeterodimer</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                    <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Calculate the heterodimerization thermodynamics of two DNA sequences.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seq1 (str)              : First DNA sequence to analyze for heterodimer </span>
+<span class="sd">                                  formation</span>
+<span class="sd">        seq2 (str)              : Second DNA sequence to analyze for </span>
+<span class="sd">                                  heterodimer formation</span>
+
+<span class="sd">        mv_conc (float/int)     : Monovalent cation conc. (mM)</span>
+<span class="sd">        dv_conc (float/int)     : Divalent cation conc. (mM)</span>
+<span class="sd">        dntp_conc (float/int)   : dNTP conc. (mM)</span>
+<span class="sd">        dna_conc (float/int)    : DNA conc. (nM)</span>
+<span class="sd">        temp_c (int)            : Simulation temperature for dG (Celsius)</span>
+<span class="sd">        max_loop(int)           : Maximum size of loops in the structure</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A `ThermoResult` object with thermodynamic characteristics of the</span>
+<span class="sd">        heterodimer interaction. </span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHeterodimer</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="calcEndStability"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcEndStability">[docs]</a><span class="k">def</span> <span class="nf">calcEndStability</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                     <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Calculate the 3&#39; end stability of DNA sequence `seq1` against DNA </span>
+<span class="sd">    sequence `seq2`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seq1 (str)                        : DNA sequence to analyze for 3&#39; end</span>
+<span class="sd">                                            hybridization against the target </span>
+<span class="sd">                                            sequence</span>
+<span class="sd">        seq2 (str)                        : Target DNA sequence to analyze for</span>
+<span class="sd">                                            seq1 3&#39; end hybridization</span>
+
+<span class="sd">        mv_conc (float/int, optional)     : Monovalent cation conc. (mM)</span>
+<span class="sd">        dv_conc (float/int, optional)     : Divalent cation conc. (mM)</span>
+<span class="sd">        dntp_conc (float/int, optional)   : dNTP conc. (mM)</span>
+<span class="sd">        dna_conc (float/int, optional)    : DNA conc. (nM)</span>
+<span class="sd">        temp_c (int, optional)            : Simulation temperature for dG (C)</span>
+<span class="sd">        max_loop(int, optional)           : Maximum size of loops in the </span>
+<span class="sd">                                            structure</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A `ThermoResult` object with thermodynamic characteristics of the</span>
+<span class="sd">        3&#39; hybridization interaction. </span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcEndStability</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="calcTm"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcTm">[docs]</a><span class="k">def</span> <span class="nf">calcTm</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+           <span class="n">max_nn_length</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">tm_method</span><span class="o">=</span><span class="s">&#39;santalucia&#39;</span><span class="p">,</span>
+           <span class="n">salt_corrections_method</span><span class="o">=</span><span class="s">&#39;santalucia&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Calculate the melting temperature (Tm) of a DNA sequence.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seq (str)                               : DNA sequence</span>
+
+<span class="sd">        mv_conc (float/int, optional)           : Monovalent cation conc. (mM)</span>
+<span class="sd">        dv_conc (float/int, optional)           : Divalent cation conc. (mM)</span>
+<span class="sd">        dntp_conc (float/int, optional)         : dNTP conc. (mM)</span>
+<span class="sd">        dna_conc (float/int, optional)          : DNA conc. (nM)</span>
+<span class="sd">        max_nn_length (int, optional)           : Maximum length for </span>
+<span class="sd">                                                  nearest-neighbor calcs</span>
+<span class="sd">        tm_method (str, optional)               : Tm calculation method </span>
+<span class="sd">                                                  (breslauer or santalucia)</span>
+<span class="sd">        salt_corrections_method (str, optional) : Salt correction method </span>
+<span class="sd">                                                  (schildkraut, owczarzy, </span>
+<span class="sd">                                                  santalucia)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The melting temperature in degrees Celsius (float).</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcTm</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+
+
+<span class="c"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Tm-only aliases ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
+</div>
+<span class="n">calcHairpinTm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">calcHairpin</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span>
+<span class="n">calcHomodimerTm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">calcHomodimer</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span>
+<span class="n">calcHeterodimerTm</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">calcHeterodimer</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span>
+
+<span class="c"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
+
+
+<div class="viewcode-block" id="designPrimers"><a class="viewcode-back" href="../../quickstart.html#primer3.bindings.designPrimers">[docs]</a><span class="k">def</span> <span class="nf">designPrimers</span><span class="p">(</span><span class="n">seq_args</span><span class="p">,</span> <span class="n">global_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">misprime_lib</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                  <span class="n">mishyb_lib</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Run the Primer3 design process.</span>
+
+<span class="sd">    If the global args have been previously set (either by a pervious</span>
+<span class="sd">    `designPrimers` call or by a `setGlobals` call), `designPrimers` may be</span>
+<span class="sd">    called with seqArgs alone (as a means of optimization).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seq_args (dict)               : Primer3 sequence/design args as per </span>
+<span class="sd">                                        Primer3 docs</span>
+
+<span class="sd">        global_args (dict, optional)  : Primer3 global args as per Primer3 docs</span>
+<span class="sd">        misprime_lib (dict, optional) : `Sequence name: sequence` dictionary </span>
+<span class="sd">                                        for mispriming checks.</span>
+<span class="sd">        mishyb_lib (dict, optional)   : `Sequence name: sequence` dictionary </span>
+<span class="sd">                                        for mishybridization checks.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of Primer3 results (should be identical to the expected</span>
+<span class="sd">        BoulderIO output from primer3_main)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">global_args</span><span class="p">:</span>
+        <span class="n">primerdesign</span><span class="o">.</span><span class="n">setGlobals</span><span class="p">(</span><span class="n">global_args</span><span class="p">,</span> <span class="n">misprime_lib</span><span class="p">,</span> <span class="n">mishyb_lib</span><span class="p">)</span>
+    <span class="n">primerdesign</span><span class="o">.</span><span class="n">setGlobals</span><span class="p">(</span><span class="n">global_args</span><span class="p">,</span> <span class="n">misprime_lib</span><span class="p">,</span> <span class="n">mishyb_lib</span><span class="p">)</span>
+    <span class="n">primerdesign</span><span class="o">.</span><span class="n">setSeqArgs</span><span class="p">(</span><span class="n">seq_args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">primerdesign</span><span class="o">.</span><span class="n">runDesign</span><span class="p">(</span><span class="n">debug</span><span class="p">)</span>
+
+</div>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The following functions are the modular subunits of `designPrimers` and may</span>
+<span class="sd">be used in cases where performance or customiziation are of high priority.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="setP3Globals"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.setP3Globals">[docs]</a><span class="k">def</span> <span class="nf">setP3Globals</span><span class="p">(</span><span class="n">global_args</span><span class="p">,</span> <span class="n">misprime_lib</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mishyb_lib</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Set the Primer3 global args and misprime/mishyb libraries.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        global_args (dict)            : Primer3 global parameters as per </span>
+<span class="sd">                                        Primer3 docs</span>
+
+<span class="sd">        misprime_lib (dict, optional) : ``&lt;Sequence name: sequence&gt;`` dict </span>
+<span class="sd">                                        for mispriming checks.</span>
+<span class="sd">        mishyb_lib (dict, optional)   : ``&lt;Sequence name: sequence&gt;`` dict </span>
+<span class="sd">                                        for mishybridization checks.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``None``</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">primerdesign</span><span class="o">.</span><span class="n">setGlobals</span><span class="p">(</span><span class="n">global_args</span><span class="p">,</span> <span class="n">misprime_lib</span><span class="p">,</span> <span class="n">mishyb_lib</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="setP3SeqArgs"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.setP3SeqArgs">[docs]</a><span class="k">def</span> <span class="nf">setP3SeqArgs</span><span class="p">(</span><span class="n">seq_args</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Set the Primer3 sequence / design arguments.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seq_args (dict)     : Primer3 seq/design args as per Primer3 docs</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``None``</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">primerdesign</span><span class="o">.</span><span class="n">setSeqArgs</span><span class="p">(</span><span class="n">seq_args</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="runP3Design"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.runP3Design">[docs]</a><span class="k">def</span> <span class="nf">runP3Design</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Start the Primer3 design process, return a dict of the Primer3 output.</span>
+
+<span class="sd">    The global parameters and seq args must have been previously set prior to</span>
+<span class="sd">    this call (raises IOError).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        debug (bool, optional)  : If ``True``, prints the received design </span>
+<span class="sd">                                  params to stderr for debugging purposes</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of Primer3 results (should be identical to the expected</span>
+<span class="sd">        BoulderIO output from primer3_main)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">primerdesign</span><span class="o">.</span><span class="n">runDesign</span><span class="p">(</span><span class="n">debug</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">primer3-py 0.4.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2014, Ben Pruitt, Nick Conway; Wyss Institute.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b1.
+    </div>
+  </body>
+</html>

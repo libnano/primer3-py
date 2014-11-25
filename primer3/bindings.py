@@ -1,8 +1,19 @@
 '''
-primer3.bindings | bindings.py
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+primer3.bindings
+~~~~~~~~~~~~~~~~
 
-This is the main API for the Python C API Primer3 calls.
+This module provides a simple API for the Primer3 primer design / thermodynamic 
+calculations library.
+
+These are direct bindings to an optimized version of the Primer3 C library, 
+as opposed to the more commonly used subprocess-based wrappers (we provide a
+set of wrappers for comparison / testing purposes as well).
+
+Note that this module effectively abstracts the C API / Cython bindings for 
+the primer design and thermodynamic analysis functionality of Primer3. This is
+done primarly to provide a clean, consistent interface. For applications with 
+stringent performance requirments, you should consider using the C API 
+and/or Cython modules directly. See the docs for more details.
 
 '''
 
@@ -16,8 +27,7 @@ from . import primerdesign
 
 # ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
 
-PRIMER3_HOME = os.environ.get('PRIMER3HOME')
-
+PRIMER3_HOME = os.environ['PRIMER3HOME']
 
 # ~~~~~~~~~~~~~~~~ Load thermodynamic parameters into memory ~~~~~~~~~~~~~~~~ #
 
@@ -46,15 +56,14 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
     ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
 
     Args:
-        seq (str)               : DNA sequence to analyze for hairpin formation
+        seq (str): DNA sequence to analyze for hairpin formation
 
-    Kwargs:
-        mv_conc (float/int)     : Monovalent cation concentration (mM)
-        dv_conc (float/int)     : Divalent cation concentration (mM)
-        dntp_conc (float/int)   : dNTP concentration (mM)
-        dna_conc (float/int)    : DNA concentration (nM)
-        temp_c (int)            : Simulation temperature for dG (Celsius)
-        max_loop(int)           : Maximum size of loops in the structure
+        mv_conc (float/int, optional): Monovalent cation conc. (mM)
+        dv_conc (float/int, optional): Divalent cation conc. (mM)
+        dntp_conc (float/int, optional): dNTP conc. (mM)
+        dna_conc (float/int, optional): DNA conc. (nM)
+        temp_c (int, optional): Simulation temperature for dG (Celsius)
+        max_loop(int, optional): Maximum size of loops in the structure
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -70,16 +79,16 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     ''' Calculate the homodimerization thermodynamics of a DNA sequence.
 
     Args:
-        seq (str)               : DNA sequence to analyze for homodimer
-                                  formation calculations
+        seq (str)                       : DNA sequence to analyze for homodimer 
+                                          formation calculations
 
-    Kwargs:
-        mv_conc (float/int)     : Monovalent cation concentration (mM)
-        dv_conc (float/int)     : Divalent cation concentration (mM)
-        dntp_conc (float/int)   : dNTP concentration (mM)
-        dna_conc (float/int)    : DNA concentration (nM)
-        temp_c (int)            : Simulation temperature for dG (Celsius)
-        max_loop (int)          : Maximum size of loops in the structure
+        mv_conc (float/int, optional)   : Monovalent cation conc. (mM)
+        dv_conc (float/int, optional)   : Divalent cation conc. (mM)
+        dntp_conc (float/int, optional) : dNTP conc. (mM)
+        dna_conc (float/int, optional)  : DNA conc. (nM)
+        temp_c (int, optional)          : Simulation temperature for dG (C)
+        max_loop (int, optional)        : Maximum size of loops in the 
+                                          structure
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -95,16 +104,15 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
 
     Args:
-        seq1 (str)              : First DNA sequence to analyze for heterodimer
+        seq1 (str)              : First DNA sequence to analyze for heterodimer 
                                   formation
-        seq2 (str)              : Second DNA sequence to analyze for
+        seq2 (str)              : Second DNA sequence to analyze for 
                                   heterodimer formation
 
-    Kwargs:
-        mv_conc (float/int)     : Monovalent cation concentration (mM)
-        dv_conc (float/int)     : Divalent cation concentration (mM)
-        dntp_conc (float/int)   : dNTP concentration (mM)
-        dna_conc (float/int)    : DNA concentration (nM)
+        mv_conc (float/int)     : Monovalent cation conc. (mM)
+        dv_conc (float/int)     : Divalent cation conc. (mM)
+        dntp_conc (float/int)   : dNTP conc. (mM)
+        dna_conc (float/int)    : DNA conc. (nM)
         temp_c (int)            : Simulation temperature for dG (Celsius)
         max_loop(int)           : Maximum size of loops in the structure
 
@@ -123,18 +131,19 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     sequence `seq2`.
 
     Args:
-        seq1 (str)              : DNA sequence to analyze for 3' end
-                                  hybridization against the target sequence
-        seq2 (str)              : Target DNA sequence to analyze for
-                                  seq1 3' end hybridization
+        seq1 (str)                        : DNA sequence to analyze for 3' end
+                                            hybridization against the target 
+                                            sequence
+        seq2 (str)                        : Target DNA sequence to analyze for
+                                            seq1 3' end hybridization
 
-    Kwargs:
-        mv_conc (float/int)     : Monovalent cation concentration (mM)
-        dv_conc (float/int)     : Divalent cation concentration (mM)
-        dntp_conc (float/int)   : dNTP concentration (mM)
-        dna_conc (float/int)    : DNA concentration (nM)
-        temp_c (int)            : Simulation temperature for dG (Celsius)
-        max_loop(int)           : Maximum size of loops in the structure
+        mv_conc (float/int, optional)     : Monovalent cation conc. (mM)
+        dv_conc (float/int, optional)     : Divalent cation conc. (mM)
+        dntp_conc (float/int, optional)   : dNTP conc. (mM)
+        dna_conc (float/int, optional)    : DNA conc. (nM)
+        temp_c (int, optional)            : Simulation temperature for dG (C)
+        max_loop(int, optional)           : Maximum size of loops in the 
+                                            structure
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -148,22 +157,22 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
            max_nn_length=60, tm_method='santalucia',
            salt_corrections_method='santalucia'):
-    ''' Calculate the melting temperature of a DNA sequence.
+    ''' Calculate the melting temperature (Tm) of a DNA sequence.
 
     Args:
-        seq (str)               : DNA sequence
+        seq (str)                               : DNA sequence
 
-    Kwargs:
-        mv_conc (float/int)     : Monovalent cation concentration (mM)
-        dv_conc (float/int)     : Divalent cation concentration (mM)
-        dntp_conc (float/int)   : dNTP concentration (mM)
-        dna_conc (float/int)    : DNA concentration (nM)
-        max_nn_length (int)     : Maximum length for nearest-neighbor calcs
-        tm_method (str)         : Tm calculation method (breslauer or
-                                  santalucia)
-        salt_corrections_method
-                          (str) : Salt correction method (schildkraut,
-                                  owczarzy, santalucia)
+        mv_conc (float/int, optional)           : Monovalent cation conc. (mM)
+        dv_conc (float/int, optional)           : Divalent cation conc. (mM)
+        dntp_conc (float/int, optional)         : dNTP conc. (mM)
+        dna_conc (float/int, optional)          : DNA conc. (nM)
+        max_nn_length (int, optional)           : Maximum length for 
+                                                  nearest-neighbor calcs
+        tm_method (str, optional)               : Tm calculation method 
+                                                  (breslauer or santalucia)
+        salt_corrections_method (str, optional) : Salt correction method 
+                                                  (schildkraut, owczarzy, 
+                                                  santalucia)
 
     Returns:
         The melting temperature in degrees Celsius (float).
@@ -191,14 +200,14 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
     called with seqArgs alone (as a means of optimization).
 
     Args:
-        seq_args (dict)     :   Primer3 sequence/design args as per Primer3 docs
+        seq_args (dict)               : Primer3 sequence/design args as per 
+                                        Primer3 docs
 
-    Kwargs:
-        global_args (dict)  :   Primer3 global args as per Primer3 docs
-        misprime_lib (dict) :   `Sequence name: sequence` dictionary for
-                                mispriming checks.
-        mishyb_lib (dict)   :   `Sequence name: sequence` dictionary for
-                                mishybridization checks.
+        global_args (dict, optional)  : Primer3 global args as per Primer3 docs
+        misprime_lib (dict, optional) : `Sequence name: sequence` dictionary 
+                                        for mispriming checks.
+        mishyb_lib (dict, optional)   : `Sequence name: sequence` dictionary 
+                                        for mishybridization checks.
 
     Returns:
         A dictionary of Primer3 results (should be identical to the expected
@@ -221,13 +230,16 @@ def setP3Globals(global_args, misprime_lib=None, mishyb_lib=None):
     ''' Set the Primer3 global args and misprime/mishyb libraries.
 
     Args:
-        global_args (dict)  :   Primer3 global parameters as per Primer3 docs
+        global_args (dict)            : Primer3 global parameters as per 
+                                        Primer3 docs
 
-    Kwargs:
-        misprime_lib (dict) :   `Sequence name: sequence` dictionary for
-                                mispriming checks.
-        mishyb_lib (dict)   :   `Sequence name: sequence` dictionary for
-                                mishybridization checks.
+        misprime_lib (dict, optional) : ``<Sequence name: sequence>`` dict 
+                                        for mispriming checks.
+        mishyb_lib (dict, optional)   : ``<Sequence name: sequence>`` dict 
+                                        for mishybridization checks.
+
+    Returns:
+        ``None``
 
     '''
     primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib)
@@ -237,7 +249,10 @@ def setP3SeqArgs(seq_args):
     ''' Set the Primer3 sequence / design arguments.
 
     Args:
-        seq_args (dict)     :   Primer3 seq/design args as per Primer3 docs
+        seq_args (dict)     : Primer3 seq/design args as per Primer3 docs
+
+    Returns:
+        ``None``
 
     '''
     primerdesign.setSeqArgs(seq_args)
@@ -248,6 +263,10 @@ def runP3Design(debug=False):
 
     The global parameters and seq args must have been previously set prior to
     this call (raises IOError).
+
+    Args:
+        debug (bool, optional)  : If ``True``, prints the received design 
+                                  params to stderr for debugging purposes
 
     Returns:
         A dictionary of Primer3 results (should be identical to the expected
