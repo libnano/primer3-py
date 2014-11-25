@@ -1,0 +1,34 @@
+Overview
+========
+
+
+Thermodynamic analysis
+----------------------
+
+The thermodynamic bindings include support for **Tm, homodimer, heterodimer, 
+hairpin, and 3' end stability calculations**. All of the native salt and oligo 
+concentration parameters of Primer3 are broken out:
+
+    `For all low-level calculations`:
+        **mv_conc** (float/int) 
+            Monovalent cation concentration (mM)
+        **dv_conc** (float/int)
+            Divalent cation concentration (mM)
+        **dntp_conc** (float/int)
+            dNTP concentration (mM)
+        **dna_conc** (float/int)
+            DNA concentration (nM)
+
+    `For homodimer/heterodimer/end stabilty calculation`:
+        **temp_c** (int)
+            Simulation temperature for dG calcs (C)
+        **max_loop** (int)
+            Maximum size of loops in the structure
+
+    `For Tm calculations`:
+        **max_nn_length** (int)
+            Maximum length for nearest-neighbor calcs
+        **tm_method** (str) 
+            Tm calculation method (breslauer or santalucia)
+        **salt_corrections_method**
+            Salt correction method (schildkraut, wczarzy, santalucia)
