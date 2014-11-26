@@ -95,7 +95,7 @@ thermo_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
 test_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
                 os.walk(TESTS_PATH) for f in files]
 
-p3_files = thermo_files + test_files + ['thermoanalysis.pxd']
+p3_files = thermo_files + test_files + ['thermoanalysis.pxd', 'thermoanalysis.pyx']
 
 
 # Insure that the copied binaries are executable
@@ -178,7 +178,7 @@ thermoanalysis_ext_list = cythonize([thermoanalysis_ext],
 
 
 setup(
-    name='Primer3-py',
+    name='primer3-py',
     version='0.4.0',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
