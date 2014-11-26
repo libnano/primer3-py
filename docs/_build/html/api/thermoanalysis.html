@@ -165,18 +165,95 @@ calculations using common calculation parameters.</p>
 calculations. Should be instantiated with the proper thermodynamic
 parameters for seqsequence calculations (salt concentrations, correction
 methods, limits, etc.). See module docstring for more information.</p>
+<dl class="method">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.calcEndStability">
+<code class="descname">calcEndStability</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcEndStability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the 3&#8217; end stability of DNA sequence <cite>seq1</cite> against DNA
+sequence <cite>seq2</cite></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.calcHairpin">
+<code class="descname">calcHairpin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHairpin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the hairpin formation thermodynamics of a DNA
+sequence, <code class="docutils literal"><span class="pre">seq1</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.calcHeterodimer">
+<code class="descname">calcHeterodimer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHeterodimer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the heterodimer formation thermodynamics of two DNA
+sequences, <code class="docutils literal"><span class="pre">seq1</span></code> and <code class="docutils literal"><span class="pre">seq2</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.calcHomodimer">
+<code class="descname">calcHomodimer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHomodimer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the homodimer formation thermodynamics of a DNA
+sequence, <code class="docutils literal"><span class="pre">seq1</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.calcTm">
+<code class="descname">calcTm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcTm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the melting temperature (Tm) of a DNA sequence (deg. C).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.dna_conc">
+<code class="descname">dna_conc</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dna_conc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concentration of DNA oligos (nM)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.dntp_conc">
+<code class="descname">dntp_conc</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dntp_conc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concentration of dNTPs (mM)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.dv_conc">
+<code class="descname">dv_conc</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dv_conc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concentration of divalent cations (mM)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.max_loop">
+<code class="descname">max_loop</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.max_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum hairpin loop size (bp)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.mv_conc">
+<code class="descname">mv_conc</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.mv_conc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concentration of monovalent cations (mM)</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="primer3.thermoanalysis.ThermoAnalysis.salt_correction_method">
 <code class="descname">salt_correction_method</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.salt_correction_method" title="Permalink to this definition">¶</a></dt>
-<dd><p>May be provided as a string (see SALT_CORRECTION_METHODS) or the
-respective integer representation.</p>
+<dd><p>Method used for salt corrections applied to melting temperature
+calculations. May be provided as a string (see SALT_CORRECTION_METHODS)
+or the respective integer representation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.temp">
+<code class="descname">temp</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulation temperature (deg. C)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoAnalysis.thal_type">
+<code class="descname">thal_type</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.thal_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of thermodynamic calculation</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="primer3.thermoanalysis.ThermoAnalysis.tm_method">
 <code class="descname">tm_method</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.tm_method" title="Permalink to this definition">¶</a></dt>
-<dd><p>May be provided as a string (see TM_METHODS) or the respective
-integer representation.</p>
+<dd><p>Method used to calculate melting temperatures. May be provided as
+a string (see TM_METHODS) or the respective integer representation.</p>
 </dd></dl>
 
 </dd></dl>
@@ -184,24 +261,51 @@ integer representation.</p>
 <dl class="class">
 <dt id="primer3.thermoanalysis.ThermoResult">
 <em class="property">class </em><code class="descclassname">primer3.thermoanalysis.</code><code class="descname">ThermoResult</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult" title="Permalink to this definition">¶</a></dt>
-<dd><p>Python class that wraps the <cite>thal_results</cite> struct from libprimer3 to
-expose tm, dg, dh, and ds values that result from a <cite>calcHairpin</cite>,
-<cite>calcHomodimer</cite>, or <cite>calcHeterodimer</cite> calculation.</p>
+<dd><p>Class that wraps the <code class="docutils literal"><span class="pre">thal_results</span></code> struct from libprimer3
+to expose tm, dg, dh, and ds values that result from a <code class="docutils literal"><span class="pre">calcHairpin</span></code>,
+<code class="docutils literal"><span class="pre">calcHomodimer</span></code>, <code class="docutils literal"><span class="pre">calcHeterodimer</span></code>, or <code class="docutils literal"><span class="pre">calcEndStability</span></code>
+calculation.</p>
 <dl class="attribute">
 <dt id="primer3.thermoanalysis.ThermoResult.__repr__">
 <code class="descname">__repr__</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.__repr__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Human-readable representation of the object</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="primer3.thermoanalysis.ThermoResult.__str__">
 <code class="descname">__str__</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.__str__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Wraps <code class="docutils literal"><span class="pre">__repr</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoResult.dg">
+<code class="descname">dg</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.dg" title="Permalink to this definition">¶</a></dt>
+<dd><p>deltaG (Gibbs free energy) of the structure (cal/mol)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoResult.dh">
+<code class="descname">dh</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.dh" title="Permalink to this definition">¶</a></dt>
+<dd><p>deltaH (entropy) of the structure (cal/mol)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoResult.ds">
+<code class="descname">ds</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.ds" title="Permalink to this definition">¶</a></dt>
+<dd><p>deltaS (enthalpy) of the structure (cal/K*mol)</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="primer3.thermoanalysis.ThermoResult.structure_found">
 <code class="descname">structure_found</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.structure_found" title="Permalink to this definition">¶</a></dt>
-<dd><p>Whether or not a structure (hairpin or dimer) was found as a
+<dd><p>Whether or not a structure (hairpin, dimer, etc) was found as a
 result of the calculation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="primer3.thermoanalysis.ThermoResult.tm">
+<code class="descname">tm</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.tm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Melting temperature of the structure in deg. C</p>
 </dd></dl>
 
 </dd></dl>
