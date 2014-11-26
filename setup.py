@@ -178,7 +178,7 @@ thermoanalysis_ext_list = cythonize([thermoanalysis_ext],
 
 
 setup(
-    name='primer3-py',
+    name='Primer3-py',
     version='0.4.0',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
