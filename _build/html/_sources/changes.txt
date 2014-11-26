@@ -1,0 +1,62 @@
+Changelog
+=========
+
+Version 0.1:                                                      March 3, 2014
+-------------------------------------------------------------------------------
+- Initial release
+
+Version 0.2:                                                     April 23, 2014
+-------------------------------------------------------------------------------
+- Corrected installation issue (replace inplace with build_lib in setup.cfg)
+- Documentation updates
+
+Version 0.2.1                                                    April 24, 2014
+-------------------------------------------------------------------------------
+- C API path fix
+
+Version 0.2.2:                                                     June 3, 2014
+-------------------------------------------------------------------------------
+- Corrected issue with parsing "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST" as a
+  python sequence object. "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST" should now
+  be provided as a list of lists or tuple of tuples (or a combination of the
+  two). -1 should be used in the case where an index is ommitted. For example::
+
+      Primer3 boulder IO input:   100,50,300,50 ; 900,60,,
+      Primer3 python input:       [[100,50,300,50], [900,60,-1,-1]]
+
+Version 0.2.3:                                                     June 5, 2014
+-------------------------------------------------------------------------------
+- Corrected several potential sources of memory leaks in the C API design
+  bindings.
+
+Version 0.2.4:                                                    June 17, 2014
+-------------------------------------------------------------------------------
+- Addressed bug in mispriming/mishybridization library parsing in which
+  memory for the global parameters struct was not being properly allocated
+
+Version 0.2.5:                                                   August 7, 2014
+-------------------------------------------------------------------------------
+- Fixed incorrect tm/salt correction method lookups in calcTm function in
+  both bindings and wrappers
+
+Version 0.3.0:                                                  August 12, 2014
+-------------------------------------------------------------------------------
+- Fixed memory leak in global param struct allocation for design bindings
+- Integrated C API patch code into libprimer3
+- Refactored libprimer3 to pure C (khash lib is now used in lieu of hashmap)
+- Corrected many minor compiler warnings in libprimer3
+- (POTENTIAL BREAKING CHANGE) Refactored thermodynamic alignment bindings to
+  always return a thermoresult namedtuple (in the previous embodiment, if no
+  structure was found, the return value was `None`) 
+
+Version 0.3.1:                                                  August 13, 2014
+-------------------------------------------------------------------------------
+- Improved support for sequences stored in Bytes objects
+- Renamed getThermoParams to loadThermoParams for clarity
+
+Version 0.4.0:                                                November 25, 2014
+-------------------------------------------------------------------------------
+- Several major bug fixes in the design bindings pipeline
+- Better testing framework for the design bindings
+- New documentation system
+- Better under-the-hood thermodynamic analysis abstraction 
