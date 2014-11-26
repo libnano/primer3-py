@@ -166,15 +166,23 @@ thermoanalysis_ext = Extension(
 )
 
 
-if ('build_ext' in sys.argv or 'install' in sys.argv) and not P3_BUILT:
-    p3Clean()
-    p3Build()
-    P3_BUILT = True
 
+if ('build_ext' in sys.argv or 'install' in sys.argv):
+    if not P3_BUILT:
+        p3Clean()
+        p3Build()
+        P3_BUILT = True
 
 is_py_3 = int(sys.version_info[0] > 2)
-thermoanalysis_ext_list = cythonize([thermoanalysis_ext], 
-    compile_time_env={'IS_PY_THREE': is_py_3} )
+thermoanalysis_ext_list = cythonize(
+    [thermoanalysis_ext], 
+    compile_time_env={'IS_PY_THREE': is_py_3},
+    force=True
+)
+
+# Insure that we don't include the built Cython module in the dist
+if 'sdist' in sys.argv:
+    os.remove(os.path.join(MODULE_PATH, 'thermoanalysis.c'))
 
 
 setup(

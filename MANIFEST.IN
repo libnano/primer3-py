@@ -1,5 +1,6 @@
-include README.rst LICENSE CHANGES
+include README.rst LICENSE CHANGES AUTHORS
 include valgrind-python.supp
-include primer3/src/*.pxd primer3/src/*.pyx primer3/src/*.h primer3/src/*.c
+include primer3/*.pxd primer3/*.pyx primer3/src/*.h primer3/src/*.c
 recursive-include primer3/test_files *
 recursive-include primer3/src/libprimer3 *
+prune primer3/thermoanalysis.c
