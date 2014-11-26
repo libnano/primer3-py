@@ -1,3 +1,6 @@
+Authors
+=======
+
 The original Primer3 source was developed at Whitehead Institute and Howard 
 Hughes Medical Institute by Steve Rozen, Andreas Untergasser, Maido Remm, 
 Triinu Koressaar, Helen Skaletsky and many others (please let us know if
@@ -22,10 +25,10 @@ development of the Python bindings and derivative source code:
 
 Lead Developers
 -------------------------------------------------------------------------------
--Ben Pruitt (https://github.com/benpruitt)
--Nick Conway (https://github.com/grinner)
+- Ben Pruitt (https://github.com/benpruitt)
+- Nick Conway (https://github.com/grinner)
 
 
 Contributors
 -------------------------------------------------------------------------------
--pramasoul (https://github.com/pramasoul)
+- pramasoul (https://github.com/pramasoul)

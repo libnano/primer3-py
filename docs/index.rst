@@ -40,6 +40,7 @@ Contents
    quickstart
    api/index
    miscellany
+   changes
 
 
 Indices and tables

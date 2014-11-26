@@ -35,9 +35,18 @@ project and dev team is through Github
 
 Licensing
 ---------
-Primer3 and this derivative work are licensed under the GPLv2 license. 
+Citations should reference the `lastest Primer3 paper 
+<http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596>`_::
 
-Copyright (C) 2014. Ben Pruitt & Nick Conway
+  Untergasser, Andreas, et al. "Primer3—new capabilities and interfaces." 
+  Nucleic acids research 40.15 (2012): e115-e115.
+  doi: 10.1093/nar/gks596
+
+All project code, including the derivative Primer3 library, is licensed 
+under GPLv2. The included Python and Python C API bindings are 
+Copyright (c) 2014 Ben Pruitt, Nick Conway; Wyss Institute for 
+Biologically Inspired Engineering.
+
 See LICENSE for full GPLv2 license.
 
 This program is free software; you can redistribute it and/or modify

@@ -1,52 +1,117 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Miscellany &mdash; primer3-py 0.4.0 documentation</title>
-    
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.4.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="primer3-py 0.4.0 documentation" href="index.html" />
-    <link rel="prev" title="Low-level thermodynamic analysis" href="api/thermoanalysis.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="api/thermoanalysis.html" title="Low-level thermodynamic analysis"
-             accesskey="P">previous</a> |</li>
-        <li><a href="index.html">primer3-py 0.4.0 documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Miscellany &mdash; primer3-py 0.4.0 documentation</title>
+  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="primer3-py 0.4.0 documentation" href="index.html"/>
+        <link rel="prev" title="Low-level thermodynamic analysis" href="api/thermoanalysis.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> primer3-py</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#thermodynamic-analysis">Thermodynamic analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#primer-design">Primer design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#advanced-installation">Advanced Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/bindings.html">Primary analysis and design API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/thermoanalysis.html">Low-level thermodynamic analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Miscellany</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#derivative-work">Derivative work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#future-work">Future work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributions">Contributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#licensing">Licensing</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">primer3-py</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Miscellany</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/miscellany.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
             
   <div class="section" id="miscellany">
 <h1>Miscellany<a class="headerlink" href="#miscellany" title="Permalink to this headline">¶</a></h1>
@@ -84,9 +149,17 @@ project and dev team is through Github
 </div>
 <div class="section" id="licensing">
 <h2>Licensing<a class="headerlink" href="#licensing" title="Permalink to this headline">¶</a></h2>
-<p>Primer3 and this derivative work are licensed under the GPLv2 license.</p>
-<p>Copyright (C) 2014. Ben Pruitt &amp; Nick Conway
-See LICENSE for full GPLv2 license.</p>
+<p>Citations should reference the <a class="reference external" href="http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596">lastest Primer3 paper</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>Untergasser, Andreas, et al. &quot;Primer3—new capabilities and interfaces.&quot;
+Nucleic acids research 40.15 (2012): e115-e115.
+doi: 10.1093/nar/gks596
+</pre></div>
+</div>
+<p>All project code, including the derivative Primer3 library, is licensed
+under GPLv2. The included Python and Python C API bindings are
+Copyright (c) 2014 Ben Pruitt, Nick Conway; Wyss Institute for
+Biologically Inspired Engineering.</p>
+<p>See LICENSE for full GPLv2 license.</p>
 <p>This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -103,67 +176,65 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Miscellany</a><ul>
-<li><a class="reference internal" href="#motivation">Motivation</a></li>
-<li><a class="reference internal" href="#derivative-work">Derivative work</a></li>
-<li><a class="reference internal" href="#future-work">Future work</a></li>
-<li><a class="reference internal" href="#contributions">Contributions</a></li>
-<li><a class="reference internal" href="#licensing">Licensing</a></li>
-</ul>
-</li>
-</ul>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="api/thermoanalysis.html" class="btn btn-neutral" title="Low-level thermodynamic analysis"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="api/thermoanalysis.html"
-                        title="previous chapter">Low-level thermodynamic analysis</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/miscellany.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Ben Pruitt, Nick Conway; Wyss Institute.
     </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="api/thermoanalysis.html" title="Low-level thermodynamic analysis"
-             >previous</a> |</li>
-        <li><a href="index.html">primer3-py 0.4.0 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &copy; Copyright 2014, Ben Pruitt, Nick Conway; Wyss Institute.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b1.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.4.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

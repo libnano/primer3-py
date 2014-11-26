@@ -1,20 +1,21 @@
 '''
-===========================================================
- primer3-py: fast primer design and thermodynamic analysis
-===========================================================
+=========================================================
+Primer3-py: simple oligo analysis and primer design
+=========================================================
 
-``primer3-py`` is a collection of Python bindings for a derivative of the
+**Primer3-py** is a collection of Python bindings for a derivative of the
 popular Primer3 C library (version 2.3.6).
 
-See README.rst for more information and primer3_test.py for usage examples.
+See README.rst and http://benpruitt.github.io/primer3-py for more information 
+and primer3_test.py for usage examples.
 
 Installation
 ------------
 
-``primer3-py`` has no external library dependencies and should compile on
+**Primer3-py** has no external library dependencies and should compile on
 most linux and OS X systems that are running Python 2.7, 3.3, or 3.4.
 
-To build ``primer3-py`` within the package directory run::
+To build **Primer3-py** within the package directory run::
 
   $ python setup.py build_ext --inplace
 
@@ -178,7 +179,7 @@ thermoanalysis_ext_list = cythonize([thermoanalysis_ext],
 
 setup(
     name='primer3-py',
-    version='0.3.1',
+    version='0.4.0',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',
@@ -202,6 +203,7 @@ setup(
     package_data={'primer3': p3_files},
     cmdclass={'install_lib': CustomInstallLib, 'sdist': CustomSdist,
               'build_ext': CustomBuildExt},
-    test_suite= "tests"
-    # zip_safe=False
+    test_suite= "tests",
+    install_requires=['Cython'],
+    zip_safe=False
 )
