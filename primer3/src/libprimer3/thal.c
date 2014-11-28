@@ -432,8 +432,8 @@ thal(const unsigned char *oligo_f,
   /* The following error messages will be seen by end users and will
      not be easy to understand. */
   CHECK_ERROR((len_f > THAL_MAX_ALIGN) && (len_r > THAL_MAX_ALIGN),
-               "Both sequences longer than " XSTR(THAL_MAX_ALIGN)
-               " for thermodynamic alignment");
+               "At least one sequence must be equal to or shorter than " 
+               XSTR(THAL_MAX_ALIGN) "bp for thermodynamic calculations");
   CHECK_ERROR((len_f > THAL_MAX_SEQ),
               LONG_SEQ_ERR_STR(THAL_MAX_SEQ) " (1)");
   CHECK_ERROR((len_r > THAL_MAX_SEQ),
@@ -2747,7 +2747,6 @@ calcHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
         } else {
             o->temp = 0.0;
             o->no_structure = 1;
-            strcpy(o->msg, "No predicted sec struc for given seq\\n");
         }
     } else {
         if(temponly == 0) {
@@ -2786,7 +2785,6 @@ calcDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
         }
         o->temp = 0.0; /* lets use generalization here; this should rather be very negative value */
         o->no_structure = 1;
-        strcpy(o->msg, "No predicted sec struc for given seq");
         return;
     } else {
         N = 0;
@@ -2827,7 +2825,6 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
 #endif
     } else {
       o->temp = 0.0; /* lets use generalization here */
-      strcpy(o->msg, "No predicted sec struc for given seq\n");
     }
   } else {
     if(temponly == 0) {
@@ -2884,7 +2881,6 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
       printf("No predicted secondary structures for given sequences\n");
     }
     o->temp = 0.0; /* lets use generalization here; this should rather be very negative value */
-    strcpy(o->msg, "No predicted sec struc for given seq");
     return;
   } else {
     N = 0;

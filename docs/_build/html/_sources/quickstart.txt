@@ -45,6 +45,12 @@ hairpin,** and **3' end stability calculations**:
         >>> primer3.calcTm('GTAAAACGACGGCCAGT')
         49.16808228911765
 
+    Note that NN thermodynamics will be used to calculate the Tm of sequences
+    up to 60 bp in length, after which point the following formula will be 
+    used::
+
+        Tm = 81.5 + 16.6(log10([mv_conc])) + 0.41(%GC) - 600/length
+
 
 .. py:function:: calcHairpin(seq[, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, \
                              dna_conc=50.0, temp_c=37, max_loop=30])
@@ -62,6 +68,11 @@ hairpin,** and **3' end stability calculations**:
         >>> print('%f, %f, %f' % (res.dg, res.dh, res.ds))
         337.086509, -36300.000000, -118.126992
 
+    **Note that at least one of the two sequences must by <60 bp in length.**
+    This is a cap imposed by Primer3 as the longest reasonable sequence length 
+    for which a two-state NN model produces reliable results (see
+    primer3/src/libnano/thal.h:50).
+
 
 .. py:function:: calcHomodimer(seq[, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, \
                                dna_conc=50.0, temp_c=37, max_loop=30])
@@ -70,6 +81,11 @@ hairpin,** and **3' end stability calculations**:
     ``seq``. Returns a ``ThermoResult`` object that provides access to the 
     thermodynamic characteristics of the result (see :py:func:`calcHairpin`
     doc for more information).
+
+    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
+    by Primer3 as the longest reasonable sequence length for which
+    a two-state NN model produces reliable results (see 
+    primer3/src/libnano/thal.h:50).
 
 
 .. py:function:: calcHeterodimer(seq1, seq2[, mv_conc=50.0, dv_conc=0.0, \
@@ -81,6 +97,12 @@ hairpin,** and **3' end stability calculations**:
     access to the thermodynamic characteristics of the result 
     (see :py:func:`calcHairpin` doc for more information).
 
+    **Note that at least one of the two sequences must by <60 bp in length.**
+    This is a cap imposed by Primer3 as the longest reasonable sequence length 
+    for which a two-state NN model produces reliable results (see
+    primer3/src/libnano/thal.h:50).
+
+
 .. py:function:: calcEndStability(seq1, seq2[, mv_conc=50.0, dv_conc=0.0, \
                                   dntp_conc=0.8, dna_conc=50.0, temp_c=37, \
                                   max_loop=30])
@@ -89,6 +111,11 @@ hairpin,** and **3' end stability calculations**:
     sequence `seq2`. Returns a ``ThermoResult`` object that provides 
     access to the thermodynamic characteristics of the result 
     (see :py:func:`calcHairpin` doc for more information).
+
+    **Note that at least one of the two sequences must by <60 bp in length.**
+    This is a cap imposed by Primer3 as the longest reasonable sequence length 
+    for which a two-state NN model produces reliable results (see
+    primer3/src/libnano/thal.h:50).
 
 
 All of these low-level thermodynamic functions share a set of keyword arguments

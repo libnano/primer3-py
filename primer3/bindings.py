@@ -73,7 +73,7 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
 
     **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
     by the Primer3 team as the longest reasonable sequence length for which
-    a two-state NN model produces reliable results (see src/libnano/thal.h:50).
+    a two-state NN model produces reliable results (see primer3/src/libnano/thal.h:50).
 
     Args:
         seq (str): DNA sequence to analyze for hairpin formation
@@ -89,9 +89,12 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
         A `ThermoResult` object with thermodynamic characteristics of the
         hairpin formation.
 
+    Raises:
+        ``RuntimeError``
+
     '''
     _setThermoArgs(**locals())
-    return _THERMO_ANALYSIS.calcHairpin(seq)
+    return _THERMO_ANALYSIS.calcHairpin(seq).checkExc()
 
 
 def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
@@ -100,7 +103,8 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
     by Primer3 as the longest reasonable sequence length for which
-    a two-state NN model produces reliable results (see src/libnano/thal.h:50).
+    a two-state NN model produces reliable results (see 
+    primer3/src/libnano/thal.h:50).
 
     Args:
         seq (str)                       : DNA sequence to analyze for homodimer 
@@ -118,9 +122,12 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
         A `ThermoResult` object with thermodynamic characteristics of the
         homodimer interaction. 
 
+    Raises:
+        ``RuntimeError``
+
     '''
     _setThermoArgs(**locals())
-    return _THERMO_ANALYSIS.calcHomodimer(seq)
+    return _THERMO_ANALYSIS.calcHomodimer(seq).checkExc()
 
 
 def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
@@ -130,7 +137,7 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length 
     for which a two-state NN model produces reliable results (see
-    src/libnano/thal.h:50).
+    primer3/src/libnano/thal.h:50).
 
     Args:
         seq1 (str)              : First DNA sequence to analyze for heterodimer 
@@ -149,9 +156,12 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
         A `ThermoResult` object with thermodynamic characteristics of the
         heterodimer interaction. 
 
+    Raises:
+        ``RuntimeError``
+
     '''
     _setThermoArgs(**locals())
-    return _THERMO_ANALYSIS.calcHeterodimer(seq1, seq2)
+    return _THERMO_ANALYSIS.calcHeterodimer(seq1, seq2).checkExc()
 
 
 def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
@@ -162,7 +172,7 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length 
     for which a two-state NN model produces reliable results (see
-    src/libnano/thal.h:50).
+    primer3/src/libnano/thal.h:50).
 
     Args:
         seq1 (str)                        : DNA sequence to analyze for 3' end
@@ -183,9 +193,12 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
         A `ThermoResult` object with thermodynamic characteristics of the
         3' hybridization interaction. 
 
+    Raises:
+        ``RuntimeError``
+
     '''
     _setThermoArgs(**locals())
-    return _THERMO_ANALYSIS.calcEndStability(seq1, seq2)
+    return _THERMO_ANALYSIS.calcEndStability(seq1, seq2).checkExc()
 
 
 def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,

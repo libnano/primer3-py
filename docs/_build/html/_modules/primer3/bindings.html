@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>primer3.bindings &mdash; Primer3-py 0.4.0 documentation</title>
+  <title>primer3.bindings &mdash; Primer3-py 0.4.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Primer3-py 0.4.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Primer3-py 0.4.1 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -90,6 +90,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../changes.html#version-0-3-0-august-12-2014">Version 0.3.0:                                                  August 12, 2014</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changes.html#version-0-3-1-august-13-2014">Version 0.3.1:                                                  August 13, 2014</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changes.html#version-0-4-0-november-25-2014">Version 0.4.0:                                                November 25, 2014</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes.html#version-0-4-1-november-28-2014">Version 0.4.1:                                                November 28, 2014</a></li>
 </ul>
 </li>
 </ul>
@@ -200,6 +201,10 @@
                 <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Calculate the hairpin formation thermodynamics of a DNA sequence.</span>
 
+<span class="sd">    **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested</span>
+<span class="sd">    by the Primer3 team as the longest reasonable sequence length for which</span>
+<span class="sd">    a two-state NN model produces reliable results (see primer3/src/libnano/thal.h:50).</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        seq (str): DNA sequence to analyze for hairpin formation</span>
 
@@ -216,12 +221,17 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span>
 
 </div>
 <div class="viewcode-block" id="calcHomodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHomodimer">[docs]</a><span class="k">def</span> <span class="nf">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
                   <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Calculate the homodimerization thermodynamics of a DNA sequence.</span>
+
+<span class="sd">    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed</span>
+<span class="sd">    by Primer3 as the longest reasonable sequence length for which</span>
+<span class="sd">    a two-state NN model produces reliable results (see </span>
+<span class="sd">    primer3/src/libnano/thal.h:50).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        seq (str)                       : DNA sequence to analyze for homodimer </span>
@@ -241,12 +251,17 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span>
 
 </div>
 <div class="viewcode-block" id="calcHeterodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHeterodimer">[docs]</a><span class="k">def</span> <span class="nf">calcHeterodimer</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
                     <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Calculate the heterodimerization thermodynamics of two DNA sequences.</span>
+
+<span class="sd">    **Note that at least one of the two sequences must by &lt;60 bp in length.**</span>
+<span class="sd">    This is a cap imposed by Primer3 as the longest reasonable sequence length </span>
+<span class="sd">    for which a two-state NN model produces reliable results (see</span>
+<span class="sd">    primer3/src/libnano/thal.h:50).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        seq1 (str)              : First DNA sequence to analyze for heterodimer </span>
@@ -267,13 +282,18 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHeterodimer</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHeterodimer</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span>
 
 </div>
 <div class="viewcode-block" id="calcEndStability"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcEndStability">[docs]</a><span class="k">def</span> <span class="nf">calcEndStability</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
                      <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Calculate the 3&#39; end stability of DNA sequence `seq1` against DNA </span>
 <span class="sd">    sequence `seq2`.</span>
+
+<span class="sd">    **Note that at least one of the two sequences must by &lt;60 bp in length.**</span>
+<span class="sd">    This is a cap imposed by Primer3 as the longest reasonable sequence length </span>
+<span class="sd">    for which a two-state NN model produces reliable results (see</span>
+<span class="sd">    primer3/src/libnano/thal.h:50).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        seq1 (str)                        : DNA sequence to analyze for 3&#39; end</span>
@@ -296,13 +316,19 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcEndStability</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcEndStability</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span>
 
 </div>
 <div class="viewcode-block" id="calcTm"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcTm">[docs]</a><span class="k">def</span> <span class="nf">calcTm</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
            <span class="n">max_nn_length</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">tm_method</span><span class="o">=</span><span class="s">&#39;santalucia&#39;</span><span class="p">,</span>
            <span class="n">salt_corrections_method</span><span class="o">=</span><span class="s">&#39;santalucia&#39;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Calculate the melting temperature (Tm) of a DNA sequence.</span>
+
+<span class="sd">    Note that NN thermodynamics will be used to calculate the Tm of sequences</span>
+<span class="sd">    up to 60 bp in length, after which point the following formula will be </span>
+<span class="sd">    used::</span>
+
+<span class="sd">        Tm = 81.5 + 16.6(log10([mv_conc])) + 0.41(%GC) - 600/length</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        seq (str)                               : DNA sequence</span>
@@ -449,7 +475,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.4.0',
+            VERSION:'0.4.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

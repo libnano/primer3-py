@@ -147,11 +147,21 @@ cdef class ThermoResult:
         def __get__(self):
             return self.thalres.dg
 
+    def checkExc(self):
+        ''' Check the ``.msg`` attribute of the internal thalres struct and 
+        raise a ``RuntimeError`` exception if it is not an empty string.
+        Otherwise, return a reference to the current object.
+        '''
+        if len(self.thalres.msg):
+            raise RuntimeError(self.thalres.msg)
+        else:
+            return self
+
     def __repr__(self):
         ''' Human-readable representation of the object '''
         return 'ThermoResult(structure_found={}, tm={:0.2f}, dg={:0.2f}, ' \
-               'dh={:0.2f}, ds={:0.2f}, msg={})'.format(self.structure_found,
-                    self.tm, self.dg, self.dh, self.ds, self.thalres.msg)
+               'dh={:0.2f}, ds={:0.2f})'.format(self.structure_found,
+                    self.tm, self.dg, self.dh, self.ds)
 
     def __str__(self):
         ''' Wraps ``__repr`` '''
@@ -359,18 +369,6 @@ cdef class ThermoAnalysis:
         cdef unsigned char* s1 = py_s1
         return ThermoAnalysis.calcHairpin_c(<ThermoAnalysis> self, s1)
 
-    cdef inline double calcTm_c(ThermoAnalysis self, char *s1):
-        cdef thal_args *ta = &self.thalargs
-        return seqtm(<const char*> s1, 
-                     ta.dna_conc, 
-                     ta.mv, 
-                     ta.dv,
-                     ta.dntp, 
-                     self.max_nn_length, 
-                     <tm_method_type>
-                     self.tm_method,
-                     <salt_correction_type> self.salt_correction_method)
-
     cdef inline ThermoResult calcEndStability_c(ThermoAnalysis self,
                                                unsigned char *s1,
                                                unsigned char *s2):
@@ -394,6 +392,18 @@ cdef class ThermoAnalysis:
         py_s2 = <bytes> _bytes(seq2)
         cdef unsigned char* s2 = py_s2
         return ThermoAnalysis.calcEndStability_c(<ThermoAnalysis> self, s1, s2)
+
+    cdef inline double calcTm_c(ThermoAnalysis self, char *s1):
+        cdef thal_args *ta = &self.thalargs
+        return seqtm(<const char*> s1, 
+                     ta.dna_conc, 
+                     ta.mv, 
+                     ta.dv,
+                     ta.dntp, 
+                     self.max_nn_length, 
+                     <tm_method_type>
+                     self.tm_method,
+                     <salt_correction_type> self.salt_correction_method)
 
     def calcTm(ThermoAnalysis self, seq1):
         ''' Calculate the melting temperature (Tm) of a DNA sequence (deg. C).
