@@ -182,6 +182,12 @@ melting temperature (C) as a float:</p>
 <span class="go">49.16808228911765</span>
 </pre></div>
 </div>
+<p>Note that NN thermodynamics will be used to calculate the Tm of sequences
+up to 60 bp in length, after which point the following formula will be
+used:</p>
+<div class="highlight-python"><div class="highlight"><pre>Tm = 81.5 + 16.6(log10([mv_conc])) + 0.41(%GC) - 600/length
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -200,6 +206,10 @@ characteristics of the result:</p>
 <span class="go">337.086509, -36300.000000, -118.126992</span>
 </pre></div>
 </div>
+<p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
+This is a cap imposed by Primer3 as the longest reasonable sequence length
+for which a two-state NN model produces reliable results (see
+src/libnano/thal.h:50).</p>
 </dd></dl>
 
 <dl class="function">
@@ -209,6 +219,9 @@ characteristics of the result:</p>
 <code class="docutils literal"><span class="pre">seq</span></code>. Returns a <code class="docutils literal"><span class="pre">ThermoResult</span></code> object that provides access to the
 thermodynamic characteristics of the result (see <a class="reference internal" href="#calcHairpin" title="calcHairpin"><code class="xref py py-func docutils literal"><span class="pre">calcHairpin()</span></code></a>
 doc for more information).</p>
+<p><strong>Note that the maximum length of ``seq`` is 60 bp.</strong> This is a cap imposed
+by Primer3 as the longest reasonable sequence length for which
+a two-state NN model produces reliable results (see src/libnano/thal.h:50).</p>
 </dd></dl>
 
 <dl class="function">
@@ -218,6 +231,10 @@ doc for more information).</p>
 <code class="docutils literal"><span class="pre">seq1</span></code> and <code class="docutils literal"><span class="pre">seq2</span></code>. Returns a <code class="docutils literal"><span class="pre">ThermoResult</span></code> object that provides
 access to the thermodynamic characteristics of the result
 (see <a class="reference internal" href="#calcHairpin" title="calcHairpin"><code class="xref py py-func docutils literal"><span class="pre">calcHairpin()</span></code></a> doc for more information).</p>
+<p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
+This is a cap imposed by Primer3 as the longest reasonable sequence length
+for which a two-state NN model produces reliable results (see
+src/libnano/thal.h:50).</p>
 </dd></dl>
 
 <dl class="function">
@@ -227,6 +244,10 @@ access to the thermodynamic characteristics of the result
 sequence <cite>seq2</cite>. Returns a <code class="docutils literal"><span class="pre">ThermoResult</span></code> object that provides
 access to the thermodynamic characteristics of the result
 (see <a class="reference internal" href="#calcHairpin" title="calcHairpin"><code class="xref py py-func docutils literal"><span class="pre">calcHairpin()</span></code></a> doc for more information).</p>
+<p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
+This is a cap imposed by Primer3 as the longest reasonable sequence length
+for which a two-state NN model produces reliable results (see
+src/libnano/thal.h:50).</p>
 </dd></dl>
 
 <p>All of these low-level thermodynamic functions share a set of keyword arguments
