@@ -60,3 +60,9 @@ Version 0.4.0:                                                November 25, 2014
 - Better testing framework for the design bindings
 - New documentation system
 - Better under-the-hood thermodynamic analysis abstraction 
+
+Version 0.4.1:                                                November 28, 2014
+-------------------------------------------------------------------------------
+- Better documentation regarding max. seq. lengths for thermo. calcs
+- calcHairpin, calcHomodimer, calcHeterodimer, and calcEndStability now raise
+  ``RuntimeError``s as appropriate

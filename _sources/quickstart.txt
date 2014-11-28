@@ -71,7 +71,7 @@ hairpin,** and **3' end stability calculations**:
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length 
     for which a two-state NN model produces reliable results (see
-    src/libnano/thal.h:50).
+    primer3/src/libnano/thal.h:50).
 
 
 .. py:function:: calcHomodimer(seq[, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, \
@@ -84,7 +84,8 @@ hairpin,** and **3' end stability calculations**:
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
     by Primer3 as the longest reasonable sequence length for which
-    a two-state NN model produces reliable results (see src/libnano/thal.h:50).
+    a two-state NN model produces reliable results (see 
+    primer3/src/libnano/thal.h:50).
 
 
 .. py:function:: calcHeterodimer(seq1, seq2[, mv_conc=50.0, dv_conc=0.0, \
@@ -99,7 +100,7 @@ hairpin,** and **3' end stability calculations**:
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length 
     for which a two-state NN model produces reliable results (see
-    src/libnano/thal.h:50).
+    primer3/src/libnano/thal.h:50).
 
 
 .. py:function:: calcEndStability(seq1, seq2[, mv_conc=50.0, dv_conc=0.0, \
@@ -114,7 +115,7 @@ hairpin,** and **3' end stability calculations**:
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length 
     for which a two-state NN model produces reliable results (see
-    src/libnano/thal.h:50).
+    primer3/src/libnano/thal.h:50).
 
 
 All of these low-level thermodynamic functions share a set of keyword arguments

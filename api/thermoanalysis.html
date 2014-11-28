@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Low-level thermodynamic analysis &mdash; Primer3-py 0.4.0 documentation</title>
+  <title>Low-level thermodynamic analysis &mdash; Primer3-py 0.4.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Primer3-py 0.4.0 documentation" href="../index.html"/>
+    <link rel="top" title="Primer3-py 0.4.1 documentation" href="../index.html"/>
         <link rel="up" title="API Documentation" href="index.html"/>
         <link rel="next" title="Miscellany" href="../miscellany.html"/>
         <link rel="prev" title="Primary analysis and design API" href="bindings.html"/> 
@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../changes.html#version-0-3-0-august-12-2014">Version 0.3.0:                                                  August 12, 2014</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changes.html#version-0-3-1-august-13-2014">Version 0.3.1:                                                  August 13, 2014</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changes.html#version-0-4-0-november-25-2014">Version 0.4.0:                                                November 25, 2014</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changes.html#version-0-4-1-november-28-2014">Version 0.4.1:                                                November 28, 2014</a></li>
 </ul>
 </li>
 </ul>
@@ -277,6 +278,14 @@ calculation.</p>
 <dd><p>Wraps <code class="docutils literal"><span class="pre">__repr</span></code></p>
 </dd></dl>
 
+<dl class="method">
+<dt id="primer3.thermoanalysis.ThermoResult.checkExc">
+<code class="descname">checkExc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.checkExc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the <code class="docutils literal"><span class="pre">.msg</span></code> attribute of the internal thalres struct and
+raise a <code class="docutils literal"><span class="pre">RuntimeError</span></code> exception if it is not an empty string.
+Otherwise, return a reference to the current object.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="primer3.thermoanalysis.ThermoResult.dg">
 <code class="descname">dg</code><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.dg" title="Permalink to this definition">¶</a></dt>
@@ -351,7 +360,7 @@ result of the calculation.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.4.0',
+            VERSION:'0.4.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
