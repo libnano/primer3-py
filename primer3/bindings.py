@@ -71,6 +71,10 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
                 temp_c=37, max_loop=30):
     ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
 
+    **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
+    by the Primer3 team as the longest reasonable sequence length for which
+    a two-state NN model produces reliable results (see src/libnano/thal.h:50).
+
     Args:
         seq (str): DNA sequence to analyze for hairpin formation
 
@@ -93,6 +97,10 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
 def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
                   temp_c=37, max_loop=30):
     ''' Calculate the homodimerization thermodynamics of a DNA sequence.
+
+    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
+    by Primer3 as the longest reasonable sequence length for which
+    a two-state NN model produces reliable results (see src/libnano/thal.h:50).
 
     Args:
         seq (str)                       : DNA sequence to analyze for homodimer 
@@ -118,6 +126,11 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                     dna_conc=50, temp_c=37, max_loop=30):
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
+
+    **Note that at least one of the two sequences must by <60 bp in length.**
+    This is a cap imposed by Primer3 as the longest reasonable sequence length 
+    for which a two-state NN model produces reliable results (see
+    src/libnano/thal.h:50).
 
     Args:
         seq1 (str)              : First DNA sequence to analyze for heterodimer 
@@ -145,6 +158,11 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                      dna_conc=50, temp_c=37, max_loop=30):
     ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA 
     sequence `seq2`.
+
+    **Note that at least one of the two sequences must by <60 bp in length.**
+    This is a cap imposed by Primer3 as the longest reasonable sequence length 
+    for which a two-state NN model produces reliable results (see
+    src/libnano/thal.h:50).
 
     Args:
         seq1 (str)                        : DNA sequence to analyze for 3' end
@@ -174,6 +192,12 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
            max_nn_length=60, tm_method='santalucia',
            salt_corrections_method='santalucia'):
     ''' Calculate the melting temperature (Tm) of a DNA sequence.
+
+    Note that NN thermodynamics will be used to calculate the Tm of sequences
+    up to 60 bp in length, after which point the following formula will be 
+    used::
+
+        Tm = 81.5 + 16.6(log10([mv_conc])) + 0.41(%GC) - 600/length
 
     Args:
         seq (str)                               : DNA sequence
