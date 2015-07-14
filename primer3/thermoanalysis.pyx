@@ -316,7 +316,7 @@ cdef class ThermoAnalysis:
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
         return tr_obj
 
-    def calcHeterodimer(ThermoAnalysis self, seq1, seq2):
+    cpdef calcHeterodimer(ThermoAnalysis self, seq1, seq2):
         ''' Calculate the heterodimer formation thermodynamics of two DNA 
         sequences, ``seq1`` and ``seq2``
         '''
@@ -329,6 +329,47 @@ cdef class ThermoAnalysis:
         cdef unsigned char* s2 = py_s2
         return ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2)
 
+    cpdef misprimingCheck(ThermoAnalysis self, putative_seq, sequences, 
+                                double tm_threshold):
+        """
+        Calculate the heterodimer formation thermodynamics of a DNA 
+        sequence, ``putative_seq`` with a list of sequences relative to 
+        a melting temperature threshold
+
+        Args:
+            putative_seq (str):
+            sequences (iterable of str):
+            tm_threshold (double): melting temperature threshold
+
+        Returns:
+            Tuple of:
+                is_offtarget (bool),
+                max_offtarget_seq_idx (int),
+                max_offtarget_tm (double)
+        """
+        cdef bint is_offtarget = False
+        cdef Py_ssize_t i
+        cdef double max_offtarget_tm = 0
+        cdef double offtarget_tm
+        cdef unsigned char* s2
+        cdef Py_ssize_t max_offtarget_seq_idx = -1
+        
+        cdef bytes py_s2
+        cdef bytes py_s1 = <bytes> _bytes(putative_seq)
+        cdef unsigned char* s1 = py_s1
+
+        for i, seq in enumerate(sequences):
+            py_s2 = <bytes> _bytes(seq)
+            s2 = py_s2
+            offtarget_tm = ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2).tm
+            if offtarget_tm > max_offtarget_tm:
+                max_offtarget_seq_idx = i
+                max_offtarget_tm = offtarget_tm
+            if offtarget_tm > tm_threshold:
+                is_offtarget = True
+                break
+        return is_offtarget, max_offtarget_seq_idx, max_offtarget_tm
+
     cdef inline ThermoResult calcHomodimer_c(ThermoAnalysis self, 
                                              unsigned char *s1):
         cdef ThermoResult tr_obj = ThermoResult()
@@ -339,7 +380,7 @@ cdef class ThermoAnalysis:
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
         return tr_obj
 
-    def calcHomodimer(ThermoAnalysis self, seq1):
+    cpdef calcHomodimer(ThermoAnalysis self, seq1):
         ''' Calculate the homodimer formation thermodynamics of a DNA 
         sequence, ``seq1``
         '''
@@ -359,7 +400,7 @@ cdef class ThermoAnalysis:
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
         return tr_obj
 
-    def calcHairpin(ThermoAnalysis self, seq1):
+    cpdef calcHairpin(ThermoAnalysis self, seq1):
         ''' Calculate the hairpin formation thermodynamics of a DNA 
         sequence, ``seq1``
         '''

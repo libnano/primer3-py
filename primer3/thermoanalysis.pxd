@@ -87,3 +87,11 @@ cdef class ThermoAnalysis:
                                                 unsigned char* s2)
 
     cdef inline double calcTm_c(ThermoAnalysis self, char* s1)
+
+    cpdef calcHeterodimer(ThermoAnalysis self, seq1, seq2)
+
+    cpdef calcHomodimer(ThermoAnalysis self, seq1)
+
+    cpdef calcHairpin(ThermoAnalysis self, seq1)
+
+    cpdef misprimingCheck(ThermoAnalysis self, putative_seq, sequences,  double tm_threshold)
