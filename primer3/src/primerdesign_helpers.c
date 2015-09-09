@@ -114,7 +114,7 @@ and the Primer3 library.
                     return -1;}                                                \
                 memcpy(*st, tc, (int)(ss + 1));                                \
             }                                                                  \
-        }                                                                      
+        }
 #else
     #define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
         if (DICT_GET_OBJ(o, d, k)) {                                           \
@@ -264,7 +264,7 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     Py_ssize_t              str_size;
     char                    *temp_char=NULL, *task_tmp=NULL;
 
-    
+
     // if (!(pa = p3_create_global_settings())) {
     //     PyErr_SetString(PyExc_IOError, "Could not allocate memory for p3 globals");
     //     return NULL;
@@ -449,14 +449,14 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
                     flat_list = 1;
                 } else {
                     PyErr_Format(PyExc_TypeError,\
-                        "\"PRIMER_PRODUCT_SIZE_RANGE\" contains mixed sequence objects and integers"); 
+                        "\"PRIMER_PRODUCT_SIZE_RANGE\" contains mixed sequence objects and integers");
                     Py_DECREF(p_obj2);
-                    Py_DECREF(p_obj3);  
-                    return -1;                 
+                    Py_DECREF(p_obj3);
+                    return -1;
                 }
             }
             Py_DECREF(p_obj2);
-            Py_DECREF(p_obj3); 
+            Py_DECREF(p_obj3);
         }
         if (!flat_list) {
             for (i=0; i < product_size_range_list_length; i++){
@@ -647,7 +647,7 @@ pdh_setSeqArgs(PyObject *sa_dict, seq_args *sa) {
     if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST")){
         int ii[4], flat_list = 0;
         if (!PySequence_Check(p_obj)){
-            PyErr_SetString(PyExc_IOError, "Value of 'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' " 
+            PyErr_SetString(PyExc_IOError, "Value of 'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' "
                             "must support the seqeunce protocol.");
             return -1;
         }
@@ -689,7 +689,7 @@ pdh_setSeqArgs(PyObject *sa_dict, seq_args *sa) {
                     return -1;
                 }
                 len2 = (int)PySequence_Size(p_obj2);
-                if (!len2 == 4) {
+                if (!(len2 == 4)) {
                     PyErr_Format(PyExc_TypeError, "Sub-list/tuple #%d of "
                                  "'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' must "
                                  "of length 4", i);
@@ -716,7 +716,7 @@ pdh_setSeqArgs(PyObject *sa_dict, seq_args *sa) {
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_EXCLUDED_REGION", sa->excl2);
     DICT_GET_AND_COPY_TO_INTERVAL_ARRAY(p_obj, sa_dict, "SEQUENCE_INTERNAL_EXCLUDED_REGION", sa->excl_internal2);
     // DICT_GET_AND_COPY_ARRAY_INTO_ARRAY(p_obj, sa_dict,  "SEQUENCE_OVERLAP_JUNCTION_LIST", &sa->primer_overlap_junctions, overlap_junction_len);
-    
+
     if (DICT_GET_OBJ(p_obj, sa_dict, "SEQUENCE_OVERLAP_JUNCTION_LIST")) {
         int *poj_arr, single_value=0;
         PyObject *arr_item;
@@ -768,7 +768,7 @@ pdh_setSeqArgs(PyObject *sa_dict, seq_args *sa) {
                     "\"SEQUENCE_INCLUDED_REGION\" contains non-int value");
                 Py_DECREF(seq_item1);
                 Py_DECREF(seq_item2);
-                return -1;                
+                return -1;
             }
             sa->incl_s = (int)PyLong_AsLong(seq_item1);
             sa->incl_l = (int)PyLong_AsLong(seq_item2);
