@@ -13,7 +13,7 @@ Installation
 ------------
 
 **Primer3-py** has no external library dependencies and should compile on
-most linux and OS X systems that are running Python 2.7, 3.3, or 3.4.
+most linux and OS X systems that are running Python 2.7, 3.3, 3.4, or 3.5.
 
 To build **Primer3-py** within the package directory run::
 
@@ -201,6 +201,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
