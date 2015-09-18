@@ -1,4 +1,4 @@
-# Copyright (C) 2014. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2014-2015. Ben Pruitt & Nick Conway; Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -60,6 +60,6 @@ __all__ = [
     'setP3Globals', 'setP3SeqArgs', 'runP3Design', 'designPrimers', 
     # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
     'bindings', 'wrappers', 'thermoanalysis', 'primerdesign'
-    ]
+]
 
 

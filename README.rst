@@ -40,4 +40,11 @@ if you'd prefer to use an established pipeline. The IO parameters mirror those
 of the original Primer3, but you don't have to deal with messy and slow file
 IO for your automated workflows.
 
-For complete documentation, see https://benpruitt.github.io/primer3-py
+**Please note that while we provide bindings, we do not provide support for 
+the Primer3 design engine. Please contact the Primer3 dev team with your
+questions: http://primer3.sourceforge.net/.** 
+
+A copy of the Primer3 2.3.6 design parameters manual can be found at:
+http://git.io/vnqBx
+
+For documentation of the bindings, see https://libnano.github.io/primer3-py
