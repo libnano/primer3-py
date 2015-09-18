@@ -2,8 +2,8 @@
  primer3-py: simple oligo analysis and primer design
 =====================================================
 
-.. image:: https://secure.travis-ci.org/benpruitt/primer3-py.png
-  :target: https://travis-ci.org/benpruitt/primer3-py
+.. image:: https://secure.travis-ci.org/libnano/primer3-py.png
+  :target: https://travis-ci.org/libnano/primer3-py
 .. image:: https://img.shields.io/pypi/l/primer3-py.png
   :target: http://www.gnu.org/licenses/gpl-2.0.html
 .. image:: https://img.shields.io/pypi/v/primer3-py.png
