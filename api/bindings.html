@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Primary analysis and design API &mdash; Primer3-py 0.4.1 documentation</title>
+  <title>Primary analysis and design API &mdash; Primer3-py 0.4.2 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Primer3-py 0.4.1 documentation" href="../index.html"/>
+    <link rel="top" title="Primer3-py 0.4.2 documentation" href="../index.html"/>
         <link rel="up" title="API Documentation" href="index.html"/>
         <link rel="next" title="Low-level thermodynamic analysis" href="thermoanalysis.html"/>
         <link rel="prev" title="API Documentation" href="index.html"/> 
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../changes.html#version-0-3-1-august-13-2014">Version 0.3.1:                                                  August 13, 2014</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changes.html#version-0-4-0-november-25-2014">Version 0.4.0:                                                November 25, 2014</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changes.html#version-0-4-1-november-28-2014">Version 0.4.1:                                                November 28, 2014</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changes.html#version-0-4-2-september-18-2015">Version 0.4.2:                                               September 18, 2015</a></li>
 </ul>
 </li>
 </ul>
@@ -150,10 +151,6 @@ and/or Cython modules directly. See the docs for more details.</p>
 <code class="descclassname">primer3.bindings.</code><code class="descname">calcEndStability</code><span class="sig-paren">(</span><em>seq1</em>, <em>seq2</em>, <em>mv_conc=50</em>, <em>dv_conc=0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50</em>, <em>temp_c=37</em>, <em>max_loop=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcEndStability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcEndStability" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the 3&#8217; end stability of DNA sequence <cite>seq1</cite> against DNA
 sequence <cite>seq2</cite>.</p>
-<p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
-This is a cap imposed by Primer3 as the longest reasonable sequence length
-for which a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -186,9 +183,6 @@ structure</li>
 <dt id="primer3.bindings.calcHairpin">
 <code class="descclassname">primer3.bindings.</code><code class="descname">calcHairpin</code><span class="sig-paren">(</span><em>seq</em>, <em>mv_conc=50.0</em>, <em>dv_conc=0.0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50.0</em>, <em>temp_c=37</em>, <em>max_loop=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHairpin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHairpin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the hairpin formation thermodynamics of a DNA sequence.</p>
-<p><strong>Note that the maximum length of `seq` is 60 bp.</strong> This is a cap suggested
-by the Primer3 team as the longest reasonable sequence length for which
-a two-state NN model produces reliable results (see primer3/src/libnano/thal.h:50).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -216,10 +210,6 @@ hairpin formation.</p>
 <dt id="primer3.bindings.calcHeterodimer">
 <code class="descclassname">primer3.bindings.</code><code class="descname">calcHeterodimer</code><span class="sig-paren">(</span><em>seq1</em>, <em>seq2</em>, <em>mv_conc=50</em>, <em>dv_conc=0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50</em>, <em>temp_c=37</em>, <em>max_loop=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHeterodimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHeterodimer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the heterodimerization thermodynamics of two DNA sequences.</p>
-<p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
-This is a cap imposed by Primer3 as the longest reasonable sequence length
-for which a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -250,10 +240,6 @@ heterodimer interaction.</p>
 <dt id="primer3.bindings.calcHomodimer">
 <code class="descclassname">primer3.bindings.</code><code class="descname">calcHomodimer</code><span class="sig-paren">(</span><em>seq</em>, <em>mv_conc=50</em>, <em>dv_conc=0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50</em>, <em>temp_c=37</em>, <em>max_loop=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHomodimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHomodimer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the homodimerization thermodynamics of a DNA sequence.</p>
-<p><strong>Note that the maximum length of ``seq`` is 60 bp.</strong> This is a cap imposed
-by Primer3 as the longest reasonable sequence length for which
-a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -283,12 +269,6 @@ homodimer interaction.</p>
 <dt id="primer3.bindings.calcTm">
 <code class="descclassname">primer3.bindings.</code><code class="descname">calcTm</code><span class="sig-paren">(</span><em>seq</em>, <em>mv_conc=50</em>, <em>dv_conc=0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50</em>, <em>max_nn_length=60</em>, <em>tm_method='santalucia'</em>, <em>salt_corrections_method='santalucia'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcTm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcTm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the melting temperature (Tm) of a DNA sequence.</p>
-<p>Note that NN thermodynamics will be used to calculate the Tm of sequences
-up to 60 bp in length, after which point the following formula will be
-used:</p>
-<div class="highlight-python"><div class="highlight"><pre>Tm = 81.5 + 16.6(log10([mv_conc])) + 0.41(%GC) - 600/length
-</pre></div>
-</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -428,7 +408,7 @@ for mishybridization checks.</li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014, Ben Pruitt, Nick Conway; Wyss Institute.
+        &copy; Copyright 2014-2015, Ben Pruitt, Nick Conway; Wyss Institute.
     </p>
   </div>
 
@@ -448,7 +428,7 @@ for mishybridization checks.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.4.1',
+            VERSION:'0.4.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

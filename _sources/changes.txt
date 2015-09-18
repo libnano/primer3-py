@@ -66,3 +66,8 @@ Version 0.4.1:                                                November 28, 2014
 - Better documentation regarding max. seq. lengths for thermo. calcs
 - calcHairpin, calcHomodimer, calcHeterodimer, and calcEndStability now raise
   ``RuntimeError``s as appropriate
+
+Version 0.4.2:                                               September 18, 2015
+-------------------------------------------------------------------------------
+- Added misprimingCheck function to `primer3/thermoanalysis.pyx`
+- Corrected unclear syntax in C API code

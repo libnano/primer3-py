@@ -13,7 +13,7 @@ pass our stringent unit testing framework.
 Requirements
 ------------
 **Primer3-py** is built and tested on Mac OS X and Linux systems; we do not 
-provide official Windows support. Python versions 2.7, 3.3, and 3.4 are 
+provide official Windows support. Python versions 2.7, 3.3, 3.4, and 3.5 are 
 fully supported.
 
 If you don't install the latest build via pip, you might have to install the 
