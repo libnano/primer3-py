@@ -415,19 +415,20 @@ print_seq(FILE *f,
                  i < h->start + h->length + sa->incl_s)
                notes[i] |= INTL_OLIGO;
         } else if (pa->primer_task == pick_sequencing_primers) {
-    	    if (pa->pick_right_primer && &retval->rev != NULL
-    	             && retval->rev.num_elem > 0){
+    	    if (pa->pick_right_primer && (retval->rev.oligo != NULL)
+    	             && (retval->rev.num_elem > 0) ){
     	      h2 = retval->rev.oligo;
-              for (j = 0; j < pa->num_return; j++) {
+            for (j = 0; j < pa->num_return; j++) {
     	        if(j > retval->rev.num_elem -1) break;
     	        h3 = h2 + j;
-                if(i >= h3->start - h3->length + 1 + sa->incl_s
-                        && i <= h3->start + sa->incl_s)
-                   notes[i] |= RIGHT_OLIGO;
+              if(i >= h3->start - h3->length + 1 + sa->incl_s
+                        && i <= h3->start + sa->incl_s) {
+                notes[i] |= RIGHT_OLIGO;
+              }
     	      }
-            }
-    	    if (pa->pick_left_primer && &retval->fwd != NULL
-    	             && retval->fwd.num_elem > 0){
+          }
+    	    if (pa->pick_left_primer && (retval->fwd.oligo != NULL)
+    	             && (retval->fwd.num_elem > 0) ) {
     	      h2 = retval->fwd.oligo;
               for (j = 0; j < pa->num_return; j++) {
     	        if(j > retval->fwd.num_elem -1) break;
@@ -843,27 +844,27 @@ format_oligos(FILE *f,
     free(warning);
   }
   if ((pa->primer_task != pick_primer_list )
-         && (pa->primer_task != pick_sequencing_primers)) {
+         && (pa->primer_task != pick_sequencing_primers) ) {
     if (print_primers == 1) {
       print_oligo_header(f, "OLIGO", print_lib_sim, pa->thermodynamic_oligo_alignment);
     }
     /* Print out the first line with the best primers */
-    if ((pa->pick_left_primer) && (&retval->fwd != NULL )
-               && (retval->fwd.num_elem > 0)){
+    if ((pa->pick_left_primer) && (retval->fwd.oligo != NULL )
+               && (retval->fwd.num_elem > 0) ) {
       print_oligo(f, "LEFT_PRIMER", sa, retval->fwd.oligo, FORWARD,
                   pa, pa->p_args.repeat_lib, print_lib_sim);
       h = retval->fwd.oligo;
       rest_count = 1;
     }
-    if ((pa->pick_internal_oligo) && (&retval->intl != NULL )
-             && (retval->intl.num_elem > 0)){
+    if ((pa->pick_internal_oligo) && (retval->intl.oligo != NULL)
+             && (retval->intl.num_elem > 0) ) {
       print_oligo(f, "INTERNAL_OLIGO", sa, retval->intl.oligo, FORWARD,
                   pa, pa->p_args.repeat_lib, print_lib_sim);
       h = retval->intl.oligo;
       rest_count = 1;
     }
-    if ((pa->pick_right_primer) && (&retval->rev != NULL )
-             && (retval->rev.num_elem > 0)) {
+    if ((pa->pick_right_primer) && (retval->rev.oligo != NULL)
+             && (retval->rev.num_elem > 0) ) {
       print_oligo(f, "RIGHT_PRIMER", sa, retval->rev.oligo, REVERSE,
                   pa, pa->p_args.repeat_lib, print_lib_sim);
 	  h = retval->rev.oligo;
@@ -885,8 +886,8 @@ format_oligos(FILE *f,
   }
   fprintf(f, "\n");
   /* Print out the other primers */
-  if ((pa->pick_left_primer) && (&retval->fwd != NULL )
-             && (retval->fwd.num_elem > rest_count)){
+  if ((pa->pick_left_primer) && (retval->fwd.oligo != NULL)
+             && (retval->fwd.num_elem > rest_count) ) {
     int n = retval->fwd.num_elem;
     h = retval->fwd.oligo;
     if (rest_count == 1) {
@@ -904,8 +905,8 @@ format_oligos(FILE *f,
       fprintf(f, "\n ");
     }
   }
-  if ((pa->pick_internal_oligo) && (&retval->intl != NULL )
-           && (retval->intl.num_elem > rest_count)){
+  if ((pa->pick_internal_oligo) && (retval->intl.oligo != NULL )
+           && (retval->intl.num_elem > rest_count) ) {
     int n = retval->intl.num_elem;
     h = retval->intl.oligo;
     if (rest_count == 1) {
@@ -923,8 +924,8 @@ format_oligos(FILE *f,
       fprintf(f, "\n ");
     }
   }
-  if ((pa->pick_right_primer) && (&retval->rev != NULL )
-           && (retval->rev.num_elem > rest_count)) {
+  if ((pa->pick_right_primer) && (retval->rev.oligo != NULL)
+           && (retval->rev.num_elem > rest_count) ) {
     int n = retval->rev.num_elem;
     h = retval->rev.oligo;
     if (rest_count == 1) {
