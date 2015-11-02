@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 '''
 =========================================================
 Primer3-py: simple oligo analysis and primer design
@@ -6,7 +8,7 @@ Primer3-py: simple oligo analysis and primer design
 **Primer3-py** is a collection of Python bindings for a derivative of the
 popular Primer3 C library (version 2.3.6).
 
-See README.rst and http://benpruitt.github.io/primer3-py for more information 
+See README.rst and http://benpruitt.github.io/primer3-py for more information
 and primer3_test.py for usage examples.
 
 Installation
@@ -36,11 +38,11 @@ import sys
 try:
     from setuptools import setup, Extension
     from setuptools.command import install_lib, sdist, build_ext
-    from setuptools import log as setup_log 
+    from setuptools import log as setup_log
 except ImportError:
     from distutils.core import setup, Extension
     from distutils.command import install_lib, sdist, build_ext
-    from distutils import log as setup_log 
+    from distutils import log as setup_log
 
 
 from os.path import join as pjoin
@@ -71,14 +73,14 @@ libprimer3_paths = [pjoin(LIBPRIMER3_PATH, 'thal.c'),
 
 def p3Clean():
     # Clean up any previous primer3 builds
-    p3clean = subprocess.Popen(['make clean'], shell=True, 
+    p3clean = subprocess.Popen(['make clean'], shell=True,
                                cwd=LIBPRIMER3_PATH)
     p3clean.wait()
 
 
 def p3Build():
     # Build primer3
-    p3build = subprocess.Popen(['make clean; make'], shell=True, 
+    p3build = subprocess.Popen(['make clean; make'], shell=True,
                                cwd=LIBPRIMER3_PATH)
     p3build.wait()
 
@@ -118,11 +120,11 @@ class CustomInstallLib(install_lib.install_lib):
                 p3Clean()
                 p3Build()
                 P3_BUILT = True
-            new_p3_binary_fps = [pjoin(self.install_dir, 'primer3', 'src', 
+            new_p3_binary_fps = [pjoin(self.install_dir, 'primer3', 'src',
                                  'libprimer3', fn) for fn in p3_binaries]
-            [shutil.copyfile(o, d) for o, d in zip(p3_binary_fps, 
+            [shutil.copyfile(o, d) for o, d in zip(p3_binary_fps,
                                                    new_p3_binary_fps)]
-            list(map(makeExecutable, new_p3_binary_fps))   
+            list(map(makeExecutable, new_p3_binary_fps))
 
 
 class CustomSdist(sdist.sdist):
@@ -161,7 +163,7 @@ thermoanalysis_ext = Extension(
     'primer3.thermoanalysis',
     sources=['primer3/thermoanalysis.pyx'] + libprimer3_paths,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
-    extra_compile_args=['-Wno-error=declaration-after-statement', 
+    extra_compile_args=['-Wno-error=declaration-after-statement',
                         '-Wno-unused-function']
 )
 
@@ -175,7 +177,7 @@ if ('build_ext' in sys.argv or 'install' in sys.argv):
 
 is_py_3 = int(sys.version_info[0] > 2)
 thermoanalysis_ext_list = cythonize(
-    [thermoanalysis_ext], 
+    [thermoanalysis_ext],
     compile_time_env={'IS_PY_THREE': is_py_3},
     force=True
 )
