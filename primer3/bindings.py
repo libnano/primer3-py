@@ -18,17 +18,17 @@
 primer3.bindings
 ~~~~~~~~~~~~~~~~
 
-This module provides a simple API for the Primer3 primer design / thermodynamic 
+This module provides a simple API for the Primer3 primer design / thermodynamic
 calculations library.
 
-These are direct bindings to an optimized version of the Primer3 C library, 
+These are direct bindings to an optimized version of the Primer3 C library,
 as opposed to the more commonly used subprocess-based wrappers (we provide a
 set of wrappers for comparison / testing purposes as well).
 
-Note that this module effectively abstracts the C API / Cython bindings for 
+Note that this module effectively abstracts the C API / Cython bindings for
 the primer design and thermodynamic analysis functionality of Primer3. This is
-done primarly to provide a clean, consistent interface. For applications with 
-stringent performance requirments, you should consider using the C API 
+done primarly to provide a clean, consistent interface. For applications with
+stringent performance requirments, you should consider using the C API
 and/or Cython modules directly. See the docs for more details.
 
 '''
@@ -38,7 +38,7 @@ import os
 from os.path import join as pjoin
 
 from . import thermoanalysis
-from . import primerdesign 
+from . import primerdesign
 
 
 # ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
@@ -54,8 +54,8 @@ primerdesign.loadThermoParams(pjoin(PRIMER3_HOME, 'primer3_config/'))
 
 _THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
 
-def _setThermoArgs(mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50, 
-                   temp_c=37, max_loop=30, tm_method='santalucia', 
+def _setThermoArgs(mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+                   temp_c=37, max_loop=30, tm_method='santalucia',
                    salt_corrections_method='santalucia', **kwargs):
     _THERMO_ANALYSIS.mv_conc = float(mv_conc)
     _THERMO_ANALYSIS.dv_conc = float(dv_conc)
@@ -103,11 +103,11 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
     by Primer3 as the longest reasonable sequence length for which
-    a two-state NN model produces reliable results (see 
+    a two-state NN model produces reliable results (see
     primer3/src/libnano/thal.h:50).
 
     Args:
-        seq (str)                       : DNA sequence to analyze for homodimer 
+        seq (str)                       : DNA sequence to analyze for homodimer
                                           formation calculations
 
         mv_conc (float/int, optional)   : Monovalent cation conc. (mM)
@@ -115,12 +115,12 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
         dntp_conc (float/int, optional) : dNTP conc. (mM)
         dna_conc (float/int, optional)  : DNA conc. (nM)
         temp_c (int, optional)          : Simulation temperature for dG (C)
-        max_loop (int, optional)        : Maximum size of loops in the 
+        max_loop (int, optional)        : Maximum size of loops in the
                                           structure
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
-        homodimer interaction. 
+        homodimer interaction.
 
     Raises:
         ``RuntimeError``
@@ -135,14 +135,14 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
-    This is a cap imposed by Primer3 as the longest reasonable sequence length 
+    This is a cap imposed by Primer3 as the longest reasonable sequence length
     for which a two-state NN model produces reliable results (see
     primer3/src/libnano/thal.h:50).
 
     Args:
-        seq1 (str)              : First DNA sequence to analyze for heterodimer 
+        seq1 (str)              : First DNA sequence to analyze for heterodimer
                                   formation
-        seq2 (str)              : Second DNA sequence to analyze for 
+        seq2 (str)              : Second DNA sequence to analyze for
                                   heterodimer formation
 
         mv_conc (float/int)     : Monovalent cation conc. (mM)
@@ -154,7 +154,7 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
-        heterodimer interaction. 
+        heterodimer interaction.
 
     Raises:
         ``RuntimeError``
@@ -166,17 +166,17 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 
 def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
                      dna_conc=50, temp_c=37, max_loop=30):
-    ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA 
+    ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
     sequence `seq2`.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
-    This is a cap imposed by Primer3 as the longest reasonable sequence length 
+    This is a cap imposed by Primer3 as the longest reasonable sequence length
     for which a two-state NN model produces reliable results (see
     primer3/src/libnano/thal.h:50).
 
     Args:
         seq1 (str)                        : DNA sequence to analyze for 3' end
-                                            hybridization against the target 
+                                            hybridization against the target
                                             sequence
         seq2 (str)                        : Target DNA sequence to analyze for
                                             seq1 3' end hybridization
@@ -186,12 +186,12 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
         dntp_conc (float/int, optional)   : dNTP conc. (mM)
         dna_conc (float/int, optional)    : DNA conc. (nM)
         temp_c (int, optional)            : Simulation temperature for dG (C)
-        max_loop(int, optional)           : Maximum size of loops in the 
+        max_loop(int, optional)           : Maximum size of loops in the
                                             structure
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
-        3' hybridization interaction. 
+        3' hybridization interaction.
 
     Raises:
         ``RuntimeError``
@@ -207,7 +207,7 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     ''' Calculate the melting temperature (Tm) of a DNA sequence.
 
     Note that NN thermodynamics will be used to calculate the Tm of sequences
-    up to 60 bp in length, after which point the following formula will be 
+    up to 60 bp in length, after which point the following formula will be
     used::
 
         Tm = 81.5 + 16.6(log10([mv_conc])) + 0.41(%GC) - 600/length
@@ -219,12 +219,12 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
         dv_conc (float/int, optional)           : Divalent cation conc. (mM)
         dntp_conc (float/int, optional)         : dNTP conc. (mM)
         dna_conc (float/int, optional)          : DNA conc. (nM)
-        max_nn_length (int, optional)           : Maximum length for 
+        max_nn_length (int, optional)           : Maximum length for
                                                   nearest-neighbor calcs
-        tm_method (str, optional)               : Tm calculation method 
+        tm_method (str, optional)               : Tm calculation method
                                                   (breslauer or santalucia)
-        salt_corrections_method (str, optional) : Salt correction method 
-                                                  (schildkraut, owczarzy, 
+        salt_corrections_method (str, optional) : Salt correction method
+                                                  (schildkraut, owczarzy,
                                                   santalucia)
 
     Returns:
@@ -253,13 +253,13 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
     called with seqArgs alone (as a means of optimization).
 
     Args:
-        seq_args (dict)               : Primer3 sequence/design args as per 
+        seq_args (dict)               : Primer3 sequence/design args as per
                                         Primer3 docs
 
         global_args (dict, optional)  : Primer3 global args as per Primer3 docs
-        misprime_lib (dict, optional) : `Sequence name: sequence` dictionary 
+        misprime_lib (dict, optional) : `Sequence name: sequence` dictionary
                                         for mispriming checks.
-        mishyb_lib (dict, optional)   : `Sequence name: sequence` dictionary 
+        mishyb_lib (dict, optional)   : `Sequence name: sequence` dictionary
                                         for mishybridization checks.
 
     Returns:
@@ -269,7 +269,6 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
     '''
     if global_args:
         primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib)
-    primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib)
     primerdesign.setSeqArgs(seq_args)
     return primerdesign.runDesign(debug)
 
@@ -283,12 +282,12 @@ def setP3Globals(global_args, misprime_lib=None, mishyb_lib=None):
     ''' Set the Primer3 global args and misprime/mishyb libraries.
 
     Args:
-        global_args (dict)            : Primer3 global parameters as per 
+        global_args (dict)            : Primer3 global parameters as per
                                         Primer3 docs
 
-        misprime_lib (dict, optional) : ``<Sequence name: sequence>`` dict 
+        misprime_lib (dict, optional) : ``<Sequence name: sequence>`` dict
                                         for mispriming checks.
-        mishyb_lib (dict, optional)   : ``<Sequence name: sequence>`` dict 
+        mishyb_lib (dict, optional)   : ``<Sequence name: sequence>`` dict
                                         for mishybridization checks.
 
     Returns:
@@ -318,7 +317,7 @@ def runP3Design(debug=False):
     this call (raises IOError).
 
     Args:
-        debug (bool, optional)  : If ``True``, prints the received design 
+        debug (bool, optional)  : If ``True``, prints the received design
                                   params to stderr for debugging purposes
 
     Returns:

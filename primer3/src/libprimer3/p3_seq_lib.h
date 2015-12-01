@@ -58,14 +58,14 @@ typedef struct seq_lib {
   int seq_num;
 
   /* The size of storage allocated for names, sequences, and weights */
-  int storage_size;  
+  int storage_size;
 } seq_lib;
 
 /* ======================================================= */
 /* Functions for creating and destroying a seq_lib object. */
 /* ======================================================= */
 
-/*  
+/*
  * Reads any file in fasta format and returns a newly allocated
  * seq_lib, lib.  Sets lib.error to a non-empty string on any error
  * other than ENOMEM.  Returns NULL on ENOMEM.
@@ -84,9 +84,18 @@ char *
 seq_lib_warning_data(const seq_lib *lib);
 
 int add_seq_and_rev_comp_to_seq_lib(seq_lib *sl,
-				    char *seq, 
-				    char *seq_id_plus, 
+				    char *seq,
+				    char *seq_id_plus,
 				    const char *errfrag);
+
+int
+add_seq_to_seq_lib(seq_lib *sl,
+                    char *seq,
+                    char *seq_id_plus,
+                    const char *errfrag);
+
+void
+reverse_complement_seq_lib(seq_lib  *lib);
 
 seq_lib *create_empty_seq_lib(void);
 

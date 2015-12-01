@@ -28,6 +28,7 @@ and the Primer3 library.
 #include    <stdio.h>
 #include    <Python.h>
 #include    <libprimer3.h>
+#include    "p3_seq_lib.h"
 
 
 #if PY_MAJOR_VERSION < 3
@@ -588,7 +589,7 @@ pdh_createSeqLib(PyObject *seq_dict){
                     "Cannot add seq with non-String type to seq_lib");
                 goto err_create_seq_lib;
             }
-            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
+            if (add_seq_to_seq_lib(sl, seq, seq_name, errfrag)) {
                 PyErr_SetString(PyExc_IOError, errfrag);
                 goto err_create_seq_lib;
             }
@@ -611,12 +612,13 @@ pdh_createSeqLib(PyObject *seq_dict){
                     "Cannot add seq with non-Unicode/Bytes type to seq_lib");
                 goto err_create_seq_lib;
             }
-            if (add_seq_and_rev_comp_to_seq_lib(sl, seq, seq_name, errfrag)) {
+            if (add_seq_to_seq_lib(sl, seq, seq_name, errfrag)) {
                 PyErr_SetString(PyExc_IOError, errfrag);
                 goto err_create_seq_lib;
             }
 #endif
     }
+    reverse_complement_seq_lib(sl);
     return sl;
 err_create_seq_lib:
     destroy_seq_lib(sl);

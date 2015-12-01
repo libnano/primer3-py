@@ -133,7 +133,7 @@ setGlobals(PyObject *self, PyObject *args){
 
     // Allocate memory for global settings
     if ((pa = p3_create_global_settings()) == NULL) {
-        PyErr_SetString(PyExc_IOError, 
+        PyErr_SetString(PyExc_IOError,
                         "Could not allocate memory for p3 globals");
         return NULL;
     }
@@ -229,7 +229,7 @@ runDesign(PyObject *self, PyObject *args){
     if (!PyArg_ParseTuple(args, "i", &debug)) {
         return NULL;
     }
-    
+
     if (debug) {
         p3_print_args(pa, sa);
     }
@@ -271,7 +271,7 @@ cleanUp(void){
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 static PyMethodDef primerdesign_methods[] = {
-    { "loadThermoParams", loadThermoParams, METH_VARARGS, 
+    { "loadThermoParams", loadThermoParams, METH_VARARGS,
      loadThermoParams__doc__ },
     { "setGlobals", setGlobals,  METH_VARARGS, setGlobals__doc__},
     { "setSeqArgs", setSeqArgs,  METH_VARARGS, setSeqArgs__doc__},

@@ -45,10 +45,6 @@ static void *p3sl_safe_malloc(size_t x);
 static void *p3sl_safe_realloc(void *p, size_t x);
 static void  p3sl_append_new_chunk(pr_append_str *x, const char *s);
 static void  p3sl_append(pr_append_str *x, const char *s);
-static int   add_seq_to_seq_lib(seq_lib *sl,
-				char *seq,
-				char *seq_id_plus,
-				const char *errfrag);
 
 static jmp_buf _jmp_buf;
 
@@ -59,9 +55,8 @@ static jmp_buf _jmp_buf;
 
 static double parse_seq_name(char *s);
 static char   upcase_and_check_char(char *s);
-static void   reverse_complement_seq_lib(seq_lib  *lib);
 
-static int
+int
 add_seq_to_seq_lib(seq_lib *sl,
 		   char *seq,
 		   char *seq_id_plus,
@@ -163,8 +158,8 @@ create_empty_seq_lib() {
   lib->names          = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
   lib->seqs           = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
   /* FIX ME Can we get rid of rev_compl_seqs? */
-  lib->rev_compl_seqs = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*)); 
-  
+  lib->rev_compl_seqs = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
+
   lib->weight         = (double*) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(double));
   lib->seq_num        = 0;
   lib->storage_size   = INIT_LIB_SIZE;
@@ -314,8 +309,8 @@ destroy_seq_lib(seq_lib *p)
       if (p->seqs[i] != NULL) {
         free(p->seqs[i]);
       }
-      free(p->seqs);
     }
+    free(p->seqs);
   }
   if (p->names != NULL) {
     for(i = 0; i < p->seq_num; i++) {
@@ -327,11 +322,13 @@ destroy_seq_lib(seq_lib *p)
   }
   // added NC
   if (p->rev_compl_seqs != NULL) {
-    for(i = 0; i < p->seq_num; i++) {
-      if (p->rev_compl_seqs[i] != NULL) {
-        free(p->rev_compl_seqs[i]);
-      }
-    }
+    // Already freed above (the rev_compl_seqs array contains pointers
+    // that just point to the seqs array)
+    // for(i = 0; i < p->seq_num; i++) {
+    //   if (p->rev_compl_seqs[i] != NULL) {
+    //     free(p->rev_compl_seqs[i]);
+    //   }
+    // }
     free(p->rev_compl_seqs);
   } // end added NC
 
@@ -342,7 +339,7 @@ destroy_seq_lib(seq_lib *p)
   free(p);
 }
 
-static void
+void
 reverse_complement_seq_lib(seq_lib  *lib)
 {
   int i, n, k;
