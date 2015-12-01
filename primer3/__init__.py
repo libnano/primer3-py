@@ -19,7 +19,7 @@ primer3-py
 ~~~~~~~~~~
 
 Python bindings / abstractions for the Primer3 primer design /
-oligonucleotide thermodynamics library. 
+oligonucleotide thermodynamics library.
 
 '''
 
@@ -38,8 +38,8 @@ if not os.environ.get('PRIMER3HOME'):
     os.environ['PRIMER3HOME'] = PRIMER3HOME
 
 from .bindings import (calcHairpin, calcHomodimer, calcHeterodimer,
-                       calcHairpinTm, calcHomodimerTm, calcHeterodimerTm, 
-                       calcTm, setP3Globals, setP3SeqArgs, runP3Design, 
+                       calcHairpinTm, calcHomodimerTm, calcHeterodimerTm,
+                       calcTm, setP3Globals, setP3SeqArgs, runP3Design,
                        designPrimers)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -51,15 +51,18 @@ def includes():
     return [LOCAL_DIR, os.environ['PRIMER3HOME']]
 
 
+__author__ = 'Ben Pruitt, Nick Conway'
+__copyright__ = 'Copyright 2014-2015, Ben Pruitt & Nick Conway; Wyss Institute'
+__license__ = 'GPLv2'
+__version__ = '0.4.3'
+
 __all__ = [
     # Low-level Tm-only bindings
     'calcHairpinTm', 'calcHomodimerTm', 'calcHeterodimerTm',
     # Low-level bindings
     'calcHairpin', 'calcHomodimer', 'calcHeterodimer', 'calcTm',
     # Primer3 design bindings
-    'setP3Globals', 'setP3SeqArgs', 'runP3Design', 'designPrimers', 
+    'setP3Globals', 'setP3SeqArgs', 'runP3Design', 'designPrimers',
     # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
     'bindings', 'wrappers', 'thermoanalysis', 'primerdesign'
 ]
-
-
