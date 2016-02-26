@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
-test_primerdesign 
+test_primerdesign
 ~~~~~~~~~~~~~~~~~
 
 Unit tests for the primer3-py primer design bindings.
@@ -46,7 +46,7 @@ def _getMemUsage():
 
 class TestDesignBindings(unittest.TestCase):
 
-    def _compareResults(self, binding_res, simulated_binding_res, 
+    def _compareResults(self, binding_res, simulated_binding_res,
                         verbose=False):
         keys_in_sim = set(simulated_binding_res)
         keys_in_binding = set(binding_res)
@@ -76,7 +76,7 @@ class TestDesignBindings(unittest.TestCase):
                          if simulated_binding_res[k] != binding_res[k]]
         disagreements = []
         for ds in discrepencies:
-            if (isinstance(binding_res[ds], (float, int)) and 
+            if (isinstance(binding_res[ds], (float, int)) and
                     binding_res[ds] != 0):
                 percent_diff = abs((binding_res[ds] - simulated_binding_res[ds])
                                     / binding_res[ds])
@@ -94,7 +94,7 @@ class TestDesignBindings(unittest.TestCase):
                                         sorted(disagreements)])
             if verbose:
                 print('\n\n\nResults disagree:')
-                print(fmt.format('Output Key', 'SimBinding Result', 
+                print(fmt.format('Output Key', 'SimBinding Result',
                                  'Binding Result'))
                 print('-'*80)
             return disagreements
@@ -111,19 +111,19 @@ class TestDesignBindings(unittest.TestCase):
         boulder_dicts = wrappers._parseMultiRecordBoulderIO(boulder_str)
         input_dicts = []
         for bd in boulder_dicts:
-            converted_input = [simulatedbindings.unwrap(arg) for arg in 
+            converted_input = [simulatedbindings.unwrap(arg) for arg in
                                bd.items()]
-            global_args = dict(filter(lambda arg: "PRIMER_" == arg[0][:7], 
+            global_args = dict(filter(lambda arg: "PRIMER_" == arg[0][:7],
                                       converted_input))
-            seq_args = dict(filter(lambda arg: "SEQUENCE_" == arg[0][:9], 
+            seq_args = dict(filter(lambda arg: "SEQUENCE_" == arg[0][:9],
                                     converted_input))
-            p3_args = dict(filter(lambda arg: "P3_" == arg[0][:3], 
+            p3_args = dict(filter(lambda arg: "P3_" == arg[0][:3],
                                     converted_input))
             input_dicts.append((global_args, seq_args, p3_args))
         return input_dicts
 
 
-    def test_CompareSim(self):
+    def test_compareSim(self):
         sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
         quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
         seq_args = {
@@ -207,24 +207,24 @@ class TestDesignBindings(unittest.TestCase):
                 wrapper_error = simulated_binding_res.get('PRIMER_ERROR')
                 if wrapper_error is not None:
                     with self.assertRaises(IOError):
-                        binding_res = bindings.designPrimers(seq_args, 
-                                                            current_global_args)                   
+                        binding_res = bindings.designPrimers(seq_args,
+                                                            current_global_args)
                 else:
                     try:
-                        binding_res = bindings.designPrimers(seq_args, 
+                        binding_res = bindings.designPrimers(seq_args,
                                                             current_global_args)
                     except IOError:
-                        if max([x in p3_args.get('P3_COMMENT', '') for x in 
+                        if max([x in p3_args.get('P3_COMMENT', '') for x in
                                 ('complain', 'fail')]):
                             pass
-                    disagreements = self._compareResults(binding_res, 
+                    disagreements = self._compareResults(binding_res,
                                                          simulated_binding_res)
                     if disagreements is not None:
                         failures.append((fn_root, test_id, disagreements))
         print(' '* 60, end='\r')
         if len(failures):
             err_msg = ('Failures occured during file testing:\n' +
-                      '\n'.join(['->{}\t{}\n{}'.format(*f) for f in 
+                      '\n'.join(['->{}\t{}\n{}'.format(*f) for f in
                                  failures]))
             raise RuntimeError(err_msg)
 

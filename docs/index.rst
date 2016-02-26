@@ -34,7 +34,7 @@ IO for your automated workflows.
 the Primer3 design engine. Please contact the Primer3 dev team with your
 questions: http://primer3.sourceforge.net/.** 
 
-A copy of the Primer3 2.3.6 design parameters manual can be found at:
+A copy of the Primer3 2.3.7 design parameters manual can be found at:
 http://git.io/vnqBx
 
 Contents

@@ -1,6 +1,6 @@
 /*
  Copyright (c) 1996,1997,1998,1999,2000,2001,2004,2006,2007,2009,2010,
-               2011,2012
+               2011,2012,2016
  Whitehead Institute for Biomedical Research, Steve Rozen
  (http://purl.com/STEVEROZEN/), and Helen Skaletsky
  All rights reserved.
@@ -126,6 +126,7 @@ static const double MinEntropyCutoff = -2500.0; /* to filter out non-existing en
 static const double MinEntropy = -3224.0; /* initiation */
 static const double G2 = 0.0; /* structures w higher G are considered to be unstabile */
 const double ABSOLUTE_ZERO = 273.15;
+const double TEMP_KELVIN = 310.15;
 const int MAX_LOOP = 30; /* the maximum size of loop that can be calculated; for larger loops formula must be implemented */
 const int MIN_LOOP = 0;
 // static const char BASES[5] = {'A', 'C', 'G', 'T', 'N'}; /* bases to be considered - N is every symbol that is not A, G, C,$
@@ -403,11 +404,12 @@ thal(const unsigned char *oligo_f,
   double* SH;
   int i, j;
   int len_f, len_r;
-  double T1;
+  // double T1; NC DEL
   int k;
   int *bp;
   unsigned char *oligo2_rev = NULL;
   double mh, ms;
+  double G1, bestG;
 
   send5 = hend5 = NULL;
   enthalpyDPT = entropyDPT = NULL;
@@ -432,7 +434,7 @@ thal(const unsigned char *oligo_f,
   /* The following error messages will be seen by end users and will
      not be easy to understand. */
   CHECK_ERROR((len_f > THAL_MAX_ALIGN) && (len_r > THAL_MAX_ALIGN),
-               "At least one sequence must be equal to or shorter than " 
+               "At least one sequence must be equal to or shorter than "
                XSTR(THAL_MAX_ALIGN) "bp for thermodynamic calculations");
   CHECK_ERROR((len_f > THAL_MAX_SEQ),
               LONG_SEQ_ERR_STR(THAL_MAX_SEQ) " (1)");
@@ -567,7 +569,7 @@ thal(const unsigned char *oligo_f,
     free(oligo1);
     free(oligo2);
     return;
-  } else if (a->type != 4) { /* Hybridization of two molecules */
+  } else if (a->type != 4) { /* Hybridization of two molecules LN 545 */
     int *ps1, *ps2;
     double dH, dS;
     len3 = len2;
@@ -575,20 +577,25 @@ thal(const unsigned char *oligo_f,
     entropyDPT = safe_recalloc(entropyDPT, len1, len2, o); /* enthalpyDPT is 3D array represented as 1D array */
     initMatrix();
     fillMatrix(a->maxLoop, o);
-    SHleft = -_INFINITY;
+    // SHleft = -_INFINITY; NC DEL
     SH = (double*) safe_malloc(2 * sizeof(double), o);
     /* calculate terminal basepairs */
     bestI = bestJ = 0;
+    G1 = bestG = _INFINITY;
     if (a->type == 1) {
       for (i = 1; i <= len1; i++) {
         for (j = 1; j <= len2; j++) {
           RSH(i, j, SH);
           SH[0] = SH[0] + SMALL_NON_ZERO; /* this adding is done for compiler, optimization -O2 vs -O0 */
           SH[1] = SH[1] + SMALL_NON_ZERO;
-          T1 = ((EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) / ((EntropyDPT(i, j)) + SH[0] +
-                dplx_init_S + RC)) - ABSOLUTE_ZERO;
-          if (T1 > SHleft  && ((EntropyDPT(i, j) + SH[0]) < 0 && (SH[1] + EnthalpyDPT(i, j)) < 0)) {
-            SHleft = T1;
+          // NC DEL BLOCK
+          // T1 = ((EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) / ((EntropyDPT(i, j)) + SH[0] +
+          //       dplx_init_S + RC)) - ABSOLUTE_ZERO;
+          // if (T1 > SHleft  && ((EntropyDPT(i, j) + SH[0]) < 0 && (SH[1] + EnthalpyDPT(i, j)) < 0)) {
+          //   SHleft = T1;
+          G1 = (EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) - TEMP_KELVIN*(EntropyDPT(i, j) + SH[0] + dplx_init_S);
+          if( G1 < bestG) {
+            bestG = G1;
             bestI = i;
             bestJ = j;
           }
@@ -608,21 +615,27 @@ thal(const unsigned char *oligo_f,
       bestI = bestJ = 0;
       bestI = len1;
       i = len1;
-      SHleft = -_INFINITY;
+      // SHleft = -_INFINITY; NC DEL
+      G1 = bestG = _INFINITY;
       for (j = 1; j <= len2; ++j) {
         RSH(i, j, SH);
-        SH[0] = SH[0]+SMALL_NON_ZERO; /* this adding is done for compiler, optimization -O2 vs -O0,
+        SH[0] = SH[0] + SMALL_NON_ZERO; /* this adding is done for compiler, optimization -O2 vs -O0,
                                          that compiler could understand that SH is changed in this cycle */
-        SH[1] = SH[1]+SMALL_NON_ZERO;
-        T1 = ((EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) / ((EntropyDPT(i, j)) + SH[0] +
-              dplx_init_S + RC)) - ABSOLUTE_ZERO;
-        if (T1 > SHleft && ((SH[0] + EntropyDPT(i, j)) < 0 && (SH[1] + EnthalpyDPT(i, j)) < 0)) {
-          SHleft = T1;
+        SH[1] = SH[1] + SMALL_NON_ZERO;
+        // T1 = ((EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) / ((EntropyDPT(i, j)) + SH[0] +
+        //       dplx_init_S + RC)) - ABSOLUTE_ZERO;
+        // if (T1 > SHleft && ((SH[0] + EntropyDPT(i, j)) < 0 && (SH[1] + EnthalpyDPT(i, j)) < 0)) {
+        //   SHleft = T1;
+        //   bestJ = j;
+        G1 = (EnthalpyDPT(i, j)+ SH[1] + dplx_init_H) - TEMP_KELVIN*(EntropyDPT(i, j) + SH[0] + dplx_init_S);
+        if(G1 < bestG) {
+          bestG = G1;
           bestJ = j;
         }
       }
     }
-    if (!isFinite(SHleft)) { bestI = bestJ = 1; }
+    // if (!isFinite(SHleft)) { bestI = bestJ = 1; } NC DEL
+    if (!isFinite(bestG)) { bestI = bestJ = 1; } // LN 594
     RSH(bestI, bestJ, SH);
     dH = EnthalpyDPT(bestI, bestJ)+ SH[1] + dplx_init_H;
     dS = (EntropyDPT(bestI, bestJ) + SH[0] + dplx_init_S);
@@ -673,7 +686,8 @@ set_thal_default_args(thal_args *a)
   a->dv = 0.0; /* mM */
   a->dntp = 0.8; /* mM */
   a->dna_conc = 50; /* nM */
-  a->temp = 310.15; /* Kelvin */
+  // a->temp = 310.15; /* Kelvin */ NC DEL
+  a->temp = TEMP_KELVIN; /* Kelvin */
   a->temponly = 1; /* return only melting temperature of predicted structure */
   a->dimer = 1; /* by default dimer structure is calculated */
 }
@@ -690,7 +704,8 @@ set_thal_oligo_default_args(thal_args *a)
   a->dv = 0.0; /* mM */
   a->dntp = 0.0; /* mM */
   a->dna_conc = 50; /* nM */
-  a->temp = 310.15; /* Kelvin */
+  // a->temp = 310.15; /* Kelvin */ NC DEL
+  a->temp = TEMP_KELVIN; /* Kelvin */
   a->temponly = 1; /* return only melting temperature of predicted structure */
   a->dimer = 1; /* by default dimer structure is calculated */
 }
@@ -836,7 +851,7 @@ p3_read_line(FILE *file, thal_results* o)
 
   // added NC, s was never freed and is static
   // since s get's resized, so add a special call
-  // to free it. OS still can handle freeing it either 
+  // to free it. OS still can handle freeing it either
   // way but it's just good accounting IMHO
   if ((o == NULL) && (file == NULL)) {
     if (s != NULL) {
@@ -1441,18 +1456,24 @@ maxTM(int i, int j)
   double T0, T1;
   double S0, S1;
   double H0, H1;
+  double* SH;
+  SH = (double*) safe_malloc(2 * sizeof(double), 0);
   T0 = T1 = -_INFINITY;
   S0 = EntropyDPT(i, j);
   H0 = EnthalpyDPT(i, j);
-  T0 = (H0 + dplx_init_H) /(S0 + dplx_init_S + RC); /* at current position */
+  // T0 = (H0 + dplx_init_H) /(S0 + dplx_init_S + RC); /* at current position */ NC DEL
+  RSH(i,j,SH);
+  T0 = (H0 + dplx_init_H + SH[1]) /(S0 + dplx_init_S + SH[0] + RC); /* at current position */
   if (isFinite(EnthalpyDPT(i - 1, j - 1)) && isFinite(Hs(i - 1, j - 1, 1))) {
     S1 = (EntropyDPT(i - 1, j - 1) + Ss(i - 1, j - 1, 1));
     H1 = (EnthalpyDPT(i - 1, j - 1) + Hs(i - 1, j - 1, 1));
+    T1 = (H1 + dplx_init_H + SH[1]) /(S1 + dplx_init_S + SH[0] + RC);
   } else {
     S1 = -1.0;
     H1 = _INFINITY;
+    T1 = (H1 + dplx_init_H) /(S1 + dplx_init_S + RC);
   }
-  T1 = (H1 + dplx_init_H) /(S1 + dplx_init_S + RC);
+  // T1 = (H1 + dplx_init_H) /(S1 + dplx_init_S + RC); NC DEL
   if (S1 < MinEntropyCutoff) {
     /* to not give dH any value if dS is unreasonable */
     S1 = MinEntropy;
@@ -1463,13 +1484,15 @@ maxTM(int i, int j)
     S0 = MinEntropy;
     H0 = 0.0;
   }
-  if ((T1 > T0) || ((S0 > 0) && (H0 > 0))) { /* T1 on suurem */
+  // if ((T1 > T0) || ((S0 > 0) && (H0 > 0))) { /* T1 on suurem */ NC DEL
+  if(T1 > T0) {
     EntropyDPT(i, j) = S1;
     EnthalpyDPT(i, j) = H1;
   } else if (T0 >= T1) {
     EntropyDPT(i, j) = S0;
     EnthalpyDPT(i, j) = H0;
   }
+  free(SH);
 }
 
 static void
@@ -1512,8 +1535,10 @@ maxTM2(int i, int j)
 static void
 LSH(int i, int j, double* EntropyEnthalpy)
 {
-  double S1, H1, T1;
-  double S2, H2, T2;
+  // double S1, H1, T1; NC DEL
+  // double S2, H2, T2; NC DEL
+  double S1, H1, T1, G1;
+  double S2, H2, T2, G2;
   S1 = S2 = -1.0;
   H1 = H2 = -_INFINITY;
   T1 = T2 = -_INFINITY;
@@ -1524,69 +1549,95 @@ LSH(int i, int j, double* EntropyEnthalpy)
   }
   S1 = atPenaltyS(numSeq1[i], numSeq2[j]) + tstack2Entropies[numSeq2[j]][numSeq2[j-1]][numSeq1[i]][numSeq1[i-1]];
   H1 = atPenaltyH(numSeq1[i], numSeq2[j]) + tstack2Enthalpies[numSeq2[j]][numSeq2[j-1]][numSeq1[i]][numSeq1[i-1]];
-  if(!isFinite(H1)) {
+  // if(!isFinite(H1)) { NC DEL
+  G1 = H1 - TEMP_KELVIN*S1;
+  if(!isFinite(H1) || (G1 > 0)) {
     H1 = _INFINITY;
     S1 = -1.0;
+    G1 = 1.0;
   }
   /** If there is two dangling ends at the same end of duplex **/
-  if(isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]]) && isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]])) {
+  // if(isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]]) && isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]])) { NC DEL
+  if ( (bpIndx(numSeq1[i-1], numSeq2[j-1]) != 1 ) &&
+      isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]]) &&
+      isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]]) ) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]] +
         dangleEntropies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]] +
         dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]];
-    if(!isFinite(H2)) {
+    // if(!isFinite(H2)) { NC DEL
+    G2 = H2 - TEMP_KELVIN*S2;
+    if(!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
       S2 = -1.0;
+      G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    if(isFinite(H1)) {
+    // if(isFinite(H1)) { NC DEL
+    if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      if(T1<T2) {
+      // if(T1<T2) { NE DEL
+      if( (T1 < T2) && (G2 < 0) ) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    } else {
+    // } else { NC DEL
+    } else if(G2 < 0) {
       S1 = S2;
       H1 = H2;
       T1 = T2;
     }
-  } else if (isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]])) {
+  // } else if (isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]])) { NC DEL
+  } else if ((bpIndx(numSeq1[i-1], numSeq2[j-1]) != 1) && isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]];
-    if(!isFinite(H2)) {
+    // if(!isFinite(H2)) { NC DEL
+    G2 = H2 - TEMP_KELVIN*S2;
+    if(!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
       S2 = -1.0;
+      G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    if(isFinite(H1)) {
+    // if(isFinite(H1)) { NC DEL
+    if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      if (T1 < T2) {
+      // if (T1 < T2) { NC DEL
+      if((T1 < T2) && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    } else {
+    // } else { NC DEL
+    } else if (G2 < 0){
       S1 = S2;
       H1 = H2;
       T1 = T2;
     }
-  } else if (isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]])) {
+  // } else if (isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]])) { NC DEL
+  } else if ((bpIndx(numSeq1[i-1], numSeq2[j-1]) != 1) && isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]];
-    if(!isFinite(H2)) {
+    // if(!isFinite(H2)) { NC DEL
+    G2 = H2 - TEMP_KELVIN*S2;
+    if(!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
       S2 = -1.0;
+      G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    if(isFinite(H1)) {
+    // if(isFinite(H1)) { NC DEL
+    if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      if(T1 < T2) {
+      // if(T1 < T2) { NC DEL
+      if(T1 < T2  && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    } else {
+    // } else { NC DEL
+    } else if(G2 < 0) {
       S1 = S2;
       H1 = H2;
       T1 = T2;
@@ -1595,6 +1646,8 @@ LSH(int i, int j, double* EntropyEnthalpy)
   S2 = atPenaltyS(numSeq1[i], numSeq2[j]);
   H2 = atPenaltyH(numSeq1[i], numSeq2[j]);
   T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
+  G1 = H1 -TEMP_KELVIN*S1;
+  G2 = H2 -TEMP_KELVIN*S2;
   if (isFinite(H1)) {
     if(T1 < T2) {
       EntropyEnthalpy[0] = S2;
@@ -1611,8 +1664,9 @@ LSH(int i, int j, double* EntropyEnthalpy)
 }
 
 static void
-RSH(int i, int j, double* EntropyEnthalpy)
+RSH(int i, int j, double* EntropyEnthalpy) // Ln 1558
 {
+  double G1, G2;
   double S1, S2;
   double H1, H2;
   double T1, T2;
@@ -1626,74 +1680,98 @@ RSH(int i, int j, double* EntropyEnthalpy)
   }
   S1 = atPenaltyS(numSeq1[i], numSeq2[j]) + tstack2Entropies[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]][numSeq2[j + 1]];
   H1 = atPenaltyH(numSeq1[i], numSeq2[j]) + tstack2Enthalpies[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]][numSeq2[j + 1]];
-  if(!isFinite(H1)) {
+  // if(!isFinite(H1)) { NC DEL
+  G1 = H1 - TEMP_KELVIN*S1;
+  if(!isFinite(H1) || (G1 > 0)) {
     H1 = _INFINITY;
     S1 = -1.0;
+    G1 = 1.0;
   }
 
-  if(isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]]) && isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) {
+  // if(isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]]) && isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) { NC DEL
+  if(bpIndx(numSeq1[i+1], numSeq2[j+1]) == 0 && isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]]) && isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]] +
         dangleEntropies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]] +
         dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]];
-    if(!isFinite(H2)) {
+    // if(!isFinite(H2)) { NC DEL
+    G2 = H2 - TEMP_KELVIN*S2;
+    if(!isFinite(H2) || G2>0) {
       H2 = _INFINITY;
       S2 = -1.0;
+      G2 = 1.0;
     }
 
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    if(isFinite(H1)) {
+    // if(isFinite(H1)) { NC DEL
+    if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      if(T1 < T2) {
+      // if(T1 < T2) { NC DEL
+      if((T1 < T2) && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    } else {
+    // } else {
+    } else if(G2 < 0){
       S1 = S2;
       H1 = H2;
       T1 = T2;
     }
   }
 
-  if(isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]])) {
+  // if(isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]])) { NC DEL
+  else if(bpIndx(numSeq1[i+1], numSeq2[j+1]) == 0 && isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]];
-    if(!isFinite(H2)) {
+    // if(!isFinite(H2)) { NC DEL
+    G2 = H2 - TEMP_KELVIN*S2;
+    if(!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
       S2 = -1.0;
+      G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    if(isFinite(H1)) {
+    // if(isFinite(H1)) { NC DEL
+    if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      if(T1 < T2) {
+      // if(T1 < T2) { NC DEL
+      if(T1 < T2 && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    } else {
+    // } else { NC DEL
+    } else if (G2 < 0){
       S1 = S2;
       H1 = H2;
       T1 = T2;
     }
   }
 
-  if(isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) {
+  // if(isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) { NC DEL
+  else if (bpIndx(numSeq1[i+1], numSeq2[j+1]) == 0 && isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]];
-    if(!isFinite(H2)) {
+    // if(!isFinite(H2)) { NC DEL
+    G2 = H2 - TEMP_KELVIN*S2;
+    if (!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
       S2 = -1.0;
+      G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    if(isFinite(H1)) {
+    // if(isFinite(H1)) { NC DEL
+    if (isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      if(T1 < T2) {
+      // if(T1 < T2) { NC DEL
+      if ((T1 < T2) && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    } else {
+    // } else { NC DEL
+    } else if (G2 < 0) {
       S1 = S2;
       H1 = H2;
       T1 = T2;
@@ -1702,6 +1780,8 @@ RSH(int i, int j, double* EntropyEnthalpy)
   S2 = atPenaltyS(numSeq1[i], numSeq2[j]);
   H2 = atPenaltyH(numSeq1[i], numSeq2[j]);
   T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
+  G1 = H1 -TEMP_KELVIN*S1;
+  G2 =  H2 -TEMP_KELVIN*S2;
   if(isFinite(H1)) {
     if(T1 < T2) {
       EntropyEnthalpy[0] = S2;
@@ -1718,13 +1798,13 @@ RSH(int i, int j, double* EntropyEnthalpy)
 }
 
 static double
-Ss(int i, int j, int k)
+Ss(int i, int j, int k) // LN 1676
 {
-  if(k == 2) {
+  if (k == 2) {
     if (i >= j) {
       return -1.0;
     }
-    if (i == len1 || j == len2 + 1) {
+    if ((i == len1) || (j == len2 + 1)) {
       return -1.0;
     }
 
@@ -1779,7 +1859,8 @@ CBI(int i, int j, double* EntropyEnthalpy, int traceback, int maxLoop)
         EntropyEnthalpy[0] = -1.0;
         EntropyEnthalpy[1] = _INFINITY;
       }
-      if (isFinite(EnthalpyDPT(ii, jj))) {
+      // if (isFinite(EnthalpyDPT(ii, jj))) { NC DEL
+      if (isFinite(EnthalpyDPT(ii, jj)) && isFinite(EnthalpyDPT(i, j))) {
         calc_bulge_internal2(i, j, ii, jj, EntropyEnthalpy, traceback,maxLoop);
         if(isFinite(EntropyEnthalpy[1])) {
           if(EntropyEnthalpy[0] < MinEntropyCutoff) {
@@ -1801,8 +1882,14 @@ static void
 calc_hairpin(int i, int j, double* EntropyEnthalpy, int traceback)
 {
   int loopSize = j - i - 1;
-  double T1, T2;
-  T1 = T2 = -_INFINITY;
+  // double T1, T2; NC DEL
+  // T1 = T2 = -_INFINITY; NC DEL
+  double G1, G2;
+  G1 = G2 = -_INFINITY;
+  double* SH;
+  SH = (double*) safe_malloc(2 * sizeof(double), 0);
+  SH[0] = -1.0;
+  SH[1] = _INFINITY;
   if(loopSize < MIN_HRPN_LOOP) {
     EntropyEnthalpy[0] = -1.0;
     EntropyEnthalpy[1] = _INFINITY;
@@ -1863,12 +1950,18 @@ calc_hairpin(int i, int j, double* EntropyEnthalpy, int traceback)
     EntropyEnthalpy[1] = _INFINITY;
     EntropyEnthalpy[0] = -1.0;
   }
-  T1 = (EntropyEnthalpy[1] + dplx_init_H) / ((EntropyEnthalpy[0] + dplx_init_S + RC));
-  T2 = (EnthalpyDPT(i, j) + dplx_init_H) / ((EntropyDPT(i, j)) + dplx_init_S + RC);
-  if(T1 < T2 && traceback == 0) {
+  // NC DEL BLOCK
+  // T1 = (EntropyEnthalpy[1] + dplx_init_H) / ((EntropyEnthalpy[0] + dplx_init_S + RC));
+  // T2 = (EnthalpyDPT(i, j) + dplx_init_H) / ((EntropyDPT(i, j)) + dplx_init_S + RC);
+  // if(T1 < T2 && traceback == 0) {
+  RSH(i,j,SH);
+  G1 = EntropyEnthalpy[1]+SH[1] -TEMP_KELVIN*(EntropyEnthalpy[0]+SH[0]);
+  G2 = EnthalpyDPT(i, j)+SH[1] -TEMP_KELVIN*(EntropyDPT(i, j)+SH[0]);
+  if(G2 < G1 && traceback == 0) {
     EntropyEnthalpy[0] = EntropyDPT(i, j);
     EntropyEnthalpy[1] = EnthalpyDPT(i, j);
   }
+  free(SH);
   return;
 }
 
@@ -1877,12 +1970,21 @@ static void
 calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int traceback, int maxLoop)
 {
   int loopSize1, loopSize2, loopSize;
-  double T1, T2;
-  double S,H;
+  // NC DEL BLOCK
+  // double T1, T2;
+  // double S,H;
+  double S, H, G1, G2;
   int N, N_loop;
-  T1 = T2 = -_INFINITY;
-  S = MinEntropy;
-  H = 0;
+  // NC DEL BLOCK
+  // T1 = T2 = -_INFINITY;
+  // S = MinEntropy;
+  // H = 0;
+  double* SH;
+  SH = (double*) safe_malloc(2 * sizeof(double), 0);
+  SH[0] = -1.0;
+  SH[1] = _INFINITY;
+  S = -1.0;
+  H = _INFINITY;
   loopSize1 = ii - i - 1;
   loopSize2 = jj - j - 1;
   if(ii < jj) {
@@ -1909,6 +2011,7 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
 #ifdef DEBUG
    if (loopSize1 + loopSize2 > maxLoop) {
       fputs("Error: calc_bulge_internal() called with loopSize1 + loopSize2 > maxLoop\n", stderr);
+      free(SH);
       return;
    }
 #endif
@@ -1918,7 +2021,7 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
     return;
   }
 #endif
-  loopSize = loopSize1 + loopSize2 -1;
+  loopSize = loopSize1 + loopSize2 - 1;
   if((loopSize1 == 0 && loopSize2 > 0) || (loopSize2 == 0 && loopSize1 > 0)) { /* only bulges have to be considered */
     if(loopSize2 == 1 || loopSize1 == 1) { /* bulge loop of size one is treated differently
                           the intervening nn-pair must be added */
@@ -1929,20 +2032,29 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
         S = bulgeLoopEntropies[loopSize] +
             stackEntropies[numSeq1[i]][numSeq1[ii]][numSeq2[j]][numSeq2[jj]];
       }
+      if(isPositive(H) || isPositive(S)){
+         H = _INFINITY;
+         S = -1.0;
+      }
       H += EnthalpyDPT(i, j);
       S += EntropyDPT(i, j);
       if(!isFinite(H)) {
         H = _INFINITY;
         S = -1.0;
       }
-      if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(ii, jj)) || !isPositive(EntropyDPT(ii, jj)))) { /* if both, S and H are positive */
-        H = _INFINITY;
-        S = -1.0;
-      }
-      T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
-      T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / ((EntropyDPT(ii, jj)) + dplx_init_S + RC);
+      // NC DEL BLOCK
+      // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(ii, jj)) || !isPositive(EntropyDPT(ii, jj)))) { /* if both, S and H are positive */
+      //   H = _INFINITY;
+      //   S = -1.0;
+      // }
+      // T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
+      // T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / ((EntropyDPT(ii, jj)) + dplx_init_S + RC);
 
-      if((T1 > T2) || ((traceback && T1 >= T2) || (traceback==1))) {
+      // if((T1 > T2) || ((traceback && T1 >= T2) || (traceback==1))) {
+      RSH(ii, jj, SH);
+      G1 = H + SH[1] - TEMP_KELVIN*(S + SH[0]);
+      G2 = EnthalpyDPT(ii, jj) + SH[1] - TEMP_KELVIN*((EntropyDPT(ii, jj) + SH[0]));
+      if( (G1 < G2) || (traceback == 1) ) {
         EntropyEnthalpy[0] = S;
         EntropyEnthalpy[1] = H;
       }
@@ -1957,13 +2069,19 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
         H = _INFINITY;
         S = -1.0;
       }
-      if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))){ /* if both, S and H are positive */
+      // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))){ /* if both, S and H are positive */ NC DEL
+      if(isPositive(H) && isPositive(S)) {
         H = _INFINITY;
         S = -1.0;
       }
-      T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
-      T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / (EntropyDPT(ii, jj) + dplx_init_S + RC);
-      if((T1 > T2) || ((traceback && T1 >= T2) || (traceback==1))) {
+      // NC DEL BLOCL
+      // T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
+      // T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / (EntropyDPT(ii, jj) + dplx_init_S + RC);
+      // if((T1 > T2) || ((traceback && T1 >= T2) || (traceback==1))) {
+      RSH(ii, jj, SH);
+      G1 = H+SH[1] -TEMP_KELVIN*(S+SH[0]);
+      G2 = EnthalpyDPT(ii, jj)+SH[1]-TEMP_KELVIN*(EntropyDPT(ii, jj)+SH[0]);
+      if( (G1 < G2) || (traceback == 1) ) {
         EntropyEnthalpy[0] = S;
         EntropyEnthalpy[1] = H;
       }
@@ -1980,19 +2098,25 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
       H = _INFINITY;
       S = -1.0;
     }
-    if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(ii, jj)) || !isPositive(EntropyDPT(ii, jj)))) { /* if both, S and H are positive */
+    // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(ii, jj)) || !isPositive(EntropyDPT(ii, jj)))) { /* if both, S and H are positive */ NC DEL
+    if( isPositive(H) && isPositive(S) ) {
       H = _INFINITY;
       S = -1.0;
     }
-    T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
-    T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / (EntropyDPT(ii, jj) + dplx_init_S + RC);
+    // T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
+    // T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / (EntropyDPT(ii, jj) + dplx_init_S + RC);
 
-    if((DBL_EQ(T1,T2) == 2) || traceback==1) {
-      if((T1 > T2) || (traceback && T1 >= T2)) {
+    // if((DBL_EQ(T1,T2) == 2) || traceback==1) {
+    //   if((T1 > T2) || (traceback && T1 >= T2)) {
+    RSH(ii,jj,SH);
+    G1 = H+SH[1] -TEMP_KELVIN*(S+SH[0]);
+    G2 = EnthalpyDPT(ii, jj) + SH[1] - TEMP_KELVIN*(EntropyDPT(ii, jj) + SH[0]);
+    if( (G1< G2) || (traceback == 1)) {
         EntropyEnthalpy[0] = S;
         EntropyEnthalpy[1] = H;
-      }
+      // } NC DEL
     }
+    free(SH);
     return;
   } else { /* only internal loops */
     H = interiorLoopEnthalpies[loopSize] + tstackEnthalpies[numSeq1[i]][numSeq1[i+1]][numSeq2[j]][numSeq2[j+1]] +
@@ -2007,17 +2131,25 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
       H = _INFINITY;
       S = -1.0;
     }
-    if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(ii, jj)) || !isPositive(EntropyDPT(ii, jj)))) { /* if both, S and H are positive */
+    // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(ii, jj)) || !isPositive(EntropyDPT(ii, jj)))) { /* if both, S and H are positive */ NC DEL
+    if(isPositive(H) && isPositive(S)) {
       H = _INFINITY;
       S = -1.0;
     }
-    T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
-    T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / ((EntropyDPT(ii, jj)) + dplx_init_S + RC);
-    if((T1 > T2) || ((traceback && T1 >= T2) || (traceback==1))) {
+    // T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
+    // T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / ((EntropyDPT(ii, jj)) + dplx_init_S + RC);
+    // if((T1 > T2) || ((traceback && T1 >= T2) || (traceback==1))) {
+    //   EntropyEnthalpy[0] = S;
+    //   EntropyEnthalpy[1] = H;
+    RSH(ii,jj,SH);
+    G1 = H + SH[1] - TEMP_KELVIN*(S + SH[0]);
+    G2 = EnthalpyDPT(ii, jj) + SH[1] - TEMP_KELVIN*(EntropyDPT(ii, jj) + SH[0]);
+    if( (G1 < G2) || (traceback == 1) ) {
       EntropyEnthalpy[0] = S;
       EntropyEnthalpy[1] = H;
     }
   }
+  free(SH);
   return;
 }
 
@@ -2039,13 +2171,13 @@ calc_bulge_internal2(int i, int j, int ii, int jj, double* EntropyEnthalpy, int 
     return;
   }
   /* Triinu, please review the statements below. */
-  if(i < (len1 -j)) {
+  // if(i < (len1 -j)) {
    /* N  = i; */
     /* N_loop = (i - 1); */
-  } else {
+  // } else {
    /* N = len1-j;  */
     /* N_loop = len1 - j - 1; */
-  }
+  // }
 #ifdef DEBUG
   if (ii <= i)
     fputs("Error in calc_bulge_internal(): ii isn't greater than i\n", stderr);
@@ -2084,7 +2216,7 @@ calc_bulge_internal2(int i, int j, int ii, int jj, double* EntropyEnthalpy, int 
   if (jj > len2)
     jj -= len2;
 #endif
-  loopSize = loopSize1 + loopSize2 -1; /* for indx only */
+  loopSize = loopSize1 + loopSize2 - 1; /* for indx only */
   if((loopSize1 == 0 && loopSize2 > 0) || (loopSize2 == 0 && loopSize1 > 0)) { /* only bulges have to be considered */
     if(loopSize2 == 1 || loopSize1 == 1) { /* bulge loop of size one is treated differently
                           the intervening nn-pair must be added */
@@ -2103,10 +2235,11 @@ calc_bulge_internal2(int i, int j, int ii, int jj, double* EntropyEnthalpy, int 
         H = _INFINITY;
         S = -1.0;
       }
-      if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))) { /* if both, S and H are positive */
-        H = _INFINITY;
-        S = -1.0;
-      }
+      // NC DEL BLOCK
+      // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))) { /* if both, S and H are positive */
+      //   H = _INFINITY;
+      //   S = -1.0;
+      // }
       T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
       T2 = (EnthalpyDPT(i, j) + dplx_init_H) / ((EntropyDPT(i, j)) + dplx_init_S + RC);
 
@@ -2129,10 +2262,11 @@ calc_bulge_internal2(int i, int j, int ii, int jj, double* EntropyEnthalpy, int 
         H = _INFINITY;
         S = -1.0;
       }
-      if (isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))) { /* if both, S and H are positive */
-          H = _INFINITY;
-          S = -1.0;
-      }
+      // NC DEL BLOCK
+      // if (isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))) { /* if both, S and H are positive */
+      //     H = _INFINITY;
+      //     S = -1.0;
+      // }
       T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
       T2 = (EnthalpyDPT(i, j) + dplx_init_H) / (EntropyDPT(i, j) + dplx_init_S + RC);
 
@@ -2150,7 +2284,7 @@ calc_bulge_internal2(int i, int j, int ii, int jj, double* EntropyEnthalpy, int 
     if(traceback != 1) {
       S += EntropyDPT(ii, jj);
     }
-    
+
     H = stackint2Enthalpies[numSeq1[i]][numSeq1[i+1]][numSeq2[j]][numSeq2[j-1]] +
         stackint2Enthalpies[numSeq2[jj]][numSeq2[jj+1]][numSeq1[ii]][numSeq1[ii-1]];
     if(traceback != 1) {
@@ -2160,10 +2294,11 @@ calc_bulge_internal2(int i, int j, int ii, int jj, double* EntropyEnthalpy, int 
       H = _INFINITY;
       S = -1.0;
     }
-    if(isPositive(H)==1 && isPositive(S)==1 && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))) { /* if both, S and H are positive */
-      H = _INFINITY;
-      S = -1.0;
-    }
+    // NC DEL BLOCK
+    // if(isPositive(H)==1 && isPositive(S)==1 && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))) { /* if both, S and H are positive */
+    //   H = _INFINITY;
+    //   S = -1.0;
+    // }
     T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
     T2 = (EnthalpyDPT(i, j) + dplx_init_H) / (EntropyDPT(i, j) + dplx_init_S + RC);
     if((DBL_EQ(T1,T2) == 2) || traceback) {
@@ -2191,10 +2326,11 @@ calc_bulge_internal2(int i, int j, int ii, int jj, double* EntropyEnthalpy, int 
       H = _INFINITY;
       S = -1.0;
     }
-    if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))){ /* if both, S and H are positive */
-      H = _INFINITY;
-      S = -1.0;
-    }
+    // NC DEL BLOCK
+    // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))){ /* if both, S and H are positive */
+    //   H = _INFINITY;
+    //   S = -1.0;
+    // }
     T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
     T2 = (EnthalpyDPT(i, j) + dplx_init_H) / ((EntropyDPT(i, j)) + dplx_init_S + RC);
     if((T1 > T2) || ((traceback && T1 >= T2) || (traceback==1))) {
@@ -2972,7 +3108,7 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
          strcatc(duplex[0], '-');
          strcatc(duplex[1], ' ');
       }
-    } else if (numSS1 > numSS2) {    
+    } else if (numSS1 > numSS2) {
       for (k = 0; k < numSS1 - numSS2; ++k) {
         strcatc(duplex[2], ' ');
         strcatc(duplex[3], '-');
