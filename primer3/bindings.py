@@ -214,7 +214,6 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
     Args:
         seq (str)                               : DNA sequence
-
         mv_conc (float/int, optional)           : Monovalent cation conc. (mM)
         dv_conc (float/int, optional)           : Divalent cation conc. (mM)
         dntp_conc (float/int, optional)         : dNTP conc. (mM)

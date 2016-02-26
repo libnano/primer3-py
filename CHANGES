@@ -76,3 +76,8 @@ Version 0.4.3                                                  December 1, 2015
 -------------------------------------------------------------------------------
 - Fixed compilation errors, unicode-related build problems
 - Fixed memory allocation / deallocation issues with mispriming libraries
+
+Version 0.5.0                                                 February 25, 2016
+-------------------------------------------------------------------------------
+- Update libprimer3 to version 2.3.7
+- Better test coverage for low level bindings

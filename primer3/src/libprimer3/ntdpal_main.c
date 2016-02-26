@@ -45,9 +45,10 @@ main(int argc, const char**argv)
 {
     dpal_args a;
     dpal_results r;
+    int tmp_ret;
     const unsigned char *s1, *s2;
     int i;
-    int print_align_end = 0; /* 
+    int print_align_end = 0; /*
                               * Print align_end_1 and align_end_2 from
                               * dpal_results.
 			      */
@@ -55,7 +56,7 @@ main(int argc, const char**argv)
     int use_h_matrix = 0;
     char mode;
     char *endptr;
-    const char *msg = 
+    const char *msg =
       "\nUsage: %s [-g <gval>] [-l <lval>] [-m <mval>]\n"
       "                 [-f2] [-p] [-s] [-e] <seq1> <seq2> <mode>"
       "\n\nwhere\n\n"
@@ -85,8 +86,9 @@ main(int argc, const char**argv)
       "       e is equivalent to G.\n\n";
 
     if (argc < 4) {
-	     fprintf(stderr, msg, argv[0]);
-	     exit(-1);
+      tmp_ret = fprintf(stderr, msg, argv[0]);
+      exit(-1);
+      return tmp_ret;
     }
     dpal_set_default_nt_args(&a);
     for (i=1; i < argc; ++i) {
@@ -150,7 +152,7 @@ main(int argc, const char**argv)
 	exit(-1);
     }
     a.flag = -1;
-    
+
     if ((argc - i) != 3){
       /* Not enough remaining arguments. */
       fprintf(stderr, msg, argv[0]);
@@ -175,8 +177,9 @@ main(int argc, const char**argv)
 
     dpal(s1, s2, &a, &r);
     if (r.score == DPAL_ERROR_SCORE) {
-      fprintf(stderr, "Error: %s\n", r.msg);
+      tmp_ret = fprintf(stderr, "Error: %s\n", r.msg);
       exit(-1);
+      return tmp_ret;
     }
     if (a.score_only) {
       printf("%.2f\n", 0.01 * r.score);
@@ -185,7 +188,7 @@ main(int argc, const char**argv)
 	if(r.align_end_2 >= 0) printf("align_end_2=%d\n ",r.align_end_2);
       }
     } else {
-      printf("|%s|  |%s| %c ", s1, s2, mode); 
+      printf("|%s|  |%s| %c ", s1, s2, mode);
       printf("score=%.2f len=%d ", (0.01 * r.score), r.path_length);
       if (print_align_end) {
 	if(r.align_end_1 >= 0) printf("align_end_1=%d ",r.align_end_1);

@@ -154,8 +154,8 @@ mirror the BoulderIO input files required by the Primer3 binaries. There
 are numerous examples of how to use the pipeline in the ``tests/`` directory.
 
 For documentation regarding the input and output parameters of the pipeline,
-please see the Primer3 2.3.6 documentation (the underlying library for 
-this package is a derivative of v2.3.6):
+please see the Primer3 2.3.7 documentation (the underlying library for 
+this package is a derivative of v2.3.7):
 
 http://primer3.sourceforge.net/primer3_manual.htm
 

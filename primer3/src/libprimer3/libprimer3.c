@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014
+Copyright (c) 2014-2016
 Ben Pruitt, Nick Conway; Wyss Institute for Biologically Inspired
 Engineering.
 
@@ -7,7 +7,7 @@ This work is a derivative of the original Primer3 library, also
 covered under the GPLv2:
 
 Copyright (c) 1996,1997,1998,1999,2000,2001,2004,2006,2007,2008,2009,
-              2010,2011,2012
+              2010,2011,2012,2016
 Whitehead Institute for Biomedical Research, Steve Rozen
 (http://purl.com/STEVEROZEN/), Andreas Untergasser and Helen Skaletsky.
 All rights reserved.
@@ -5454,7 +5454,7 @@ static int compare_nucleotides(const char a, const char b)
   if(a >= 'a' && a <= 'z') {
     x = ('A' + a - 'a');
   }
-  if(b >= 'b' && b <= 'z') {
+  if(b >= 'a' && b <= 'z') {
     y = ('A' + b - 'a');
   }
 
@@ -5808,7 +5808,7 @@ p3_get_pair_array_explain_string(const pair_array_t *pair_array)
 const char *
 libprimer3_release(void)
 {
-  return "libprimer3 release 2.3.6";
+  return "libprimer3 release 2.3.7";
 }
 
 const char *
