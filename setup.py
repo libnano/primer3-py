@@ -8,7 +8,7 @@ Primer3-py: simple oligo analysis and primer design
 **Primer3-py** is a collection of Python bindings for a derivative of the
 popular Primer3 C library (version 2.3.7).
 
-See README.rst and http://benpruitt.github.io/primer3-py for more information
+See README.rst and http://libnano.github.io/primer3-py for more information
 and primer3_test.py for usage examples.
 
 Installation
@@ -193,7 +193,7 @@ setup(
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',
-    url='https://github.com/benpruitt/primer3-py',
+    url='https://github.com/libnano/primer3-py',
     description='Python bindings for Primer3',
     long_description=LONG_DESCRIPTION,
     classifiers=[
