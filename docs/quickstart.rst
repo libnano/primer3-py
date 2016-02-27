@@ -3,7 +3,7 @@ Getting Started
 
 
 **Primer3-py** is designed to be simple to install and use. We use 
-`Travis CI <https://travis-ci.org/benpruitt/primer3-py>`_, an awesome 
+`Travis CI <https://travis-ci.org/libnano/primer3-py>`_, an awesome 
 continuous integration platform, to insure that all of our releases build and
 pass our stringent unit testing framework. 
 
@@ -228,7 +228,7 @@ Advanced Installation
 ---------------------
 Users interested in contributing to development may want to work with the 
 latest development build. To get the latest and greatest code, head over
-`our Github repo <https://github.com/benpruitt/primer3-py>`_ and clone the 
+`our Github repo <https://github.com/libnano/primer3-py>`_ and clone the 
 repo or download a tarball. Building from source is easy::
 
     $ python setup.py install 
@@ -245,13 +245,13 @@ site packages directory (this will allow Primer3-py)
 Testing
 -------
 Every commit pushed to 
-`our Github repo <https://github.com/benpruitt/primer3-py>`_ is tested to 
+`our Github repo <https://github.com/libnano/primer3-py>`_ is tested to 
 insure it builds properly and passes our unit testing framework on 
-`Travis CI <https://travis-ci.org/benpruitt/primer3-py>`_. 
+`Travis CI <https://travis-ci.org/libnano/primer3-py>`_. 
 
 If you'd like to run the tests yourself, we suggest the following workflow::
     
-    $ git clone https://github.com/benpruitt/primer3-py
+    $ git clone https://github.com/libnano/primer3-py
     $ cd primer3-py 
     $ python setup.py build_ext --inplace
     $ nosetests
