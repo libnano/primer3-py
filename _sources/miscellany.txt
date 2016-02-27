@@ -31,7 +31,7 @@ We welcome any contributions that improve the stability, compatibility or
 test coverage (shoutout to pramasoul (https://github.com/pramasoul) for his 
 help with the testing framework). The best way to interface with the 
 project and dev team is through Github 
-(https://github.com/benpruitt/primer3-py).
+(https://github.com/libnano/primer3-py).
 
 Licensing
 ---------
