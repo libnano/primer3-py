@@ -8,8 +8,6 @@
   :target: http://www.gnu.org/licenses/gpl-2.0.html
 .. image:: https://img.shields.io/pypi/v/primer3-py.png
   :target: https://pypi.python.org/pypi/primer3-py
-.. image:: https://img.shields.io/pypi/dm/primer3-py.png
-  :target: https://pypi.python.org/pypi/primer3-py
 
 
 **Primer3-py** is a Python-abstracted API for the popular Primer3 library. The
