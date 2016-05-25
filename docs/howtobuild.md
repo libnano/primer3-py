@@ -1,7 +1,7 @@
 # Building for upload to PyPi
 # Deps: setuptools, twine, wheel
 
-# .pypirc file in ~ like: 
+# .pypirc file in ~ like:
 
     [distutils]
     index-servers = pypi
@@ -13,6 +13,7 @@
 
 1. python setup.py sdist
 2. python setup.py bdist
-3. twine upload dist/*
+3. python setup.py bdist_wheel
+4. twine upload dist/*
 
 # repeat for other versions w/ bdist and `twine upload dist/<fn of wheel>
