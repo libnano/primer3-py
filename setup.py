@@ -38,12 +38,11 @@ import sys
 try:
     from setuptools import setup, Extension
     from setuptools.command import install_lib, sdist, build_ext
-    from setuptools import log as setup_log
 except ImportError:
     from distutils.core import setup, Extension
     from distutils.command import install_lib, sdist, build_ext
-    from distutils import log as setup_log
 
+from distutils import log as setup_log
 
 from os.path import join as pjoin
 from os.path import relpath as rpath
