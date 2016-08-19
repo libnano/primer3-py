@@ -44,7 +44,7 @@
 #include <setjmp.h>
 #include <ctype.h>
 #include <math.h>
-#include <unistd.h>
+// #include <unistd.h> COMMENTED OUT BY NC unused and breaks Windows build
 
 #if defined(__sun)
 #include <ieeefp.h>

@@ -70,24 +70,31 @@ libprimer3_paths = [pjoin(LIBPRIMER3_PATH, 'thal.c'),
                     pjoin(SRC_PATH, 'primerdesign_helpers.c')]
 
 
+maker = 'nmake' if sys.platform == 'win32' else 'make'
+
 def p3Clean():
     # Clean up any previous primer3 builds
-    p3clean = subprocess.Popen(['make clean'], shell=True,
-                               cwd=LIBPRIMER3_PATH)
-    p3clean.wait()
+    if sys.platform != 'win32':
+        p3clean = subprocess.Popen(['%s clean' % (maker)], shell=True,
+                                   cwd=LIBPRIMER3_PATH)
+        p3clean.wait()
 
 
 def p3Build():
     # Build primer3
-    p3build = subprocess.Popen(['make clean; make'], shell=True,
-                               cwd=LIBPRIMER3_PATH)
-    p3build.wait()
+    if sys.platform != 'win32':
+        p3build = subprocess.Popen(['%s clean; %s' % (maker, maker)], shell=True,
+                                   cwd=LIBPRIMER3_PATH)
+        p3build.wait()
 
 P3_BUILT = False
 
 
 # Find all necessary primer3 binaries / data files to include with the package
 p3_binaries = ['oligotm', 'ntthal', 'primer3_core']
+if sys.platform == 'win32':
+    p3_binaries = []
+
 p3_binary_fps = [pjoin(LIBPRIMER3_PATH, fn) for fn in p3_binaries]
 
 thermo_files = [rpath(pjoin(root, f), MODULE_PATH) for root, _, files in
@@ -150,20 +157,25 @@ class CustomBuildExt(build_ext.build_ext):
 
 
 # Build the C API and Cython extensions
+if sys.platform == 'win32':
+    extra_compile_args = ['']
+else:
+    extra_compile_args = ['-Wno-error=declaration-after-statement',
+                        '-Wno-unused-function']
+
 primerdesign_ext = Extension(
     'primer3.primerdesign',
-    sources=['primer3/src/primerdesign_py.c'] + libprimer3_paths,
+    sources=[pjoin('primer3','src','primerdesign_py.c')] + libprimer3_paths,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
-    extra_compile_args=["-Wno-error=declaration-after-statement"]
+    extra_compile_args=extra_compile_args
 )
 
 
 thermoanalysis_ext = Extension(
     'primer3.thermoanalysis',
-    sources=['primer3/thermoanalysis.pyx'] + libprimer3_paths,
+    sources=[pjoin('primer3','thermoanalysis.pyx')] + libprimer3_paths,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
-    extra_compile_args=['-Wno-error=declaration-after-statement',
-                        '-Wno-unused-function']
+    extra_compile_args=extra_compile_args
 )
 
 
