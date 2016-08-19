@@ -494,6 +494,7 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
                 Py_DECREF(p_obj3);
                 Py_DECREF(p_obj4);
             }
+            pa->num_intervals = i;
         }
     }
 
