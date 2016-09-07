@@ -1009,7 +1009,7 @@ pdh_outputToDict(const p3_global_settings *pa, const seq_args *sa,
     }
     if (pa->pick_right_primer == 1
       && pa->pick_left_primer == 1) {
-        SET_DICT_KEY_TO_STR(output_dict, "PRIMER_INTERNAL_EXPLAIN", \
+        SET_DICT_KEY_TO_STR(output_dict, "PRIMER_PAIR_EXPLAIN", \
             p3_get_pair_array_explain_string(p3_get_rv_best_pairs(retval)), \
             obj_ptr);
     }
