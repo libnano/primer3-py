@@ -81,3 +81,13 @@ Version 0.5.0                                                 February 25, 2016
 -------------------------------------------------------------------------------
 - Update libprimer3 to version 2.3.7
 - Better test coverage for low level bindings
+
+Version 0.5.1                                                      May 25, 2016
+-------------------------------------------------------------------------------
+- Update thal.c to incorporate traceback fix from Primer3 dev team
+  (thanks Triinu)
+
+Version 0.5.2                                                       May 1, 2017
+-------------------------------------------------------------------------------
+- Fixed issue where `pa->num_intervals` was not properly set via the bindings
+- Fixed typo that caused incorrect output for `PRIMER_PAIR_EXPLAIN`
