@@ -6696,11 +6696,11 @@ _pr_data_control(const p3_global_settings *pa,
       pr_append(glob_err, MACRO_VALUE_AS_STRING(MAX_PRIMER_LENGTH));
       return 1;
     }
-    if ((int)strlen(sa->internal_input) > (unsigned) pa->o_args.max_size)
+    if ((int)strlen(sa->internal_input) > (int)pa->o_args.max_size)
       pr_append_new_chunk(warning,
                           "Specified internal oligo > PRIMER_INTERNAL_MAX_SIZE");
 
-    if ((int)strlen(sa->internal_input) < (unsigned) pa->o_args.min_size)
+    if ((int)strlen(sa->internal_input) < (int)pa->o_args.min_size)
       pr_append_new_chunk(warning,
                           "Specified internal oligo < PRIMER_INTERNAL_MIN_SIZE");
 
@@ -6718,11 +6718,11 @@ _pr_data_control(const p3_global_settings *pa,
       pr_append(glob_err, MACRO_VALUE_AS_STRING(MAX_PRIMER_LENGTH));
       return 1;
     }
-    if ((int)strlen(sa->left_input) > (unsigned) pa->p_args.max_size) {
+    if ((int)strlen(sa->left_input) > (int)pa->p_args.max_size) {
       pr_append_new_chunk(warning,
                           "Specified left primer > PRIMER_MAX_SIZE");
     }
-    if ((int)strlen(sa->left_input) < (unsigned) pa->p_args.min_size) {
+    if ((int)strlen(sa->left_input) < (int)pa->p_args.min_size) {
       pr_append_new_chunk(warning,
                           "Specified left primer < PRIMER_MIN_SIZE");
     }
@@ -6741,11 +6741,11 @@ _pr_data_control(const p3_global_settings *pa,
       pr_append(glob_err, MACRO_VALUE_AS_STRING(MAX_PRIMER_LENGTH));
       return 1;
     }
-    if ((int)strlen(sa->right_input) < (unsigned) pa->p_args.min_size) {
+    if ((int)strlen(sa->right_input) < (int)pa->p_args.min_size) {
       pr_append_new_chunk(warning,
                           "Specified right primer < PRIMER_MIN_SIZE");
     }
-    if ((int)strlen(sa->right_input) > (unsigned) pa->p_args.max_size) {
+    if ((int)strlen(sa->right_input) > (int)pa->p_args.max_size) {
       pr_append_new_chunk(warning,
                           "Specified right primer > PRIMER_MAX_SIZE");
     } else { /* We do not want to overflow s1. */

@@ -316,7 +316,7 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_COMPL_ANY", pa->pair_compl_any);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_COMPL_END", pa->pair_compl_end);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_COMPL_ANY_TH", pa->pair_compl_any_th);
-    DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_COMPL_END_TH", pa->p_args.divalent_conc);
+    DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PAIR_MAX_COMPL_END_TH", pa->pair_compl_end_th);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_PICK_ANYWAY", pa->pick_anyway);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_GC_CLAMP", pa->gc_clamp);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MAX_END_GC", pa->max_end_gc);
