@@ -65,7 +65,7 @@ Version 0.4.1:                                                November 28, 2014
 -------------------------------------------------------------------------------
 - Better documentation regarding max. seq. lengths for thermo. calcs
 - calcHairpin, calcHomodimer, calcHeterodimer, and calcEndStability now raise
-  ``RuntimeError``s as appropriate
+  `RuntimeError`s as appropriate
 
 Version 0.4.2:                                               September 18, 2015
 -------------------------------------------------------------------------------
@@ -91,3 +91,8 @@ Version 0.5.2                                                       May 1, 2017
 -------------------------------------------------------------------------------
 - Fixed issue where `pa->num_intervals` was not properly set via the bindings
 - Fixed typo that caused incorrect output for `PRIMER_PAIR_EXPLAIN`
+
+Version 0.5.3                                                       May 6, 2017
+-------------------------------------------------------------------------------
+- Fixed improper assignment of "PRIMER_PAIR_MAX_COMPL_END_TH" during design
+  arg parsing test
