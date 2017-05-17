@@ -42,6 +42,6 @@ the Primer3 design engine. Please contact the Primer3 dev team with your
 questions: http://primer3.sourceforge.net/.**
 
 A copy of the Primer3 2.3.7 design parameters manual can be found at:
-http://git.io/vnqBx
+https://git.io/v9xrc
 
 For documentation of the bindings, see https://libnano.github.io/primer3-py
