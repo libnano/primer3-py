@@ -37,10 +37,10 @@ import sys
 
 try:
     from setuptools import setup, Extension
-    from setuptools.command import install_lib, sdist, build_ext
+    from setuptools.command import install_lib, sdist, build_clib
 except ImportError:
     from distutils.core import setup, Extension
-    from distutils.command import install_lib, sdist, build_ext
+    from distutils.command import install_lib, sdist, build_clib
 
 from distutils import log as setup_log
 
@@ -144,7 +144,7 @@ class CustomSdist(sdist.sdist):
         sdist.sdist.run(self)
 
 
-class CustomBuildExt(build_ext.build_ext):
+class CustomBuildClib(build_clib.build_clib):
 
     def run(self):
         global P3_BUILT
@@ -153,7 +153,7 @@ class CustomBuildExt(build_ext.build_ext):
             p3Clean()
             p3Build()
             P3_BUILT = True
-        build_ext.build_ext.run(self)
+        build_clib.build_clib.run(self)
 
 
 # Build the C API and Cython extensions
