@@ -96,3 +96,8 @@ Version 0.5.3                                                       May 6, 2017
 -------------------------------------------------------------------------------
 - Fixed improper assignment of "PRIMER_PAIR_MAX_COMPL_END_TH" during design
   arg parsing
+
+Version 0.5.4                                                     June 20, 2017
+-------------------------------------------------------------------------------
+- Migration of Cython extension build process to build_clib to remove Cython
+  as a runtime requirement for setup.py (thanks to @tdsmith)

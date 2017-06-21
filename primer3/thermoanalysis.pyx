@@ -34,7 +34,7 @@ Calculations are performed under the following paradigm:
         print(oligo_calc.calcTm(primer))  # Print the melting temp
 
 3) (optional) You can update an individual parameter at any time
-    
+
     oligo_calc.mv_conc = 80  # Increaase the monovalent ion conc to 80 mM
 
 
@@ -77,6 +77,9 @@ cdef unsigned char[:] _chars(s):
     return memoryview(s)
 
 cdef inline bytes _bytes(s):
+    # Note that this check gets optimized out by the C compiler and is
+    # recommended over the IF/ELSE Cython compile-time directives
+    # See: Cython/Includes/cpython/version.pxd
     if PY_MAJOR_VERSION > 2:
         if isinstance(s, str):
             # encode to the specific encoding used inside of the module
@@ -109,7 +112,7 @@ atexit.register(_cleanup)
 # ~~~~~~~~~~~~~~ Thermodynamic calculations class declarations ~~~~~~~~~~~~~~ #
 
 cdef class ThermoResult:
-    ''' Class that wraps the ``thal_results`` struct from libprimer3 
+    ''' Class that wraps the ``thal_results`` struct from libprimer3
     to expose tm, dg, dh, and ds values that result from a ``calcHairpin``,
     ``calcHomodimer``, ``calcHeterodimer``, or ``calcEndStability``
     calculation.
@@ -121,7 +124,7 @@ cdef class ThermoResult:
         self.thalres.align_end_1 = self.thalres.align_end_2 = 0
 
     property structure_found:
-        ''' Whether or not a structure (hairpin, dimer, etc) was found as a 
+        ''' Whether or not a structure (hairpin, dimer, etc) was found as a
         result of the calculation.
         '''
         def __get__(self):
@@ -148,7 +151,7 @@ cdef class ThermoResult:
             return self.thalres.dg
 
     def checkExc(self):
-        ''' Check the ``.msg`` attribute of the internal thalres struct and 
+        ''' Check the ``.msg`` attribute of the internal thalres struct and
         raise a ``RuntimeError`` exception if it is not an empty string.
         Otherwise, return a reference to the current object.
         '''
@@ -169,24 +172,24 @@ cdef class ThermoResult:
 
 
 cdef class ThermoAnalysis:
-    ''' Python class that serves as the entry point for thermodynamic 
-    calculations. Should be instantiated with the proper thermodynamic 
+    ''' Python class that serves as the entry point for thermodynamic
+    calculations. Should be instantiated with the proper thermodynamic
     parameters for seqsequence calculations (salt concentrations, correction
     methods, limits, etc.). See module docstring for more information.
     '''
 
     TM_METHODS = {
         'breslauer': 0,
-        'santalucia': 1        
+        'santalucia': 1
     }
 
     SALT_CORRECTION_METHODS = {
         'schildkraut': 0,
         'santalucia': 1,
-        'owczarzy': 2            
+        'owczarzy': 2
     }
 
-    def __cinit__(self, 
+    def __cinit__(self,
                   thal_type=1,
                   mv_conc=50,
                   dv_conc=1.5,
@@ -266,7 +269,7 @@ cdef class ThermoAnalysis:
             self.thalargs.maxLoop = value
 
     property tm_method:
-        ''' Method used to calculate melting temperatures. May be provided as 
+        ''' Method used to calculate melting temperatures. May be provided as
         a string (see TM_METHODS) or the respective integer representation.
         '''
         def __get__(self):
@@ -284,8 +287,8 @@ cdef class ThermoAnalysis:
                                      ''.format(value))
 
     property salt_correction_method:
-        ''' Method used for salt corrections applied to melting temperature 
-        calculations. May be provided as a string (see SALT_CORRECTION_METHODS) 
+        ''' Method used for salt corrections applied to melting temperature
+        calculations. May be provided as a string (see SALT_CORRECTION_METHODS)
         or the respective integer representation.
         '''
         def __get__(self):
@@ -310,14 +313,14 @@ cdef class ThermoAnalysis:
                                                unsigned char *s2):
         cdef ThermoResult tr_obj = ThermoResult()
 
-        self.thalargs.dimer = 1 
+        self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1
         thal(<const unsigned char*> s1, <const unsigned char*> s2,
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
         return tr_obj
 
     cpdef calcHeterodimer(ThermoAnalysis self, seq1, seq2):
-        ''' Calculate the heterodimer formation thermodynamics of two DNA 
+        ''' Calculate the heterodimer formation thermodynamics of two DNA
         sequences, ``seq1`` and ``seq2``
         '''
         # first convert any unicode to a byte string and then
@@ -329,11 +332,11 @@ cdef class ThermoAnalysis:
         cdef unsigned char* s2 = py_s2
         return ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2)
 
-    cpdef misprimingCheck(ThermoAnalysis self, putative_seq, sequences, 
+    cpdef misprimingCheck(ThermoAnalysis self, putative_seq, sequences,
                                 double tm_threshold):
         """
-        Calculate the heterodimer formation thermodynamics of a DNA 
-        sequence, ``putative_seq`` with a list of sequences relative to 
+        Calculate the heterodimer formation thermodynamics of a DNA
+        sequence, ``putative_seq`` with a list of sequences relative to
         a melting temperature threshold
 
         Args:
@@ -353,7 +356,7 @@ cdef class ThermoAnalysis:
         cdef double offtarget_tm
         cdef unsigned char* s2
         cdef Py_ssize_t max_offtarget_seq_idx = -1
-        
+
         cdef bytes py_s2
         cdef bytes py_s1 = <bytes> _bytes(putative_seq)
         cdef unsigned char* s1 = py_s1
@@ -370,18 +373,18 @@ cdef class ThermoAnalysis:
                 break
         return is_offtarget, max_offtarget_seq_idx, max_offtarget_tm
 
-    cdef inline ThermoResult calcHomodimer_c(ThermoAnalysis self, 
+    cdef inline ThermoResult calcHomodimer_c(ThermoAnalysis self,
                                              unsigned char *s1):
         cdef ThermoResult tr_obj = ThermoResult()
 
-        self.thalargs.dimer = 1 
+        self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1
         thal(<const unsigned char*> s1, <const unsigned char*> s1,
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
         return tr_obj
 
     cpdef calcHomodimer(ThermoAnalysis self, seq1):
-        ''' Calculate the homodimer formation thermodynamics of a DNA 
+        ''' Calculate the homodimer formation thermodynamics of a DNA
         sequence, ``seq1``
         '''
         # first convert any unicode to a byte string and then
@@ -390,7 +393,7 @@ cdef class ThermoAnalysis:
         cdef unsigned char* s1 = py_s1
         return ThermoAnalysis.calcHomodimer_c(<ThermoAnalysis> self, s1)
 
-    cdef inline ThermoResult calcHairpin_c(ThermoAnalysis self, 
+    cdef inline ThermoResult calcHairpin_c(ThermoAnalysis self,
                                            unsigned char *s1):
         cdef ThermoResult tr_obj = ThermoResult()
 
@@ -401,7 +404,7 @@ cdef class ThermoAnalysis:
         return tr_obj
 
     cpdef calcHairpin(ThermoAnalysis self, seq1):
-        ''' Calculate the hairpin formation thermodynamics of a DNA 
+        ''' Calculate the hairpin formation thermodynamics of a DNA
         sequence, ``seq1``
         '''
         # first convert any unicode to a byte string and then
@@ -415,14 +418,14 @@ cdef class ThermoAnalysis:
                                                unsigned char *s2):
         cdef ThermoResult tr_obj = ThermoResult()
 
-        self.thalargs.dimer = 1 
+        self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 2
         thal(<const unsigned char*> s1, <const unsigned char*> s2,
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
         return tr_obj
 
     def calcEndStability(ThermoAnalysis self, seq1, seq2):
-        ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA 
+        ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
         sequence `seq2`
         '''
         # first convert any unicode to a byte string and then
@@ -436,12 +439,12 @@ cdef class ThermoAnalysis:
 
     cdef inline double calcTm_c(ThermoAnalysis self, char *s1):
         cdef thal_args *ta = &self.thalargs
-        return seqtm(<const char*> s1, 
-                     ta.dna_conc, 
-                     ta.mv, 
+        return seqtm(<const char*> s1,
+                     ta.dna_conc,
+                     ta.mv,
                      ta.dv,
-                     ta.dntp, 
-                     self.max_nn_length, 
+                     ta.dntp,
+                     self.max_nn_length,
                      <tm_method_type>
                      self.tm_method,
                      <salt_correction_type> self.salt_correction_method)
