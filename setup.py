@@ -37,17 +37,15 @@ import sys
 
 try:
     from setuptools import setup, Extension
-    from setuptools.command import install_lib, sdist, build_ext
+    from setuptools.command import install_lib, sdist, build_clib
 except ImportError:
     from distutils.core import setup, Extension
-    from distutils.command import install_lib, sdist, build_ext
+    from distutils.command import install_lib, sdist, build_clib
 
 from distutils import log as setup_log
 
 from os.path import join as pjoin
 from os.path import relpath as rpath
-
-from Cython.Build import cythonize
 
 
 with open('README.rst') as fd:
@@ -144,7 +142,7 @@ class CustomSdist(sdist.sdist):
         sdist.sdist.run(self)
 
 
-class CustomBuildExt(build_ext.build_ext):
+class CustomBuildClib(build_clib.build_clib):
 
     def run(self):
         global P3_BUILT
@@ -153,7 +151,7 @@ class CustomBuildExt(build_ext.build_ext):
             p3Clean()
             p3Build()
             P3_BUILT = True
-        build_ext.build_ext.run(self)
+        build_clib.build_clib.run(self)
 
 
 # Build the C API and Cython extensions
@@ -186,13 +184,6 @@ if ('build_ext' in sys.argv or 'install' in sys.argv):
         p3Build()
         P3_BUILT = True
 
-is_py_3 = int(sys.version_info[0] > 2)
-thermoanalysis_ext_list = cythonize(
-    [thermoanalysis_ext],
-    compile_time_env={'IS_PY_THREE': is_py_3},
-    force=True
-)
-
 # Insure that we don't include the built Cython module in the dist
 if 'sdist' in sys.argv:
     os.remove(os.path.join(MODULE_PATH, 'thermoanalysis.c'))
@@ -221,11 +212,11 @@ setup(
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)'
     ],
     packages=['primer3'],
-    ext_modules=[primerdesign_ext] + thermoanalysis_ext_list,
+    ext_modules=[primerdesign_ext, thermoanalysis_ext],
     package_data={'primer3': p3_files},
     cmdclass={'install_lib': CustomInstallLib, 'sdist': CustomSdist,
-              'build_ext': CustomBuildExt},
+              'build_clib': CustomBuildClib},
     test_suite='tests',
-    install_requires=['Cython'],
+    setup_requires=['Cython', 'setuptools>=18.0'],
     zip_safe=False
 )
