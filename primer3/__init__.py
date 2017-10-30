@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2014-2017. Ben Pruitt & Nick Conway; Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -52,9 +52,9 @@ def includes():
 
 
 __author__ = 'Ben Pruitt, Nick Conway'
-__copyright__ = 'Copyright 2014-2015, Ben Pruitt & Nick Conway; Wyss Institute'
+__copyright__ = 'Copyright 2014-2017, Ben Pruitt & Nick Conway; Wyss Institute'
 __license__ = 'GPLv2'
-__version__ = '0.5.4'
+__version__ = '0.5.5'
 
 __all__ = [
     # Low-level Tm-only bindings
