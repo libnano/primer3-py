@@ -54,7 +54,7 @@ def includes():
 __author__ = 'Ben Pruitt, Nick Conway'
 __copyright__ = 'Copyright 2014-2017, Ben Pruitt & Nick Conway; Wyss Institute'
 __license__ = 'GPLv2'
-__version__ = '0.5.5'
+__version__ = '0.5.6'
 
 __all__ = [
     # Low-level Tm-only bindings

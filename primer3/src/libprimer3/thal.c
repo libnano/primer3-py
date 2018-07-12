@@ -806,8 +806,8 @@ reverse(unsigned char *s)
 static FILE*
 openParamFile(const char* fname, thal_results* o)
 {
-  FILE* file;
-  char* paramdir;
+  FILE* file = NULL;
+  char* paramdir = NULL;
   file = fopen(fname, "rt");
   if (!file) {
     paramdir = (char*) safe_malloc(strlen(parampath) + strlen(fname) + 1, o);
@@ -818,9 +818,14 @@ openParamFile(const char* fname, thal_results* o)
       perror(paramdir);
 #endif
       THAL_IO_ERROR(paramdir);
-      free(paramdir);
+      // NOTE: Commented out as unreachable NC 2018.07.11
+      // free(paramdir);
+      // paramdir = NULL;
     }
-    free(paramdir);
+    if (paramdir != NULL) {
+      free(paramdir);
+      paramdir = NULL;
+    }
   }
   return file;
 }
@@ -3094,8 +3099,9 @@ equal(double a, double b)
     return 0;
   return fabs(a - b) < 1e-5;
 
-  if (a == 0 && b == 0)
-    return 1;
+  // NOTE: code not reachable, commented out NC 2018.07.11
+  // if (a == 0 && b == 0)
+  //   return 1;
 }
 
 static void

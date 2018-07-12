@@ -334,10 +334,10 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PRODUCT_MAX_TM", pa->product_max_tm);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PRODUCT_MIN_TM", pa->product_min_tm);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_PRODUCT_OPT_TM", pa->product_opt_tm);
-    DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_SEQUENCING_LEAD", pa->sequencing.lead);
-    DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_SEQUENCING_SPACING", pa->sequencing.spacing);
-    DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_SEQUENCING_INTERVAL", pa->sequencing.interval);
-    DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_SEQUENCING_ACCURACY", pa->sequencing.accuracy);
+    DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_SEQUENCING_LEAD", pa->sequencing.lead);
+    DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_SEQUENCING_SPACING", pa->sequencing.spacing);
+    DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_SEQUENCING_INTERVAL", pa->sequencing.interval);
+    DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_SEQUENCING_ACCURACY", pa->sequencing.accuracy);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION", pa->min_5_prime_overlap_of_junction);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION", pa->min_3_prime_overlap_of_junction);
     DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_PICK_RIGHT_PRIMER", pa->pick_right_primer);
@@ -898,6 +898,41 @@ pdh_setSeqArgs(PyObject *sa_dict, seq_args *sa) {
         SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
 #endif
 
+#if PY_MAJOR_VERSION < 3
+    #define SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(dict, key, num, str, obj_ptr)\
+        if ((obj_ptr = PyTuple_New(2)) == NULL) {                              \
+            PyErr_Format(PyExc_IOError, "Could not create tuple for %s ", key);\
+            return NULL;                                                       \
+        }                                                                      \
+        if (PyTuple_SetItem(obj_ptr, 0, PyFloat_FromDouble(num))) {            \
+            PyErr_Format(PyExc_IOError,                                        \
+                         "Could not pack value 1 for %s into tuple", key);     \
+            return NULL;                                                       \
+        }                                                                      \
+        if (PyTuple_SetItem(obj_ptr, 1, PyString_FromString(str))) {           \
+            PyErr_Format(PyExc_IOError,                                        \
+                         "Could not pack value 2 for %s into tuple",key);      \
+            return NULL;                                                       \
+        }                                                                      \
+        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
+#else
+    #define SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(dict, key, num, str, obj_ptr)\
+        if ((obj_ptr = PyTuple_New(2)) == NULL) {                              \
+            PyErr_Format(PyExc_IOError, "Could not create tuple for %s ", key);\
+            return NULL;                                                       \
+        }                                                                      \
+        if (PyTuple_SetItem(obj_ptr, 0, PyFloat_FromDouble(num))) {            \
+            PyErr_Format(PyExc_IOError,                                        \
+                         "Could not pack value 1 for %s into tuple", key);     \
+            return NULL;                                                       \
+        }                                                                      \
+        if (PyTuple_SetItem(obj_ptr, 1, PyUnicode_FromString(str))) {          \
+            PyErr_Format(PyExc_IOError,                                        \
+                         "Could not pack value 2 for %s into tuple",key);      \
+            return NULL;                                                       \
+        }                                                                      \
+        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
+#endif
 
 PyObject*
 pdh_outputToDict(const p3_global_settings *pa, const seq_args *sa,
@@ -1288,19 +1323,19 @@ pdh_outputToDict(const p3_global_settings *pa, const seq_args *sa,
     if (seq_lib_num_seq(pa->p_args.repeat_lib) > 0) {
         if (go_fwd == 1){
             sprintf(outbuff, "PRIMER_LEFT%s_LIBRARY_MISPRIMING", suffix);
-            SET_DICT_KEY_TO_TUPLE_OF_LONG_AND_STR(output_dict, outbuff, \
+            SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(output_dict, outbuff, \
                 fwd->repeat_sim.score[fwd->repeat_sim.max], \
                 fwd->repeat_sim.name, obj_ptr);
         }
         if (go_rev == 1){
             sprintf(outbuff, "PRIMER_RIGHT%s_LIBRARY_MISPRIMING", suffix);
-            SET_DICT_KEY_TO_TUPLE_OF_LONG_AND_STR(output_dict, outbuff, \
+            SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(output_dict, outbuff, \
                 rev->repeat_sim.score[rev->repeat_sim.max], \
                 rev->repeat_sim.name, obj_ptr);
         }
         if (retval->output_type == primer_pairs){
             sprintf(outbuff, "PRIMER_PAIR%s_LIBRARY_MISPRIMING", suffix);
-            SET_DICT_KEY_TO_TUPLE_OF_LONG_AND_STR(output_dict, outbuff, \
+            SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(output_dict, outbuff, \
                 retval->best_pairs.pairs[i].repeat_sim, \
                 retval->best_pairs.pairs[i].rep_name, obj_ptr);
         }
@@ -1308,7 +1343,7 @@ pdh_outputToDict(const p3_global_settings *pa, const seq_args *sa,
     /* Print out internal oligo mispriming scores */
     if (go_int == 1 && seq_lib_num_seq(pa->o_args.repeat_lib) > 0) {
         sprintf(outbuff, "PRIMER_%s%s_LIBRARY_MISPRIMING", int_oligo, suffix);
-        SET_DICT_KEY_TO_TUPLE_OF_LONG_AND_STR(output_dict, outbuff, \
+        SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(output_dict, outbuff, \
             intl->repeat_sim.score[intl->repeat_sim.max], \
             intl->repeat_sim.name, obj_ptr);
     }

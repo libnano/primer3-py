@@ -191,7 +191,7 @@ if 'sdist' in sys.argv:
 
 setup(
     name='primer3-py',
-    version='0.5.5',
+    version='0.5.6',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',
