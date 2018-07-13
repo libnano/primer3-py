@@ -109,6 +109,9 @@ def _cleanup():
 
 atexit.register(_cleanup)
 
+def precision(x, pts=None):
+    return x if pts is None else round(x, pts)
+
 # ~~~~~~~~~~~~~~ Thermodynamic calculations class declarations ~~~~~~~~~~~~~~ #
 
 cdef class ThermoResult:
@@ -169,6 +172,22 @@ cdef class ThermoResult:
     def __str__(self):
         ''' Wraps ``__repr`` '''
         return self.__repr__()
+
+    def todict(self, pts=None):
+        '''
+        Args:
+            pts: precision to round floats to
+
+        Returns:
+            dictionary
+        '''
+        return {
+            'structure_found': self.structure_found,
+            'tm': precision(self.tm, pts),
+            'dg': precision(self.dg, pts),
+            'dh': precision(self.dh, pts),
+            'ds': precision(self.ds, pts)
+        }
 
 
 cdef class ThermoAnalysis:
@@ -457,3 +476,22 @@ cdef class ThermoAnalysis:
         py_s1 = <bytes> _bytes(seq1)
         cdef char* s1 = py_s1
         return ThermoAnalysis.calcTm_c(<ThermoAnalysis> self, s1)
+
+    def todict(self):
+        '''
+        Returns:
+            dictionary
+        '''
+        return {
+            'mv_conc':      self.mv_conc,
+            'dv_conc':      self.dv_conc,
+            'dntp_conc':    self.dntp_conc,
+            'dna_conc':     self.dna_conc,
+            'temp_c':       self.temp,
+            'max_loop':     self.max_loop,
+            'temp_only':    self.temp_only,
+            'debug':        self.thalargs.debug,
+            'max_nn_length': self.max_nn_length,
+            'tm_method':    self.tm_method,
+            'salt_correction_method': self.salt_correction_method
+        }
