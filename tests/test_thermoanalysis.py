@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2014-2018. Ben Pruitt & Nick Conway; Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,14 +23,20 @@ Unit tests for the primer3-py low level thermodynamic calculation bindings.
 '''
 
 from __future__ import print_function
-
-import random
-import resource
 import unittest
-
 from time import sleep
+import random
+import sys
 
-from primer3 import bindings, wrappers
+try:
+    import resource
+except: # For Windows compatibility
+    resource = None
+
+from primer3 import (
+    bindings,
+    wrappers
+)
 
 
 def _getMemUsage():
@@ -38,6 +44,9 @@ def _getMemUsage():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
+@unittest.skipIf(
+    sys.platform=='win32',
+    "Windows doesn't support resource module and wrappers")
 class TestLowLevelBindings(unittest.TestCase):
 
     def randArgs(self):

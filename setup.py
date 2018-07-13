@@ -47,7 +47,6 @@ from distutils import log as setup_log
 from os.path import join as pjoin
 from os.path import relpath as rpath
 
-
 with open('README.rst') as fd:
     LONG_DESCRIPTION = fd.read()
 

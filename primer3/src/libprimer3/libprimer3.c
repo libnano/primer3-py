@@ -3958,7 +3958,7 @@ if (j == OT_LEFT || j == OT_RIGHT) {
     }
     return sum;
   } else {
-    PR_ASSERT(0); /* Programmig error. */
+    PR_ASSERT(0); /* Programming error. */
     return -1.0;
   }
 }

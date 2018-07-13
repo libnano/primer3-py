@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2014-2018. Ben Pruitt & Nick Conway; Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,13 +26,19 @@ from __future__ import print_function
 
 import os
 import random
-import resource
 import sys
 import unittest
-
 from time import sleep
 
-from primer3 import bindings, wrappers
+try:
+    import resource
+except: # For Windows compatibility
+    resource = None
+
+from primer3 import (
+    bindings,
+    wrappers
+)
 
 from . import _simulatedbindings as simulatedbindings
 
@@ -43,7 +49,9 @@ def _getMemUsage():
     """ Get current process memory usage in bytes """
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
-
+@unittest.skipIf(
+    sys.platform=='win32',
+    "Windows doesn't support resource module and wrappers")
 class TestDesignBindings(unittest.TestCase):
 
     def _compareResults(self, binding_res, simulated_binding_res,
