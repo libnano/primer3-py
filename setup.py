@@ -28,6 +28,10 @@ you may do so using either pip or the setup.py script::
             or
   $ python setup.py install
 
+Create wheels with wheel installed and tar.gz::
+
+  $ python setup.py bdist_wheel
+  $ python setup.py sdist --formats=gztar
 '''
 
 import os
