@@ -38,6 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <limits.h>
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include "oligotm.h"
 
 #define T_KELVIN 273.15;
@@ -343,26 +345,26 @@ oligotm(const  char *s,
 
     /** Terminal AT penalty **/
 
-    if(strncmp("A", s, 1)==0
-       || strncmp("T", s, 1)==0)  {
+    if (    (strncmp("A", s, 1) == 0)
+        ||  (strncmp("T", s, 1) == 0) )  {
       ds += -41;
       dh += -23;
-    } else if (strncmp("C", s, 1)==0
-         || strncmp("G", s, 1)==0) {
+    } else if (   (strncmp("C", s, 1) == 0)
+              ||  (strncmp("G", s, 1) == 0) ) {
       ds += 28;
       dh += -1;
     }
-    s+=len;
-    if(strncmp("T", s, 1)==0
-       || strncmp("A", s, 1)==0) {
+    s += len;
+    if (  (strncmp("T", s, 1) == 0)
+       || (strncmp("A", s, 1) == 0) ) {
       ds += -41;
       dh += -23;
-    } else if (strncmp("C", s, 1)==0
-         || strncmp("G", s, 1)==0) {
+    } else if ( (strncmp("C", s, 1) == 0)
+              ||(strncmp("G", s, 1) == 0) ) {
       ds += 28;
       dh += -1;
     }
-    s-=len;
+    s -= len;
   }
   /* Use a finite-state machine (DFA) to calucluate dh and ds for s. */
   c = *s; s++;
@@ -450,7 +452,7 @@ oligotm(const  char *s,
     } else {
       free_divalent = (divalent_conc - dntp_conc)/1000.0;
     }
-     
+
     if(K_mM==0) {
       div_monov_ratio = 6.0;
     } else {
@@ -528,32 +530,33 @@ double
 oligodg(const char *s,      /* The sequence. */
     int tm_method)
 {
-   register int dg = 0;
-   register char c;
+  register int dg = 0;
+  register char c;
 
-  if (tm_method != breslauer_auto
-      && tm_method != santalucia_auto)
+  if (    (tm_method != breslauer_auto)
+      &&  (tm_method != santalucia_auto)) {
     return OLIGOTM_ERROR;
+  }
 
-   /* Use a finite-state machine (DFA) to calucluate dg s. */
-   c = *s; s++;
-   if(tm_method != breslauer_auto) {
-      dg=-1960; /* Initial dG */
-      if(c == 'A' || c == 'T')  {
-   dg += -50; /* terminal AT penalty */
-      }
-      if (c == 'A') goto A_STATE2;
-      else if (c == 'G') goto G_STATE2;
-      else if (c == 'T') goto T_STATE2;
-      else if (c == 'C') goto C_STATE2;
-      else if (c == 'N') goto N_STATE2;
-      else goto ERROR;
-      STATE2(A);
-      STATE2(T);
-      STATE2(G);
-      STATE2(C);
-      STATE2(N);
-     } else {
+  /* Use a finite-state machine (DFA) to calucluate dg s. */
+  c = *s; s++;
+  if(tm_method != breslauer_auto) {
+    dg = -1960; /* Initial dG */
+    if(c == 'A' || c == 'T')  {
+      dg += -50; /* terminal AT penalty */
+    }
+    if (c == 'A') goto A_STATE2;
+    else if (c == 'G') goto G_STATE2;
+    else if (c == 'T') goto T_STATE2;
+    else if (c == 'C') goto C_STATE2;
+    else if (c == 'N') goto N_STATE2;
+    else goto ERROR;
+    STATE2(A);
+    STATE2(T);
+    STATE2(G);
+    STATE2(C);
+    STATE2(N);
+  } else {
     if (c == 'A') goto A_STATE;
     else if (c == 'G') goto G_STATE;
     else if (c == 'T') goto T_STATE;
@@ -566,26 +569,26 @@ oligodg(const char *s,      /* The sequence. */
     STATE(C);
     STATE(N);
 
-     }
+  }
 DONE:  /* dg is now computed for the given sequence. */
-   if(tm_method != breslauer_auto) {
-      int sym;
-      --s; --s; c = *s;
-      if(c == 'A' || c == 'T')  {
-   dg += -50; /* terminal AT penalty */
-      }
-      sym = symmetry(s);
-      if(sym==1)   {
-   dg +=-430; /* symmetry correction for dG */
-      }
-   }
-   return dg / 1000.0;
+  if(tm_method != breslauer_auto) {
+    int sym;
+    --s; --s; c = *s;
+    if(c == 'A' || c == 'T')  {
+      dg += -50; /* terminal AT penalty */
+    }
+    sym = symmetry(s);
+    if(sym==1)   {
+      dg +=-430; /* symmetry correction for dG */
+    }
+  }
+  return dg / 1000.0;
 
- ERROR:  /*
-    * length of s was less than 2 or there was an illegal character in
-    * s.
-    */
-    return OLIGOTM_ERROR;
+ERROR:  /*
+        * length of s was less than 2 or there was an illegal character in
+        * s.
+        */
+  return OLIGOTM_ERROR;
 }
 
 double end_oligodg(const char *s,
@@ -594,9 +597,10 @@ double end_oligodg(const char *s,
 {
   int x = (int)strlen(s);
 
-  if (tm_method != breslauer_auto
-      && tm_method != santalucia_auto)
+  if (    (tm_method != breslauer_auto)
+      &&  (tm_method != santalucia_auto)) {
     return OLIGOTM_ERROR;
+}
 
   return
     x < len
@@ -614,27 +618,55 @@ double seqtm(const  char *seq,
   tm_method_type tm_method,
   salt_correction_type salt_corrections)
 {
-  int len = (int)strlen(seq);
-   if (tm_method != breslauer_auto
-      && tm_method != santalucia_auto)
+  int i = 0;
+  double result = OLIGOTM_ERROR;
+  int len = (int) strlen(seq);
+  char* seqcopy = NULL;
+
+  if (tm_method != breslauer_auto
+      && tm_method != santalucia_auto) {
     return OLIGOTM_ERROR;
+  }
+
   if (salt_corrections != schildkraut
       && salt_corrections != santalucia
-      && salt_corrections != owczarzy)
-    return OLIGOTM_ERROR;
+      && salt_corrections != owczarzy) {
+        return OLIGOTM_ERROR;
+  }
+  /* copy string to ensure upper case for character handling*/
+  seqcopy = (char*) malloc((len + 1) * sizeof(char));
+  if (seqcopy == NULL) {
+    return result;
+  }
+  strcpy(seqcopy, seq);
+  for(i = 0; i < len; i++) { seqcopy[i] = toupper(seqcopy[i]); }
 
   if (len > nn_max_len) {
-    return long_seq_tm(seq, 0, len, salt_conc, divalent_conc, dntp_conc);
+    result = long_seq_tm(seqcopy,
+                          0,
+                          len,
+                          salt_conc,
+                          divalent_conc,
+                          dntp_conc);
   } else {
-    return oligotm(seq, dna_conc, salt_conc,
-          divalent_conc, dntp_conc, tm_method, salt_corrections);
+    result = oligotm(seqcopy,
+                    dna_conc,
+                    salt_conc,
+                    divalent_conc,
+                    dntp_conc,
+                    tm_method,
+                    salt_corrections);
   }
+  free(seqcopy);
+  seqcopy = NULL;
+  return result;
 }
 
 /* See oligotm.h for documentation on this function and the formula it
    uses. */
 double
-long_seq_tm(const char *s,
+long_seq_tm(
+  const char *s,
   int start,
   int len,
   double salt_conc,
@@ -654,8 +686,9 @@ long_seq_tm(const char *s,
   end = &s[start + len];
   /* Length <= 0 is nonsensical. */
   for (p = &s[start]; p < end; p++) {
-    if ('G' == *p || 'C' == *p)
+    if ('G' == *p || 'C' == *p) {
       GC_count++;
+    }
   }
 
   return
@@ -667,48 +700,50 @@ long_seq_tm(const char *s,
 
  /* Return 1 if string is symmetrical, 0 otherwise. */
 int symmetry(const char* seq) {
-   register char s;
-   register char e;
-   const char *seq_end=seq;
-   int i = 0;
-   int seq_len = (int)strlen(seq);
-   int mp = seq_len/2;
-   if(seq_len%2==1) {
+  register char s;
+  register char e;
+  const char *seq_end=seq;
+  int i = 0;
+  int seq_len = (int)strlen(seq);
+  int mp = seq_len / 2;
+  if((seq_len % 2) == 1) {
+    return 0;
+  }
+  seq_end += seq_len;
+  seq_end--;
+  while(i < mp) {
+    i++;
+    s = *seq;
+    e = *seq_end;
+    if (    (s=='A' && e!='T')
+        ||  (s=='T' && e!='A')
+        ||  (e=='A' && s!='T')
+        ||  (e=='T' && s!='A')) {
       return 0;
-   }
-   seq_end+=seq_len;
-   seq_end--;
-   while(i<mp) {
-      i++;
-      s=*seq;
-      e=*seq_end;
-      if ((s=='A' && e!='T')
-    || (s=='T' && e!='A')
-    || (e=='A' && s!='T')
-    || (e=='T' && s!='A')) {
-   return 0;
-      }
-      if ((s=='C' && e!='G')
-    || (s=='G' && e!='C')
-    || (e=='C' && s!='G')
-    || (e=='G' && s!='C')) {
-   return 0;
-      }
-      seq++;
-      seq_end--;
-   }
-   return 1;
+    }
+    if (  (s=='C' && e!='G')
+      ||  (s=='G' && e!='C')
+      ||  (e=='C' && s!='G')
+      ||  (e=='G' && s!='C')) {
+      return 0;
+    }
+    seq++;
+    seq_end--;
+  }
+  return 1;
 }
 
 /* Convert divalent salt concentration to monovalent */
 double divalent_to_monovalent(double divalent,
             double dntp)
 {
-   if(divalent==0) dntp=0;
-   if(divalent<0 || dntp<0) return OLIGOTM_ERROR;
-   if(divalent<dntp)
-     /* According to theory, melting temperature does not depend on
-  divalent cations */
-     divalent=dntp;
-   return 120*(sqrt(divalent-dntp));
+    if (divalent==0) { dntp=0; }
+    if (divalent < 0 || dntp < 0) { return OLIGOTM_ERROR; }
+    if (divalent < dntp) {
+      /* According to theory, melting temperature does not depend on
+      * divalent cations
+      */
+      divalent = dntp;
+    }
+    return 120*(sqrt(divalent-dntp));
 }
