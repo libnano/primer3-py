@@ -194,7 +194,7 @@ if 'sdist' in sys.argv:
 
 setup(
     name='primer3-py',
-    version='0.5.7',
+    version='0.5.8',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',
@@ -206,9 +206,8 @@ setup(
         'Programming Language :: Cython',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
