@@ -102,20 +102,38 @@ THERMORESULT = namedtuple('thermoresult', [
     'ds',               # Entropy (cal/(K*mol))
     'dh',               # Enthalpy (kcal/mol)
     'dg',               # Gibbs free energy
-    'tm']               # Melting temperature (deg. Celsius)
+    'tm',               # Melting temperature (deg. Celsius)
+    'repr']             # printable (str) representation of structure)
 )
 
-NULLTHERMORESULT = THERMORESULT(False, 0, 0, 0, 0)
+NULLTHERMORESULT = THERMORESULT(False, 0, 0, 0, 0, '')
 
 def _parse_ntthal(ntthal_output):
     ''' Helper method that uses regex to parse ntthal output. '''
-    parsed_vals = re.search(_ntthal_re, ntthal_output)
+    lines = ntthal_output.split('\n')
+    parsed_vals = re.search(_ntthal_re, lines[0])
+    if parsed_vals:
+        r1 = []
+        r2 = []
+        r3 = []
+        for l1, l2, l3, l4 in zip(*(l[4:] for l in lines[1:5])):
+            if l2 != ' ':
+                r1.append(l2)
+                r2.append('|')
+                r3.append(l3)
+            else:
+                r1.append(l1)
+                r2.append(' ')
+                r3.append(l4 if l4 != '-' else ' ')
+        repr_str = '\n'.join(map(''.join, (r1,r2,r3)))
+
     return THERMORESULT(
         True,                           # Structure found
         float(parsed_vals.group(1)),    # dS
         float(parsed_vals.group(2)),    # dH
         float(parsed_vals.group(3)),    # dG
-        float(parsed_vals.group(4))     # tm
+        float(parsed_vals.group(4)),    # tm
+        repr_str
     ) if parsed_vals else NULLTHERMORESULT
 
 
