@@ -4694,7 +4694,7 @@ align_thermod(const char *s1,
 {
   int thal_trace=0;
   thal_results r;
-  thal((const unsigned char *) s1, (const unsigned char *) s2, a, &r, 1);
+  thal((const unsigned char *) s1, (const unsigned char *) s2, a, &r, 1, NULL);
   if (thal_trace) {
     fprintf(stdout,
        "thal, thal_args, type=%d maxLoop=%d mv=%f dv=%f "

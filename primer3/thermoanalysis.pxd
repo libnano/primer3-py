@@ -18,7 +18,7 @@
 thermoanalysis.pxd
 ~~~~~~~~~~~~~~~~~~
 
-Cython header file for thermoanalysis.pyx -- allows for cross-project Cython / 
+Cython header file for thermoanalysis.pyx -- allows for cross-project Cython /
 C integration of the low-level thermodynamic analysis bindings.
 
 '''
@@ -41,7 +41,7 @@ cdef extern from "thal.h":
         double temp               # temp at which hairpins will be calculated
         int temponly              # print only temp to stderr
         int dimer                 # if non-zero dimer structure is calculated
-    
+
     ctypedef struct thal_results:
         char msg[255]
         int no_structure # Added no structure (1 if no structure found)
@@ -58,7 +58,8 @@ cdef extern from "thal.h":
                 const unsigned char*,
                 const thal_args*,
                 thal_results*,
-                const int)
+                const int,
+                char*)
 
     int get_thermodynamic_values(const char*, thal_results *)
 
@@ -67,6 +68,8 @@ cdef extern from "thal.h":
 
 cdef class ThermoResult:
     cdef thal_results thalres
+    cdef public object ascii_structure
+
 
 cdef class ThermoAnalysis:
     cdef thal_args thalargs
@@ -74,13 +77,24 @@ cdef class ThermoAnalysis:
     cdef public int _tm_method
     cdef public int _salt_correction_method
 
-    cdef inline ThermoResult calcHeterodimer_c(ThermoAnalysis self,
-                                               unsigned char*s1,
-                                               unsigned char* s2)
+    cdef inline ThermoResult calcHeterodimer_c(
+        ThermoAnalysis self,
+        unsigned char*s1,
+        unsigned char* s2,
+        bint output_structure
+    )
 
-    cdef inline ThermoResult calcHomodimer_c(ThermoAnalysis self, unsigned char*s1)
+    cdef inline ThermoResult calcHomodimer_c(
+        ThermoAnalysis self,
+        unsigned char*s1,
+        bint output_structure
+    )
 
-    cdef inline ThermoResult calcHairpin_c(ThermoAnalysis self, unsigned char*s1)
+    cdef inline ThermoResult calcHairpin_c(
+        ThermoAnalysis self,
+        unsigned char*s1,
+        bint output_structure
+    )
 
     cdef inline ThermoResult calcEndStability_c(ThermoAnalysis self,
                                                 unsigned char*s1,
@@ -88,10 +102,10 @@ cdef class ThermoAnalysis:
 
     cdef inline double calcTm_c(ThermoAnalysis self, char* s1)
 
-    cpdef calcHeterodimer(ThermoAnalysis self, seq1, seq2)
+    cpdef calcHeterodimer(ThermoAnalysis self, seq1, seq2, output_structure=*)
 
-    cpdef calcHomodimer(ThermoAnalysis self, seq1)
+    cpdef calcHomodimer(ThermoAnalysis self, seq1, output_structure=*)
 
-    cpdef calcHairpin(ThermoAnalysis self, seq1)
+    cpdef calcHairpin(ThermoAnalysis self, seq1, output_structure=*)
 
     cpdef misprimingCheck(ThermoAnalysis self, putative_seq, sequences,  double tm_threshold)

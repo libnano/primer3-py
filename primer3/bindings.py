@@ -68,7 +68,7 @@ def _setThermoArgs(mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
 
 def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
-                temp_c=37, max_loop=30):
+                temp_c=37, max_loop=30, output_structure=False):
     ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
 
     **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
@@ -84,6 +84,7 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
         dna_conc (float/int, optional): DNA conc. (nM)
         temp_c (int, optional): Simulation temperature for dG (Celsius)
         max_loop(int, optional): Maximum size of loops in the structure
+        output_structure (bool) : If `True`, the ASCII dimer structure is saved
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -94,11 +95,11 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
 
     '''
     _setThermoArgs(**locals())
-    return _THERMO_ANALYSIS.calcHairpin(seq).checkExc()
+    return _THERMO_ANALYSIS.calcHairpin(seq, output_structure).checkExc()
 
 
 def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-                  temp_c=37, max_loop=30):
+                  temp_c=37, max_loop=30, output_structure=False):
     ''' Calculate the homodimerization thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
@@ -117,6 +118,7 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
         temp_c (int, optional)          : Simulation temperature for dG (C)
         max_loop (int, optional)        : Maximum size of loops in the
                                           structure
+        output_structure (bool) : If `True`, the ASCII dimer structure is saved
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -127,11 +129,12 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
     '''
     _setThermoArgs(**locals())
-    return _THERMO_ANALYSIS.calcHomodimer(seq).checkExc()
+    return _THERMO_ANALYSIS.calcHomodimer(seq, output_structure).checkExc()
 
 
 def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                    dna_conc=50, temp_c=37, max_loop=30):
+                    dna_conc=50, temp_c=37, max_loop=30,
+                    output_structure=False):
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
@@ -151,6 +154,7 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
         dna_conc (float/int)    : DNA conc. (nM)
         temp_c (int)            : Simulation temperature for dG (Celsius)
         max_loop(int)           : Maximum size of loops in the structure
+        output_structure (bool) : If `True`, the ASCII dimer structure is saved
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -161,7 +165,7 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 
     '''
     _setThermoArgs(**locals())
-    return _THERMO_ANALYSIS.calcHeterodimer(seq1, seq2).checkExc()
+    return _THERMO_ANALYSIS.calcHeterodimer(seq1, seq2, output_structure).checkExc()
 
 
 def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
