@@ -2934,6 +2934,9 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
     if(temponly == 0) {
       mg = mh - (temp * (ms + (((N/2)-1) * saltCorrection)));
       ms = ms + (((N/2)-1) * saltCorrection);
+      o->ds = (double) ms;
+      o->dh = (double) mh;
+      o->dg = (double) mg;
       o->temp = (double) t;
       if (output_buf == NULL) {
         printf("Calculated thermodynamical parameters for dimer:\t%d\tdS = %g\tdH = %g\tdG = %g\tt = %g\n",
@@ -3008,6 +3011,9 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
       G = (H) - (t37 * (S + (N * saltCorrection)));
       S = S + (N * saltCorrection);
       o->temp = (double) t;
+      o->ds = (double) S;
+      o->dh = (double) H;
+      o->dg = (double) G;
       /* maybe user does not need as precise as that */
       /* printf("Thermodynamical values:\t%d\tdS = %g\tdH = %g\tdG = %g\tt = %g\tN = %d, SaltC=%f, RC=%f\n",
         len1, (double) S, (double) H, (double) G, (double) t, (int) N, saltCorrection, RC); */
