@@ -156,6 +156,21 @@ cdef class ThermoResult:
         def __get__(self):
             return self.thalres.dg
 
+    property ascii_structure_lines:
+        ''' ASCII structure representation split into indivudial lines
+
+        e.g.,
+            [u'SEQ\t         -    T CCT-   A   TTGCTTTGAAACAATTCACCATGCAGA',
+             u'SEQ\t      TGC GATG G    GCT TGC                           ',
+             u'STR\t      ACG CTAC C    CGA ACG                           ',
+             u'STR\tAACCTT   T    T TTAT   G   TAGGCGAGCCACCAGCGGCATAGTAA-']
+        '''
+        def __get__(self):
+            if self.ascii_structure:
+                return self.ascii_structure.strip('\n').split('\n')
+            else:
+                return None
+
     def checkExc(self):
         ''' Check the ``.msg`` attribute of the internal thalres struct and
         raise a ``RuntimeError`` exception if it is not an empty string.
