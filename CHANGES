@@ -106,15 +106,20 @@ Version 0.5.5                                                  October 30, 2017
 -------------------------------------------------------------------------------
 - Remove unicode character from README.rst
 
-Version 0.5.6                                                  July 12, 2018
+Version 0.5.6                                                     July 12, 2018
 -------------------------------------------------------------------------------
 - Fixes to primerdesign_helpers.c C macro errors.
-- Added the todict() methods in thermoanalysis.pyx for serialization help for tests
-there
+- Added the todict() methods in thermoanalysis.pyx for serialization help for
+  tests there
 
-Version 0.5.7                                                  August 10, 2018
+Version 0.5.7                                                   August 10, 2018
 -------------------------------------------------------------------------------
 - Changes to upper case sequences in seqtm() in oligotm.c because calls to
 ThermoAnalysis.calcTm returned 0.0 for strings with lower case letters
 - disabled existing tests on Windows due to incompatibility with process and
 memory calls.  TODO: create more tests for ThermoAnalysis
+
+Version 0.6.0                                                      May 10, 2019
+-------------------------------------------------------------------------------
+- Added functionality for bindings to expose the ASCII representation of
+  computed dimer and hairpin structures

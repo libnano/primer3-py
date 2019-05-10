@@ -52,9 +52,9 @@ def includes():
 
 
 __author__ = 'Ben Pruitt, Nick Conway'
-__copyright__ = 'Copyright 2014-2018, Ben Pruitt & Nick Conway; Wyss Institute'
+__copyright__ = 'Copyright 2014-2019, Ben Pruitt & Nick Conway; Wyss Institute'
 __license__ = 'GPLv2'
-__version__ = '0.5.8'
+__version__ = '0.6.0'
 
 __all__ = [
     # Low-level Tm-only bindings
