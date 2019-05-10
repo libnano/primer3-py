@@ -320,11 +320,11 @@ if(a.debug == 0) {
 
    /* execute thermodynamical alignemnt */
    if(a.dimer==0 && oligo1!=NULL){
-      thal(oligo1,oligo1,&a,&o,1);
+      thal(oligo1,oligo1,&a,&o,1,NULL);
    } else if(a.dimer==0 && oligo1==NULL && oligo2!=NULL) {
-      thal(oligo2,oligo2,&a,&o,1);
+      thal(oligo2,oligo2,&a,&o,1,NULL);
    } else {
-      thal(oligo1,oligo2,&a,&o,1);
+      thal(oligo1,oligo2,&a,&o,1,NULL);
    }
    /* encountered error during thermodynamical calc */
    if (o.temp == THAL_ERROR_SCORE) {

@@ -40,6 +40,9 @@ Calculations are performed under the following paradigm:
 
 '''
 
+from libc.stdlib cimport malloc, free
+from libc.string cimport strlen
+
 from cpython.version cimport PY_MAJOR_VERSION
 import atexit
 
@@ -153,6 +156,21 @@ cdef class ThermoResult:
         def __get__(self):
             return self.thalres.dg
 
+    property ascii_structure_lines:
+        ''' ASCII structure representation split into indivudial lines
+
+        e.g.,
+            [u'SEQ\t         -    T CCT-   A   TTGCTTTGAAACAATTCACCATGCAGA',
+             u'SEQ\t      TGC GATG G    GCT TGC                           ',
+             u'STR\t      ACG CTAC C    CGA ACG                           ',
+             u'STR\tAACCTT   T    T TTAT   G   TAGGCGAGCCACCAGCGGCATAGTAA-']
+        '''
+        def __get__(self):
+            if self.ascii_structure:
+                return self.ascii_structure.strip('\n').split('\n')
+            else:
+                return None
+
     def checkExc(self):
         ''' Check the ``.msg`` attribute of the internal thalres struct and
         raise a ``RuntimeError`` exception if it is not an empty string.
@@ -183,6 +201,7 @@ cdef class ThermoResult:
         '''
         return {
             'structure_found': self.structure_found,
+            'ascii_structure': self.ascii_structure,
             'tm': precision(self.tm, pts),
             'dg': precision(self.dg, pts),
             'dh': precision(self.dh, pts),
@@ -329,16 +348,38 @@ cdef class ThermoAnalysis:
 
     cdef inline ThermoResult calcHeterodimer_c(ThermoAnalysis self,
                                                unsigned char *s1,
-                                               unsigned char *s2):
+                                               unsigned char *s2,
+                                               bint output_structure):
         cdef ThermoResult tr_obj = ThermoResult()
+        cdef char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1
-        thal(<const unsigned char*> s1, <const unsigned char*> s2,
-         <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
+        if (output_structure == 1):
+            c_ascii_structure = <char *>malloc(
+                (strlen(<const char*>s1) + strlen(<const char*>s2)) * 4 + 24)
+            c_ascii_structure[0] = '\0';
+        thal(
+            <const unsigned char*> s1,
+            <const unsigned char*> s2,
+            <const thal_args *> &(self.thalargs),
+            &(tr_obj.thalres),
+            1 if c_ascii_structure else 0,
+            c_ascii_structure
+        )
+        if (output_structure == 1):
+            try:
+                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
+            finally:
+                free(c_ascii_structure)
         return tr_obj
 
-    cpdef calcHeterodimer(ThermoAnalysis self, seq1, seq2):
+    cpdef calcHeterodimer(
+            ThermoAnalysis self,
+            seq1,
+            seq2,
+            output_structure=False
+        ):
         ''' Calculate the heterodimer formation thermodynamics of two DNA
         sequences, ``seq1`` and ``seq2``
         '''
@@ -349,7 +390,8 @@ cdef class ThermoAnalysis:
         cdef unsigned char* s1 = py_s1
         py_s2 = <bytes> _bytes(seq2)
         cdef unsigned char* s2 = py_s2
-        return ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2)
+        return ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2,
+                                                output_structure)
 
     cpdef misprimingCheck(ThermoAnalysis self, putative_seq, sequences,
                                 double tm_threshold):
@@ -383,7 +425,7 @@ cdef class ThermoAnalysis:
         for i, seq in enumerate(sequences):
             py_s2 = <bytes> _bytes(seq)
             s2 = py_s2
-            offtarget_tm = ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2).tm
+            offtarget_tm = ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2, 0).tm
             if offtarget_tm > max_offtarget_tm:
                 max_offtarget_seq_idx = i
                 max_offtarget_tm = offtarget_tm
@@ -393,16 +435,34 @@ cdef class ThermoAnalysis:
         return is_offtarget, max_offtarget_seq_idx, max_offtarget_tm
 
     cdef inline ThermoResult calcHomodimer_c(ThermoAnalysis self,
-                                             unsigned char *s1):
+                                             unsigned char *s1,
+                                             bint output_structure):
         cdef ThermoResult tr_obj = ThermoResult()
+        cdef char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1
-        thal(<const unsigned char*> s1, <const unsigned char*> s1,
-         <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
+        if (output_structure == 1):
+            c_ascii_structure = <char *>malloc(
+                (strlen(<const char*>s1) * 8 + 24)
+            )
+            c_ascii_structure[0] = '\0';
+        thal(
+            <const unsigned char*> s1,
+            <const unsigned char*> s1,
+            <const thal_args *> &(self.thalargs),
+            &(tr_obj.thalres),
+            1 if c_ascii_structure else 0,
+            c_ascii_structure
+        )
+        if (output_structure == 1):
+            try:
+                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
+            finally:
+                free(c_ascii_structure)
         return tr_obj
 
-    cpdef calcHomodimer(ThermoAnalysis self, seq1):
+    cpdef calcHomodimer(ThermoAnalysis self, seq1, output_structure=False):
         ''' Calculate the homodimer formation thermodynamics of a DNA
         sequence, ``seq1``
         '''
@@ -410,19 +470,38 @@ cdef class ThermoAnalysis:
         # cooerce to a unsigned char *
         py_s1 = <bytes> _bytes(seq1)
         cdef unsigned char* s1 = py_s1
-        return ThermoAnalysis.calcHomodimer_c(<ThermoAnalysis> self, s1)
+        return ThermoAnalysis.calcHomodimer_c(<ThermoAnalysis> self, s1,
+                                              output_structure)
 
     cdef inline ThermoResult calcHairpin_c(ThermoAnalysis self,
-                                           unsigned char *s1):
+                                           unsigned char *s1,
+                                           bint output_structure):
         cdef ThermoResult tr_obj = ThermoResult()
+        cdef char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 0
         self.thalargs.type = <thal_alignment_type> 4
-        thal(<const unsigned char*> s1, <const unsigned char*> s1,
-         <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
+        if (output_structure == 1):
+            c_ascii_structure = <char *>malloc(
+                (strlen(<const char*>s1) * 2 + 24)
+            )
+            c_ascii_structure[0] = '\0';
+        thal(
+            <const unsigned char*> s1,
+            <const unsigned char*> s1,
+            <const thal_args *> &(self.thalargs),
+            &(tr_obj.thalres),
+            1 if c_ascii_structure else 0,
+            c_ascii_structure
+        )
+        if (output_structure == 1):
+            try:
+                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
+            finally:
+                free(c_ascii_structure)
         return tr_obj
 
-    cpdef calcHairpin(ThermoAnalysis self, seq1):
+    cpdef calcHairpin(ThermoAnalysis self, seq1, output_structure=False):
         ''' Calculate the hairpin formation thermodynamics of a DNA
         sequence, ``seq1``
         '''
@@ -430,7 +509,8 @@ cdef class ThermoAnalysis:
         # cooerce to a unsigned char *
         py_s1 = <bytes> _bytes(seq1)
         cdef unsigned char* s1 = py_s1
-        return ThermoAnalysis.calcHairpin_c(<ThermoAnalysis> self, s1)
+        return ThermoAnalysis.calcHairpin_c(<ThermoAnalysis> self, s1,
+                                            output_structure)
 
     cdef inline ThermoResult calcEndStability_c(ThermoAnalysis self,
                                                unsigned char *s1,
@@ -440,7 +520,7 @@ cdef class ThermoAnalysis:
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 2
         thal(<const unsigned char*> s1, <const unsigned char*> s2,
-         <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0)
+         <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0, NULL)
         return tr_obj
 
     def calcEndStability(ThermoAnalysis self, seq1, seq2):

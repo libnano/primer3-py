@@ -255,10 +255,10 @@ static void calcDimer(int*, int*, double, double, double, int, double, thal_resu
 static void calcHairpin(int*, double, double, int, double, thal_results *);
 
 /* prints ascii output of dimer structure */
-static void drawDimer(int*, int*, double, double, double, int, double, thal_results *);
+static void drawDimer(int*, int*, double, double, double, int, double, thal_results *, char *);
 
 /* prints ascii output of hairpin structure */
-static void drawHairpin(int*, double, double, int, double, thal_results *);
+static void drawHairpin(int*, double, double, int, double, thal_results *, char *);
 
 static int equal(double a, double b);
 
@@ -399,7 +399,8 @@ thal(const unsigned char *oligo_f,
      const unsigned char *oligo_r,
      const thal_args *a,
      thal_results *o,
-     const int print_output)
+     const int print_output,
+     char *ascii_structure)
 {
   double* SH;
   int i, j;
@@ -550,7 +551,7 @@ thal(const unsigned char *oligo_f,
       tracebacku(bp, a->maxLoop, o);
       /* traceback for unimolecular structure */
       if (print_output) {
-        drawHairpin(bp, mh, ms, a->temponly,a->temp, o);
+        drawHairpin(bp, mh, ms, a->temponly,a->temp, o, ascii_structure);
       } else {
         calcHairpin(bp, mh, ms, a->temponly,a->temp, o);
       }
@@ -644,7 +645,8 @@ thal(const unsigned char *oligo_f,
     if (isFinite(EnthalpyDPT(bestI, bestJ))) {
       traceback(bestI, bestJ, RC, ps1, ps2, a->maxLoop, o);
       if (print_output) {
-        drawDimer(ps1, ps2, SHleft, dH, dS, a->temponly, a->temp, o);
+        drawDimer(ps1, ps2, SHleft, dH, dS, a->temponly, a->temp, o,
+                  ascii_structure);
       } else {
         calcDimer(ps1, ps2, SHleft, dH, dS, a->temponly, a->temp, o);
       }
@@ -2903,14 +2905,14 @@ calcDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
 }
 
 static void
-drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o)
+drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o, char *output_buf)
 {
   /* Plain text */
   int i, N = 0;
   double mg, t;
   char* asciiRow;
   if (!isFinite(ms) || !isFinite(mh)) {
-    if(temponly == 0) {
+    if (temponly == 0 && output_buf == NULL) {
       printf("0\tdS = %g\tdH = %g\tinf\tinf\n", (double) ms,(double) mh);
 #ifdef DEBUG
       fputs("No temperature could be calculated\n",stderr);
@@ -2932,9 +2934,14 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
     if(temponly == 0) {
       mg = mh - (temp * (ms + (((N/2)-1) * saltCorrection)));
       ms = ms + (((N/2)-1) * saltCorrection);
+      o->ds = (double) ms;
+      o->dh = (double) mh;
+      o->dg = (double) mg;
       o->temp = (double) t;
-      printf("Calculated thermodynamical parameters for dimer:\t%d\tdS = %g\tdH = %g\tdG = %g\tt = %g\n",
-        len1, (double) ms, (double) mh, (double) mg, (double) t);
+      if (output_buf == NULL) {
+        printf("Calculated thermodynamical parameters for dimer:\t%d\tdS = %g\tdH = %g\tdG = %g\tt = %g\n",
+          len1, (double) ms, (double) mh, (double) mg, (double) t);
+      }
     } else {
       o->temp = (double) t;
       return;
@@ -2954,22 +2961,38 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
       }
     }
   }
-  printf("SEQ\t");
-  for(i = 0; i < len1; ++i) printf("%c",asciiRow[i]);
-  printf("\nSTR\t%s\n", oligo1);
+  if (output_buf != NULL) {
+    sprintf(output_buf, "SEQ\t");
+    output_buf += 4;
+  } else{
+    printf("SEQ\t");
+  }
+  for(i = 0; i < len1; ++i) {
+    if (output_buf != NULL) {
+      sprintf(output_buf, "%c", asciiRow[i]);
+      output_buf++;
+    } else {
+      printf("%c",asciiRow[i]);
+    }
+  }
+  if (output_buf != NULL) {
+    sprintf(output_buf, "\nSTR\t%s\n", oligo1);
+  } else {
+    printf("\nSTR\t%s\n", oligo1);
+  }
   free(asciiRow);
   return;
 }
 
 static void
-drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, double t37, thal_results *o)
+drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, double t37, thal_results *o, char *output_buf)
 {
   int i, j, k, numSS1, numSS2, N;
   char* duplex[4];
   double G, t;
   t = G = 0;
   if (!isFinite(temp)) {
-    if (temponly == 0) {
+    if (temponly == 0 && output_buf == NULL) {
       printf("No predicted secondary structures for given sequences\n");
     }
     o->temp = 0.0; /* lets use generalization here; this should rather be very negative value */
@@ -2988,11 +3011,16 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
       G = (H) - (t37 * (S + (N * saltCorrection)));
       S = S + (N * saltCorrection);
       o->temp = (double) t;
+      o->ds = (double) S;
+      o->dh = (double) H;
+      o->dg = (double) G;
       /* maybe user does not need as precise as that */
       /* printf("Thermodynamical values:\t%d\tdS = %g\tdH = %g\tdG = %g\tt = %g\tN = %d, SaltC=%f, RC=%f\n",
         len1, (double) S, (double) H, (double) G, (double) t, (int) N, saltCorrection, RC); */
-      printf("Calculated thermodynamical parameters for dimer:\tdS = %g\tdH = %g\tdG = %g\tt = %g\n",
-        (double) S, (double) H, (double) G, (double) t);
+      if (output_buf == NULL) {
+        printf("Calculated thermodynamical parameters for dimer:\tdS = %g\tdH = %g\tdG = %g\tt = %g\n",
+          (double) S, (double) H, (double) G, (double) t);
+      }
     } else {
       o->temp = (double) t;
       return;
@@ -3071,14 +3099,25 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
       }
     }
   }
-  printf("SEQ\t");
-  printf("%s\n", duplex[0]);
-  printf("SEQ\t");
-  printf("%s\n", duplex[1]);
-  printf("STR\t");
-  printf("%s\n", duplex[2]);
-  printf("STR\t");
-  printf("%s\n", duplex[3]);
+  if (output_buf == NULL) {
+    printf("SEQ\t");
+    printf("%s\n", duplex[0]);
+    printf("SEQ\t");
+    printf("%s\n", duplex[1]);
+    printf("STR\t");
+    printf("%s\n", duplex[2]);
+    printf("STR\t");
+    printf("%s\n", duplex[3]);
+  } else {
+    sprintf(
+      output_buf,
+      "SEQ\t%s\nSEQ\t%s\nSTR\t%s\nSTR\t%s\n",
+      duplex[0],
+      duplex[1],
+      duplex[2],
+      duplex[3]
+    );
+  }
 
   free(duplex[0]);
   free(duplex[1]);

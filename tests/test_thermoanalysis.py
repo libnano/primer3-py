@@ -90,7 +90,8 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
+                output_structure=True
             )
             wrapper_res = wrappers.calcHairpin(
                 seq=self.seq1,
@@ -102,6 +103,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 max_loop=self.max_loop
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(
+                binding_res.ascii_structure,
+                wrapper_res.ascii_structure
+            )
 
     def test_calcHomodimer(self):
         for _ in range(100):
@@ -113,7 +118,8 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
+                output_structure=True
             )
             wrapper_res = wrappers.calcHomodimer(
                 seq=self.seq1,
@@ -125,6 +131,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 max_loop=self.max_loop
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(
+                binding_res.ascii_structure,
+                wrapper_res.ascii_structure
+            )
 
     def test_calcHeterodimer(self):
         for _ in range(100):
@@ -137,7 +147,8 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
+                output_structure=True
             )
             wrapper_res = wrappers.calcHeterodimer(
                 seq1=self.seq1,
@@ -150,6 +161,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 max_loop=self.max_loop
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertEqual(
+                binding_res.ascii_structure,
+                wrapper_res.ascii_structure
+            )
             # Ensure that order of sequences does not matter
             # Should be fixed as of Primer3 2.3.7 update
             binding_12_res = bindings.calcHeterodimer(
@@ -160,7 +175,8 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
+                output_structure=True
             )
             binding_21_res = bindings.calcHeterodimer(
                 seq1=self.seq1,
@@ -245,7 +261,8 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
+                output_structure=True
             )
         sleep(0.1)  # Pause for any GC
         em = _getMemUsage()

@@ -151,6 +151,7 @@ void thal(const unsigned char *oligo1,
 	  const unsigned char *oligo2,
 	  const thal_args* a,
 	  thal_results* o,
-      const int print_output);
+    const int print_output,
+    char *ascii_structure);
 
 #endif
