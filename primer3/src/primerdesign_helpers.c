@@ -121,7 +121,7 @@ and the Primer3 library.
         if (DICT_GET_OBJ(o, d, k)) {                                           \
             int from_int = 0;                                                  \
             if (PyUnicode_Check(o)) {                                          \
-                tc = PyUnicode_AsUTF8AndSize(o, &ss);                          \
+                tc = (char *)PyUnicode_AsUTF8AndSize(o, &ss);                  \
             } else if (PyBytes_Check(o)){                                      \
                 if (PyBytes_AsStringAndSize(o, &tc, &ss) == -1) {              \
                     return -1;}                                                \
@@ -596,7 +596,7 @@ pdh_createSeqLib(PyObject *seq_dict){
             }
 #else
             if (PyUnicode_Check(py_seq_name)) {
-                seq_name = PyUnicode_AsUTF8(py_seq_name);
+                seq_name = (char *)PyUnicode_AsUTF8(py_seq_name);
             } else if (PyBytes_Check(py_seq_name)){
                 seq_name = PyBytes_AsString(py_seq_name);
             } else {
@@ -605,7 +605,7 @@ pdh_createSeqLib(PyObject *seq_dict){
                 goto err_create_seq_lib;
             }
             if (PyUnicode_Check(py_seq)) {
-                seq = PyUnicode_AsUTF8(py_seq);
+                seq = (char *)PyUnicode_AsUTF8(py_seq);
             } else if (PyBytes_Check(py_seq)){
                 seq = PyBytes_AsString(py_seq);
             } else {
