@@ -63,12 +63,12 @@ LIBPRIMER3_PATH =       pjoin(SRC_PATH, 'libprimer3')
 THERMO_PARAMS_PATH =    pjoin(LIBPRIMER3_PATH, 'primer3_config')
 KLIB_PATH =             pjoin(LIBPRIMER3_PATH, 'klib')
 
-libprimer3_paths = [pjoin(LIBPRIMER3_PATH, 'thal.c'),
-                    pjoin(LIBPRIMER3_PATH, 'oligotm.c'),
-                    pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.c'),
-                    pjoin(LIBPRIMER3_PATH, 'libprimer3.c'),
-                    pjoin(LIBPRIMER3_PATH, 'dpal.c'),
-                    pjoin(SRC_PATH, 'primerdesign_helpers.c')]
+libprimer3_paths = [rpath(pjoin(LIBPRIMER3_PATH, 'thal.c')),
+                    rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.c')),
+                    rpath(pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.c')),
+                    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.c')),
+                    rpath(pjoin(LIBPRIMER3_PATH, 'dpal.c')),
+                    rpath(pjoin(SRC_PATH, 'primerdesign_helpers.c'))]
 
 
 maker = 'nmake' if sys.platform == 'win32' else 'make'
