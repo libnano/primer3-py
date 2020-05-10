@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2018. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2014-2020. Ben Pruitt & Nick Conway; Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify

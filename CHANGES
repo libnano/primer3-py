@@ -123,3 +123,8 @@ Version 0.6.0                                                      May 10, 2019
 -------------------------------------------------------------------------------
 - Added functionality for bindings to expose the ASCII representation of
   computed dimer and hairpin structures
+
+Version 0.6.1                                                       May 9, 2020
+-------------------------------------------------------------------------------
+- Fixed issue related to absolute paths populated in `SOURCES.txt` of sdist
+- Clean up in `setup.py` and better Windows build support
