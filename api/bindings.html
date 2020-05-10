@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Primary analysis and design API &mdash; Primer3-py 0.5.5 documentation</title>
+  <title>Primary analysis and design API &mdash; Primer3-py 0.6.1 documentation</title>
   
 
   
@@ -17,43 +17,36 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Primer3-py 0.5.5 documentation" href="../index.html"/>
-        <link rel="up" title="API Documentation" href="index.html"/>
-        <link rel="next" title="Low-level thermodynamic analysis" href="thermoanalysis.html"/>
-        <link rel="prev" title="API Documentation" href="index.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Low-level thermodynamic analysis" href="thermoanalysis.html" />
+    <link rel="prev" title="API Documentation" href="index.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -67,7 +60,7 @@
             
             
               <div class="version">
-                0.5.5
+                0.6.1
               </div>
             
           
@@ -114,7 +107,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Primer3-py</a>
@@ -122,9 +115,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -182,278 +176,249 @@ the primer design and thermodynamic analysis functionality of Primer3. This is
 done primarly to provide a clean, consistent interface. For applications with
 stringent performance requirments, you should consider using the C API
 and/or Cython modules directly. See the docs for more details.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.calcEndStability">
-<code class="descclassname">primer3.bindings.</code><code class="descname">calcEndStability</code><span class="sig-paren">(</span><em>seq1</em>, <em>seq2</em>, <em>mv_conc=50</em>, <em>dv_conc=0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50</em>, <em>temp_c=37</em>, <em>max_loop=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcEndStability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcEndStability" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the 3&#8217; end stability of DNA sequence <cite>seq1</cite> against DNA
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcEndStability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq1</span></em>, <em class="sig-param"><span class="n">seq2</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">temp_c</span><span class="o">=</span><span class="default_value">37</span></em>, <em class="sig-param"><span class="n">max_loop</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcEndStability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcEndStability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the 3’ end stability of DNA sequence <cite>seq1</cite> against DNA
 sequence <cite>seq2</cite>.</p>
 <p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
 This is a cap imposed by Primer3 as the longest reasonable sequence length
 for which a two-state NN model produces reliable results (see
 primer3/src/libnano/thal.h:50).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>seq1</strong> (<em>str</em>) &#8211; DNA sequence to analyze for 3&#8217; end
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq1</strong> (<em>str</em>) – DNA sequence to analyze for 3’ end
 hybridization against the target
-sequence</li>
-<li><strong>seq2</strong> (<em>str</em>) &#8211; Target DNA sequence to analyze for
-seq1 3&#8217; end hybridization</li>
-<li><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; Monovalent cation conc. (mM)</li>
-<li><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; Divalent cation conc. (mM)</li>
-<li><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; dNTP conc. (mM)</li>
-<li><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; DNA conc. (nM)</li>
-<li><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) &#8211; Simulation temperature for dG (C)</li>
-<li><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) &#8211; Maximum size of loops in the
-structure</li>
+sequence</p></li>
+<li><p><strong>seq2</strong> (<em>str</em>) – Target DNA sequence to analyze for
+seq1 3’ end hybridization</p></li>
+<li><p><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) – Simulation temperature for dG (C)</p></li>
+<li><p><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum size of loops in the
+structure</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
-3&#8217; hybridization interaction.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">RuntimeError</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
+3’ hybridization interaction.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.calcHairpin">
-<code class="descclassname">primer3.bindings.</code><code class="descname">calcHairpin</code><span class="sig-paren">(</span><em>seq</em>, <em>mv_conc=50.0</em>, <em>dv_conc=0.0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50.0</em>, <em>temp_c=37</em>, <em>max_loop=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHairpin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHairpin" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcHairpin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50.0</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50.0</span></em>, <em class="sig-param"><span class="n">temp_c</span><span class="o">=</span><span class="default_value">37</span></em>, <em class="sig-param"><span class="n">max_loop</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">output_structure</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHairpin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHairpin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the hairpin formation thermodynamics of a DNA sequence.</p>
 <p><strong>Note that the maximum length of `seq` is 60 bp.</strong> This is a cap suggested
 by the Primer3 team as the longest reasonable sequence length for which
 a two-state NN model produces reliable results (see primer3/src/libnano/thal.h:50).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>seq</strong> (<em>str</em>) &#8211; DNA sequence to analyze for hairpin formation</li>
-<li><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; Monovalent cation conc. (mM)</li>
-<li><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; Divalent cation conc. (mM)</li>
-<li><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; dNTP conc. (mM)</li>
-<li><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; DNA conc. (nM)</li>
-<li><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) &#8211; Simulation temperature for dG (Celsius)</li>
-<li><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) &#8211; Maximum size of loops in the structure</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<em>str</em>) – DNA sequence to analyze for hairpin formation</p></li>
+<li><p><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum size of loops in the structure</p></li>
+<li><p><strong>output_structure</strong> (<em>bool</em>) – If <cite>True</cite>, the ASCII dimer structure is saved</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
 hairpin formation.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">RuntimeError</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.calcHeterodimer">
-<code class="descclassname">primer3.bindings.</code><code class="descname">calcHeterodimer</code><span class="sig-paren">(</span><em>seq1</em>, <em>seq2</em>, <em>mv_conc=50</em>, <em>dv_conc=0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50</em>, <em>temp_c=37</em>, <em>max_loop=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHeterodimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHeterodimer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcHeterodimer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq1</span></em>, <em class="sig-param"><span class="n">seq2</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">temp_c</span><span class="o">=</span><span class="default_value">37</span></em>, <em class="sig-param"><span class="n">max_loop</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">output_structure</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHeterodimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHeterodimer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the heterodimerization thermodynamics of two DNA sequences.</p>
 <p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
 This is a cap imposed by Primer3 as the longest reasonable sequence length
 for which a two-state NN model produces reliable results (see
 primer3/src/libnano/thal.h:50).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>seq1</strong> (<em>str</em>) &#8211; First DNA sequence to analyze for heterodimer
-formation</li>
-<li><strong>seq2</strong> (<em>str</em>) &#8211; Second DNA sequence to analyze for
-heterodimer formation</li>
-<li><strong>mv_conc</strong> (<em>float/int</em>) &#8211; Monovalent cation conc. (mM)</li>
-<li><strong>dv_conc</strong> (<em>float/int</em>) &#8211; Divalent cation conc. (mM)</li>
-<li><strong>dntp_conc</strong> (<em>float/int</em>) &#8211; dNTP conc. (mM)</li>
-<li><strong>dna_conc</strong> (<em>float/int</em>) &#8211; DNA conc. (nM)</li>
-<li><strong>temp_c</strong> (<em>int</em>) &#8211; Simulation temperature for dG (Celsius)</li>
-<li><strong>max_loop</strong> (<em>int</em>) &#8211; Maximum size of loops in the structure</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq1</strong> (<em>str</em>) – First DNA sequence to analyze for heterodimer
+formation</p></li>
+<li><p><strong>seq2</strong> (<em>str</em>) – Second DNA sequence to analyze for
+heterodimer formation</p></li>
+<li><p><strong>mv_conc</strong> (<em>float/int</em>) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<em>float/int</em>) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<em>float/int</em>) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<em>float/int</em>) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<em>int</em>) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_loop</strong> (<em>int</em>) – Maximum size of loops in the structure</p></li>
+<li><p><strong>output_structure</strong> (<em>bool</em>) – If <cite>True</cite>, the ASCII dimer structure is saved</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
 heterodimer interaction.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">RuntimeError</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.calcHomodimer">
-<code class="descclassname">primer3.bindings.</code><code class="descname">calcHomodimer</code><span class="sig-paren">(</span><em>seq</em>, <em>mv_conc=50</em>, <em>dv_conc=0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50</em>, <em>temp_c=37</em>, <em>max_loop=30</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHomodimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHomodimer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcHomodimer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">temp_c</span><span class="o">=</span><span class="default_value">37</span></em>, <em class="sig-param"><span class="n">max_loop</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">output_structure</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHomodimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHomodimer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the homodimerization thermodynamics of a DNA sequence.</p>
 <p><strong>Note that the maximum length of ``seq`` is 60 bp.</strong> This is a cap imposed
 by Primer3 as the longest reasonable sequence length for which
 a two-state NN model produces reliable results (see
 primer3/src/libnano/thal.h:50).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>seq</strong> (<em>str</em>) &#8211; DNA sequence to analyze for homodimer
-formation calculations</li>
-<li><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; Monovalent cation conc. (mM)</li>
-<li><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; Divalent cation conc. (mM)</li>
-<li><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; dNTP conc. (mM)</li>
-<li><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; DNA conc. (nM)</li>
-<li><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) &#8211; Simulation temperature for dG (C)</li>
-<li><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) &#8211; Maximum size of loops in the
-structure</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<em>str</em>) – DNA sequence to analyze for homodimer
+formation calculations</p></li>
+<li><p><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) – Simulation temperature for dG (C)</p></li>
+<li><p><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum size of loops in the
+structure</p></li>
+<li><p><strong>output_structure</strong> (<em>bool</em>) – If <cite>True</cite>, the ASCII dimer structure is saved</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
 homodimer interaction.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">RuntimeError</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.calcTm">
-<code class="descclassname">primer3.bindings.</code><code class="descname">calcTm</code><span class="sig-paren">(</span><em>seq</em>, <em>mv_conc=50</em>, <em>dv_conc=0</em>, <em>dntp_conc=0.8</em>, <em>dna_conc=50</em>, <em>max_nn_length=60</em>, <em>tm_method='santalucia'</em>, <em>salt_corrections_method='santalucia'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcTm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcTm" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcTm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">max_nn_length</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">tm_method</span><span class="o">=</span><span class="default_value">'santalucia'</span></em>, <em class="sig-param"><span class="n">salt_corrections_method</span><span class="o">=</span><span class="default_value">'santalucia'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcTm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcTm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the melting temperature (Tm) of a DNA sequence.</p>
 <p>Note that NN thermodynamics will be used to calculate the Tm of sequences
 up to 60 bp in length, after which point the following formula will be
 used:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Tm</span> <span class="o">=</span> <span class="mf">81.5</span> <span class="o">+</span> <span class="mf">16.6</span><span class="p">(</span><span class="n">log10</span><span class="p">([</span><span class="n">mv_conc</span><span class="p">]))</span> <span class="o">+</span> <span class="mf">0.41</span><span class="p">(</span><span class="o">%</span><span class="n">GC</span><span class="p">)</span> <span class="o">-</span> <span class="mi">600</span><span class="o">/</span><span class="n">length</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tm</span> <span class="o">=</span> <span class="mf">81.5</span> <span class="o">+</span> <span class="mf">16.6</span><span class="p">(</span><span class="n">log10</span><span class="p">([</span><span class="n">mv_conc</span><span class="p">]))</span> <span class="o">+</span> <span class="mf">0.41</span><span class="p">(</span><span class="o">%</span><span class="n">GC</span><span class="p">)</span> <span class="o">-</span> <span class="mi">600</span><span class="o">/</span><span class="n">length</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>seq</strong> (<em>str</em>) &#8211; DNA sequence</li>
-<li><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; Monovalent cation conc. (mM)</li>
-<li><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; Divalent cation conc. (mM)</li>
-<li><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; dNTP conc. (mM)</li>
-<li><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) &#8211; DNA conc. (nM)</li>
-<li><strong>max_nn_length</strong> (<em>int</em><em>, </em><em>optional</em>) &#8211; Maximum length for
-nearest-neighbor calcs</li>
-<li><strong>tm_method</strong> (<em>str</em><em>, </em><em>optional</em>) &#8211; Tm calculation method
-(breslauer or santalucia)</li>
-<li><strong>salt_corrections_method</strong> (<em>str</em><em>, </em><em>optional</em>) &#8211; Salt correction method
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<em>str</em>) – DNA sequence</p></li>
+<li><p><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – DNA conc. (nM)</p></li>
+<li><p><strong>max_nn_length</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum length for
+nearest-neighbor calcs</p></li>
+<li><p><strong>tm_method</strong> (<em>str</em><em>, </em><em>optional</em>) – Tm calculation method
+(breslauer or santalucia)</p></li>
+<li><p><strong>salt_corrections_method</strong> (<em>str</em><em>, </em><em>optional</em>) – Salt correction method
 (schildkraut, owczarzy,
-santalucia)</li>
+santalucia)</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The melting temperature in degrees Celsius (float).</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The melting temperature in degrees Celsius (float).</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.designPrimers">
-<code class="descclassname">primer3.bindings.</code><code class="descname">designPrimers</code><span class="sig-paren">(</span><em>seq_args</em>, <em>global_args=None</em>, <em>misprime_lib=None</em>, <em>mishyb_lib=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#designPrimers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.designPrimers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">designPrimers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq_args</span></em>, <em class="sig-param"><span class="n">global_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">misprime_lib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mishyb_lib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#designPrimers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.designPrimers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the Primer3 design process.</p>
 <p>If the global args have been previously set (either by a pervious
 <cite>designPrimers</cite> call or by a <cite>setGlobals</cite> call), <cite>designPrimers</cite> may be
 called with seqArgs alone (as a means of optimization).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>seq_args</strong> (<em>dict</em>) &#8211; Primer3 sequence/design args as per
-Primer3 docs</li>
-<li><strong>global_args</strong> (<em>dict</em><em>, </em><em>optional</em>) &#8211; Primer3 global args as per Primer3 docs</li>
-<li><strong>misprime_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) &#8211; <cite>Sequence name: sequence</cite> dictionary
-for mispriming checks.</li>
-<li><strong>mishyb_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) &#8211; <cite>Sequence name: sequence</cite> dictionary
-for mishybridization checks.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq_args</strong> (<em>dict</em>) – Primer3 sequence/design args as per
+Primer3 docs</p></li>
+<li><p><strong>global_args</strong> (<em>dict</em><em>, </em><em>optional</em>) – Primer3 global args as per Primer3 docs</p></li>
+<li><p><strong>misprime_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <cite>Sequence name: sequence</cite> dictionary
+for mispriming checks.</p></li>
+<li><p><strong>mishyb_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <cite>Sequence name: sequence</cite> dictionary
+for mishybridization checks.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary of Primer3 results (should be identical to the expected
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of Primer3 results (should be identical to the expected
 BoulderIO output from primer3_main)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.runP3Design">
-<code class="descclassname">primer3.bindings.</code><code class="descname">runP3Design</code><span class="sig-paren">(</span><em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#runP3Design"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.runP3Design" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">runP3Design</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#runP3Design"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.runP3Design" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the Primer3 design process, return a dict of the Primer3 output.</p>
 <p>The global parameters and seq args must have been previously set prior to
 this call (raises IOError).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>debug</strong> (<em>bool</em><em>, </em><em>optional</em>) &#8211; If <code class="docutils literal"><span class="pre">True</span></code>, prints the received design
-params to stderr for debugging purposes</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary of Primer3 results (should be identical to the expected
-BoulderIO output from primer3_main)</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, prints the received design
+params to stderr for debugging purposes</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of Primer3 results (should be identical to the expected
+BoulderIO output from primer3_main)</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.setP3Globals">
-<code class="descclassname">primer3.bindings.</code><code class="descname">setP3Globals</code><span class="sig-paren">(</span><em>global_args</em>, <em>misprime_lib=None</em>, <em>mishyb_lib=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#setP3Globals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.setP3Globals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">setP3Globals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_args</span></em>, <em class="sig-param"><span class="n">misprime_lib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mishyb_lib</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#setP3Globals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.setP3Globals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the Primer3 global args and misprime/mishyb libraries.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>global_args</strong> (<em>dict</em>) &#8211; Primer3 global parameters as per
-Primer3 docs</li>
-<li><strong>misprime_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) &#8211; <code class="docutils literal"><span class="pre">&lt;Sequence</span> <span class="pre">name:</span> <span class="pre">sequence&gt;</span></code> dict
-for mispriming checks.</li>
-<li><strong>mishyb_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) &#8211; <code class="docutils literal"><span class="pre">&lt;Sequence</span> <span class="pre">name:</span> <span class="pre">sequence&gt;</span></code> dict
-for mishybridization checks.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>global_args</strong> (<em>dict</em>) – Primer3 global parameters as per
+Primer3 docs</p></li>
+<li><p><strong>misprime_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">&lt;Sequence</span> <span class="pre">name:</span> <span class="pre">sequence&gt;</span></code> dict
+for mispriming checks.</p></li>
+<li><p><strong>mishyb_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">&lt;Sequence</span> <span class="pre">name:</span> <span class="pre">sequence&gt;</span></code> dict
+for mishybridization checks.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">None</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="primer3.bindings.setP3SeqArgs">
-<code class="descclassname">primer3.bindings.</code><code class="descname">setP3SeqArgs</code><span class="sig-paren">(</span><em>seq_args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#setP3SeqArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.setP3SeqArgs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">setP3SeqArgs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq_args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#setP3SeqArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.setP3SeqArgs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the Primer3 sequence / design arguments.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seq_args</strong> (<em>dict</em>) &#8211; Primer3 seq/design args as per Primer3 docs</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seq_args</strong> (<em>dict</em>) – Primer3 seq/design args as per Primer3 docs</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -461,9 +426,7 @@ for mishybridization checks.</li>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -472,7 +435,7 @@ for mishybridization checks.</li>
         <a href="thermoanalysis.html" class="btn btn-neutral float-right" title="Low-level thermodynamic analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -481,11 +444,11 @@ for mishybridization checks.</li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2017, Ben Pruitt, Nick Conway; Wyss Institute.
+        &copy; Copyright 2014-2020, Ben Pruitt, Nick Conway; Wyss Institute
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -498,36 +461,15 @@ for mishybridization checks.</li>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.5.5',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

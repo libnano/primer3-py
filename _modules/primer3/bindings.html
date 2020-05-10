@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>primer3.bindings &mdash; Primer3-py 0.5.5 documentation</title>
+  <title>primer3.bindings &mdash; Primer3-py 0.6.1 documentation</title>
   
 
   
@@ -17,41 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Primer3-py 0.5.5 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -65,7 +58,7 @@
             
             
               <div class="version">
-                0.5.5
+                0.6.1
               </div>
             
           
@@ -105,7 +98,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Primer3-py</a>
@@ -113,9 +106,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -145,8 +139,6 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
-        
       </li>
     
   </ul>
@@ -158,7 +150,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for primer3.bindings</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright (C) 2014-2015. Ben Pruitt &amp; Nick Conway; Wyss Institute</span>
+<span></span><span class="c1"># Copyright (C) 2014-2020. Ben Pruitt &amp; Nick Conway; Wyss Institute</span>
 <span class="c1"># See LICENSE for full GPLv2 license.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
@@ -195,10 +187,10 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pjoin</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pjoin</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">thermoanalysis</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">primerdesign</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">thermoanalysis</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">primerdesign</span>
 
 
 <span class="c1"># ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #</span>
@@ -228,7 +220,7 @@
 
 
 <div class="viewcode-block" id="calcHairpin"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHairpin">[docs]</a><span class="k">def</span> <span class="nf">calcHairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">dna_conc</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
-                <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+                <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">output_structure</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Calculate the hairpin formation thermodynamics of a DNA sequence.</span>
 
 <span class="sd">    **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested</span>
@@ -244,6 +236,7 @@
 <span class="sd">        dna_conc (float/int, optional): DNA conc. (nM)</span>
 <span class="sd">        temp_c (int, optional): Simulation temperature for dG (Celsius)</span>
 <span class="sd">        max_loop(int, optional): Maximum size of loops in the structure</span>
+<span class="sd">        output_structure (bool) : If `True`, the ASCII dimer structure is saved</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A `ThermoResult` object with thermodynamic characteristics of the</span>
@@ -254,11 +247,11 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">output_structure</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="calcHomodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHomodimer">[docs]</a><span class="k">def</span> <span class="nf">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-                  <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+                  <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">output_structure</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Calculate the homodimerization thermodynamics of a DNA sequence.</span>
 
 <span class="sd">    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed</span>
@@ -277,6 +270,7 @@
 <span class="sd">        temp_c (int, optional)          : Simulation temperature for dG (C)</span>
 <span class="sd">        max_loop (int, optional)        : Maximum size of loops in the</span>
 <span class="sd">                                          structure</span>
+<span class="sd">        output_structure (bool) : If `True`, the ASCII dimer structure is saved</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A `ThermoResult` object with thermodynamic characteristics of the</span>
@@ -287,11 +281,12 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">output_structure</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="calcHeterodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHeterodimer">[docs]</a><span class="k">def</span> <span class="nf">calcHeterodimer</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-                    <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+                    <span class="n">dna_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">temp_c</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">max_loop</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                    <span class="n">output_structure</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Calculate the heterodimerization thermodynamics of two DNA sequences.</span>
 
 <span class="sd">    **Note that at least one of the two sequences must by &lt;60 bp in length.**</span>
@@ -311,6 +306,7 @@
 <span class="sd">        dna_conc (float/int)    : DNA conc. (nM)</span>
 <span class="sd">        temp_c (int)            : Simulation temperature for dG (Celsius)</span>
 <span class="sd">        max_loop(int)           : Maximum size of loops in the structure</span>
+<span class="sd">        output_structure (bool) : If `True`, the ASCII dimer structure is saved</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A `ThermoResult` object with thermodynamic characteristics of the</span>
@@ -321,7 +317,7 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_setThermoArgs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHeterodimer</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">_THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHeterodimer</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">,</span> <span class="n">output_structure</span><span class="p">)</span><span class="o">.</span><span class="n">checkExc</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="calcEndStability"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcEndStability">[docs]</a><span class="k">def</span> <span class="nf">calcEndStability</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">,</span> <span class="n">mv_conc</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dv_conc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dntp_conc</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
@@ -488,9 +484,7 @@
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -499,11 +493,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2014-2017, Ben Pruitt, Nick Conway; Wyss Institute.
+        &copy; Copyright 2014-2020, Ben Pruitt, Nick Conway; Wyss Institute
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -516,36 +510,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.5.5',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>
