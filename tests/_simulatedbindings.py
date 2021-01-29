@@ -175,7 +175,7 @@ def designPrimers(seq_args, global_args=None, reset_args=True,
     ''' Run the Primer3 design process, with the same interface as the bindings,
     using the wrapped subprocess of primer3_core to do the work. 
 
-    If the global args have been previously set (either by a pervious
+    If the global args have been previously set (either by a previous
     `designPrimers` call or by a `setGlobals` call), `designPrimers` may be
     called with seqArgs alone (as a means of optimization).
 

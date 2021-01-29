@@ -251,7 +251,7 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
                   mishyb_lib=None, debug=False):
     ''' Run the Primer3 design process.
 
-    If the global args have been previously set (either by a pervious
+    If the global args have been previously set (either by a previous
     `designPrimers` call or by a `setGlobals` call), `designPrimers` may be
     called with seqArgs alone (as a means of optimization).
 
