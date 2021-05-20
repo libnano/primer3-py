@@ -30,7 +30,6 @@ and the Primer3 library.
 #include    <libprimer3.h>
 #include    "p3_seq_lib.h"
 
-
 #if PY_MAJOR_VERSION < 3
 /* see http://python3porting.com/cextensions.html */
     #ifdef PyLong_Check
@@ -382,6 +381,15 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MUST_MATCH_THREE_PRIME", &pa->p_args.must_match_three_prime, temp_char, str_size);
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_FIVE_PRIME", &pa->o_args.must_match_five_prime, temp_char, str_size);
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_THREE_PRIME", &pa->o_args.must_match_three_prime, temp_char, str_size);
+	//masking parameters
+	DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_TEMPLATE", pa->mask_template);
+	DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_MASK_FAILURE_RATE", pa->mp.failure_rate);
+	DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_MASK_FAILURE_RATE ", pa->p_args.weights.failure_rate);
+	DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_5P_DIRECTION", pa->mp.nucl_masked_in_5p_direction);
+	DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_3P_DIRECTION", pa->mp.nucl_masked_in_3p_direction);
+    DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PREFIX", &pa->mp.list_prefix, temp_char, str_size);
+
+
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_TM_GT", pa->p_args.weights.temp_gt);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_TM_LT", pa->p_args.weights.temp_lt);
     DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_GC_PERCENT_GT", pa->p_args.weights.gc_content_gt);
@@ -496,6 +504,51 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
             }
             pa->num_intervals = i;
         }
+    }
+	//mask parameters
+    if(pa->mask_template){
+        pa->lowercase_masking=pa->mask_template;
+    }        
+	const char *kmer_lists_path = NULL;
+    /* Check if template masking flag was given */
+    if (pa->mask_template == 1)
+	   if (!DICT_GET_OBJ(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PATH")) 
+	    {
+		    struct stat st;
+		    if ((stat("../kmer_lists", &st) == 0) && S_ISDIR(st.st_mode)) {
+				kmer_lists_path =
+				(char*) malloc(strlen("../kmer_lists/") * sizeof(char) + 1);
+				if (NULL == kmer_lists_path)  return -2; /* Out of memory */
+				strcpy(kmer_lists_path, "../kmer_lists/");
+			} else if ((stat("/opt/kmer_lists", &st) == 0)  && S_ISDIR(st.st_mode)) {
+				kmer_lists_path =
+			   (char*) malloc(strlen("/opt/kmer_lists/") * sizeof(char) + 1);
+				if (NULL == kmer_lists_path) return -2; /* Out of memory */
+					strcpy(kmer_lists_path, "/opt/kmer_lists/");
+		} else {
+			DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PATH", kmer_lists_path, temp_char, str_size);
+		}
+	}
+
+    /* Check that we found the kmer lists in case masking flag was set to 1. */
+    if (pa->mask_template == 1 && kmer_lists_path == NULL){
+        PyErr_Format(PyExc_TypeError,\
+			"PRIMER_ERROR=masking template chosen, but path to kmer lists not specified\n=\n");
+		Py_DECREF(kmer_lists_path);
+        return -1;
+    }
+    /* Set up some masking parameters */
+    /* edited by M. Lepamets */
+	if (pa->mask_template == 1) {
+		pa->mp.window_size = DEFAULT_WORD_LEN_2;
+		if (pa->pick_right_primer == 0) pa->mp.mdir = fwd;
+		else if (pa->pick_left_primer == 0) pa->mp.mdir = rev;
+		if (DICT_GET_OBJ(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PATH")) 
+		{
+			delete_formula_parameters (pa->mp.fp, pa->mp.nlists);
+			pa->mp.fp = create_default_formula_parameters (pa->mp.list_prefix, kmer_lists_path, NULL);
+			pa->masking_parameters_changed = 0;
+		}
     }
 
     // Handler primer task

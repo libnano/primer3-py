@@ -1,3 +1,81 @@
+release 2.5.0 2019-08-17  ===============================================
+This release adds new features to primer3_core and related C code.
+
+The primer3_config files for thermodynamic calculations are embedded in the
+code and the primer3_config/ folder is not required any more for default
+settings.
+
+If PRIMER_SECONDARY_STRUCTURE_ALIGNMENT=1 is set, the secondary structure 
+will be displayed as string representation (for example):
+PRIMER_LEFT_0_SELF_ANY_STUCT=5' ATTCGATTCTCCCCGGTATC 3'\n               ||||\n        3' CTATGGCCCCTCTTAGCTTA 5'\n
+for the structure:
+5' ATTCGATTCTCCCCGGTATC 3'
+               ||||
+        3' CTATGGCCCCTCTTAGCTTA 5'
+
+
+Minor fixes:
+1. Primer3 can handle windows newlines on input files.
+
+2. A bug in the compl_end calculations was fixed.
+
+3. The primer3_config/ folder is not required any more.
+
+
+release 2.4.0 2017-11-03  ===============================================
+This release adds a new feature to primer3_core and related C code.
+
+PCR PRIMER DESIGN TEMPLATE MASKING BEFORE PRIMER DESIGN. This feature
+helps to prevent designing primers to template regions that are repetitive.
+Primers with more binding sites tend to have higher failure rates. The
+masking is based on statistical model (see Documentation for details).
+
+NEW INPUT TAGS AND DEFAULT VALUES:
+PRIMER_MASK_TEMPLATE=0
+PRIMER_MASK_FAILURE_RATE=0.1
+PRIMER_MASK_5P_DIRECTION=1
+PRIMER_MASK_3P_DIRECTION=1
+PRIMER_MASK_KMERLIST_PREFIX=homo_sapiens
+PRIMER_MASK_KMERLIST_PATH=../kmer_lists/
+PRIMER_WT_MASK_FAILURE_RATE=0.0
+
+See the documentation for details. The tag PRIMER_MASK_TEMPLATE directs
+primer3_core to premask template sequence for primer design.
+
+NEW EXECUTABLE: primer3_masker
+
+masker masks repetitive regions in INPUTFILE (given as fasta and/or multiple
+fasta format) based on statistical approach.
+
+IMPORTANT: because PRIMER_MASK_TEMPLATE=1,
+PRIMER_MASK_KMERLIST_PATH must point to the right location.
+This tag specifies the path to the directory that contains kmer list files
+used by the template masking approach. The default location: ../kmer_lists/  If  the
+list files are not in that location, be sure to set
+PRIMER_MASK_KMERLIST_PATH
+
+By default, directory ../kmer_lists/ contains example kmers. Software for
+making kmers can be downloaded http://bioinfo.ut.ee/FastGT/index.php?r=site/index
+Premade list files can be downloaded from: http://primer3.ut.ee/lists.htm
+
+In 2016:
+Major correction:
+1. The long primer3_core comand line options with single hyphen (-myargs) 
+   are depreciated. Use double hyphens (--myargs) instead. 
+
+2. The PRIMER_TASK pick_discriminative_primers was modified. Now the primer
+   border the provided SEQUENCE_TARGET and do not overlap by one basepair.
+
+Minor fixes:
+1. The test scripts were updated to use the default valgrind path and to
+   use the --type comand line arguments instead of -type.
+
+2. In thal.c the function finite() was replaced by the c99 isfinite().
+
+3. In libprimer3 all abort() functions were removed and error handling
+   implemented.
+
+
 release 2.3.7 2016-02-18 ===============================================
 
 Major correction:

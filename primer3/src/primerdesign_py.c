@@ -121,7 +121,7 @@ setGlobals(PyObject *self, PyObject *args){
     */
 
     PyObject        *global_args=NULL, *misprime_lib=NULL;
-    PyObject        *mishyb_lib=NULL;
+    PyObject        *mishyb_lib=NULL;  *kmer_path=NULL;
     seq_lib         *mp_lib, *mh_lib;
 
 
@@ -139,7 +139,7 @@ setGlobals(PyObject *self, PyObject *args){
     }
 
     if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args,
-                          &misprime_lib, &mishyb_lib)) {
+                          &misprime_lib, &mishyb_lib, &kmer_path)) {
         goto err_set_global;
     }
 
@@ -160,6 +160,11 @@ setGlobals(PyObject *self, PyObject *args){
         }
         pa->o_args.repeat_lib = mh_lib;
     }
+	if ((kmer_list) != NULL) && (kmer_list != Py_None)) {
+		if ((fp = pdh_createKmerList(kmer_list)) == NULL) {
+            goto err_set_global;
+		}
+		pa->p_args.repeat_lib = mp_lib;
 
     Py_RETURN_NONE;
 

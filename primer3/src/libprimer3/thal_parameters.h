@@ -1,12 +1,12 @@
 /*
-Copyright (c) 1996,1997,1998,1999,2000,2001,2004,2006,2007
+Copyright (c) 2018
 Whitehead Institute for Biomedical Research, Steve Rozen
-(http://purl.com/STEVEROZEN/), Andreas Untergasser and Helen Skaletsky
+(http://purl.com/STEVEROZEN/), Andreas Untergasser and Helen Skaletsky.
 All rights reserved.
 
-    This file is part of primer3.
+    This file is part of the primer3 suite and libraries.
 
-    Primer3 and the libprimer3 library are free software;
+    The primer3 suite and libraries are free software;
     you can redistribute them and/or modify them under the terms
     of the GNU General Public License as published by the Free
     Software Foundation; either version 2 of the License, or (at
@@ -18,7 +18,7 @@ All rights reserved.
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this file (file gpl-2.0.txt in the source
+    along with this software (file gpl-2.0.txt in the source
     distribution); if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
@@ -35,27 +35,22 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef PR_FORMAT_OUTPUT_H
-#define PR_FORMAT_OUTPUT_H 1
 
-#include "libprimer3.h"
+#ifndef THERMODYNAMIC_PARAMETERS_H
+#define THERMODYNAMIC_PARAMETERS_H 1
+#include "thal.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* 
- * Format the pair in p (plus the middle oligo if appropriate)
- * on f.  If p->product_size = 0 then primer choice failed.
- * Both functions may exit on error, using the conventions
- * in primer3_boulder_main.c
+ * Copy the default thermodynamic parameter strings to *a 
  */
+int set_default_thal_parameters(thal_parameters *a);
 
-void print_format_output(FILE *f, 
-                         const int *io_version, 
-                         const p3_global_settings *pa,
-                         const seq_args *sa, 
-                         const p3retval *, 
-                         const char *,
-                         int   explain_flag);
-
-
-void format_error(FILE *f, const char* seq_name, const char *err);
-void format_warning(FILE *f, const char* seq_name, const char *err);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

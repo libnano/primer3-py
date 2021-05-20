@@ -45,15 +45,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <limits.h> /* SHRT_MIN, ULONG_MAX */
 #include <float.h> /* DBL_MIN */
 
-#include "oligotm.h"
-
 #ifdef __cplusplus
   extern "C" {
 #endif
 
 /* ALIGN_SCORE_UNDEF is used only libprimer3 and clients, not in dpal */
 #define ALIGN_SCORE_UNDEF            -DBL_MAX
-
+     
 /* These next 5 are exposed for format_output.c -- probabaly should be reviewed. */
 #define PR_INFINITE_POSITION_PENALTY -1.0
 #define PR_DEFAULT_INSIDE_PENALTY     PR_INFINITE_POSITION_PENALTY
@@ -85,7 +83,7 @@ if (!(COND)) {                                           \
 }
 
 /* Enum to define tasks primer3 can do */
-typedef enum task {
+typedef enum task { 
   pick_pcr_primers               = 0,
   /*  For backward compatibility, equivalent to
       generic
@@ -98,7 +96,7 @@ typedef enum task {
   pick_hyb_probe_only            = 4,
   generic                        = 5,
   pick_cloning_primers           = 6,
-  pick_discriminative_primers    = 7,
+  pick_discriminative_primers    = 7,    
   pick_sequencing_primers        = 8,
   pick_primer_list               = 9,
   check_primers                  = 10,
@@ -116,7 +114,14 @@ typedef struct pr_append_str {
   char *data;
 } pr_append_str;
 
-/*
+#include "oligotm.h"
+#include "masker.h"
+#include "thal.h"
+#include "thal_parameters.h"
+#include "dpal.h"
+#include "khash.h"
+
+/* 
  * Arguments to the primer program as a whole.  Values for these arguments are
  * retained _across_ different input records.  (These are the so-called
  * "Global" arguments in the documentation.)
@@ -143,6 +148,7 @@ typedef struct oligo_weights {
   double temp_lt;
   double template_mispriming;
   double template_mispriming_th;
+  double failure_rate;
 
 } oligo_weights;
 
@@ -209,7 +215,7 @@ typedef struct args_for_one_oligo_or_primer {
   int    opt_size;
   int    min_size;
   int    max_size;
-  int    max_poly_x;      /*
+  int    max_poly_x;      /* 
                            * Maximum length of mononucleotide sequence in an
                            * oligo.
                            */
@@ -217,12 +223,12 @@ typedef struct args_for_one_oligo_or_primer {
   int    min_end_quality;
   int    min_quality;       /* Minimum quality permitted for oligo sequence.*/
 
-  double max_self_any;
+  double max_self_any;  
   double max_self_end;
   double max_self_any_th;
   double max_self_end_th;
   double max_hairpin_th;
-  double max_repeat_compl;   /*
+  double max_repeat_compl;   /* 
                               * Acceptable complementarity with repeat
                               * sequences.
                               */
@@ -259,8 +265,8 @@ typedef struct args_for_one_oligo_or_primer {
 } args_for_one_oligo_or_primer;
 
 /* Maxima needed for interface data structures. */
-#define PR_MAX_INTERVAL_ARRAY 200
-/*
+#define PR_MAX_INTERVAL_ARRAY 200 
+/* 
  * Maximum number of input intervals
  * supported; used for targets, excluded
  * regions, product-size intervals, etc.
@@ -272,7 +278,7 @@ typedef struct p3_global_settings {
   /* Arguments that control behavior of choose_primers() */
 
   task   primer_task; /* 2 if left primer only, 3 if right primer
-		       * only, 4 if internal oligo only.  */
+                       * only, 4 if internal oligo only.  */
 
   int    pick_left_primer;
   int    pick_right_primer;
@@ -280,7 +286,7 @@ typedef struct p3_global_settings {
 
   int    file_flag;   /* TO DO, See if this can be factored out. */
 
-  int    first_base_index;  /*
+  int    first_base_index;  /* 
                              * The index of the first base in the input
                              * sequence.  This parameter is ignored within
                              * pr_choice; pr_choice's caller must assure that
@@ -289,7 +295,7 @@ typedef struct p3_global_settings {
                              * adjust base indexes.
                              */
 
-  int    liberal_base;   /*
+  int    liberal_base;   /* 
                           * If non-0 then turn characters other than
                           * [ATGCNatgcn] into N.
                           */
@@ -316,24 +322,24 @@ typedef struct p3_global_settings {
   args_for_one_oligo_or_primer p_args;
   args_for_one_oligo_or_primer o_args;
 
-  tm_method_type tm_santalucia;
-  /*
+  tm_method_type tm_santalucia;  
+  /* 
      tm_santalucia added by T.Koressaar for updated table
      thermodynamics.  Specifies details of melting temperature
      calculation.  (New in v. 1.1.0, added by Maido Remm and Triinu
      Koressaar.)
-
+      
      A value of 1 (recommended) directs primer3 to use the table of
      thermodynamic values and the method for melting temperature
      calculation suggested in the paper [SantaLucia JR (1998) "A
      unified view of polymer, dumbbell and oligonucleotide DNA
      nearest-neighbor thermodynamics", Proc Natl Acad Sci 95:1460-65
      http://dx.doi.org/10.1073/pnas.95.4.1460].
-
+      
      A value of 0 directs primer3 to a backward compatible calculation
      (in other words, the only calculation availble in previous
      version of primer3).
-
+      
      This backward compatible calculation uses the table of
      thermodynamic parameters in the paper [Breslauer KJ, Frank R,
      Bloecker H and Marky LA (1986) "Predicting DNA duplex stability
@@ -343,12 +349,12 @@ typedef struct p3_global_settings {
      RE (1990) "Optimization of the annealing temperature for DNA
      amplification in vitro", Nucleic Acids Res 18:6409-12
      http://www.pubmedcentral.nih.gov/articlerender.fcgi?tool=pubmed&pubmedid=2243783].
-
+       
      The default value is 0 only for backward compatibility.
   */
 
-  salt_correction_type salt_corrections;
-  /*
+  salt_correction_type salt_corrections; 
+  /* 
      salt_corrections added by T.Koressaar for salt correction for Tm
      calculation.  A value of 1 (recommended) directs primer3 to use
      the salt correction formula in the paper [SantaLucia JR (1998) "A
@@ -392,8 +398,8 @@ typedef struct p3_global_settings {
   /* Start of arguments related to primer and/or oligo
      location in the template. */
 
-  int lowercase_masking;
-  /*
+  int lowercase_masking; 
+  /* 
      lowercase_masking added by T.Koressaar. Enables design of primers
      from lowercase masked template.  A value of 1 directs primer3 to
      reject primers overlapping lowercase a base exactly at the 3'
@@ -408,7 +414,7 @@ typedef struct p3_global_settings {
   */
 
   sequencing_parameters sequencing;  /* Used to calculate the position
-					of sequencing primers */
+                                        of sequencing primers */
 
   double outside_penalty; /* Multiply this value times the number of NTs
                            * from the 3' end to the the (unique) target to
@@ -434,7 +440,7 @@ typedef struct p3_global_settings {
      three slots. */
   int    pr_min[PR_MAX_INTERVAL_ARRAY]; /* Minimum product sizes. */
   int    pr_max[PR_MAX_INTERVAL_ARRAY]; /* Maximum product sizes. */
-  int    num_intervals;         /*
+  int    num_intervals;         /* 
                                  * Number of product size intervals
                                  * (i.e. number of elements in pr_min and
                                  * pr_max)
@@ -451,12 +457,12 @@ typedef struct p3_global_settings {
   double pair_compl_any_th;
   double pair_compl_end;
   double pair_compl_end_th;
-
+   
   int thermodynamic_oligo_alignment;
-  /*
+  /* 
      Enables to use approach of thermodynamical alignment for dimer
      and hairpin calculations.
-
+   
      0 = Use alignment *not* based on thermodynamics - the only dimer
      calculation approach until primer3 2.2.0.  No hairpins are
      calculated.
@@ -464,14 +470,28 @@ typedef struct p3_global_settings {
      1 = Use alignment based on thermodynamics. Hairpins are calculated
   */
   int thermodynamic_template_alignment;
-  /*
-     Enables to use approach of thermodynamical alignment for template
+  /* 
+     Enables to use approach of thermodynamical alignment for template 
      mispriming calculations.
      0 = Use alignment *not* based on thermodynamics.
      1 = Use alignment based on thermodynamics.
   */
 
-  double max_diff_tm;
+  thal_parameters thermodynamic_parameters;
+  /*
+     The parameters for thermodynamic calculation. Default parameters
+     are loaded by the thermodynamic_parameters.h function and
+     can be overwitten by read_boulder.h functions.
+  */
+
+  int show_secondary_structure_alignment;
+  /* 
+     String representations of the secondary structures are calculated.
+     0 = Do not calculate and show secondary structure strings.
+     1 = Calculate and show secondary structure strings.
+  */
+
+  double max_diff_tm; 
   /* Maximum allowed difference between temperature of primer and
      temperature of product.  Cannot be calculated until product is
      known. */
@@ -487,13 +507,21 @@ typedef struct p3_global_settings {
      Please see the user documentation (primer3_manual.htm) for
      PRIMER_{LEFT,RIGHT}_MIN_THREE_PRIME_DISTANCE.
   */
-
+  
   int    min_5_prime_overlap_of_junction;   /* The number of basepairs
-					       the primer has to
-					       overlap an overlap
-					       junction. */
+                                               the primer has to
+                                               overlap an overlap
+                                               junction. */
   int    min_3_prime_overlap_of_junction;
 
+  int    mask_template;
+  int    masking_parameters_changed;
+  /* Turn on masking of the trimmed_orig_seq (added by M. Lepamets)*/
+      
+  masker_parameters mp;
+   /*
+    a struct containing all masking parameters
+   */
   int dump;  /* dump fields for global settings and seq args if dump == 1 */
 } p3_global_settings;
 
@@ -505,24 +533,24 @@ typedef enum oligo_type { OT_LEFT = 0, OT_RIGHT = 1, OT_INTL = 2 }
    library (which is read in from a fasta file). */
 typedef struct rep_sim {
   char *name;       /* Name of the sequence format with maximum
-		       similarity to the oligo.
+                     * similarity to the oligo.
                      */
 
-  short min;        /*
+  short min;        /* 
                      * The minimum score in slot 'score' (below).
                      * (Used when the objective function involves
                      * minimization of mispriming possibilities.)
                      */
 
   short max;        /* The index of the maximum score in slot 'score'
-		       (below). */
+                       (below). */
 
-  double *score;    /*
+  double *score;    /* 
                     * Array of similarity (i.e. false-priming) scores,
                     * one for each entry in the 'repeat_lib' slot
                     * of the primargs struct.  In libprimer3.c,
-		    * score is set to NULL to indicate that
-		    * the rep_sim structure is uninitialized.
+                    * score is set to NULL to indicate that
+                    * the rep_sim structure is uninitialized.
                     */
 } rep_sim;
 
@@ -533,44 +561,44 @@ CANNOT COMPILE FOR THIS SYSTEM (< 32 bits in an unsigned long it)
 typedef struct oligo_problems {
   unsigned long int prob;
 } oligo_problems;
-
+     
 typedef struct primer_rec {
-
+        
   rep_sim repeat_sim;
   /* Information on the best repeat library (mispriming library)
    * match for this oligo (primer), plus additional scores.
    */
-
+        
   double temp; /* The oligo melting temperature calculated for the
-		* primer. */
-
+                * primer. */
+        
   double gc_content;
-
-  double position_penalty;
+        
+  double position_penalty; 
   /*
    * Penalty for distance from "ideal" position as specified
    * by inside_penalty and outside_penalty.
    */
 
   double quality;  /* Part of objective function due to this primer. */
-
+        
   double end_stability;
   /* Delta G of disription of 5 3' bases. */
-
+        
   int    start;    /* Position of the 5'-most base within the primer
-		      WITH RESPECT TO THE seq_args FIELD
-		      trimmed_seq. */
-
-  int    seq_quality; /* Minimum quality score of bases included. */
+                      WITH RESPECT TO THE seq_args FIELD
+                      trimmed_seq. */
+        
+  int    seq_quality; /* Minimum quality score of bases included. */   
   int    seq_end_quality;  /* Minimum quality core of the 5 3' bases. */
-
-
+        
+        
   double self_any; /* Self complementarity as local alignment * 100. */
-
+        
   double self_end; /* Self complementarity at 3' end * 100. */
-
+        
   double hairpin_th; /* hairpin, thermodynamical approach and calculated as any */
-
+        
   double template_mispriming;
   /* Max 3' complementarity to any ectopic site in template
      on the given template strand. */
@@ -578,17 +606,30 @@ typedef struct primer_rec {
   /* Max 3' complementarity to any ectopic site in the
      template on the reverse complement of the given template
      strand. */
+
+  char *self_any_struct; /* Secondary structure of self_any */
+
+  char *self_end_struct; /* Secondary structure of self_end */
+
+  char *hairpin_struct; /* Secondary structure of hairpin_th */
+
+  char *template_mispriming_struct; /* Secondary structure of template_mispriming */
+
+  char *template_mispriming_r_struct; /* Secondary structure of template_mispriming_r */
+
   char   length;   /* Length of the oligo. */
   char   num_ns;   /* Number of Ns in the oligo. */
-
+        
   char   must_use; /* Non-0 if the oligo must be used even if it is illegal. */
   char   overlaps; /* Non-0 if the oligo overlaps some oligo used in one of the best pairs. */
-
+        
   oligo_problems problems;
   char   overlaps_overlap_position;
 
   char template_mispriming_ok; /* Non-0 if the oligo was checked for this already and it is ok. */
-
+  
+  double failure_rate; /* Primer failure rate due to non-specific priming */
+        
 } primer_rec;
 
 const char *
@@ -596,7 +637,7 @@ const char *
 
 int p3_ol_is_ok(const primer_rec *);
 
-/*
+/* 
  * The structure for a pair of primers and for a pair of
  * primers plus an internal oligo.
  */
@@ -604,9 +645,9 @@ typedef struct primer_pair {
   double pair_quality;  /* Penalty value of the primer pair */
 
   double diff_tm;       /* Absolute value of the difference between melting
-                         * temperatures for left and right primers.
+                         * temperatures for left and right primers. 
                          */
-
+   
   double product_tm;    /* Estimated melting temperature of the product. */
 
   double product_tm_oligo_tm_diff;
@@ -615,20 +656,26 @@ typedef struct primer_pair {
 
   double t_opt_a;
 
-  double compl_any;     /*
+  double compl_any;     /* 
                          * Local complementarity score between left and right
                          * primers (* 100).
                          */
 
-  double compl_end;     /*
+  double compl_end;     /* 
                          * 3'-anchored global complementatory score between *
                          * left and right primers (* 100).
                          */
-
+  
   double template_mispriming;
                         /* Maximum total mispriming score of both primers
                            to ectopic sites in the template, on "same"
                            strand (* 100). */
+
+  char *compl_any_struct; /* Secondary structure of compl_any */
+
+  char *compl_end_struct; /* Secondary structure of compl_end */
+
+  char *template_mispriming_struct; /* Secondary structure of template_mispriming */
 
   double repeat_sim;    /* Maximum total similarity of both primers to the
                          * sequence from given file in fasta format.
@@ -640,7 +687,7 @@ typedef struct primer_pair {
   char   must_use;
 
   int    product_size;  /* Product size. */
-  int    target;        /*
+  int    target;        /* 
                          * 1 if there is a target between the right and left
                          * primers.
                          */
@@ -658,15 +705,14 @@ typedef struct interval_array_t4 {
   int left_pairs[PR_MAX_INTERVAL_ARRAY][2];
   int right_pairs[PR_MAX_INTERVAL_ARRAY][2];
   int any_left;  /* set to 1 if the empty pair ",," is given for any
-		    left interval */
+                    left interval */
   int any_right; /* set to 1 if the empty pair ",," is given for any
-		    right interval */
+                    right interval */
   int any_pair;  /* set to 1 if both intervals are given as empty */
   int count;     /* total number of pairs */
 } interval_array_t4;
 
-int
-interval_array_t2_count(const interval_array_t2 *array);
+int interval_array_t2_count(const interval_array_t2 *array);
 
 const int *
 interval_array_t2_get_pair(const interval_array_t2 *array, int i);
@@ -686,7 +732,7 @@ typedef struct oligo_stats {
   int compl_any;           /* Self-complementarity too high.                */
   int compl_end;           /* Self-complementarity at 3' end too high.      */
   int hairpin_th;          /* Hairpin structure too stable in
-			      thermodynamical approach                      */
+                              thermodynamical approach                      */
   int repeat_score;        /* Complementarity with repeat sequence too high.*/
   int poly_x;              /* Long mononucleotide sequence inside.          */
   int seq_quality;         /* Low quality of bases included.                */
@@ -696,9 +742,9 @@ typedef struct oligo_stats {
   int template_mispriming; /* Template mispriming score too high.           */
   int ok;                  /* Number of acceptable oligos.                  */
   int gmasked;             /* Added by T. Koressaar, number of gmasked
-			      oligos */
-  int must_match_fail;     /* Added by A. Untergasser, number of oligos
-			      failing must match */
+                              oligos */
+  int must_match_fail;     /* Added by A. Untergasser, number of oligos 
+                              failing must match */
   int not_in_any_left_ok_region; /* Oligo not included in any of the
                                     left regions given in
                                     PRIMER_PAIR_OK_REGION_LIST. */
@@ -763,19 +809,19 @@ typedef struct seq_args {
 
   interval_array_t2 excl2;/* The number of excluded regions. */
 
-  interval_array_t2 excl_internal2;
+  interval_array_t2 excl_internal2; 
                           /* Number of excluded regions for internal
                              oligo; similar to excl2.*/
 
   interval_array_t4 ok_regions;
 
-  int primer_overlap_junctions[PR_MAX_INTERVAL_ARRAY];
+  int primer_overlap_junctions[PR_MAX_INTERVAL_ARRAY]; 
   /* List of overlap junction positions. */
 
   int primer_overlap_junctions_count;
 
   int incl_s;             /* The 0-based start of included region. */
-  int incl_l;             /*
+  int incl_l;             /* 
                            * The length of the included region, which is
                            * also the length of the trimmed_seq field.
                            */
@@ -785,7 +831,7 @@ typedef struct seq_args {
   int  n_quality;            /* Number of valid elements in 'quality' */
   int  quality_storage_size; /* Amount of storage quality points to. */
 
-  char *sequence;         /* The template sequence itself as input,
+  char *sequence;         /* The template sequence itself as input, 
                              not trimmed, not up-cased. */
   char *sequence_name;    /* An identifier for the sequence. */
   char *sequence_file;    /* Another identifer for the sequence. */
@@ -794,11 +840,16 @@ typedef struct seq_args {
   /* Element add by T. Koressaar support lowercase masking: */
   char *trimmed_orig_seq; /* Trimmed version of the original,
                              mixed-case sequence. */
+  
+  /* Added by M. Lepamets */
+  char *trimmed_masked_seq; /* Masked version of the trimmed seq */
+  char *trimmed_masked_seq_r; /* Masked version of the other strand
+                                of the trimmed seq */                           
 
   char *upcased_seq;      /* Upper case version of sequence
                              (_not_ trimmed). */
 
-  char *upcased_seq_r;    /* Upper case version of sequence,
+  char *upcased_seq_r;    /* Upper case version of sequence, 
                              other strand (_not_ trimmed). */
 
   char *left_input;       /* A left primer to check or design around. */
@@ -806,7 +857,7 @@ typedef struct seq_args {
   char *right_input;      /* A right primer to check or design around. */
 
   char *internal_input;   /* An internal oligo to check or design around. */
-
+  
   int force_left_start;   /* The 0-based forced 5' start left primer. */
   int force_left_end;     /* The 0-based forced 3' end left primer. */
   int force_right_start;  /* The 0-based forced 5' start right primer. */
@@ -835,14 +886,14 @@ typedef struct oligo_array {
 } oligo_array;
 
 /*
- * The return value for for primer3.
+ * The return value for for primer3. 
  * After use, free memory with destroy_p3retval().
  */
 typedef struct p3retval {
-
+        
   /* Arrays of oligo (primer) records. */
   oligo_array fwd, intl, rev;
-
+        
   /* Array of best primer pairs */
   pair_array_t best_pairs;
 
@@ -854,7 +905,7 @@ typedef struct p3retval {
   pr_append_str per_sequence_err;
   pr_append_str warnings;
 
-  /*
+  /* 
    * An optional _output_, meaninful if a
    * start_codon_pos is "not null".  The position of
    * the intial base of the leftmost stop codon that
@@ -867,10 +918,11 @@ typedef struct p3retval {
 } p3retval;
 
 /* Deallocate a primer3 state */
+void destroy_secundary_structures(const p3_global_settings *pa, p3retval *retval);
 void destroy_p3retval(p3retval *);
 
 void destroy_dpal_thal_arg_holder(void);
-
+       
 /* get elements of p3retval */
 const pair_array_t *p3_get_rv_best_pairs(const p3retval *r);
 const oligo_array *p3_get_rv_fwd(const p3retval *r);
@@ -879,7 +931,7 @@ const oligo_array *p3_get_rv_rev(const p3retval *r);
 
 /* TO DO -- needs more documentation
    It is the responsibility of caller to free the return value. */
-char *p3_get_rv_and_gs_warnings(const p3retval *retval,
+char *p3_get_rv_and_gs_warnings(const p3retval *retval, 
                                       const p3_global_settings *pa);
 
 /* Return a char * describing global errors (usually/always?)  errors
@@ -1141,8 +1193,8 @@ void p3_set_gs_pair_max_template_mispriming(p3_global_settings * p ,
 
 void p3_set_gs_pair_max_template_mispriming_th(p3_global_settings * p ,
                                             double pair_max_template_mispriming_th);
-
-void p3_set_gs_pair_repeat_compl(p3_global_settings * p, double pair_repeat_compl);
+     
+void p3_set_gs_pair_repeat_compl(p3_global_settings * p, double pair_repeat_compl); 
 
 void p3_set_gs_pair_compl_any(p3_global_settings * p , double  pair_compl_any);
 void p3_set_gs_pair_compl_end(p3_global_settings * p , double  pair_compl_end);
@@ -1154,13 +1206,13 @@ void p3_set_gs_min_right_three_prime_distance(p3_global_settings *p, int min_dis
 void p3_set_gs_min_5_prime_overlap_of_junction(p3_global_settings *p, int min_5_prime);
 void p3_set_gs_min_3_prime_overlap_of_junction(p3_global_settings *p, int min_3_prime);
 
-/*
+/* 
  * Choose individual primers or oligos, or primer pairs, or primer
- * pairs with internal oligos. On ENOMEM return NULL and set errno.
- * Otherwise return retval (updated).  Errors are returned in
+ * pairs with internal oligos. On ENOMEM return NULL and set errno. 
+ * Otherwise return retval (updated).  Errors are returned in 
  * in retval.
  */
-p3retval *choose_primers(const p3_global_settings *pa,
+p3retval *choose_primers(const p3_global_settings *pa, 
                          seq_args *sa);
 
 /* For testing/debugging: print the values in pa and sa to stdout. */
@@ -1168,9 +1220,9 @@ void p3_print_args(const p3_global_settings *pa, seq_args *sa) ;
 
 /* Print out the content of one primer array */
 /* Return 1 on error, otherwise 0. */
-int    p3_print_one_oligo_list(const seq_args *,
+int    p3_print_one_oligo_list(const seq_args *, 
                                int, const primer_rec[],
-                               const oligo_type, const int,
+                               const oligo_type, const int, 
                                const int, FILE *,int);
 
 char  *pr_oligo_sequence(const seq_args *, const primer_rec *);
@@ -1189,7 +1241,7 @@ void          destroy_pr_append_str_data(pr_append_str *str);
 /* Return 1 on ENOMEM, otherwise 0 */
 int           pr_append_external(pr_append_str *, const char *);
 
-int           pr_append_w_sep_external(pr_append_str *x,
+int           pr_append_w_sep_external(pr_append_str *x, 
                                        const char *sep,
                                        const char *s);
 
@@ -1201,32 +1253,33 @@ const char *  pr_append_str_chars(const pr_append_str *x);
 const char *p3_get_pair_array_explain_string(const pair_array_t *);
 const char *p3_get_oligo_array_explain_string(const oligo_array *);
 
-const char  *libprimer3_release(void);
+const char *libprimer3_release(void);
 const char *primer3_copyright(void);
 
 /* An accessor function for a primer_rec *. */
 double oligo_max_template_mispriming(const primer_rec *);
 double oligo_max_template_mispriming_thermod(const primer_rec *);
+char * oligo_max_template_mispriming_struct(const primer_rec *h);
 
 int   strcmp_nocase(const char *, const char *);
 
 void
 p3_set_program_name(const char *name);
 
-/*
+/* 
  * Utility function for C clients -- will not overflow
  * buffer.  Warning: points to static storage that is over-written
  * on the next call.
  */
 char* p3_read_line(FILE *file);
 
-/*
+/* 
    Return 1 iff the argument 'oligo' has any problems -- i.e.
    violations of design constraints.
  */
 int        p3_ol_has_any_problem(const primer_rec *oligo);
 
-/*
+/*  
     Return a string details the the problems in 'oligo', i.e. the
     constraints that 'oligo' violates.  WARNING: Returns a pointer to
     static storage, which is over-written on next call.
@@ -1234,7 +1287,7 @@ int        p3_ol_has_any_problem(const primer_rec *oligo);
 const char *p3_get_ol_problem_string(const primer_rec *oligo);
 
 
-/*
+/* 
    Creates up to three files, the names of which are based on the
    argument 'file'.  One file is a table of forward primers, one a table
    of reverse primers, and one a table of internal hybridization
@@ -1242,30 +1295,30 @@ const char *p3_get_ol_problem_string(const primer_rec *oligo);
    (in the 'pa' argument).  Returns 0 on success, 1 on error.  On
    error, check errno for ENOMEM. Used to implement P3_FILE_FLAG=1.
  */
-int    p3_print_oligo_lists(const p3retval*,
-                            const seq_args *,
-                            const p3_global_settings *,
+int    p3_print_oligo_lists(const p3retval*, 
+                            const seq_args *, 
+                            const p3_global_settings *, 
                             pr_append_str *err,
                             const char* file_name);
 
 
-/*
+/* 
    Translate the values in the stats struct into an warning string.
    Call this function only if the 'stat's contains the _errors_
    associated with a given primer i.e. that primer was supplied by the
    caller and pick_anyway is set.
 */
 void add_must_use_warnings(pr_append_str *warning,
-			   const char* text,
-			   const oligo_stats *stats);
+                           const char* text,
+                           const oligo_stats *stats);
 
 
 
-/*
+/* 
    Reverse and complement the sequence seq and put the result in s.
    WARNING: It is up the caller to ensure that s points to enough
    space.
-*/
+*/ 
 void   p3_reverse_complement(const char *, char *);
 
 #ifdef __cplusplus
