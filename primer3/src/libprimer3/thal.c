@@ -509,6 +509,7 @@ thal(const unsigned char *oligo_f,
    CHECK_ERROR(1==len_r, "Length 1 second sequence"); */
    /* The following error messages will be seen by end users and will
       not be easy to understand. */
+
    CHECK_ERROR((len_f > THAL_MAX_ALIGN) && (len_r > THAL_MAX_ALIGN),
                "At least one sequence must be equal to or shorter than " 
                XSTR(THAL_MAX_ALIGN) "bp for thermodynamic calculations");
@@ -629,6 +630,7 @@ thal(const unsigned char *oligo_f,
         o->sec_struct=drawHairpin(bp, mh, ms, mode,a->temp, o); /* if mode=THL_FAST or THL_DEBUG_F then return after printing basic therm data */
       } else if((mode != THL_FAST) && (mode != THL_DEBUG_F) && (mode != THL_STRUCT)) {
         fputs("No secondary structure could be calculated\n",stderr);
+        o->no_structure = 1;
       }
 
       if(o->temp==-_INFINITY && (!strcmp(o->msg, ""))) o->temp=0.0;
@@ -709,6 +711,7 @@ thal(const unsigned char *oligo_f,
       } else  {
          o->temp = 0.0;
          /* fputs("No secondary structure could be calculated\n",stderr); */
+          o->no_structure = 1;
       }
       free(ps1);
       free(ps2);
@@ -2832,6 +2835,7 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, const thal_mode m
    if (!isFinite(temp)){
       if((mode != THL_FAST) && (mode != THL_DEBUG_F) && (mode != THL_STRUCT)) {
          printf("No predicted secondary structures for given sequences\n");
+         o->no_structure = 1;
       }
       o->temp = 0.0; /* lets use generalization here; this should rather be very negative value */
       strcpy(o->msg, "No predicted sec struc for given seq");
@@ -2850,6 +2854,9 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, const thal_mode m
          G = (H) - (t37 * (S + (N * saltCorrection)));
          S = S + (N * saltCorrection);
          o->temp = (double) t;
+         o->ds = (double) S;
+         o->dh = (double) H;
+         o->dg = (double) G;
          /* maybe user does not need as precise as that */
          /* printf("Thermodynamical values:\t%d\tdS = %g\tdH = %g\tdG = %g\tt = %g\tN = %d, SaltC=%f, RC=%f\n",
                 len1, (double) S, (double) H, (double) G, (double) t, (int) N, saltCorrection, RC); */
@@ -3113,6 +3120,9 @@ drawHairpin(int* bp, double mh, double ms, const thal_mode mode, double temp, th
       if((mode != THL_FAST) && (mode != THL_DEBUG_F)) {
          mg = mh - (temp * (ms + (((N/2)-1) * saltCorrection)));
          ms = ms + (((N/2)-1) * saltCorrection);
+         o->ds = (double) ms;
+         o->dh = (double) mh;
+         o->dg = (double) mg;
          o->temp = (double) t;
          if (mode != THL_STRUCT) {
            printf("Calculated thermodynamical parameters for dimer:\t%d\tdS = %g\tdH = %g\tdG = %g\tt = %g\n",

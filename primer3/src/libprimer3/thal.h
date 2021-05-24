@@ -90,6 +90,7 @@ typedef enum thal_alignment_type {
 
 /* Structure for passing arguments to THermodynamic ALignment calculation */
 typedef struct {
+   int debug; /* if non zero, print debugging info to stderr */
    thal_alignment_type type; /* one of the
               1 THAL_ANY, (by default)
               2 THAL_END1,
@@ -101,13 +102,18 @@ typedef struct {
    double dntp; /* concentration of dNTP-s */
    double dna_conc; /* concentration of oligonucleotides */
    double temp; /* temperature from which hairpin structures will be calculated */
+   int temponly; /* if non zero, print only temperature to stderr */
    int dimer; /* if non zero, dimer structure is calculated */
 } thal_args;
 
 /* Structure for receiving results from the thermodynamic alignment calculation */
 typedef struct {
    char msg[255];
+   int no_structure;    // Added no structure (1 if no structure found)
    double temp;
+   double ds;           // Added entropy value
+   double dh;           // Added enthalpy value
+   double dg;           // Added gibbs free energy value
    int align_end_1;
    int align_end_2;
    char *sec_struct;

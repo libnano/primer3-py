@@ -55,7 +55,7 @@ LDLIBS     = -lm
 AR         = ar
 CC         = gcc
 CXX        = g++
-O_OPTS     = -O2
+O_OPTS     = -O0
 CC_OPTS    = -g -Wall -D__USE_FIXED_PROTOTYPES__
 P_DEFINES  =
 
@@ -254,12 +254,12 @@ masker.o: masker.c masker.h libprimer3.h
 
 #primer_test: test
 
-#test: $(PRIMER_EXE) $(NTDPAL_EXE) $(NTTHAL_EXE)
-#ifeq ($(TESTOPTS),--windows)
-#	cd ../test & $(WINMAKE) TESTOPTS=$(TESTOPTS)
-#else
-#	cd ../test; make test
-#endif
+test: $(PRIMER_EXE) $(NTDPAL_EXE) $(NTTHAL_EXE)
+ifeq ($(TESTOPTS),--windows)
+	cd ../test & $(WINMAKE) TESTOPTS=$(TESTOPTS)
+else
+	cd ../test; make test
+endif
 
 install: $(EXES) $(LIBRARIES)
 	install -d "$(PREFIX)/bin"

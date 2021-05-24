@@ -88,6 +88,14 @@ int add_seq_and_rev_comp_to_seq_lib(seq_lib *sl,
                                     char *seq_id_plus, 
                                     const char *errfrag);
 
+seq_lib * create_empty_seq_lib();
+
+int add_seq_to_seq_lib(seq_lib *sl,
+                                char *seq, 
+                                char *seq_id_plus, 
+                                const char *errfrag);
+								
+void reverse_complement_seq_lib(seq_lib  *lib);
 
 #endif
 

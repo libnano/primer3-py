@@ -45,10 +45,6 @@ static void *p3sl_safe_malloc(size_t x);
 static void *p3sl_safe_realloc(void *p, size_t x);
 static void  p3sl_append_new_chunk(pr_append_str *x, const char *s);
 static void  p3sl_append(pr_append_str *x, const char *s);
-static int   add_seq_to_seq_lib(seq_lib *sl,
-                                char *seq, 
-                                char *seq_id_plus, 
-                                const char *errfrag);
 
 static jmp_buf _jmp_buf;
 
@@ -59,9 +55,8 @@ static jmp_buf _jmp_buf;
 
 static double parse_seq_name(char *s);
 static char   upcase_and_check_char(char *s);
-static void   reverse_complement_seq_lib(seq_lib  *lib);
 
-static int
+int
 add_seq_to_seq_lib(seq_lib *sl,
                    char *seq, 
                    char *seq_id_plus, 
@@ -78,9 +73,9 @@ add_seq_to_seq_lib(seq_lib *sl,
     sl->storage_size = ss;
     sl->names = (char**) p3sl_safe_realloc(sl->names, ss*sizeof(*sl->names));
     sl->seqs  = (char**) p3sl_safe_realloc(sl->seqs , ss*sizeof(*sl->seqs));
-    sl->rev_compl_seqs  = p3sl_safe_realloc(sl->rev_compl_seqs , ss*sizeof(char*));
+    //sl->rev_compl_seqs  = (char**) p3sl_safe_realloc(sl->rev_compl_seqs , ss*sizeof(*sl->rev_compl_seqs));
     sl->weight= (double*) p3sl_safe_realloc(sl->weight,
-                                   ss*sizeof(double));
+                                   ss*sizeof(*sl->weight));
   }
   sl->seq_num = i + 1;
 
@@ -156,16 +151,16 @@ create_empty_seq_lib() {
     return NULL; /* If we get here, there was an error in
                     p3sl_safe_malloc or p3sl_safe_realloc. */
 
-  lib =  (seq_lib*) p3sl_safe_malloc(sizeof(seq_lib));
+  lib =  (seq_lib*) p3sl_safe_malloc(sizeof(* lib));
   
-  memset(lib, 0, sizeof(seq_lib));
+  memset(lib, 0, sizeof(*lib));
   lib->repeat_file    = NULL;
-  lib->names          = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
-  lib->seqs           = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
+  lib->names          = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->names));
+  lib->seqs           = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->seqs));
   /* FIX ME Can we get rid of rev_compl_seqs? */
-  lib->rev_compl_seqs = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
+  //lib->rev_compl_seqs = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
 
-  lib->weight         = (double*) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(double));
+  lib->weight         = (double*) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->weight));
   lib->seq_num        = 0;
   lib->storage_size   = INIT_LIB_SIZE;
   return lib;
@@ -325,35 +320,24 @@ destroy_seq_lib(seq_lib *p)
     }
     free(p->names);
   }
-  // added NC
-  if (p->rev_compl_seqs != NULL) {
-    // Already freed above (the rev_compl_seqs array contains pointers
-    // that just point to the seqs array)
-    // for(i = 0; i < p->seq_num; i++) {
-    //   if (p->rev_compl_seqs[i] != NULL) {
-    //     free(p->rev_compl_seqs[i]);
-    //   }
-    // }
-    free(p->rev_compl_seqs);
-  } // end added NC
-
   free(p->weight);
   free(p->error.data);
   free(p->warning.data);
-  // free(p->rev_compl_seqs);
+  free(p->rev_compl_seqs);
   free(p);
 }
 
-static void
+void
 reverse_complement_seq_lib(seq_lib  *lib)
 {
     int i, n, k;
     if((n = lib->seq_num) == 0) return;
     else {
         lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(*lib->names));
-    lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(char*));
-    lib->seqs = (char**) p3sl_safe_realloc(lib->seqs, 2*n*sizeof(char*));
-    lib->weight = (double*) p3sl_safe_realloc(lib->weight, 2*n*sizeof(double));
+    lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(*lib->seqs));
+    lib->seqs = (char**) p3sl_safe_realloc(lib->seqs, 2*n*sizeof(*lib->seqs));
+    lib->weight = (double*) p3sl_safe_realloc(lib->weight, 2*n*sizeof(*lib->weight));
+	lib->rev_compl_seqs = (char**) p3sl_safe_malloc(2*n*sizeof(*lib->seqs));
 
         lib->seq_num *= 2;
         for(i=n; i<lib->seq_num; i++){

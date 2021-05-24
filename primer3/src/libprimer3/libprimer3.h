@@ -120,6 +120,7 @@ typedef struct pr_append_str {
 #include "thal_parameters.h"
 #include "dpal.h"
 #include "khash.h"
+#include "masker.h"
 
 /* 
  * Arguments to the primer program as a whole.  Values for these arguments are

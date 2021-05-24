@@ -603,6 +603,7 @@ p3_destroy_global_settings(p3_global_settings *a)
     destroy_seq_lib(a->p_args.repeat_lib);
     destroy_seq_lib(a->o_args.repeat_lib);
     free(a);
+    a = NULL;
   }
 }
 
@@ -1090,16 +1091,26 @@ destroy_p3retval(p3retval *state)
   destroy_pr_append_str_data(&state->warnings);
 
   free(state);
+  state = NULL;
 }
 
 void 
 destroy_dpal_thal_arg_holder() {
-  if(dpal_arg_to_use != NULL)
-     destroy_dpal_arg_holder(dpal_arg_to_use);
-   if(thal_arg_to_use != NULL)
-     destroy_thal_arg_holder(thal_arg_to_use);
-   if(thal_oligo_arg_to_use != NULL)
-     destroy_thal_arg_holder(thal_oligo_arg_to_use);
+  if (dpal_arg_to_use != NULL)
+  {
+    destroy_dpal_arg_holder(dpal_arg_to_use);
+    dpal_arg_to_use = NULL;
+  }
+  if (thal_arg_to_use != NULL)
+  {
+    destroy_thal_arg_holder(thal_arg_to_use);
+    thal_arg_to_use = NULL;
+  }
+  if (thal_oligo_arg_to_use != NULL)
+  {
+    destroy_thal_arg_holder(thal_oligo_arg_to_use);
+    thal_oligo_arg_to_use = NULL;
+  }
 }
 
 const oligo_array * p3_get_rv_fwd(const p3retval *r) {
@@ -1136,7 +1147,7 @@ create_seq_arg()
   //seq_args *r = (seq_args *) malloc(sizeof(*r));
   seq_args *r = (seq_args *) malloc(sizeof(seq_args));
   if (NULL == r) return NULL; /* Out of memory */
-  memset(r, 0, sizeof(*r));
+  memset(r, 0, sizeof(seq_args));
   r->start_codon_pos = PR_DEFAULT_START_CODON_POS;
   r->incl_l = -1; /* Indicates logical NULL. */
 
@@ -1174,6 +1185,7 @@ destroy_seq_args(seq_args *sa)
   free(sa->upcased_seq_r);
   free(sa->sequence_name);
   free(sa);
+  sa = NULL;
 }
 
 /* ============================================================ */
@@ -1190,7 +1202,7 @@ static void free_pair_memory(int rev_num_elem)
   khash_t(primer_pair_map) *hmap = NULL;
   khiter_t it;
 
-  primer_pair *pp;
+  primer_pair *pp = NULL;
   int i;
 
   if (max_j_seen != NULL) {
