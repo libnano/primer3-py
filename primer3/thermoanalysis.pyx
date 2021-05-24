@@ -95,14 +95,20 @@ cdef inline bytes _bytes(s):
 # ~~~~~~~~~ Load base thermodynamic parameters into memory from file ~~~~~~~~ #
 
 def _loadThermoParams():
-    cdef char*           param_path
+    cdef thal_parameters thalparam
     cdef thal_results    thalres
+    cdef char* param_path
     import os
+    thal_set_null_parameters(&thalparam)
     PRIMER3_HOME = os.environ.get('PRIMER3HOME')
     ppath = os.path.join(PRIMER3_HOME, 'primer3_config/')
     ppathb = ppath.encode('utf-8')
     param_path = ppathb
-    if get_thermodynamic_values(param_path, &thalres) != 0:
+    
+    if thal_load_parameters(param_path, &thalparam, &thalres) != 0: 
+        raise IOError("Could not load thermodynamic config file %s" % ppath)        
+   
+    if get_thermodynamic_values(&thalparam, &thalres) != 0:
         raise IOError("Could not load thermodynamic config file %s" % ppath)
 
 _loadThermoParams()
@@ -351,27 +357,26 @@ cdef class ThermoAnalysis:
                                                unsigned char *s2,
                                                bint output_structure):
         cdef ThermoResult tr_obj = ThermoResult()
-        cdef char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1
-        if (output_structure == 1):
-            c_ascii_structure = <char *>malloc(
-                (strlen(<const char*>s1) + strlen(<const char*>s2)) * 4 + 24)
-            c_ascii_structure[0] = '\0';
+        if (output_structure == 1): 
+            curr_thal_mode = <thal_mode> 4
+        else: 
+            curr_thal_mode = <thal_mode> 1
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s2,
             <const thal_args *> &(self.thalargs),
-            &(tr_obj.thalres),
-            1 if c_ascii_structure else 0,
-            c_ascii_structure
+            curr_thal_mode,
+            &(tr_obj.thalres)
         )
         if (output_structure == 1):
             try:
-                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
+                tr_obj.ascii_structure = tr_obj.thalres.sec_struct.decode('UTF-8')
             finally:
-                free(c_ascii_structure)
+                free(tr_obj.thalres.sec_struct)
+
         return tr_obj
 
     cpdef calcHeterodimer(
@@ -438,28 +443,25 @@ cdef class ThermoAnalysis:
                                              unsigned char *s1,
                                              bint output_structure):
         cdef ThermoResult tr_obj = ThermoResult()
-        cdef char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1
-        if (output_structure == 1):
-            c_ascii_structure = <char *>malloc(
-                (strlen(<const char*>s1) * 8 + 24)
-            )
-            c_ascii_structure[0] = '\0';
+        if (output_structure == 1): 
+            curr_thal_mode = <thal_mode> 4
+        else:
+            curr_thal_mode = <thal_mode> 1
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s1,
             <const thal_args *> &(self.thalargs),
-            &(tr_obj.thalres),
-            1 if c_ascii_structure else 0,
-            c_ascii_structure
+            curr_thal_mode,
+            &(tr_obj.thalres)
         )
         if (output_structure == 1):
             try:
-                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
-            finally:
-                free(c_ascii_structure)
+                tr_obj.ascii_structure = tr_obj.thalres.sec_struct.decode('UTF-8')
+            except:
+                return tr_obj
         return tr_obj
 
     cpdef calcHomodimer(ThermoAnalysis self, seq1, output_structure=False):
@@ -477,28 +479,25 @@ cdef class ThermoAnalysis:
                                            unsigned char *s1,
                                            bint output_structure):
         cdef ThermoResult tr_obj = ThermoResult()
-        cdef char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 0
         self.thalargs.type = <thal_alignment_type> 4
         if (output_structure == 1):
-            c_ascii_structure = <char *>malloc(
-                (strlen(<const char*>s1) * 2 + 24)
-            )
-            c_ascii_structure[0] = '\0';
+            curr_thal_mode = <thal_mode> 4
+        else:
+            curr_thal_mode = <thal_mode> 1
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s1,
             <const thal_args *> &(self.thalargs),
-            &(tr_obj.thalres),
-            1 if c_ascii_structure else 0,
-            c_ascii_structure
+            curr_thal_mode,
+            &(tr_obj.thalres)
         )
         if (output_structure == 1):
             try:
-                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
-            finally:
-                free(c_ascii_structure)
+                tr_obj.ascii_structure = tr_obj.thalres.sec_struct.decode('UTF-8')
+            except:
+                return tr_obj
         return tr_obj
 
     cpdef calcHairpin(ThermoAnalysis self, seq1, output_structure=False):
@@ -520,7 +519,7 @@ cdef class ThermoAnalysis:
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 2
         thal(<const unsigned char*> s1, <const unsigned char*> s2,
-         <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0, NULL)
+         <const thal_args *> &(self.thalargs), <thal_mode> 1, &(tr_obj.thalres))
         return tr_obj
 
     def calcEndStability(ThermoAnalysis self, seq1, seq2):

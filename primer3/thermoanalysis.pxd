@@ -51,17 +51,47 @@ cdef extern from "thal.h":
         double dg # Added gibbs free energy value
         int align_end_1
         int align_end_2
+        char *sec_struct
+    
+    ctypedef struct thal_parameters:
+        char *dangle_dh
+        char *dangle_ds
+        char *loops_dh
+        char *loops_ds
+        char *stack_dh
+        char *stack_ds
+        char *stackmm_dh
+        char *stackmm_ds
+        char *tetraloop_dh
+        char *tetraloop_ds
+        char *triloop_dh
+        char *triloop_ds
+        char *tstack_tm_inf_ds
+        char *tstack_dh
+        char *tstack2_dh
+        char *tstack2_ds
+
+    ctypedef enum thal_mode:
+      THL_FAST    = 0
+      THL_GENERAL = 1
+      THL_DEBUG_F = 2
+      THL_DEBUG   = 3
+      THL_STRUCT  = 4
 
 
 
     void thal(  const unsigned char*,
                 const unsigned char*,
                 const thal_args*,
-                thal_results*,
-                const int,
-                char*)
+                const thal_mode mode, 
+                thal_results*)
 
-    int get_thermodynamic_values(const char*, thal_results *)
+    
+    int thal_load_parameters(const char*, thal_parameters *, thal_results *);
+    
+    int thal_set_null_parameters(thal_parameters *);
+    
+    int get_thermodynamic_values(const thal_parameters *, thal_results *)
 
     void destroy_thal_structures()
 
@@ -69,7 +99,6 @@ cdef extern from "thal.h":
 cdef class ThermoResult:
     cdef thal_results thalres
     cdef public object ascii_structure
-
 
 cdef class ThermoAnalysis:
     cdef thal_args thalargs

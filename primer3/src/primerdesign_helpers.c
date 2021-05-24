@@ -382,11 +382,11 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_FIVE_PRIME", &pa->o_args.must_match_five_prime, temp_char, str_size);
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_INTERNAL_MUST_MATCH_THREE_PRIME", &pa->o_args.must_match_three_prime, temp_char, str_size);
 	//masking parameters
-	DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_TEMPLATE", pa->mask_template);
-	DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_MASK_FAILURE_RATE", pa->mp.failure_rate);
-	DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_MASK_FAILURE_RATE ", pa->p_args.weights.failure_rate);
-	DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_5P_DIRECTION", pa->mp.nucl_masked_in_5p_direction);
-	DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_3P_DIRECTION", pa->mp.nucl_masked_in_3p_direction);
+	  DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_TEMPLATE", pa->mask_template);
+	  DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_MASK_FAILURE_RATE", pa->mp.failure_rate);
+	  DICT_GET_AND_ASSIGN_DOUBLE(p_obj, p3s_dict, "PRIMER_WT_MASK_FAILURE_RATE ", pa->p_args.weights.failure_rate);
+	  DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_5P_DIRECTION", pa->mp.nucl_masked_in_5p_direction);
+	  DICT_GET_AND_ASSIGN_INT(p_obj, p3s_dict, "PRIMER_MASK_3P_DIRECTION", pa->mp.nucl_masked_in_3p_direction);
     DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PREFIX", &pa->mp.list_prefix, temp_char, str_size);
 
 
@@ -509,11 +509,12 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
     if(pa->mask_template){
         pa->lowercase_masking=pa->mask_template;
     }        
-	const char *kmer_lists_path = NULL;
+	char *kmer_lists_path = NULL;
     /* Check if template masking flag was given */
-    if (pa->mask_template == 1)
-	   if (!DICT_GET_OBJ(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PATH")) 
-	    {
+    if (pa->mask_template == 1) 
+	{
+	   if (!DICT_GET_OBJ(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PATH"))
+	   {
 		    struct stat st;
 		    if ((stat("../kmer_lists", &st) == 0) && S_ISDIR(st.st_mode)) {
 				kmer_lists_path =
@@ -525,8 +526,9 @@ pdh_setGlobals(p3_global_settings *pa, PyObject *p3s_dict) {
 			   (char*) malloc(strlen("/opt/kmer_lists/") * sizeof(char) + 1);
 				if (NULL == kmer_lists_path) return -2; /* Out of memory */
 					strcpy(kmer_lists_path, "/opt/kmer_lists/");
+			}
 		} else {
-			DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PATH", kmer_lists_path, temp_char, str_size);
+			DICT_GET_AND_COPY_STR(p_obj, p3s_dict, "PRIMER_MASK_KMERLIST_PATH", &kmer_lists_path, temp_char, str_size);
 		}
 	}
 
@@ -996,7 +998,7 @@ pdh_outputToDict(const p3_global_settings *pa, const seq_args *sa,
     /* The pointers to warning tag */
     char *warning;
 
-    char outbuff[100]; // Output buffer for sprintf key string formatting
+    char outbuff[200]; // Output buffer for sprintf key string formatting
 
     /* A place to put a string containing all error messages */
     pr_append_str *combined_retval_err = NULL;
