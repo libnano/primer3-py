@@ -73,12 +73,14 @@ LIBPRIMER3_FPS = [
     rpath(pjoin(LIBPRIMER3_PATH, 'thal.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.c')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.cc')),
     rpath(pjoin(LIBPRIMER3_PATH, 'dpal.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'masker.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thal_parameters.c')),
     rpath(pjoin(SRC_PATH, 'primerdesign_helpers.c')),
 ]
 
-LIBPRIMER3_BINARIES = ['oligotm', 'ntthal', 'primer3_core']
+LIBPRIMER3_BINARIES = ['oligotm', 'ntthal', 'primer3_core', 'primer3_masker']
 if sys.platform == 'win32':
     LIBPRIMER3_BINARIES = [bin_fn + '.exe' for bin_fn in LIBPRIMER3_BINARIES]
 

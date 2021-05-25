@@ -492,6 +492,8 @@ static void op_set_too_short(primer_rec *);
 static void op_set_does_not_amplify_orf(primer_rec *);
 /* End functions to set problems in oligos */
 
+static void print_pair_array(const char* title, int num, const interval_array_t array);
+
 /* Global static variables. */
 static const char *primer3_copyright_char_star = "\n"
 "Copyright (c) 1996-2019\n"
@@ -536,6 +538,19 @@ static const int use_end_for_th_template_mispriming = 1;
 
 #define DEFAULT_OPT_GC_PERCENT PR_UNDEFINED_INT_OPT
 
+static void print_pair_array(const char* title, int num,
+    const interval_array_t array)
+{
+    int j;
+    if (num > 0) {
+        printf("%s (start, end)*:", title);
+        for (j = 0; j < num; j++)
+            printf(" %d,%d",
+                array[j][0],
+                array[j][1]);
+        printf("\n");
+    }
+}
 /* Set the program name */
 void
 p3_set_program_name(const char *pname) 
@@ -1185,7 +1200,6 @@ destroy_seq_args(seq_args *sa)
   free(sa->upcased_seq_r);
   free(sa->sequence_name);
   free(sa);
-  sa = NULL;
 }
 
 /* ============================================================ */
@@ -9414,18 +9428,10 @@ p3_print_args(const p3_global_settings *p, seq_args *s)
   if (s != NULL) {
     printf("=============\n");
     printf("BEGIN SEQUENCE ARGS\n") ;
-    /* TO DO: complete the statments for dumping this data
-       printf("interval_array_t2 tar2 %i\n",
-       int pairs[PR_MAX_INTERVAL_ARRAY][2]) ;
-       int count) ;
-       printf("interval_array_t2 excl2 %i\n",
-       int pairs[PR_MAX_INTERVAL_ARRAY][2]) ;
-       int count) ;
-       printf("interval_array_t2 excl_internal2 %i\n",
-       int pairs[PR_MAX_INTERVAL_ARRAY][2]) ;
-       int count) ;
-       printf("ok_regions \n");
-    */
+    print_pair_array("interval_array_t2 tar2", s->tar2.count, s->tar2.pairs);
+    print_pair_array("interval_array_t2 excl2", s->excl2.count, s->excl2.pairs);
+    print_pair_array("interval_array_t2 excl_internal2", s->excl_internal2.count, s->excl_internal2.pairs);
+    printf("ok_regions \n");
 
     if (s->primer_overlap_junctions_count > 0) {
       printf("primer_overlap_junctions_count %i\n",
