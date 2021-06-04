@@ -239,9 +239,9 @@ if ('build_ext' in sys.argv or 'install' in sys.argv):
 
 setup(
     name='primer3-py',
-    version='0.6.1',
+    version='0.6.1000',
     license='GPLv2',
-    author='Ben Pruitt, Nick Conway',
+    author='Ben Pruitt, Nick Conway, June Snedecor',
     author_email='bpruittvt@gmail.com',
     url='https://github.com/libnano/primer3-py',
     description='Python bindings for Primer3',
