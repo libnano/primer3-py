@@ -55,7 +55,7 @@ LDLIBS     = -lm
 AR         = ar
 CC         = gcc
 CXX        = g++
-O_OPTS     = -O0
+O_OPTS     = -O2
 CC_OPTS    = -g -Wall -D__USE_FIXED_PROTOTYPES__
 P_DEFINES  =
 
@@ -64,9 +64,6 @@ CXXFLAGS = $(CFLAGS) -std=c++11
 LDFLAGS = -g
 # Note, for profiling, use
 # make O_OPTS='-pg -O0' LDFLAGS='-g -pg'
-
-# Target installation directory
-PREFIX     = /usr/local
 
 # ======================================================================
 # If you have trouble with library skew when moving primer3 executables
