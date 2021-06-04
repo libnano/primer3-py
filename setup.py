@@ -239,7 +239,7 @@ if ('build_ext' in sys.argv or 'install' in sys.argv):
 
 setup(
     name='primer3-py',
-    version='0.6.1000',
+    version='0.6.1000', #not an official release!
     license='GPLv2',
     author='Ben Pruitt, Nick Conway, June Snedecor',
     author_email='bpruittvt@gmail.com',
