@@ -67,6 +67,7 @@ PyDoc_STRVAR(setGlobals__doc__,
 "global_args: dictionary of Primer3 args\n"
 "misprime_lib: mispriming library dictionary\n"
 "mishyb_lib: mishybridization library dictionary\n"
+"path: path to the parameter directory\n"
 );
 
 PyDoc_STRVAR(setSeqArgs__doc__,
@@ -84,7 +85,7 @@ PyDoc_STRVAR(runDesign__doc__,
 
 
 static PyObject*
-loadThermoParams(PyObject *self, PyObject *args) {
+loadThermoParams(PyObject* self, PyObject* args) {
     /* This loads the thermodynamic parameters from the parameter files
      * found at the provided path and should only need to be called once
      * prior to running thermodynamic calculations. Returns boolean indicating
@@ -100,21 +101,26 @@ loadThermoParams(PyObject *self, PyObject *args) {
     }
 
     thal_set_null_parameters(&thalparam);
-    
-    if (thal_load_parameters(param_path, &thalparam, &thalres)) {
-      PyErr_SetString(PyExc_IOError, thalres.msg);
-      return NULL;
-    }
-    else {
-      Py_RETURN_TRUE;
+
+    if (param_path != NULL) {
+        if (thal_load_parameters(param_path, &thalparam, &thalres)) {
+            PyErr_SetString(PyExc_IOError, thalres.msg);
+            return NULL;
+        }
+    } else {
+        if (set_default_thal_parameters(&thalparam)) {
+            PyErr_SetString(PyExc_IOError, "Unable to load defaults!");
+            return NULL;
+        }
     }
 
-    if (get_thermodynamic_values(&thalparam, &thalres)){
+
+    if (get_thermodynamic_values(&thalparam, &thalres)) {
         PyErr_SetString(PyExc_IOError, thalres.msg);
         return NULL;
-    } else {
-        Py_RETURN_TRUE;
     }
+
+    Py_RETURN_TRUE;
 }
 
 
@@ -134,6 +140,8 @@ setGlobals(PyObject *self, PyObject *args){
     PyObject        *global_args=NULL, *misprime_lib=NULL;
     PyObject        *mishyb_lib=NULL;  
     seq_lib         *mp_lib, *mh_lib;
+    char* param_path = NULL;
+    thal_results    thalres;
 
 
     if (pa != NULL) {
@@ -149,14 +157,25 @@ setGlobals(PyObject *self, PyObject *args){
         return NULL;
     }
 
-    if (!PyArg_ParseTuple(args, "O!OO", &PyDict_Type, &global_args,
-                          &misprime_lib, &mishyb_lib)) {
+    if (!PyArg_ParseTuple(args, "O!OOs", &PyDict_Type, &global_args,
+                          &misprime_lib, &mishyb_lib, &param_path)) {
         goto err_set_global;
     }
 
 
     if ((pdh_setGlobals(pa, global_args)) != 0) {
         goto err_set_global;
+    }
+
+    if ((param_path != NULL)) {
+        if (thal_load_parameters(param_path, &pa->thermodynamic_parameters, &thalres)) {
+            PyErr_SetString(PyExc_IOError, thalres.msg);
+            return NULL;
+        }
+        if (get_thermodynamic_values(&pa->thermodynamic_parameters, &thalres)) {
+            PyErr_SetString(PyExc_IOError, thalres.msg);
+            return NULL;
+        }
     }
 
     if ((misprime_lib != NULL) && (misprime_lib != Py_None)) {
@@ -242,10 +261,13 @@ runDesign(PyObject *self, PyObject *args){
     }
 
     if (debug) {
-        p3_print_args(pa, sa);
+        pa->dump = 1;
     }
 
     retval = choose_primers(pa, sa);
+
+    destroy_secundary_structures(pa, retval);
+
     if ((results = pdh_outputToDict(pa, sa, retval)) == NULL){
         if (retval != NULL) {
             destroy_p3retval(retval);

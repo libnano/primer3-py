@@ -631,6 +631,7 @@ thal(const unsigned char *oligo_f,
       } else if((mode != THL_FAST) && (mode != THL_DEBUG_F) && (mode != THL_STRUCT)) {
         fputs("No secondary structure could be calculated\n",stderr);
         o->no_structure = 1;
+        o->sec_struct = NULL;
       }
 
       if(o->temp==-_INFINITY && (!strcmp(o->msg, ""))) o->temp=0.0;
@@ -711,7 +712,7 @@ thal(const unsigned char *oligo_f,
       } else  {
          o->temp = 0.0;
          /* fputs("No secondary structure could be calculated\n",stderr); */
-          o->no_structure = 1;
+         o->no_structure = 1;
       }
       free(ps1);
       free(ps2);
@@ -732,7 +733,7 @@ thal(const unsigned char *oligo_f,
 void 
 set_thal_default_args(thal_args *a)
 {
-  memset(a, 0, sizeof(thal_args));
+   memset(a, 0, sizeof(thal_args));
    a->type = thal_any; /* thal_alignment_type THAL_ANY */
    a->maxLoop = MAX_LOOP;
    a->mv = 50; /* mM */
@@ -747,7 +748,7 @@ set_thal_default_args(thal_args *a)
 void
 set_thal_oligo_default_args(thal_args *a)    
 {
-  memset(a, 0, sizeof(thal_args));
+   memset(a, 0, sizeof(thal_args));
    a->type = thal_any; /* thal_alignment_type THAL_ANY */
    a->maxLoop = MAX_LOOP;
    a->mv = 50; /* mM */
@@ -2835,10 +2836,11 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, const thal_mode m
    if (!isFinite(temp)){
       if((mode != THL_FAST) && (mode != THL_DEBUG_F) && (mode != THL_STRUCT)) {
          printf("No predicted secondary structures for given sequences\n");
-         o->no_structure = 1;
       }
       o->temp = 0.0; /* lets use generalization here; this should rather be very negative value */
       strcpy(o->msg, "No predicted sec struc for given seq");
+      o->no_structure = 1;
+
       return NULL;
    } else {
       N=0;
@@ -2943,14 +2945,25 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, const thal_mode m
         }
    }
    if ((mode == THL_GENERAL) || (mode == THL_DEBUG)) {
-     printf("SEQ\t");
-     printf("%s\n", duplex[0]);
-     printf("SEQ\t");
-     printf("%s\n", duplex[1]);
-     printf("STR\t");
-     printf("%s\n", duplex[2]);
-     printf("STR\t");
-     printf("%s\n", duplex[3]);
+     ret_str[3] = NULL;
+     save_append_string(&ret_str[3], &ret_space, o, "SEQ\t");
+     save_append_string(&ret_str[3], &ret_space, o, duplex[0]);
+     save_append_string(&ret_str[3], &ret_space, o, "\n");
+     save_append_string(&ret_str[3], &ret_space, o, "SEQ\t");
+     save_append_string(&ret_str[3], &ret_space, o, duplex[1]);
+     save_append_string(&ret_str[3], &ret_space, o, "\n");
+     save_append_string(&ret_str[3], &ret_space, o, "STR\t");
+     save_append_string(&ret_str[3], &ret_space, o, duplex[2]);
+     save_append_string(&ret_str[3], &ret_space, o, "\n");
+     save_append_string(&ret_str[3], &ret_space, o, "STR\t");
+     save_append_string(&ret_str[3], &ret_space, o, duplex[3]);
+     save_append_string(&ret_str[3], &ret_space, o, "\n");
+
+     ret_ptr = (char*)safe_malloc(strlen(ret_str[3]) + 1, o);
+     strcpy(ret_ptr, ret_str[3]);
+     if (ret_str[3]) {
+         free(ret_str[3]);
+     }
    }
    if (mode == THL_STRUCT) {
      ret_str[3] = NULL;
@@ -3106,6 +3119,7 @@ drawHairpin(int* bp, double mh, double ms, const thal_mode mode, double temp, th
          o->temp = 0.0; /* lets use generalization here */
          strcpy(o->msg, "No predicted sec struc for given seq\n");
       }
+      o->no_structure = 1;
    } else {
       if((mode != THL_FAST) && (mode != THL_DEBUG_F)) {
          for (i = 1; i < len1; ++i) {
@@ -3151,9 +3165,17 @@ drawHairpin(int* bp, double mh, double ms, const thal_mode mode, double temp, th
       }
    }
    if ((mode == THL_GENERAL) || (mode == THL_DEBUG)) {
-     printf("SEQ\t");
-     for(i = 0; i < len1; ++i) printf("%c",asciiRow[i]);
-     printf("\nSTR\t%s\n", oligo1);
+       ret_str = NULL;
+       save_append_string(&ret_str, &ret_space, o, "SEQ\t");
+       for(i = 0; i < len1; ++i) save_append_char(&ret_str, &ret_space, o, asciiRow[i]);
+       save_append_string(&ret_str, &ret_space, o, "\nSTR\t");
+       for (i = 0; i < len1; ++i) save_append_char(&ret_str, &ret_space, o, oligo1[i]);
+       save_append_string(&ret_str, &ret_space, o, "\n");
+	   ret_ptr = (char *) safe_malloc(strlen(ret_str) + 1, o);
+       strcpy(ret_ptr, ret_str);
+       if (ret_str != NULL) {
+           free(ret_str);
+       }
    }
    if (mode == THL_STRUCT) {
      ret_str = NULL;
