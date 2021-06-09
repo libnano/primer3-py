@@ -26,6 +26,7 @@ Python C API code and primer3 native C code.
 */
 
 #include    <libprimer3.h>
+#include    <sys/stat.h>
 
 /* Set the primer3 global settings according to the key: value pairs in
  * p3_settings_dict. This almost exactly mirrors the primer3 documentation,

@@ -271,7 +271,7 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
 
     '''
     if global_args:
-        primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib)
+        primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib, pjoin(PRIMER3_HOME, 'primer3_config/'))
     primerdesign.setSeqArgs(seq_args)
     return primerdesign.runDesign(debug)
 
@@ -297,7 +297,7 @@ def setP3Globals(global_args, misprime_lib=None, mishyb_lib=None):
         ``None``
 
     '''
-    primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib)
+    primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib, pjoin(PRIMER3_HOME, 'primer3_config/'))
 
 
 def setP3SeqArgs(seq_args):

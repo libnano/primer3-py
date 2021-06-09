@@ -301,7 +301,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Calculate the melting temperature of oligo s.  See
    oligotm.h for documentation of arguments.
 */
-double
+double 
 oligotm(const  char *s,
      double DNA_nM,
      double K_mM,
@@ -310,29 +310,26 @@ oligotm(const  char *s,
      tm_method_type  tm_method,
      salt_correction_type salt_corrections)
 {
-  register int dh = 0, ds = 0;
+   register int dh = 0, ds = 0;
   register char c;
   double delta_H, delta_S;
   double Tm; /* Melting temperature */
   double correction;
   int len, sym;
   const char* seq = s;
-  if(divalent_to_monovalent(divalent_conc, dntp_conc) == OLIGOTM_ERROR) {
-    return OLIGOTM_ERROR;
-  }
-
+   if(divalent_to_monovalent(divalent_conc, dntp_conc) == OLIGOTM_ERROR)
+     return OLIGOTM_ERROR;
+   
   /** K_mM = K_mM + divalent_to_monovalent(divalent_conc, dntp_conc); **/
   if (tm_method != breslauer_auto
-      && tm_method != santalucia_auto) {
+      && tm_method != santalucia_auto)
     return OLIGOTM_ERROR;
-  }
   if (salt_corrections != schildkraut
       && salt_corrections != santalucia
-      && salt_corrections != owczarzy) {
+      && salt_corrections != owczarzy)
     return OLIGOTM_ERROR;
-  }
 
-  len = ((int)strlen(s)-1);
+  len = (strlen(s)-1);
 
   sym = symmetry(s); /*Add symmetry correction if seq is symmetrical*/
   if( tm_method == breslauer_auto ) {
@@ -344,27 +341,27 @@ oligotm(const  char *s,
     }
 
     /** Terminal AT penalty **/
-
-    if (    (strncmp("A", s, 1) == 0)
-        ||  (strncmp("T", s, 1) == 0) )  {
+      
+    if(strncmp("A", s, 1)==0
+       || strncmp("T", s, 1)==0)  {
       ds += -41;
       dh += -23;
-    } else if (   (strncmp("C", s, 1) == 0)
-              ||  (strncmp("G", s, 1) == 0) ) {
+    } else if (strncmp("C", s, 1)==0 
+               || strncmp("G", s, 1)==0) {
       ds += 28;
       dh += -1;
     }
-    s += len;
-    if (  (strncmp("T", s, 1) == 0)
-       || (strncmp("A", s, 1) == 0) ) {
+    s+=len;
+    if(strncmp("T", s, 1)==0 
+       || strncmp("A", s, 1)==0) {
       ds += -41;
       dh += -23;
-    } else if ( (strncmp("C", s, 1) == 0)
-              ||(strncmp("G", s, 1) == 0) ) {
+    } else if (strncmp("C", s, 1)==0 
+               || strncmp("G", s, 1)==0) {
       ds += 28;
       dh += -1;
     }
-    s -= len;
+    s-=len;
   }
   /* Use a finite-state machine (DFA) to calucluate dh and ds for s. */
   c = *s; s++;
@@ -393,17 +390,17 @@ oligotm(const  char *s,
     STATE2(C);
     STATE2(N);
   }
-
-
+   
+   
  DONE:  /* dh and ds are now computed for the given sequence. */
-  delta_H = dh * -100.0;  /*
-         * Nearest-neighbor thermodynamic values for dh
-         * are given in 100 cal/mol of interaction.
-         */
+  delta_H = dh * -100.0;  /* 
+                           * Nearest-neighbor thermodynamic values for dh
+                           * are given in 100 cal/mol of interaction.
+                           */
   delta_S = ds * -0.1;     /*
-          * Nearest-neighbor thermodynamic values for ds
-          * are in in .1 cal/K per mol of interaction.
-          */
+                            * Nearest-neighbor thermodynamic values for ds
+                            * are in in .1 cal/K per mol of interaction.
+                            */
   Tm=0;  /* Melting temperature */
   len=len+1;
 
@@ -421,94 +418,91 @@ oligotm(const  char *s,
     } else {
       /* Equation B */
       Tm = delta_H / (delta_S + 1.987 * log(DNA_nM/4000000000.0)) - T_KELVIN;
-    }
+    }      
   } else if (salt_corrections == owczarzy) {
-    double gcPercent=0;
-    double free_divalent; /* conc of divalent cations minus dNTP conc */
-    int i;
-
-    /**** BEGIN: UPDATED SALT BY OWCZARZY *****/
-    /* different salt corrections for monovalent (Owczarzy et al.,2004)
-      and divalent cations (Owczarzy et al.,2008) */
-    /* competition bw magnesium and monovalent cations, see Owczarzy et al., 2008 Figure 9 and Equation 16 */
-
-    static const double crossover_point = 0.22; /* depending on the value of div_monov_ratio respect
-               to value of crossover_point Eq 16 (divalent corr, Owczarzy et al., 2008)
-               or Eq 22 (monovalent corr, Owczarzy et al., 2004) should be used */
-    double div_monov_ratio;
-    static double a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0;
-
-    for(i = 0; i <= len && seq != NULL && seq != '\0';) {
-      if(*seq == 'C' || *seq == 'G') {
-        gcPercent++;
+     double gcPercent=0;
+     double free_divalent; /* conc of divalent cations minus dNTP conc */
+     int i;
+     for(i = 0; i <= len && seq != NULL && *seq != '\0';) {
+        if(*seq == 'C' || *seq == 'G') {
+           gcPercent++;
+        }  
+        seq++;
+        i++;
+     }
+     gcPercent = (double)gcPercent/((double)len);
+     /**** BEGIN: UPDATED SALT BY OWCZARZY *****/
+      /* different salt corrections for monovalent (Owczarzy et al.,2004) 
+      and divalent cations (Owczarzy et al.,2008)
+      */
+     /* competition bw magnesium and monovalent cations, see Owczarzy et al., 2008 Figure 9 and Equation 16 */
+     
+     static const double crossover_point = 0.22; /* depending on the value of div_monov_ratio respect
+                                             to value of crossover_point Eq 16 (divalent corr, Owczarzy et al., 2008)
+                                             or Eq 22 (monovalent corr, Owczarzy et al., 2004) should be used */
+     double div_monov_ratio;
+     if(dntp_conc >= divalent_conc) {
+        free_divalent = 0.00000000001; /* to not to get log(0) */
+     } else {
+        free_divalent = (divalent_conc - dntp_conc)/1000.0;
+     }
+     static double a = 0,b = 0,c = 0,d = 0,e = 0,f = 0,g = 0;
+      if(K_mM==0) {
+         div_monov_ratio = 6.0;
+      } else {
+         div_monov_ratio = (sqrt(free_divalent))/(K_mM/1000); /* if conc of monov cations is provided
+                                                                    a ratio is calculated to further calculate
+                                                                    the _correct_ correction */
       }
-      seq++;
-      i++;
-    }
-    gcPercent = (double)gcPercent/((double)len);
-
-    if(dntp_conc >= divalent_conc) {
-      free_divalent = 0.00000000001; /* to not to get log(0) */
-    } else {
-      free_divalent = (divalent_conc - dntp_conc)/1000.0;
-    }
-
-    if(K_mM==0) {
-      div_monov_ratio = 6.0;
-    } else {
-      div_monov_ratio = (sqrt(free_divalent))/(K_mM/1000); /* if conc of monov cations is provided
-                    a ratio is calculated to further calculate
-                    the _correct_ correction */
-    }
-    if (div_monov_ratio < crossover_point) {
-      /* use only monovalent salt correction, Eq 22 (Owczarzy et al., 2004) */
-      correction
-        = (((4.29 * gcPercent) - 3.95) * pow(10,-5) * log(K_mM / 1000.0))
-          + (9.40 * pow(10,-6) * (pow(log(K_mM / 1000.0),2)));
-    } else {
-      /* magnesium effects are dominant, Eq 16 (Owczarzy et al., 2008) is used */
-      b =- 9.11 * pow(10,-6);
-      c = 6.26 * pow(10,-5);
-      e =- 4.82 * pow(10,-4);
-      f = 5.25 * pow(10,-4);
-      a = 3.92 * pow(10,-5);
-      d = 1.42 * pow(10,-5);
-      g = 8.31 * pow(10,-5);
-      if(div_monov_ratio < 6.0) {
-        /* in particular ratio of conc of monov and div cations
-        *             some parameters of Eq 16 must be corrected (a,d,g) */
-        a = 3.92 * pow(10,-5) * (0.843 - (0.352 * sqrt(K_mM/1000.0) * log(K_mM/1000.0)));
-        d = 1.42 * pow(10,-5) * (1.279 - 4.03 * pow(10,-3) * log(K_mM/1000.0) - 8.03 * pow(10,-3) * pow(log(K_mM/1000.0),2));
-        g = 8.31 * pow(10,-5) * (0.486 - 0.258 * log(K_mM/1000.0) + 5.25 * pow(10,-3) * pow(log(K_mM/1000.0),3));
-      }
-
-      correction = a + (b * log(free_divalent))
-                  + gcPercent * (c + (d * log(free_divalent)))
-                  + (1/(2 * (len - 1))) * (e + (f * log(free_divalent))
-                  + g * (pow((log(free_divalent)),2)));
-    }
-    /**** END: UPDATED SALT BY OWCZARZY *****/
-    if (sym == 1) {
-      /* primer is symmetrical */
-      /* Equation A */
-      Tm = 1/((1/(delta_H
+     if (div_monov_ratio < crossover_point) {
+        /* use only monovalent salt correction, Eq 22 (Owczarzy et al., 2004) */
+        correction
+          = (((4.29 * gcPercent) - 3.95) * pow(10,-5) * log(K_mM / 1000.0))
+            + (9.40 * pow(10,-6) * (pow(log(K_mM / 1000.0),2)));
+     } else {
+        /* magnesium effects are dominant, Eq 16 (Owczarzy et al., 2008) is used */
+        b =- 9.11 * pow(10,-6);
+        c = 6.26 * pow(10,-5);
+        e =- 4.82 * pow(10,-4);
+        f = 5.25 * pow(10,-4);
+        a = 3.92 * pow(10,-5);
+        d = 1.42 * pow(10,-5);
+        g = 8.31 * pow(10,-5);
+        if(div_monov_ratio < 6.0) {
+           /* in particular ratio of conc of monov and div cations
+            *             some parameters of Eq 16 must be corrected (a,d,g) */
+           a = 3.92 * pow(10,-5) * (0.843 - (0.352 * sqrt(K_mM/1000.0) * log(K_mM/1000.0)));
+           d = 1.42 * pow(10,-5) * (1.279 - 4.03 * pow(10,-3) * log(K_mM/1000.0) - 8.03 * pow(10,-3) * pow(log(K_mM/1000.0),2));
+           g = 8.31 * pow(10,-5) * (0.486 - 0.258 * log(K_mM/1000.0) + 5.25 * pow(10,-3) * pow(log(K_mM/1000.0),3));
+        }
+        
+        correction = a + (b * log(free_divalent))
+          + gcPercent * (c + (d * log(free_divalent)))
+            + (1/(2 * (len - 1))) * (e + (f * log(free_divalent))
+                                     + g * (pow((log(free_divalent)),2)));
+     }
+     /**** END: UPDATED SALT BY OWCZARZY *****/
+     if (sym == 1) {
+           /* primer is symmetrical */
+        /* Equation A */
+        Tm = 1/((1/(delta_H 
                     /
-              (delta_S + 1.9872 * log(DNA_nM/1000000000.0)))) + correction) - T_KELVIN;
-    } else {
-      /* Equation B */
-      Tm = 1/((1/(delta_H
-          /
-        (delta_S + 1.9872 * log(DNA_nM/4000000000.0)))) + correction) - T_KELVIN;
-    }
+                    (delta_S + 1.9872 * log(DNA_nM/1000000000.0)))) + correction) - T_KELVIN;
+     } else {
+        /* Equation B */
+        Tm = 1/((1/(delta_H
+                    /
+                    (delta_S + 1.9872 * log(DNA_nM/4000000000.0)))) + correction) - T_KELVIN;
+     } 
   } /* END else if (salt_corrections == owczarzy) { */
-
-
+   
+   
    /***************************************/
    return Tm;
-ERROR:  /*
-    * length of s was less than 2 or there was an illegal character in
-    * s.
-    */
+ERROR:  /* 
+          * length of s was less than 2 or there was an illegal character in
+          * s.
+          */
   return OLIGOTM_ERROR;
 }
 #undef DO_PAIR
@@ -526,37 +520,36 @@ ERROR:  /*
      goto CATID2(THIS,_STATE2);      \
 }
 
-double
+double 
 oligodg(const char *s,      /* The sequence. */
-    int tm_method)
+    int tm_method) 
 {
-  register int dg = 0;
-  register char c;
+   register int dg = 0;
+   register char c;
 
-  if (    (tm_method != breslauer_auto)
-      &&  (tm_method != santalucia_auto)) {
+  if (tm_method != breslauer_auto
+      && tm_method != santalucia_auto)
     return OLIGOTM_ERROR;
-  }
 
-  /* Use a finite-state machine (DFA) to calucluate dg s. */
-  c = *s; s++;
-  if(tm_method != breslauer_auto) {
-    dg = -1960; /* Initial dG */
-    if(c == 'A' || c == 'T')  {
-      dg += -50; /* terminal AT penalty */
-    }
-    if (c == 'A') goto A_STATE2;
-    else if (c == 'G') goto G_STATE2;
-    else if (c == 'T') goto T_STATE2;
-    else if (c == 'C') goto C_STATE2;
-    else if (c == 'N') goto N_STATE2;
-    else goto ERROR;
-    STATE2(A);
-    STATE2(T);
-    STATE2(G);
-    STATE2(C);
-    STATE2(N);
-  } else {
+   /* Use a finite-state machine (DFA) to calucluate dg s. */
+   c = *s; s++;
+   if(tm_method != breslauer_auto) {      
+      dg=-1960; /* Initial dG */
+      if(c == 'A' || c == 'T')  {
+         dg += -50; /* terminal AT penalty */
+      }
+      if (c == 'A') goto A_STATE2;
+      else if (c == 'G') goto G_STATE2;
+      else if (c == 'T') goto T_STATE2;
+      else if (c == 'C') goto C_STATE2;
+      else if (c == 'N') goto N_STATE2;
+      else goto ERROR;
+      STATE2(A);
+      STATE2(T);
+      STATE2(G);
+      STATE2(C);
+      STATE2(N);
+     } else {
     if (c == 'A') goto A_STATE;
     else if (c == 'G') goto G_STATE;
     else if (c == 'T') goto T_STATE;
@@ -569,41 +562,40 @@ oligodg(const char *s,      /* The sequence. */
     STATE(C);
     STATE(N);
 
-  }
+     }
 DONE:  /* dg is now computed for the given sequence. */
-  if(tm_method != breslauer_auto) {
-    int sym;
-    --s; --s; c = *s;
-    if(c == 'A' || c == 'T')  {
-      dg += -50; /* terminal AT penalty */
-    }
-    sym = symmetry(s);
-    if(sym==1)   {
-      dg +=-430; /* symmetry correction for dG */
-    }
-  }
-  return dg / 1000.0;
+   if(tm_method != breslauer_auto) {
+      int sym;
+      --s; --s; c = *s;
+      if(c == 'A' || c == 'T')  {
+         dg += -50; /* terminal AT penalty */
+      }
+      sym = symmetry(s);
+      if(sym==1)   {
+         dg +=-430; /* symmetry correction for dG */
+      }
+   }
+   return dg / 1000.0;
 
-ERROR:  /*
-        * length of s was less than 2 or there was an illegal character in
-        * s.
-        */
-  return OLIGOTM_ERROR;
-}
-
-double end_oligodg(const char *s,
-  int len, /* The number of characters to return. */
-  int tm_method)
-{
-  int x = (int)strlen(s);
-
-  if (    (tm_method != breslauer_auto)
-      &&  (tm_method != santalucia_auto)) {
+ ERROR:  /* 
+          * length of s was less than 2 or there was an illegal character in
+          * s.
+          */
     return OLIGOTM_ERROR;
 }
 
-  return
-    x < len
+double end_oligodg(const char *s,  
+  int len, /* The number of characters to return. */
+  int tm_method)
+{
+  int x = strlen(s);
+
+  if (tm_method != breslauer_auto
+      && tm_method != santalucia_auto)
+    return OLIGOTM_ERROR;
+
+  return 
+    x < len 
     ? oligodg(s,tm_method) :
     oligodg(s + (x - len),tm_method);
 }
@@ -618,21 +610,18 @@ double seqtm(const  char *seq,
   tm_method_type tm_method,
   salt_correction_type salt_corrections)
 {
-  int i = 0;
   double result = OLIGOTM_ERROR;
   int len = (int) strlen(seq);
   char* seqcopy = NULL;
+  int i;
 
   if (tm_method != breslauer_auto
-      && tm_method != santalucia_auto) {
+      && tm_method != santalucia_auto)
     return OLIGOTM_ERROR;
-  }
-
   if (salt_corrections != schildkraut
       && salt_corrections != santalucia
-      && salt_corrections != owczarzy) {
-        return OLIGOTM_ERROR;
-  }
+      && salt_corrections != owczarzy)
+    return OLIGOTM_ERROR;
   /* copy string to ensure upper case for character handling*/
   seqcopy = (char*) malloc((len + 1) * sizeof(char));
   if (seqcopy == NULL) {
@@ -665,8 +654,7 @@ double seqtm(const  char *seq,
 /* See oligotm.h for documentation on this function and the formula it
    uses. */
 double
-long_seq_tm(
-  const char *s,
+long_seq_tm(const char *s,
   int start,
   int len,
   double salt_conc,
@@ -678,19 +666,18 @@ long_seq_tm(
 
   if (divalent_to_monovalent(divalent_conc, dntp_conc) == OLIGOTM_ERROR)
     return OLIGOTM_ERROR;
-
+  
   salt_conc = salt_conc + divalent_to_monovalent(divalent_conc, dntp_conc);
-
+  
   if ((unsigned) (start + len) > strlen(s) || start < 0 || len <= 0)
     return OLIGOTM_ERROR;
   end = &s[start + len];
   /* Length <= 0 is nonsensical. */
   for (p = &s[start]; p < end; p++) {
-    if ('G' == *p || 'C' == *p) {
+    if ('G' == *p || 'C' == *p)
       GC_count++;
-    }
   }
-
+  
   return
     81.5
     + (16.6 * log10(salt_conc / 1000.0))
@@ -698,15 +685,15 @@ long_seq_tm(
     - (600.0 / len);
 }
 
- /* Return 1 if string is symmetrical, 0 otherwise. */
+ /* Return 1 if string is symmetrical, 0 otherwise. */ 
 int symmetry(const char* seq) {
-  register char s;
-  register char e;
-  const char *seq_end=seq;
-  int i = 0;
-  int seq_len = (int)strlen(seq);
-  int mp = seq_len / 2;
-  if((seq_len % 2) == 1) {
+   register char s;
+   register char e;
+   const char *seq_end=seq;
+   int i = 0;
+   int seq_len=strlen(seq);
+   int mp = seq_len/2;
+   if(seq_len%2==1) {
     return 0;
   }
   seq_end += seq_len;
@@ -734,16 +721,14 @@ int symmetry(const char* seq) {
 }
 
 /* Convert divalent salt concentration to monovalent */
-double divalent_to_monovalent(double divalent,
-            double dntp)
+double divalent_to_monovalent(double divalent, 
+                              double dntp)
 {
-    if (divalent==0) { dntp=0; }
-    if (divalent < 0 || dntp < 0) { return OLIGOTM_ERROR; }
-    if (divalent < dntp) {
-      /* According to theory, melting temperature does not depend on
-      * divalent cations
-      */
-      divalent = dntp;
-    }
-    return 120*(sqrt(divalent-dntp));
+   if(divalent==0) dntp=0;
+   if(divalent<0 || dntp<0) return OLIGOTM_ERROR;
+   if(divalent<dntp) 
+     /* According to theory, melting temperature does not depend on
+        divalent cations */
+     divalent=dntp;  
+   return 120*(sqrt(divalent-dntp));
 }

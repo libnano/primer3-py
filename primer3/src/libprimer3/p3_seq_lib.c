@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>      /* memset(), ... */
 #include <setjmp.h>      /* longjmp(), ... */
 #include "libprimer3.h"  /* Must include libprimer3.h, which
-			    includes p3_seq_lib.h */
+                            includes p3_seq_lib.h */
 
 static void *p3sl_safe_malloc(size_t x);
 static void *p3sl_safe_realloc(void *p, size_t x);
@@ -58,9 +58,9 @@ static char   upcase_and_check_char(char *s);
 
 int
 add_seq_to_seq_lib(seq_lib *sl,
-		   char *seq,
-		   char *seq_id_plus,
-		   const char *errfrag) {
+                   char *seq, 
+                   char *seq_id_plus, 
+                   const char *errfrag) {
 
   int  i = sl->seq_num;
   int  ss = sl->storage_size;
@@ -71,11 +71,11 @@ add_seq_to_seq_lib(seq_lib *sl,
   if (i >= ss) {
     ss += INIT_LIB_SIZE;
     sl->storage_size = ss;
-    sl->names = (char**) p3sl_safe_realloc(sl->names, ss*sizeof(char*));
-    sl->seqs  = (char**) p3sl_safe_realloc(sl->seqs , ss*sizeof(char*));
-    // was commented out
-    sl->rev_compl_seqs  = p3sl_safe_realloc(sl->rev_compl_seqs , ss*sizeof(char*));
-    sl->weight= (double*) p3sl_safe_realloc(sl->weight, ss*sizeof(double));
+    sl->names = (char**) p3sl_safe_realloc(sl->names, ss*sizeof(*sl->names));
+    sl->seqs  = (char**) p3sl_safe_realloc(sl->seqs , ss*sizeof(*sl->seqs));
+    //sl->rev_compl_seqs  = (char**) p3sl_safe_realloc(sl->rev_compl_seqs , ss*sizeof(*sl->rev_compl_seqs));
+    sl->weight= (double*) p3sl_safe_realloc(sl->weight,
+                                   ss*sizeof(*sl->weight));
   }
   sl->seq_num = i + 1;
 
@@ -106,32 +106,32 @@ add_seq_to_seq_lib(seq_lib *sl,
     p3sl_append(&sl->warning, ", entry ");
     p3sl_append(&sl->warning, seq_id_plus);
   }
-
+    
   return 0;
 }
 
-int
+int 
 add_seq_and_rev_comp_to_seq_lib(seq_lib *sl,
-				char *seq,
-				char *seq_id_plus,
-				const char *errfrag) {
+                                char *seq, 
+                                char *seq_id_plus, 
+                                const char *errfrag) {
   char *rev_seq = NULL;
   char *rev_seq_id = NULL;
   int  save_r = 0;
 
   if (seq == NULL) { save_r = 1; }
-
+  
   if (add_seq_to_seq_lib(sl, seq, seq_id_plus, errfrag)) {
     return 1;
   }
-
+  
   rev_seq_id = (char*) malloc(strlen(seq_id_plus) + 9);
   if (rev_seq_id == NULL) return 1;
 
   /* Handle the ID */
   strcpy(rev_seq_id, "reverse ");
   strcat(rev_seq_id, seq_id_plus);
-
+    
   /* Handle the sequence */
   rev_seq = (char*) malloc(strlen(seq) + 1);
   if (rev_seq == NULL) { free(rev_seq_id); return 1; }
@@ -149,18 +149,18 @@ create_empty_seq_lib() {
 
   if (setjmp(_jmp_buf) != 0)
     return NULL; /* If we get here, there was an error in
-		    p3sl_safe_malloc or p3sl_safe_realloc. */
+                    p3sl_safe_malloc or p3sl_safe_realloc. */
 
-  lib =  (seq_lib*) p3sl_safe_malloc(sizeof(seq_lib));
-
-  memset(lib, 0, sizeof(seq_lib));
+  lib =  (seq_lib*) p3sl_safe_malloc(sizeof(* lib));
+  
+  memset(lib, 0, sizeof(*lib));
   lib->repeat_file    = NULL;
-  lib->names          = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
-  lib->seqs           = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
+  lib->names          = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->names));
+  lib->seqs           = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->seqs));
   /* FIX ME Can we get rid of rev_compl_seqs? */
-  lib->rev_compl_seqs = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
+  //lib->rev_compl_seqs = (char**) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(char*));
 
-  lib->weight         = (double*) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(double));
+  lib->weight         = (double*) p3sl_safe_malloc(INIT_LIB_SIZE*sizeof(*lib->weight));
   lib->seq_num        = 0;
   lib->storage_size   = INIT_LIB_SIZE;
   return lib;
@@ -181,16 +181,16 @@ read_and_create_seq_lib(const char * filename, const char *errfrag) {
 
     if (setjmp(_jmp_buf) != 0)
       return NULL; /* If we get here, there was an error in
-		      p3sl_safe_malloc or p3sl_safe_realloc. */
+                      p3sl_safe_malloc or p3sl_safe_realloc. */
 
 
     lib->repeat_file = (char*) p3sl_safe_malloc(strlen(filename) + 1);
     strcpy(lib->repeat_file, filename);
 
     if((file = fopen(lib->repeat_file,"r")) == NULL) {
-	p3sl_append_new_chunk(&lib->error,
-			    "Cannot open ");
-	goto ERROR;
+        p3sl_append_new_chunk(&lib->error,
+                            "Cannot open ");
+        goto ERROR;
     }
 
     seq = (char*) p3sl_safe_malloc(P3SL_INIT_BUF_SIZE);
@@ -203,78 +203,78 @@ read_and_create_seq_lib(const char * filename, const char *errfrag) {
       p = p3_read_line(file);
 
       if (NULL == p) {
-	/* End of file */
-	if (seq_id_plus != NULL) {
-	    if (seq_len == 0) {
-	      p3sl_append_new_chunk(&lib->error,
-				    "Empty sequence in ");
-	      goto ERROR;
-	    } else {
-	      if (add_seq_to_seq_lib(lib, seq, seq_id_plus, errfrag)) {
-		p3sl_append(&lib->error, " in ");
-		goto ERROR;
-	      }
-	    }
-	    free(seq_id_plus);
-	    seq_id_plus = NULL;
-	}
-	break;
+        /* End of file */
+        if (seq_id_plus != NULL) {
+            if (seq_len == 0) {
+              p3sl_append_new_chunk(&lib->error,
+                                    "Empty sequence in ");
+              goto ERROR;
+            } else {
+              if (add_seq_to_seq_lib(lib, seq, seq_id_plus, errfrag)) {
+                p3sl_append(&lib->error, " in ");
+                goto ERROR;
+              }
+            }
+            free(seq_id_plus);
+            seq_id_plus = NULL;
+        }
+        break;
       }
 
       if ('>' == *p) {
-	/* We found an id line */
-	/* There are two possibilities */
-	if (seq_id_plus == NULL) {
-	  /* 1. This is the first id line in the file,
-	     in which case seq_id_plus == NULL
-	     (and seq_len == 0). */
-	  seq_id_plus = (char*) p3sl_safe_malloc(strlen(p) + 1);
-	  p++;  /* skip past the '>' */
-	  strcpy(seq_id_plus, p);
-	} else {
-	  /* 2. This is NOT the first id line in the
-	     file, in which case seq_id_plus != NULL */
-	  if (seq_id_plus != NULL) {
-	    if (seq_len == 0) {
-	      p3sl_append_new_chunk(&lib->error,
-				    "Empty sequence in ");
-	      goto ERROR;
-	    } else {
-	      if (add_seq_to_seq_lib(lib, seq, seq_id_plus, errfrag)) {
-		p3sl_append(&lib->error, " in ");
-		goto ERROR;
-	      }
-	      /*"emtpy" the buffer */
-	      seq_len = 0;
-	      *seq = '\0';
-	    }
-	    free(seq_id_plus);
-	    seq_id_plus = (char*) p3sl_safe_malloc(strlen(p));
-	    p++;  /* skip past the '>' */
-	    strcpy(seq_id_plus, p);
-	  }
-	}
+        /* We found an id line */
+        /* There are two possibilities */
+        if (seq_id_plus == NULL) {
+          /* 1. This is the first id line in the file,
+             in which case seq_id_plus == NULL 
+             (and seq_len == 0). */
+          seq_id_plus = (char*) p3sl_safe_malloc(strlen(p) + 1);
+          p++;  /* skip past the '>' */
+          strcpy(seq_id_plus, p); 
+        } else {
+          /* 2. This is NOT the first id line in the
+             file, in which case seq_id_plus != NULL */
+          if (seq_id_plus != NULL) {
+            if (seq_len == 0) {
+              p3sl_append_new_chunk(&lib->error,
+                                    "Empty sequence in ");
+              goto ERROR;
+            } else {
+              if (add_seq_to_seq_lib(lib, seq, seq_id_plus, errfrag)) {
+                p3sl_append(&lib->error, " in ");
+                goto ERROR;
+              }
+              /*"emtpy" the buffer */
+              seq_len = 0;
+              *seq = '\0';
+            }
+            free(seq_id_plus);
+            seq_id_plus = (char*) p3sl_safe_malloc(strlen(p));
+            p++;  /* skip past the '>' */
+            strcpy(seq_id_plus, p); 
+          }
+        }
       } else {
-	/* A sequence line */
-	if (seq_id_plus == NULL) {
-	  p3sl_append_new_chunk(&lib->error,
-				    "Missing id line (expected '>') in ");
-	  goto ERROR;
-	}
-	while ( strlen(p)+ seq_len + 1 > seq_storage_size ) {
-	  seq_storage_size *= 2;
-	  seq = (char*) p3sl_safe_realloc(seq, seq_storage_size);
-	}
-	strcat(seq, p);
-	seq_len += strlen(p);
+        /* A sequence line */
+        if (seq_id_plus == NULL) {
+          p3sl_append_new_chunk(&lib->error,
+                                    "Missing id line (expected '>') in ");
+          goto ERROR;
+        }
+        while ( strlen(p)+ seq_len + 1 > seq_storage_size ) {
+          seq_storage_size *= 2;
+          seq = (char*) p3sl_safe_realloc(seq, seq_storage_size);
+        }
+        strcat(seq, p);
+        seq_len += strlen(p);
       }
     }
 
     if (lib->seq_num == 0) {
-      	p3sl_append_new_chunk(&lib->error, "Empty ");
-	goto ERROR;
+              p3sl_append_new_chunk(&lib->error, "Empty ");
+        goto ERROR;
     }
-
+      
     reverse_complement_seq_lib(lib);
 
     if (file) fclose(file);
@@ -293,7 +293,7 @@ read_and_create_seq_lib(const char * filename, const char *errfrag) {
 }
 
 
-/*
+/* 
  * Free exogenous storage associated with a seq_lib (but not the seq_lib
  * itself).  Silently ignore NULL p.  Set *p to 0 bytes.
  */
@@ -320,51 +320,39 @@ destroy_seq_lib(seq_lib *p)
     }
     free(p->names);
   }
-  // added NC
-  if (p->rev_compl_seqs != NULL) {
-    // Already freed above (the rev_compl_seqs array contains pointers
-    // that just point to the seqs array)
-    // for(i = 0; i < p->seq_num; i++) {
-    //   if (p->rev_compl_seqs[i] != NULL) {
-    //     free(p->rev_compl_seqs[i]);
-    //   }
-    // }
-    free(p->rev_compl_seqs);
-  } // end added NC
-
   free(p->weight);
   free(p->error.data);
   free(p->warning.data);
-  // free(p->rev_compl_seqs);
+  free(p->rev_compl_seqs);
   free(p);
 }
 
 void
 reverse_complement_seq_lib(seq_lib  *lib)
 {
-  int i, n, k;
-  if((n = lib->seq_num) == 0) {
-    return;
-  } else {
-    lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(char*));
-    lib->seqs = (char**) p3sl_safe_realloc(lib->seqs, 2*n*sizeof(char*));
-    lib->weight = (double*) p3sl_safe_realloc(lib->weight, 2*n*sizeof(double));
-    lib->rev_compl_seqs = (char**) p3sl_safe_malloc(2*n*sizeof(char*));
+    int i, n, k;
+    if((n = lib->seq_num) == 0) return;
+    else {
+        lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(*lib->names));
+    lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(*lib->seqs));
+    lib->seqs = (char**) p3sl_safe_realloc(lib->seqs, 2*n*sizeof(*lib->seqs));
+    lib->weight = (double*) p3sl_safe_realloc(lib->weight, 2*n*sizeof(*lib->weight));
+	lib->rev_compl_seqs = (char**) p3sl_safe_malloc(2*n*sizeof(*lib->seqs));
 
-    lib->seq_num *= 2;
-    for(i = n; i < lib->seq_num; i++) {
-	    k = (int)strlen(lib->names[i-n]);
-	    lib->names[i] = (char*) p3sl_safe_malloc(k + 9);
-	    strcpy(lib->names[i], "reverse ");
-	    strcat(lib->names[i], lib->names[i-n]);
-	    lib->seqs[i] = (char*) p3sl_safe_malloc(strlen(lib->seqs[i-n]) + 1);
-	    p3_reverse_complement(lib->seqs[i-n], lib->seqs[i]);
-	    lib->weight[i] = lib->weight[i-n];
-	    lib->rev_compl_seqs[i-n] = lib->seqs[i];
-	    lib->rev_compl_seqs[i] = lib->seqs[i-n];
+        lib->seq_num *= 2;
+        for(i=n; i<lib->seq_num; i++){
+	        k = (int)strlen(lib->names[i-n]);
+            lib->names[i] = (char*) p3sl_safe_malloc(k + 9);
+            strcpy(lib->names[i], "reverse ");
+            strcat(lib->names[i], lib->names[i-n]);
+            lib->seqs[i] = (char*) p3sl_safe_malloc(strlen(lib->seqs[i-n]) + 1);
+            p3_reverse_complement(lib->seqs[i-n], lib->seqs[i]);
+            lib->weight[i] = lib->weight[i-n];
+            lib->rev_compl_seqs[i-n] = lib->seqs[i];
+            lib->rev_compl_seqs[i] = lib->seqs[i-n];
+       }
     }
-  }
-  return;
+    return;
 }
 
 int
@@ -389,22 +377,22 @@ parse_seq_name(char *s)
     while( *p != '*' && *p != '\0' ) p++;
     if (*p == '\0' ) return 1;
     else {
-	 p++;
-	 n = strtod( p, &q );
-	 if( q == p ) return -1;
+         p++;
+         n = strtod( p, &q );
+         if( q == p ) return -1;
     }
     if(n > PR_MAX_LIBRARY_WT) return -1;
 
     return n;
 }
 
-/*
+/* 
  * Removes spaces and "end-of-line" characters
  * from the sequence, replaces all other
  * characters except A, T, G, C and IUB/IUPAC
  * codes with N.  Returns 0 if there were no such
  * replacements and the first non-ACGT, non-IUB
- * character otherwise.
+ * character otherwise. 
  */
 static char
 upcase_and_check_char(char *s)
@@ -414,21 +402,21 @@ upcase_and_check_char(char *s)
     j = 0; m = 0;
     n = (int)strlen(s);
     for(i=0; i<n; i++){
+      
+        switch(s[i])
+        {
+        case 'a' : s[i-j] = 'A'; break;
+        case 'g' : s[i-j] = 'G'; break;
+        case 'c' : s[i-j] = 'C'; break;
+        case 't' : s[i-j] = 'T'; break;
+        case 'n' : s[i-j] = 'N'; break;
+        case 'A' : s[i-j] = 'A'; break;
+        case 'G' : s[i-j] = 'G'; break;
+        case 'C' : s[i-j] = 'C'; break;
+        case 'T' : s[i-j] = 'T'; break;
+        case 'N' : s[i-j] = 'N'; break;
 
-	switch(s[i])
-	{
-	case 'a' : s[i-j] = 'A'; break;
-	case 'g' : s[i-j] = 'G'; break;
-	case 'c' : s[i-j] = 'C'; break;
-	case 't' : s[i-j] = 'T'; break;
-	case 'n' : s[i-j] = 'N'; break;
-	case 'A' : s[i-j] = 'A'; break;
-	case 'G' : s[i-j] = 'G'; break;
-	case 'C' : s[i-j] = 'C'; break;
-	case 'T' : s[i-j] = 'T'; break;
-	case 'N' : s[i-j] = 'N'; break;
-
-        case 'b' : case 'B':
+        case 'b' : case 'B': 
         case 'd' : case 'D':
         case 'h' : case 'H':
         case 'v' : case 'V':
@@ -436,16 +424,16 @@ upcase_and_check_char(char *s)
         case 'y' : case 'Y':
         case 'k' : case 'K':
         case 'm' : case 'M':
-	case 's' : case 'S':
-	case 'w' : case 'W':
-	  s[i-j] = toupper(s[i]); break;
+        case 's' : case 'S':
+        case 'w' : case 'W':
+          s[i-j] = toupper(s[i]); break;
 
-	case '\n': j++;          break;
-	case ' ' : j++;          break;
-	case '\t': j++;          break;
-	case '\r': j++;          break;
-	default  : if (!m) m = s[i]; s[i-j] = 'N';
-	}
+        case '\n': j++;          break;
+        case ' ' : j++;          break;
+        case '\t': j++;          break;
+        case '\r': j++;          break;
+        default  : if (!m) m = s[i]; s[i-j] = 'N'; 
+        }
     }
     s[n-j] = '\0';
     return m;

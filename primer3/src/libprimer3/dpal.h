@@ -50,29 +50,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef DPAL_MAX_ALIGN
 #define DPAL_MAX_ALIGN   1600 /* 
-			       * The maximum size of a string that can be
-			       * aligned with with generic dpal and for which
-			       * we can return a "path".  Several arrays of
-			       * size DPAL_MAX_ALIGN X DPAL_MAX_ALIGN are
-			       * statically allocated in dpal.o
-			       */
+                               * The maximum size of a string that can be
+                               * aligned with with generic dpal and for which
+                               * we can return a "path".  Several arrays of
+                               * size DPAL_MAX_ALIGN X DPAL_MAX_ALIGN are
+                               * statically allocated in dpal.o
+                               */
 #endif
 
 #define DPAL_LOCAL        0  /* Return a local alignment. */
 #define DPAL_GLOBAL_END   1  /* 
-			      * Return a global alignment _anchored at the end
-			      * of the first sequence_.
-			      */
+                              * Return a global alignment _anchored at the end
+                              * of the first sequence_.
+                              */
 #define DPAL_GLOBAL       2  /* 
-			      * Return an arbitrary global alignment, that is
-			      * one anchored at the end of either the first or
-			      * the second sequence.
-			      */
+                              * Return an arbitrary global alignment, that is
+                              * one anchored at the end of either the first or
+                              * the second sequence.
+                              */
 #define DPAL_LOCAL_END    3   /* 
                                * Return a local alignment that includes the
-			       * end (but not necessarily the beginning) of
-			       * the first sequence.
-			       */
+                               * end (but not necessarily the beginning) of
+                               * the first sequence.
+                               */
 
 /*
  * It is not possible to specify end-gap penalties for the DPAL_GLOBAL_END
@@ -88,37 +88,29 @@ typedef int dpal_ssm[UCHAR_MAX + 1][UCHAR_MAX + 1];
 /* Structure for passing in arguments to the main function, dpal. */
 typedef struct {
     int check_chars;        /* 
-		             * If non-0, check for and raise an error on an
-		             * illegal character in the input strings.
-			     */
-    int debug;              /* 
-			     * If non-0, print debugging information to
-			     * stderr.
-			     */
+                             * If non-0, check for and raise an error on an
+                             * illegal character in the input strings.
+                             */
     int fail_stop;           /* Exit with -1 on error. */
     int flag;                /* 
-			      * One of DPAL_GLOBAL, DPAL_LOCAL,
-			      * DPAL_GLOBAL_END, DPAL_LOCAL_END
-			      */
+                              * One of DPAL_GLOBAL, DPAL_LOCAL,
+                              * DPAL_GLOBAL_END, DPAL_LOCAL_END
+                              */
     int force_generic;      /* Force the use of the generic function. */
     int force_long_generic; /* 
-			     * Force the use of the long generic no-path
-			     * function.
-			     */
+                             * Force the use of the long generic no-path
+                             * function.
+                             */
     int force_long_maxgap1; /* Force the use of the long maxgap 1 functions. */
     int gap;                 /* The "gap opening" penalty. */
     int gapl;                /* The "gap extension" penalty. */
     int max_gap;             /* 
-		              * The maximum allowable size for a gap. -1
-		              * indicates that the gap can be of any size.
-			      */
+                              * The maximum allowable size for a gap. -1
+                              * indicates that the gap can be of any size.
+                              */
     int score_max;           /* If greater than 0 stop search as soon as
-			      * score > score_max.
-			      */
-    int score_only;          /* 
-			      * If non-0, only print the score on
-			      * stdout. (Incompatible with debug.)
-			      */
+                              * score > score_max.
+                              */
     dpal_ssm ssm;            /* The scoring system matrix. */
 } dpal_args;
 
@@ -130,7 +122,21 @@ typedef struct {
     int     align_end_1; /* Last alignment position in the 1st sequence. */
     int     align_end_2; /* Last alignment position in the 2nd sequence. */
     double  score;
+    char    *sec_struct;
 } dpal_results;
+
+/* 
+ * DPM_FAST    = 0 - score only with optimized functions (fast)
+ * DPM_GENERAL = 1 - use general function without debug (slow)
+ * DPM_DEBUG   = 2 - debug mode print alignments on STDERR
+ * DPM_STRUCT  = 3 - calculate secondary structures as string
+ */
+typedef enum dpal_mode { 
+  DPM_FAST    = 0,
+  DPM_GENERAL = 1,
+  DPM_DEBUG   = 2, 
+  DPM_STRUCT  = 3
+} dpal_mode;
 
 /* Initialize the argument to the default matrix for nucleotide matches. */
 void dpal_set_default_nt_args(dpal_args *);
@@ -156,7 +162,7 @@ int dpal_set_ambiguity_code_matrix(dpal_args *);
  * and puts additional information in out->msg.
  */
 void dpal(const unsigned char *, const unsigned char*,
-	  const dpal_args *, dpal_results *out);
+          const dpal_args *, const dpal_mode mode, dpal_results *out);
 
 void set_dpal_args(dpal_args *);
 

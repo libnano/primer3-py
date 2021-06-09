@@ -49,16 +49,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #ifndef DPAL_FORGET_PATH
-/*
+/* 
  * Print an alignment on stderr, given the 2 aligned sequences, the "trace"
  * matrix, and the coordinate of the end point of the alignment to print.
  */
-static void print_align(const unsigned char *, const unsigned char *,
-                        int[DPAL_MAX_ALIGN][DPAL_MAX_ALIGN][3], int, int,
-                        const dpal_args*);
+static char *print_align(const unsigned char *, const unsigned char *,
+                         int[DPAL_MAX_ALIGN][DPAL_MAX_ALIGN][3], int, int,
+                         const dpal_args*, const dpal_mode mode, dpal_results *);
 #endif
 
-/*
+/* 
  * Return 1 if there is an illegal character in the first argument, and place
  * the illegal character in the address contained in the last argument.
  */
@@ -69,13 +69,14 @@ static const unsigned char *xlate_ambiguity_code(char);
 /*
  * The next function headers are for various versions of the
  * dynamic-programming alignment code optimized for particular input argument
- * values.
+ * values. 
  */
 static void _dpal_generic(const unsigned char *,
                           const unsigned char *,
                           const int,
                           const int,
                           const dpal_args *,
+                          const dpal_mode mode,
                           dpal_results *);
 
 static void _dpal_long_nopath_maxgap1_local_end(const unsigned char *,
@@ -114,24 +115,20 @@ void
 set_dpal_args(dpal_args *a) {
   unsigned int i, j;
 
-  memset(a, 0, sizeof(dpal_args));
-  for (i = 0; i <= UCHAR_MAX; i++) {
-    for (j = 0; j <= UCHAR_MAX; j++) {
+  memset(a, 0, sizeof(*a));
+  for (i = 0; i <= UCHAR_MAX; i++)
+    for (j = 0; j <= UCHAR_MAX; j++)
       if (('A' == i || 'C' == i || 'G' == i || 'T' == i || 'N' == i)
-          && ('A' == j || 'C' == j || 'G' == j || 'T' == j
+          && ('A' == j || 'C' == j || 'G' == j || 'T' == j 
               || 'N' == j)) {
-        if (i == 'N' || j == 'N') {
+        if (i == 'N' || j == 'N') 
           a->ssm[i][j] = -25;
-        } else if (i == j) {
+        else if (i == j)
           a->ssm[i][j] = 100;
-        } else {
+        else 
           a->ssm[i][j] = -100;
-        }
-      } else {
+      } else
         a->ssm[i][j] = INT_MIN;
-      }
-    }
-  }
 
   a->gap                = -200;
   a->gapl               = -200;
@@ -139,8 +136,6 @@ set_dpal_args(dpal_args *a) {
   a->max_gap            = 1;
   a->fail_stop          = 1;
   a->check_chars        = 0;
-  a->debug              = 0;
-  a->score_only         = 1;
   a->force_generic      = 0;
   a->force_long_generic = 0;
   a->force_long_maxgap1 = 0;
@@ -150,12 +145,10 @@ void
 dpal_set_default_nt_args(dpal_args *a) {
   set_dpal_args(a);
   a->check_chars        = 1;
-  a->debug              = 0;
   a->fail_stop          = DPAL_EXIT_ON_ERROR;
   a->gap                = -100;
   a->gapl               = -100;
   a->max_gap            = 3;
-  a->score_only         = 0;
 }
 
 void
@@ -165,9 +158,9 @@ dpal_set_h_nt_matrix(dpal_args *a) {
   for (i = 0; i <= UCHAR_MAX; i++)
     for (j = 0; j <= UCHAR_MAX; j++)
       if (('A' == i || 'C' == i || 'G' == i || 'T' == i || 'N' == i)
-          && ('A' == j || 'C' == j || 'G' == j || 'T' == j
+          && ('A' == j || 'C' == j || 'G' == j || 'T' == j 
               || 'N' == j)) {
-        if (i == 'N' || j == 'N')
+        if (i == 'N' || j == 'N') 
           a->ssm[i][j] = -50;
         else if (i == j) {
           if ('C' == i || 'G' == i)
@@ -175,7 +168,7 @@ dpal_set_h_nt_matrix(dpal_args *a) {
           else
             a->ssm[i][j] = 200;
         }
-        else
+        else 
           a->ssm[i][j] = -50;
       } else
         a->ssm[i][j] = INT_MIN;
@@ -251,7 +244,7 @@ xlate_ambiguity_code(char c)
   else return NULL; /* Error condition */
 }
 
-/*
+/* 
    The next two macros require that the output argument is always
    called 'out'.
  */
@@ -267,14 +260,15 @@ fail_action(const dpal_args *in, dpal_results *out) {
   if (in->fail_stop) {
     fprintf(stderr, "\n%s\n", out->msg);
     exit(-1);
-  }
-  out->score=DPAL_ERROR_SCORE;
+  } 
+  out->score=DPAL_ERROR_SCORE; 
 }
 
 void
 dpal(const unsigned char *X,
      const unsigned char *Y,
      const dpal_args *in,
+     const dpal_mode mode,
      dpal_results *out)
 {
   int xlen, ylen;
@@ -283,6 +277,7 @@ dpal(const unsigned char *X,
   out->score = DPAL_ERROR_SCORE;
   out->path_length = 0;
   out->msg = NULL;
+  out->sec_struct = NULL;
 
   CHECK_ERROR(NULL == X,   "NULL first sequence");
   CHECK_ERROR(NULL == Y,   "NULL second sequence");
@@ -301,8 +296,8 @@ dpal(const unsigned char *X,
     CHECK_ERROR(illegal_char(Y, in->ssm, &msg[28]), msg);
   }
 
-  xlen = (int)strlen((char *) X);
-  ylen = (int)strlen((char *) Y);
+  xlen = strlen((char *) X);
+  ylen = strlen((char *) Y);
 
   out->align_end_1 = -1;
   out->align_end_2 = -1;
@@ -317,18 +312,16 @@ dpal(const unsigned char *X,
     out->score = 0;
     return;
   }
-  CHECK_ERROR(in->debug != 0 && in->score_only != 0,
-              "score_only must be 0 if debug is non-0");
-  if (1 == in->force_generic || in->debug == 1 || 0 == in->score_only) {
-    /*
-     * A true value of in->debug really means "print alignment on stderr"
+  if (1 == in->force_generic || mode != 0 ) {
+    /* 
+     * A true value of in->mode really means "print alignment on stderr"
      * and implies 0 == a.score_only.
      */
     CHECK_ERROR(xlen > DPAL_MAX_ALIGN,
                 "Sequence 1 longer than DPAL_MAX_ALIGN and alignment is requested");
     CHECK_ERROR(ylen > DPAL_MAX_ALIGN,
                 "Sequence 2 longer than DPAL_MAX_ALIGN and alignment is requested");
-    _dpal_generic(X, Y, xlen, ylen, in, out);
+    _dpal_generic(X, Y, xlen, ylen, in, mode, out);
   } else if (1 == in->force_long_generic) {
     _dpal_long_nopath_generic(X, Y, xlen, ylen, in, out);
   } else if (1 == in->max_gap ) {
@@ -339,11 +332,11 @@ dpal(const unsigned char *X,
     else if (DPAL_LOCAL_END == in->flag)
       _dpal_long_nopath_maxgap1_local_end(X, Y, xlen, ylen, in, out);
     else if (xlen <= DPAL_MAX_ALIGN && ylen <= DPAL_MAX_ALIGN)
-      _dpal_generic(X, Y, xlen, ylen, in, out);
+      _dpal_generic(X, Y, xlen, ylen, in, mode, out);
     else _dpal_long_nopath_generic(X, Y, xlen, ylen, in, out);
   }
   else if (xlen < DPAL_MAX_ALIGN && ylen < DPAL_MAX_ALIGN)
-    _dpal_generic(X, Y, xlen, ylen, in, out);
+    _dpal_generic(X, Y, xlen, ylen, in, mode, out);
   else
     _dpal_long_nopath_generic(X, Y, xlen, ylen, in, out);
 
@@ -355,9 +348,10 @@ dpal(const unsigned char *X,
 static void
 _dpal_generic(const unsigned char *X,
               const unsigned char *Y,
-              const int xlen,
+              const int xlen, 
               const int ylen,
               const dpal_args *in,
+	      const dpal_mode mode,
               dpal_results *out)
 {
 
@@ -375,7 +369,7 @@ _dpal_generic(const unsigned char *X,
 #ifndef DPAL_FORGET_PATH
     int i0 = -99, j0 = -99;
     int saved_k;
-#endif
+#endif 
 
     int I = -99, J = -99; /* Coordinates of the maximum score. */
     int smax;             /* The optimum score. */
@@ -395,7 +389,7 @@ _dpal_generic(const unsigned char *X,
     /* Initialize the 0th column of the score matrix. */
     smax = INT_MIN;
     for(i=0; i < xlen; i++) {
-        score = in->ssm[X[i]][Y[0]];
+        score = in->ssm[X[i]][Y[0]]; 
         if (DPAL_LOCAL == in->flag) {
             if (score < 0) score = 0;
             if(score > smax) {
@@ -405,20 +399,20 @@ _dpal_generic(const unsigned char *X,
         }
         else if (DPAL_LOCAL_END == in->flag) {if (score < 0) score = 0;}
         S[i][0] = score;
-    }
+    }   
     /* Move code for find global-alignment and end-anchored
        alignment below? */
     if (DPAL_LOCAL != in->flag) {
-        /*
+        /* 
          * For a non-local alignment we restrict our search for the maximum
          * score to the last row.
          */
         smax = S[xlen-1][0]; I=xlen-1; J=0;
     }
-
+           
     /* Initialize the 0th row of the score matrix. */
-    for(j=0; j<ylen; j++) {
-        score = in->ssm[X[0]][Y[j]];
+    for(j=0; j<ylen; j++) { 
+        score = in->ssm[X[0]][Y[j]]; 
 
         if(DPAL_LOCAL == in->flag){
             if (score < 0) score = 0;
@@ -429,7 +423,7 @@ _dpal_generic(const unsigned char *X,
         }
         else if (DPAL_LOCAL_END == in->flag) {if (score < 0) score = 0;}
         S[0][j] = score;
-    }
+    }   
     if(DPAL_GLOBAL == in->flag&&S[0][ylen-1]>smax){
                 smax = S[0][ylen-1];
                 I=0; J=ylen-1;
@@ -504,17 +498,17 @@ _dpal_generic(const unsigned char *X,
             }
 
             if (score >= smax)
-                /*
+                /* 
                  * Because of comparison '>=' immediately above, dpal reports
                  * ungapped (i.e. diagonal) alignments if there is a choice
                  * of more than one optimum alignment.
                  */
                 /* Move code to get 'g' and 'e' maxima to a separate loop ? */
-                if (DPAL_LOCAL == in->flag
+                if (DPAL_LOCAL == in->flag 
                     || (DPAL_GLOBAL_END == in->flag && i == xlen-1)
                     || (DPAL_LOCAL_END   == in->flag && i == xlen-1)
                     || (DPAL_GLOBAL == in->flag&& (i==xlen-1||j==ylen-1))) {
-                    /*
+                    /*  
                      * If in->flag is DPAL_LOCAL, then a cell anywhere within
                      * S may be the endpoint of the alignment.  If in->flag is
                      * DPAL_GLOBAL_END, then only cells in the last row may be
@@ -525,9 +519,9 @@ _dpal_generic(const unsigned char *X,
                     I = i;
                     J = j;
             } /*  put else here ? */
-            if (score < 0 && (DPAL_LOCAL == in->flag
+            if (score < 0 && (DPAL_LOCAL == in->flag 
                               || DPAL_LOCAL_END == in->flag))
-                /*
+                /* 
                  * For a local alignment, 0 is the lowest score that we record
                  * in S.
                  */
@@ -538,7 +532,7 @@ _dpal_generic(const unsigned char *X,
     }
     /* I and J now specify the last pair of an optimum alignment. */
 
-#ifndef DPAL_FORGET_PATH
+#ifndef DPAL_FORGET_PATH    
     k = (I > J) ? I+1 : J+1;
     saved_k=k;
 
@@ -560,7 +554,7 @@ _dpal_generic(const unsigned char *X,
     }
 #endif
 
-    if ((DPAL_LOCAL == in->flag
+    if ((DPAL_LOCAL == in->flag 
          || DPAL_LOCAL_END == in->flag)&& S[I][J] <= 0) {
         /* There is no alignment at all. */
         out->score = 0;
@@ -569,14 +563,16 @@ _dpal_generic(const unsigned char *X,
         out->score = smax;
         out->align_end_1 = I;
         out->align_end_2 = J;
-#ifndef DPAL_FORGET_PATH
+#ifndef DPAL_FORGET_PATH        
         out->path_length = saved_k - k + 1;
 #else
         out->path_length = 0;
 #endif
     }
 #ifndef DPAL_FORGET_PATH
-    if (in->debug) print_align(X,Y,P,I,J, in);
+    if (mode > 1) { 
+      out->sec_struct = print_align(X,Y,P,I,J,in,mode,out);
+    }
 #endif
     return;
  FAIL:
@@ -587,13 +583,13 @@ _dpal_generic(const unsigned char *X,
 static void
 _dpal_long_nopath_generic(const unsigned char *X,
                           const unsigned char *Y,
-                          const int xlen,
+                          const int xlen, 
                           const int ylen,
                           const dpal_args *in,
                           dpal_results *out)
 {
     /* The "score matrix" (matrix of best scores). */
-    int **S, *SI, **P;
+    int **S, *SI, **P; 
 
     register int i, j, k, mg, mgy, c;
     register int gap = in->gap, gapl = in->gapl, max_gap = in->max_gap;
@@ -624,7 +620,7 @@ _dpal_long_nopath_generic(const unsigned char *X,
     /* Initialize the 0th column of the score matrix. */
     smax = INT_MIN;
     for(i=0; i < xlen; i++) {
-        score = in->ssm[X[i]][Y[0]];
+        score = in->ssm[X[i]][Y[0]]; 
         if (DPAL_LOCAL == in->flag) {
             if (score < 0) score = 0;
             if(score > smax) {
@@ -634,20 +630,20 @@ _dpal_long_nopath_generic(const unsigned char *X,
         }
         else if (DPAL_LOCAL_END == in->flag) {if (score < 0) score = 0;}
         S[0][i] = score;
-    }
+    }   
     /* Move code for find global-alignment and end-anchored
        alignment below? */
     if (DPAL_LOCAL != in->flag) {
-        /*
+        /* 
          * For a non-local alignment we restrict our search for the maximum
          * score to the last row.
          */
         smax = S[0][xlen-1]; I=xlen-1; J=0;
     }
-
-    /* Initialize the 0th row of the score matrix.
-    for(j=0; j<ylen; j++) {
-        score = in->ssm[X[0]][Y[j]];
+           
+    /* Initialize the 0th row of the score matrix. 
+    for(j=0; j<ylen; j++) { 
+        score = in->ssm[X[0]][Y[j]]; 
 
         if(DPAL_LOCAL == in->flag){
             if (score < 0) score = 0;
@@ -657,8 +653,8 @@ _dpal_long_nopath_generic(const unsigned char *X,
             }
         }
         S[0][j] = score;
-    }
-
+    }   
+    
     if(DPAL_GLOBAL == in->flag&&S[0][ylen-1]>smax){
                 smax = S[0][ylen-1];
                 I=0; J=ylen-1;
@@ -672,7 +668,7 @@ _dpal_long_nopath_generic(const unsigned char *X,
          if (DPAL_LOCAL == in->flag) {
              if (score < 0) score = 0;
              if(score > smax) smax = score;
-         }
+         }    
          else if (DPAL_LOCAL_END == in->flag) { if (score < 0) score = 0;}
          else if (DPAL_GLOBAL == in->flag && j == ylen-1 && score > smax)
                         smax = score;
@@ -682,27 +678,27 @@ _dpal_long_nopath_generic(const unsigned char *X,
             score=S[mgy-1][i-1];
 
                 mg=(max_gap+1>i||max_gap<0)?i:max_gap+1;
-                for(k=2; k<=mg; k++)
+                for(k=2; k<=mg; k++) 
                     if((c = S[mgy-1][i-k] + gap + gapl*(k-2)) > score)score = c;
 
-                for(k=2;k<=mgy;k++)
+                for(k=2;k<=mgy;k++) 
                     if((c = S[mgy-k][i-1] + gap + gapl*(k-2)) > score)score=c;
 
                 score += in->ssm[X[i]][Y[j]];
 
             if (score >= smax)
-                /*
+                /* 
                  * Because of comparison '>=' immediately above, dpal reports
                  * ungapped (i.e. diagonal) alignments if there is a choice
                  * of more than one optimum alignment.
                  */
                 /* Move code to get 'g' and 'e' maxima to a separate loop ? */
-                if (DPAL_LOCAL == in->flag
+                if (DPAL_LOCAL == in->flag 
                     || ((DPAL_GLOBAL_END == in->flag
-                         || DPAL_LOCAL_END == in->flag)
+                         || DPAL_LOCAL_END == in->flag) 
                         && i == xlen-1)
                     || (DPAL_GLOBAL == in->flag&& (i==xlen-1||j==ylen-1))) {
-                    /*
+                    /*  
                      * If in->flag is DPAL_LOCAL, then a cell anywhere within
                      * S may be the endpoint of the alignment.  If in->flag is
                      * DPAL_GLOBAL_END, then only cells in the last row may be
@@ -715,7 +711,7 @@ _dpal_long_nopath_generic(const unsigned char *X,
             } /*  put else here ? */
             if (score < 0 && (DPAL_LOCAL == in->flag
                               || DPAL_LOCAL_END == in->flag))
-                /*
+                /* 
                  * For a local alignment, 0 is the lowest score that we record
                  * in S.
                  */
@@ -751,13 +747,13 @@ _dpal_long_nopath_generic(const unsigned char *X,
 static void
 _dpal_long_nopath_maxgap1_local(const unsigned char *X,
                                 const unsigned char *Y,
-                                const int xlen,
+                                const int xlen, 
                                 const int ylen,
                                 const dpal_args *in,
                                 dpal_results *out)
 {
     /* The "score matrix" (matrix of best scores). */
-    int *S0, *S1, *S2;
+    int *S0, *S1, *S2; 
     int *P0, *P1, *P2;
     int *S;
 
@@ -787,13 +783,13 @@ _dpal_long_nopath_maxgap1_local(const unsigned char *X,
     smax = 0; /* For local alignment score can never be less than 0. */
 
     /* Initialize the 0th row of the score matrix. */
-    for(j=0; j < ylen; j++) {
-        score = in->ssm[X[0]][Y[j]];
+    for(j=0; j < ylen; j++) { 
+        score = in->ssm[X[0]][Y[j]]; 
         if (score < 0) score = 0;
         else if (score > smax) smax = score;
         /*S[0][j] = score;*/
         S0[j] = score;
-    }
+    }   
 
     /* Set the 1st row of the score matrix. */
     score = in->ssm[X[1]][Y[0]];
@@ -826,7 +822,7 @@ _dpal_long_nopath_maxgap1_local(const unsigned char *X,
             score +=gap;
             if((a=S1[j-1]) >score) score = a;
 
-            score += in->ssm[X[i]][Y[j]];
+            score += in->ssm[X[i]][Y[j]];       
             if (score < 0 ) score = 0;
             else if (score > smax) smax = score;
             S2[j]=score;
@@ -844,13 +840,13 @@ _dpal_long_nopath_maxgap1_local(const unsigned char *X,
 static void
 _dpal_long_nopath_maxgap1_global_end(const unsigned char *X,
                                      const unsigned char *Y,
-                                     const int xlen,
+                                     const int xlen, 
                                      const int ylen,
                                      const dpal_args *in,
                                      dpal_results *out)
 {
   /* The "score matrix" (matrix of best scores). */
-  int *S0, *S1, *S2, *S;
+  int *S0, *S1, *S2, *S; 
   int *P0, *P1, *P2;
 
   register int i, j, k;
@@ -873,9 +869,9 @@ _dpal_long_nopath_maxgap1_global_end(const unsigned char *X,
   S0 = P0; S1 = P1; S2 = P2;
 
   smax = in->ssm[X[xlen-1]][Y[0]];
-
+           
   /* Set the 0th row of the score matrix. */
-  for(j=0; j<xlen; j++) S0[j] = in->ssm[X[j]][Y[0]];
+  for(j=0; j<xlen; j++) S0[j] = in->ssm[X[j]][Y[0]]; 
 
   /* Set the 1st row of the score matrix. */
   S1[0] = in->ssm[X[0]][Y[1]];
@@ -948,17 +944,21 @@ _dpal_long_nopath_maxgap1_global_end(const unsigned char *X,
 
 #ifndef DPAL_FORGET_PATH
 /* Reconstruct the best path and print the alignment. */
-void
+char *
 print_align(const unsigned char *X,
             const unsigned char *Y,
             int P[DPAL_MAX_ALIGN][DPAL_MAX_ALIGN][3],
             int I,
             int J,
-            const dpal_args *dargs)
+            const dpal_args *dargs,
+	    const dpal_mode mode,
+            dpal_results *out)
 {
   int JX[DPAL_MAX_ALIGN],JY[DPAL_MAX_ALIGN];
-  int k,i,j,n,m;
+  int k,i,j,n,m,ret_nr,ret_pr_once;
   char sx[3*DPAL_MAX_ALIGN],sy[3*DPAL_MAX_ALIGN],sxy[3*DPAL_MAX_ALIGN];
+  char ret_str[9*(DPAL_MAX_ALIGN + 10)];
+  char *ret_ptr = NULL;
 
   for (i=0; i < 3*DPAL_MAX_ALIGN; i++) {
     sx[i] = ' '; sy[i] = ' '; sxy[i] = ' ';
@@ -1016,32 +1016,100 @@ print_align(const unsigned char *X,
   }
   sx[m] = X[I];
   sy[m] = Y[J];
-  for (i=m+1; i < (signed) (m + (int)strlen((char *) X) - I); i++)
+  for (i=m+1; i < (signed) (m + strlen((char *) X) - I); i++) 
     sx[i]=X[i-m+I];
-  for (i=m+1; i < (signed) (m + (int)strlen((char *) Y) - J); i++)
+  for (i=m+1; i < (signed) (m + strlen((char *) Y) - J); i++) 
     sy[i]=Y[i-m+J];
 
   if (dargs->ssm[(unsigned char)sx[m]][(unsigned char)sy[m]] > 0)
     sxy[m] = '|';
   else sxy[m]=' ';
   m++;
-  if ((int)strlen((char *) X) - I > (int)strlen((char *) Y)-J) {
-    k = m + (int)strlen((char *) X) - I;
+  if (strlen((char *) X) - I > strlen((char *) Y)-J) {
+    k = m + strlen((char *) X) - I;
   } else {
-    k = m + (int)strlen((char *) Y) - J;
+    k = m + strlen((char *) Y) - J;
   }
-
-  j=0;
-  while(j<k){
-    for(i=j;i<j+70;i++) fprintf(stderr, "%c",sx[i]);
-    fprintf(stderr, "\n");
-    for(i=j;i<j+70;i++) fprintf(stderr, "%c",sxy[i]);
-    fprintf(stderr, "\n");
-    for(i=j;i<j+70;i++) fprintf(stderr, "%c",sy[i]); fprintf(stderr,"\n");
-    for(i=0;i<70;i++)   fprintf(stderr, "_");
-    fprintf(stderr, "\n");
-    j +=70;
+  if (mode == DPM_DEBUG) {
+    j=0;
+    while(j<k){
+      for(i=j;i<j+70;i++) fprintf(stderr, "%c",sx[i]);
+      fprintf(stderr, "\n");
+      for(i=j;i<j+70;i++) fprintf(stderr, "%c",sxy[i]);
+      fprintf(stderr, "\n");
+      for(i=j;i<j+70;i++) fprintf(stderr, "%c",sy[i]);
+      fprintf(stderr,"\n");
+      for(i=0;i<70;i++)   fprintf(stderr, "_");
+      fprintf(stderr, "\n");
+      j +=70;
+    }
+    return NULL;
   }
+  if (mode == DPM_STRUCT) {
+    j=0;
+    ret_nr = 0;
+    while(j<k){
+      strcpy(ret_str + ret_nr, "   ");
+      ret_nr += 3;
+      ret_pr_once = -1;
+      for(i=j;i<j+70;i++) {
+        if (ret_pr_once < 0 && sx[i] != ' ') {
+          ret_str[ret_nr - 3] = '5';
+          ret_str[ret_nr - 2] = '\'';
+          ret_pr_once = 1;
+        }
+        ret_str[ret_nr++] = sx[i];
+      }
+      while (ret_nr > 0 && ret_str[ret_nr - 1] == ' ') {
+        ret_nr--;
+      }
+      strcpy(ret_str + ret_nr, " 3\'\\n   ");
+      ret_nr += 8;
+      for(i=j;i<j+70;i++) {
+        ret_str[ret_nr++] = sxy[i];
+      }
+      while (ret_nr > 0 && ret_str[ret_nr - 1] == ' ') {
+        ret_nr--;
+      }
+      strcpy(ret_str + ret_nr, "\\n   ");
+      ret_nr += 5;
+      ret_pr_once = -1;
+      for(i=j;i<j+70;i++) {
+        if (ret_pr_once < 0 && sy[i] != ' ') {
+          ret_str[ret_nr - 3] = '3';
+          ret_str[ret_nr - 2] = '\'';
+          ret_pr_once = 1;
+        }
+	if (sy[i] == 'A') {
+          ret_str[ret_nr++] = 'T';
+	} else if (sy[i] == 'T') {
+          ret_str[ret_nr++] = 'A';
+        } else if (sy[i] == 'C') {
+          ret_str[ret_nr++] = 'G';
+        } else if (sy[i] == 'G') {
+          ret_str[ret_nr++] = 'C';
+        } else {
+          ret_str[ret_nr++] = sy[i];
+	}
+      }
+      while (ret_nr > 0 && ret_str[ret_nr - 1] == ' ') {
+        ret_nr--;
+      }
+      strcpy(ret_str + ret_nr, " 5\'\\n");
+      ret_nr += 5;
+      j +=70;
+    }
+    ret_str[ret_nr++] = '\0';
+    ret_ptr = (char *) malloc(strlen(ret_str) + 1);
+    if (!ret_ptr) { 
+      out->msg = "Out of memory";
+      errno=ENOMEM;
+      return NULL;
+    }
+    strcpy(ret_ptr, ret_str);
+    return ret_ptr;
+  }
+  return NULL;
 }  /* print_align(X,Y,P,I,J, dargs) */
 #endif
 
@@ -1063,13 +1131,13 @@ illegal_char(const unsigned char *X,
 static void
 _dpal_long_nopath_maxgap1_local_end(const unsigned char *X,
                                     const unsigned char *Y,
-                                    const int xlen,
+                                    const int xlen, 
                                     const int ylen,
                                     const dpal_args *in,
                                     dpal_results *out)
 {
   /* The "score matrix" (matrix of best scores). */
-  int *S0, *S1, *S2;
+  int *S0, *S1, *S2; 
   int *P0, *P1, *P2;
   int *S;
 
@@ -1099,12 +1167,12 @@ _dpal_long_nopath_maxgap1_local_end(const unsigned char *X,
   smax = 0; /* For local alignment score can never be less than 0. */
 
   /* Initialize the 0th row of the score matrix. */
-  for(j=0; j < ylen; j++) {
-    score = in->ssm[X[0]][Y[j]];
+  for(j=0; j < ylen; j++) { 
+    score = in->ssm[X[0]][Y[j]]; 
     if (score < 0) score = 0;
     /*S[0][j] = score;*/
     S0[j] = score;
-  }
+  }   
 
   /* Set the 1st row of the score matrix. */
   score = in->ssm[X[1]][Y[0]];
@@ -1133,7 +1201,7 @@ _dpal_long_nopath_maxgap1_local_end(const unsigned char *X,
       score +=gap;
       if((a=S1[j-1]) >score) score = a;
 
-      score += in->ssm[X[i]][Y[j]];
+      score += in->ssm[X[i]][Y[j]];       
       if (score < 0 ) score = 0;
       S2[j]=score;
     }
