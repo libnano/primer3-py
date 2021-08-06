@@ -334,10 +334,9 @@ reverse_complement_seq_lib(seq_lib  *lib)
     if((n = lib->seq_num) == 0) return;
     else {
         lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(*lib->names));
-    lib->names = (char**) p3sl_safe_realloc(lib->names, 2*n*sizeof(*lib->seqs));
-    lib->seqs = (char**) p3sl_safe_realloc(lib->seqs, 2*n*sizeof(*lib->seqs));
-    lib->weight = (double*) p3sl_safe_realloc(lib->weight, 2*n*sizeof(*lib->weight));
-	lib->rev_compl_seqs = (char**) p3sl_safe_malloc(2*n*sizeof(*lib->seqs));
+        lib->seqs = (char**) p3sl_safe_realloc(lib->seqs, 2*n*sizeof(*lib->seqs));
+        lib->weight = (double*) p3sl_safe_realloc(lib->weight, 2*n*sizeof(*lib->weight));
+        lib->rev_compl_seqs = (char**) p3sl_safe_malloc(2*n*sizeof(*lib->seqs));
 
         lib->seq_num *= 2;
         for(i=n; i<lib->seq_num; i++){
