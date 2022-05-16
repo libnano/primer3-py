@@ -11,7 +11,7 @@ functionalities into your projects and applications.
 
 Derivative work
 ---------------
-The included ``libprimer3`` source is a dervative of the Primer3 v2.3.7 
+The included ``libprimer3`` source is a derivative of the Primer3 v2.3.7 
 library that includes a number of optimizations and improvements to make it 
 more amenable to Python C API / Cython bindings. Every effort has been made
 to insure that the underlying algorithms and calculations deterministically 
