@@ -147,6 +147,8 @@ typedef struct oligo_weights {
   double temp_cutoff;
   double temp_gt;
   double temp_lt;
+  double bound_gt;
+  double bound_lt;
   double template_mispriming;
   double template_mispriming_th;
   double failure_rate;
@@ -186,6 +188,9 @@ typedef struct args_for_one_oligo_or_primer {
   double opt_tm;
   double min_tm;
   double max_tm;
+  double opt_bound;
+  double min_bound;
+  double max_bound;
   double opt_gc_content;
   double max_gc;
   double min_gc;
@@ -212,6 +217,11 @@ typedef struct args_for_one_oligo_or_primer {
   double dntp_conc;
 
   double dna_conc;
+
+  double dmso_conc;
+  double dmso_fact;
+  double formamide_conc;
+  
   int    num_ns_accepted;
   int    opt_size;
   int    min_size;
@@ -221,6 +231,12 @@ typedef struct args_for_one_oligo_or_primer {
                            * oligo.
                            */
 
+  int    min_5_prime_overlap_of_junction;   /* The number of basepairs
+                                               the primer has to
+                                               overlap an overlap
+                                               junction. */
+  int    min_3_prime_overlap_of_junction;
+  
   int    min_end_quality;
   int    min_quality;       /* Minimum quality permitted for oligo sequence.*/
 
@@ -382,6 +398,9 @@ typedef struct p3_global_settings {
   /* Start of arguments applicable to primers but not
      oligos */
 
+  double annealing_temp;
+  /* The actual annealing temperature of the PCR reaction. */
+  
   double max_end_stability;
   /* The maximum value allowed for the delta
    * G of disruption for the 5 3' bases of
@@ -500,6 +519,7 @@ typedef struct p3_global_settings {
   pair_weights  pr_pair_weights;
 
   int    min_left_three_prime_distance;
+  int    min_internal_three_prime_distance;
   int    min_right_three_prime_distance;
   /* Minimum number of base pairs between the 3' ends of any two left
      or any two right primers when returning num_return primer pairs.
@@ -509,12 +529,6 @@ typedef struct p3_global_settings {
      PRIMER_{LEFT,RIGHT}_MIN_THREE_PRIME_DISTANCE.
   */
   
-  int    min_5_prime_overlap_of_junction;   /* The number of basepairs
-                                               the primer has to
-                                               overlap an overlap
-                                               junction. */
-  int    min_3_prime_overlap_of_junction;
-
   int    mask_template;
   int    masking_parameters_changed;
   /* Turn on masking of the trimmed_orig_seq (added by M. Lepamets)*/
@@ -573,6 +587,9 @@ typedef struct primer_rec {
   double temp; /* The oligo melting temperature calculated for the
                 * primer. */
         
+  double bound; /* The fraction of primers bound at melting temperature
+                 * temperature. */
+				 
   double gc_content;
         
   double position_penalty; 
@@ -719,6 +736,7 @@ const int *
 interval_array_t2_get_pair(const interval_array_t2 *array, int i);
 
 typedef struct oligo_stats {
+  int sequencing_location; /* Number of locations for sequencing primers    */																			  
   int considered;          /* Total number of tested oligos of given type   */
   int ns;                  /* Number of oligos rejected because of Ns       */
   int target;              /* Overlapping targets.                          */
@@ -728,6 +746,8 @@ typedef struct oligo_stats {
   int gc_end_high;         /* Too many G+Cs at the 3' end.                  */
   int temp_min;            /* Melting temperature below t_min.              */
   int temp_max;            /* Melting temperature more than t_max.          */
+  int bound_min;           /* Fraction bound below min.                     */
+  int bound_max;           /* Fraction bound above max.                     */
   int size_min;            /* Primer shorter than minimal size.             */
   int size_max;            /* Primer longer than minimal size.              */
   int compl_any;           /* Self-complementarity too high.                */
@@ -752,6 +772,8 @@ typedef struct oligo_stats {
   int not_in_any_right_ok_region;/* Oligo not included in any of the
                                     right regions given in
                                     PRIMER_PAIR_OK_REGION_LIST. */
+  int does_not_overlap_a_required_point; /* Oligo does not overlap one of
+                                            the "required sites". */
 } oligo_stats;
 
 typedef struct pair_stats {
@@ -821,12 +843,18 @@ typedef struct seq_args {
 
   int primer_overlap_junctions_count;
 
+  int intl_overlap_junctions[PR_MAX_INTERVAL_ARRAY];
+  /* List of overlap junction positions. */
+
+  int intl_overlap_junctions_count;
+  
   int incl_s;             /* The 0-based start of included region. */
   int incl_l;             /* 
                            * The length of the included region, which is
                            * also the length of the trimmed_seq field.
                            */
   int  start_codon_pos;   /* Index of first base of the start codon. */
+  char start_codon_seq[4];  /* Sequence of the start codon, usually ATG\0 */  
 
   int  *quality;             /* Vector of quality scores. */
   int  n_quality;            /* Number of valid elements in 'quality' */
@@ -835,7 +863,7 @@ typedef struct seq_args {
   char *sequence;         /* The template sequence itself as input, 
                              not trimmed, not up-cased. */
   char *sequence_name;    /* An identifier for the sequence. */
-  char *sequence_file;    /* Another identifer for the sequence. */
+  char *sequence_file;    /* Another identifier for the sequence. */
   char *trimmed_seq;      /* The included region only, _UPCASED_. */
 
   /* Element add by T. Koressaar support lowercase masking: */
@@ -863,7 +891,10 @@ typedef struct seq_args {
   int force_left_end;     /* The 0-based forced 3' end left primer. */
   int force_right_start;  /* The 0-based forced 5' start right primer. */
   int force_right_end;    /* The 0-based forced 3' end right primer. */
-
+  char *overhang_left;    /* sequence added to the 5' end of the left primer */
+  char *overhang_right;   /* sequence added to the 5' end of the right primer */
+  char *overhang_right_rv;  /* the reverse complement of *overhang_right
+                               matching the sequence */
 } seq_args;
 
 /* oligo_array is used to store a list of oligos or primers */
@@ -1039,17 +1070,25 @@ void p3_set_gs_primer_opt_tm(p3_global_settings * p , double product_opt_tm);
 void p3_set_gs_primer_opt_gc_percent(p3_global_settings * p , double val);
 void p3_set_gs_primer_min_tm(p3_global_settings * p , double product_min_tm);
 void p3_set_gs_primer_max_tm(p3_global_settings * p , double product_max_tm);
+void p3_set_gs_primer_opt_bound(p3_global_settings * p , double product_opt_tm);
+void p3_set_gs_primer_min_bound(p3_global_settings * p , double product_min_tm);
+void p3_set_gs_primer_max_bound(p3_global_settings * p , double product_max_tm);
 void p3_set_gs_primer_max_diff_tm(p3_global_settings * p , double val);
 void p3_set_gs_primer_tm_santalucia(p3_global_settings * p,
                                     tm_method_type val);
 void p3_set_gs_primer_salt_corrections(p3_global_settings * p,
                                        salt_correction_type salt_corrections);
+void p3_set_gs_primer_annealing_temp(p3_global_settings * p,
+                                     salt_correction_type salt_corrections);
 void p3_set_gs_primer_min_gc(p3_global_settings * p , double val);
 void p3_set_gs_primer_max_gc(p3_global_settings * p , double val);
 void p3_set_gs_primer_salt_conc(p3_global_settings * p , double val);
 void p3_set_gs_primer_divalent_conc(p3_global_settings * p , double val);
 void p3_set_gs_primer_dntp_conc(p3_global_settings * p , double val);
 void p3_set_gs_primer_dna_conc(p3_global_settings * p , double val);
+void p3_set_gs_primer_dmso_conc(p3_global_settings * p , double val);
+void p3_set_gs_primer_dmso_fact(p3_global_settings * p , double val);
+void p3_set_gs_primer_formamide_conc(p3_global_settings * p , double val);
 void p3_set_gs_primer_num_ns_accepted(p3_global_settings * p , int val);
 void p3_set_gs_primer_product_opt_size(p3_global_settings * p , int val);
 void p3_set_gs_primer_self_any(p3_global_settings * p , double val);
@@ -1082,12 +1121,18 @@ void p3_set_gs_primer_internal_oligo_max_poly_x(p3_global_settings * p , int val
 void p3_set_gs_primer_internal_oligo_opt_tm(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_max_tm(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_min_tm(p3_global_settings * p , double val);
+void p3_set_gs_primer_internal_oligo_opt_bound(p3_global_settings * p , double val);
+void p3_set_gs_primer_internal_oligo_max_bound(p3_global_settings * p , double val);
+void p3_set_gs_primer_internal_oligo_min_bound(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_min_gc(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_max_gc(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_salt_conc(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_divalent_conc(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_dntp_conc(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_dna_conc(p3_global_settings * p , double val);
+void p3_set_gs_primer_internal_oligo_dmso_conc(p3_global_settings * p , double val);
+void p3_set_gs_primer_internal_oligo_dmso_fact(p3_global_settings * p , double val);
+void p3_set_gs_primer_internal_oligo_formamide_conc(p3_global_settings * p , double val);
 void p3_set_gs_primer_internal_oligo_num_ns(p3_global_settings * p , int val);
 void p3_set_gs_primer_internal_oligo_min_quality(p3_global_settings * p , int val);
 void p3_set_gs_primer_internal_oligo_self_any(p3_global_settings * p , double val);
@@ -1112,6 +1157,8 @@ void p3_set_gs_primer_thermodynamic_oligo_alignment(p3_global_settings * p , int
 void p3_set_gs_primer_thermodynamic_template_alignment(p3_global_settings * p , int val);
 void p3_set_gs_primer_wt_tm_gt(p3_global_settings * p , double val);
 void p3_set_gs_primer_wt_tm_lt(p3_global_settings * p , double val);
+void p3_set_gs_primer_wt_bound_gt(p3_global_settings * p , double val);
+void p3_set_gs_primer_wt_bound_lt(p3_global_settings * p , double val);
 void p3_set_gs_primer_wt_gc_percent_gt(p3_global_settings * p , double val);
 void p3_set_gs_primer_wt_gc_percent_lt(p3_global_settings * p , double val);
 void p3_set_gs_primer_wt_size_lt(p3_global_settings * p , double val);
@@ -1131,6 +1178,8 @@ void p3_set_gs_primer_wt_template_mispriming(p3_global_settings * p , double val
 void p3_set_gs_primer_wt_template_mispriming_th(p3_global_settings * p , double val);
 void p3_set_gs_primer_io_wt_tm_gt(p3_global_settings * p , double val);
 void p3_set_gs_primer_io_wt_tm_lt(p3_global_settings * p , double val);
+void p3_set_gs_primer_io_wt_bound_gt(p3_global_settings * p , double val);
+void p3_set_gs_primer_io_wt_bound_lt(p3_global_settings * p , double val);
 void p3_set_gs_primer_io_wt_gc_percent_gt(p3_global_settings * p , double val);
 void p3_set_gs_primer_io_wt_gc_percent_lt(p3_global_settings * p , double val);
 void p3_set_gs_primer_io_wt_size_lt(p3_global_settings * p , double val);
@@ -1203,9 +1252,12 @@ void p3_set_gs_pair_compl_any_th(p3_global_settings * p , double  pair_compl_any
 void p3_set_gs_pair_compl_end_th(p3_global_settings * p , double  pair_compl_end_th);
 
 void p3_set_gs_min_left_three_prime_distance(p3_global_settings *p, int min_distance);
+void p3_set_gs_min_internal_three_prime_distance(p3_global_settings *p, int min_distance);
 void p3_set_gs_min_right_three_prime_distance(p3_global_settings *p, int min_distance);
 void p3_set_gs_min_5_prime_overlap_of_junction(p3_global_settings *p, int min_5_prime);
 void p3_set_gs_min_3_prime_overlap_of_junction(p3_global_settings *p, int min_3_prime);
+void p3_set_gs_min_5_internal_overlap_of_junction(p3_global_settings *p, int min_5_prime);
+void p3_set_gs_min_3_internal_overlap_of_junction(p3_global_settings *p, int min_3_prime);
 
 /* 
  * Choose individual primers or oligos, or primer pairs, or primer
@@ -1227,8 +1279,10 @@ int    p3_print_one_oligo_list(const seq_args *,
                                const int, FILE *,int);
 
 char  *pr_oligo_sequence(const seq_args *, const primer_rec *);
+char  *pr_oligo_overhang_sequence(const seq_args *, const primer_rec *);																		
 
 char  *pr_oligo_rev_c_sequence(const seq_args *, const primer_rec *);
+char  *pr_oligo_rev_c_overhang_sequence(const seq_args *, const primer_rec *);																			  
 
 /* Return NULL on ENOMEM */
 pr_append_str *create_pr_append_str(void);

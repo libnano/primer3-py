@@ -63,9 +63,13 @@ cdef extern from "oligotm.h":
                      double,
                      double,
                      double,
+                     double,
+                     double,
+                     double,
                      int,
                      tm_method_type,
                      salt_correction_type,
+                     double
                      )
 
 
@@ -239,13 +243,17 @@ cdef class ThermoAnalysis:
                   dv_conc=1.5,
                   dntp_conc=0.2,
                   dna_conc=200,
+                  dmso_conc=0.0,
+                  dmso_fact=0.6,
+                  formamide_conc=0.0,
                   temp_c=37,
                   max_loop=30,
                   temp_only=0,
                   debug=0,
                   max_nn_length=60,
                   tm_method=1,
-                  salt_correction_method=1):
+                  salt_correction_method=1,
+                  annealing_temp=-10.0):
         self.thalargs.type = thal_type
 
         self.thalargs.mv = mv_conc;
@@ -256,6 +264,10 @@ cdef class ThermoAnalysis:
         self.thalargs.maxLoop = max_loop;
         self.thalargs.temponly = temp_only;
         self.thalargs.debug = debug;
+        self.thalargs.dmso_conc = dmso_conc;
+        self.thalargs.dmso_fact = dmso_fact;
+        self.thalargs.formamide_conc = formamide_conc;
+        self.thalargs.annealing_temp = annealing_temp;
 
         self.max_nn_length = max_nn_length;
 
@@ -552,10 +564,14 @@ cdef class ThermoAnalysis:
                      ta.mv,
                      ta.dv,
                      ta.dntp,
+                     ta.dmso_conc,
+                     ta.dmso_fact,
+                     ta.formamide_conc,
                      self.max_nn_length,
                      <tm_method_type>
                      self.tm_method,
-                     <salt_correction_type> self.salt_correction_method)
+                     <salt_correction_type> self.salt_correction_method,
+                     ta.annealing_temp)
 
     def calcTm(ThermoAnalysis self, seq1):
         ''' Calculate the melting temperature (Tm) of a DNA sequence (deg. C).

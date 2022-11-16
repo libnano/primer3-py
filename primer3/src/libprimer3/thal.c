@@ -3105,6 +3105,8 @@ drawHairpin(int* bp, double mh, double ms, const thal_mode mode, double temp, th
    char* ret_str;
    /* Plain text */
    int i, N = 0;
+   ret_ptr = NULL;
+   N = 0;
    double mg, t;
    char* asciiRow;
    if (!isFinite(ms) || !isFinite(mh)) {

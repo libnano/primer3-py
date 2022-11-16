@@ -45,6 +45,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define OLIGOTM_ERROR -999999.9999
 
+typedef struct tm_ret {
+  double Tm;
+  double bound;
+} tm_ret;
+
 /* Return the delta G of the last len bases of oligo if oligo is at least len
    bases long; otherwise return the delta G of oligo. */
 double end_oligodg(const char *oligo, int len, int tm_method);
@@ -55,10 +60,17 @@ double end_oligodg(const char *oligo, int len, int tm_method);
    Press).
 
    Tm = 81.5 + 16.6(log10([Na+])) + .41*(%GC) - 600/length
+             - [DMSO] * dmso_fact
+             + (0.453 * (GC_fract - 2.88) * [formamide]
 
    Where [Na+] is the molar sodium concentration, (%GC) is the percent of Gs
    and Cs in the sequence, and length is the length of the sequence.
 
+   [DMSO] is the percent concentration of DMSO and dmso_fact the correction
+   factor, by default 0.6. GC_fract is the fraction of C and G in the *oligo
+   and [formamide] the concentration of formamide in mol/l. See
+   primer3_manual.htm for details and citations.
+   
    A similar formula is used by the prime primer selection program in GCG
    (http://www.gcg.com), which instead uses 675.0 / length in the last term
    (after F. Baldino, Jr, M.-F. Chesselet, and M.E.  Lewis, Methods in
@@ -72,12 +84,15 @@ double end_oligodg(const char *oligo, int len, int tm_method);
    since mM is the usual units in PCR applications.
 
  */
-double long_seq_tm(const char *seq, 
+tm_ret long_seq_tm(const char *seq,
                    int start, 
                    int length, 
                    double salt_conc, 
                    double divalent_conc, 
-                   double dntp_conc);
+                   double dntp_conc,
+                   double dmso_conc,
+                   double dmso_fact,
+                   double formamide_conc);
 
 /* 
    For olgigotm() and seqtm()
@@ -148,23 +163,30 @@ typedef enum salt_correction_type {
  
  */
 
-double oligotm(const  char *seq,     /* The sequence. */
+tm_ret oligotm(const  char *seq,     /* The sequence. */
                double dna_conc,      /* DNA concentration (nanomolar). */
                double salt_conc,     /* Salt concentration (millimolar). */
                double divalent_conc, /* Concentration of divalent cations (millimolar) */
                double dntp_conc,     /* Concentration of dNTPs (millimolar) */
+               double dmso_conc,     /* Concentration of DMSO (%) */
+               double dmso_fact,     /* DMSO correction factor, default 0.6 */
+               double formamide_conc, /* Concentration of formamide (mol/l) */
                tm_method_type tm_method,    /* See description above. */
-               salt_correction_type salt_corrections  /* See description above. */
+               salt_correction_type salt_corrections, /* See description above. */
+               double annealing_temp /* Actual annealing temperature of the PCR reaction */
                );
 
 /* Return the melting temperature of a given sequence, 'seq', of any
    length.
 */
-double seqtm(const  char *seq,  /* The sequence. */
+tm_ret seqtm(const  char *seq,  /* The sequence. */
              double dna_conc,   /* DNA concentration (nanomolar). */
-             double salt_conc,  /* Concentration of monovalent cations (millimolar). */
+             double salt_conc,  /* Concentration of divalent cations (millimolar). */
              double divalent_conc, /* Concentration of divalent cations (millimolar) */
              double dntp_conc,     /* Concentration of dNTPs (millimolar) */
+             double dmso_conc,     /* Concentration of DMSO (%) */
+             double dmso_fact,     /* DMSO correction factor, default 0.6 */
+             double formamide_conc, /* Concentration of formamide (mol/l) */
              int    nn_max_len,  /* The maximum sequence length for
                                     using the nearest neighbor model
                                     (as implemented in oligotm.  For
@@ -174,9 +196,9 @@ double seqtm(const  char *seq,  /* The sequence. */
                                  */
 
              tm_method_type  tm_method,       /* See description above. */
-             salt_correction_type salt_corrections /* See description above. */
+             salt_correction_type salt_corrections, /* See description above. */
+             double annealing_temp /* Actual annealing temperature of the PCR reaction */
              );
-
      
 /* Return the delta G of disruption of oligo using the nearest neighbor model.
    The length of seq should be relatively short, 

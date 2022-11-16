@@ -37,7 +37,11 @@ cdef extern from "thal.h":
         double mv                 # [ ] of monovalent cations (mM)
         double dv                 # [ ] of divalent cations (mM)
         double dntp               # [ ] of dNTPs (mM)
+        double dmso_conc          # [ ] of DMSO (%)
+        double dmso_fact          # [ ] of DMSO (correction factor, default 0.6)
+        double formamide_conc     # [ ] of formamide (mol/l) */
         double dna_conc           # [ ] of oligos (nM)
+        double annealing_temp     # [ ] Actual annealing temperature of the PCR reaction
         double temp               # temp at which hairpins will be calculated
         int temponly              # print only temp to stderr
         int dimer                 # if non-zero dimer structure is calculated

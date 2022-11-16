@@ -61,6 +61,7 @@ char *endptr; /* reading input */
 int i; /* index */
 const unsigned char *oligo1, *oligo2; /* inserted oligo sequences */
 char *path = NULL; /* path to the parameter files */
+int interactive = 0;
 
 /* Beginning of main */
 int main(int argc, char** argv) 
@@ -69,6 +70,7 @@ int main(int argc, char** argv)
    int tmp_ret = 0;
    thal_args a;
    thal_results o;
+   o.sec_struct=NULL;
    set_thal_default_args(&a);
    thal_mode mode = THL_GENERAL; /* by default print only melting temperature, 
                                     do not draw structure or print any additional parameters */
@@ -103,6 +105,9 @@ int main(int argc, char** argv)
      "-s1 DNA_oligomer\n"
      "\n"
      "-s2 DNA_oligomer\n"
+     "\n"
+     "-i                   - run in an interactive mode, each line is an oligo. Pairs oligos to test \n"
+     "                       should be provided on one line separated by a comma (dimer only).\n"
      "\n";
    if(argc < 2) {
 #ifdef DEBUG
@@ -268,6 +273,8 @@ int main(int argc, char** argv)
             exit(-1);
          }
          i++;
+      } else if (!strncmp("-i", argv[i], 2)) { /* interactive mode */
+         interactive = 1;
       } else if(!strncmp("-", argv[i], 1)) { /* Unknown option. */
 #ifdef DEBUG
          fprintf(stderr, usage, argv[0]);
@@ -280,15 +287,22 @@ int main(int argc, char** argv)
    /* END reading INPUT */
    
    /* check the input correctness */
-   if(a.dimer!=0 && (oligo2==NULL || oligo1==NULL)) { /* if user wants to calculate structure 
-                                                       of dimer then two sequences must be defined*/
-      fprintf(stderr, usage, argv[0]);
-      exit(-1);
-   }
-   if(a.dimer==0 && (oligo2==NULL && oligo1==NULL)) { /* if user wants to calculate structure
-                                                       of monomer then only one sequence must be defined */
-      fprintf(stderr, usage, argv[0]);
-      exit(-1);
+   if(interactive) {
+     if(oligo1!=NULL || oligo2!=NULL) {
+        fprintf(stderr, usage, argv[0]);
+        exit(-1);
+     }
+   } else {
+      if(a.dimer!=0 && (oligo2==NULL || oligo1==NULL)) { /* if user wants to calculate structure 
+                                             of dimer then two sequences must be defined*/
+        fprintf(stderr, usage, argv[0]);
+        exit(-1);
+      }
+      if(a.dimer==0 && (oligo2==NULL && oligo1==NULL)) { /* if user wants to calculate structure
+                                             of monomer then only one sequence must be defined */
+        fprintf(stderr, usage, argv[0]);
+        exit(-1);
+      }
    }
    /* read default thermodynamic parameters */
    thal_parameters thermodynamic_parameters;
@@ -321,26 +335,59 @@ int main(int argc, char** argv)
      }
    }
 
-   /* execute thermodynamical alignemnt */
-   if(a.dimer==0 && oligo1!=NULL){
-      thal(oligo1,oligo1,&a,mode,&o);   
-   } else if(a.dimer==0 && oligo1==NULL && oligo2!=NULL) {
-      thal(oligo2,oligo2,&a,mode,&o);
-   } else {
-      thal(oligo1,oligo2,&a,mode,&o);   
+   if(interactive) {
+     size_t buffer_size = 16384;
+     char *oligo_str = (char*)malloc(sizeof(char)*buffer_size);
+
+     while(NULL != fgets(oligo_str, buffer_size, stdin)) {
+       oligo_str[strlen(oligo_str)-1] = '\0';
+       oligo1 = (const unsigned char*)oligo_str;
+       if(a.dimer==0) {
+         thal(oligo1,oligo1,&a,mode,&o);
+       } else {
+         char *sep = strchr(oligo_str, ',');
+         if (sep != NULL) {
+           oligo2 = (const unsigned char*)sep;
+           oligo2++;
+           *sep = '\0';
+           thal(oligo1,oligo2,&a,mode,&o);
+         } else {
+           fprintf(stderr, usage, argv[0]);
+           exit(-1);
+         }
+       }
+       /* encountered error during thermodynamical calc */
+       if (o.temp == THAL_ERROR_SCORE) {
+         tmp_ret = fprintf(stderr, "Error: %s\n", o.msg);
+         exit(-1);
+       }
+       if((mode == THL_FAST) || (mode == THL_DEBUG_F))
+         printf("%f\n",o.temp);
+       free(o.sec_struct);
+       o.sec_struct=NULL;
+       fflush(stdout);
+     }
+     free((void*)oligo_str);
+  } else {
+     /* execute thermodynamical alignemnt */
+     if(a.dimer==0 && oligo1!=NULL){
+       thal(oligo1,oligo1,&a,mode,&o);
+     } else if(a.dimer==0 && oligo1==NULL && oligo2!=NULL) {
+       thal(oligo2,oligo2,&a,mode,&o);
+     } else {
+       thal(oligo1,oligo2,&a,mode,&o);
+     }
+     /* encountered error during thermodynamical calc */
+     if (o.temp == THAL_ERROR_SCORE) {
+       tmp_ret = fprintf(stderr, "Error: %s\n", o.msg);
+       exit(-1);
+     }
+     if((mode == THL_FAST) || (mode == THL_DEBUG_F))
+       printf("%f\n",o.temp);
+     free(o.sec_struct);
    }
-   /* encountered error during thermodynamical calc */
-   if (o.temp == THAL_ERROR_SCORE) {
-      tmp_ret = fprintf(stderr, "Error: %s\n", o.msg);
-      exit(-1);
-   }
-   if((mode == THL_FAST) || (mode == THL_DEBUG_F))
-     printf("%f\n",o.temp);
-   if ((mode == THL_GENERAL) || (mode == THL_DEBUG))
-     if (o.no_structure != 1)
-        printf("%s", o.sec_struct);
-   /* cleanup */
-   destroy_thal_structures();
-   thal_free_parameters(&thermodynamic_parameters);
-   return EXIT_SUCCESS;
+       /* cleanup */
+     destroy_thal_structures();
+     thal_free_parameters(&thermodynamic_parameters);
+     return EXIT_SUCCESS;
 }

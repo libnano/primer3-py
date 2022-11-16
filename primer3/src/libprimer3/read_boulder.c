@@ -194,6 +194,7 @@ read_boulder_record(FILE *file_input,
   int line_len;
   int tag_len, datum_len;
   int data_found = 0;
+  int read_start_codon = 0;						   
   char *s, *n, *datum, *task_tmp = NULL;
   const char *p;
   pr_append_str *parse_err;
@@ -270,6 +271,8 @@ read_boulder_record(FILE *file_input,
       COMPARE_AND_MALLOC("SEQUENCE_PRIMER", sa->left_input);
       COMPARE_AND_MALLOC("SEQUENCE_PRIMER_REVCOMP", sa->right_input);
       COMPARE_AND_MALLOC("SEQUENCE_INTERNAL_OLIGO", sa->internal_input);
+      COMPARE_AND_MALLOC("SEQUENCE_OVERHANG_LEFT", sa->overhang_left);
+      COMPARE_AND_MALLOC("SEQUENCE_OVERHANG_RIGHT", sa->overhang_right);
       COMPARE_2_INTERVAL_LIST("SEQUENCE_PRIMER_PAIR_OK_REGION_LIST", &sa->ok_regions);
       COMPARE_INTERVAL_LIST("SEQUENCE_TARGET", &sa->tar2);
       COMPARE_INTERVAL_LIST("SEQUENCE_EXCLUDED_REGION", &sa->excl2);
@@ -279,7 +282,15 @@ read_boulder_record(FILE *file_input,
         if (parse_intron_list(datum, sa->primer_overlap_junctions, 
                               &sa->primer_overlap_junctions_count) == 0) {
           pr_append_new_chunk(parse_err,
-                              "Error in SEQUENCE_PRIMER_OVERLAP_JUNCTION_LIST");
+                              "Error in SEQUENCE_OVERLAP_JUNCTION_LIST");
+        }
+        continue;
+      }
+      if (COMPARE("SEQUENCE_INTERNAL_OVERLAP_JUNCTION_LIST")) {
+        if (parse_intron_list(datum, sa->intl_overlap_junctions,
+                              &sa->intl_overlap_junctions_count) == 0) {
+          pr_append_new_chunk(parse_err,
+                              "Error in SEQUENCE_INTERNAL_OVERLAP_JUNCTION_LIST");
         }
         continue;
       }
@@ -296,6 +307,23 @@ read_boulder_record(FILE *file_input,
           continue;
       }
       COMPARE_INT("SEQUENCE_START_CODON_POSITION", sa->start_codon_pos);
+      if ((!strncmp(s, "SEQUENCE_START_CODON_SEQUENCE", tag_len)
+          && ('=' == s[tag_len] || ' ' == s[tag_len])
+          && '\0' == "SEQUENCE_START_CODON_SEQUENCE"[tag_len])) {
+        if (read_start_codon) {
+           pr_append_new_chunk(parse_err, "Duplicate tag: SEQUENCE_START_CODON_SEQUENCE");
+        } else {
+           read_start_codon = 1;
+           if (datum_len == 3) {
+             sa->start_codon_seq[0] = toupper(s[tag_len + 1]);
+             sa->start_codon_seq[1] = toupper(s[tag_len + 2]);
+             sa->start_codon_seq[2] = toupper(s[tag_len + 3]);
+           } else {
+             sa->start_codon_seq[0] = 'X';
+           }
+        }
+        continue;
+       }
       COMPARE_INT("SEQUENCE_FORCE_LEFT_START", sa->force_left_start);
       COMPARE_INT("SEQUENCE_FORCE_LEFT_END", sa->force_left_end);
       COMPARE_INT("SEQUENCE_FORCE_RIGHT_START", sa->force_right_start);
@@ -316,6 +344,9 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_OPT_GC_PERCENT", pa->p_args.opt_gc_content);
       COMPARE_FLOAT("PRIMER_MIN_TM", pa->p_args.min_tm);
       COMPARE_FLOAT("PRIMER_MAX_TM", pa->p_args.max_tm);
+      COMPARE_FLOAT("PRIMER_OPT_BOUND", pa->p_args.opt_bound);
+      COMPARE_FLOAT("PRIMER_MIN_BOUND", pa->p_args.min_bound);
+      COMPARE_FLOAT("PRIMER_MAX_BOUND", pa->p_args.max_bound);
       COMPARE_FLOAT("PRIMER_PAIR_MAX_DIFF_TM", pa->max_diff_tm);
       if (COMPARE("PRIMER_TM_FORMULA")) {
           parse_int("PRIMER_TM_FORMULA", datum, &tmp_int, parse_err);
@@ -327,12 +358,16 @@ read_boulder_record(FILE *file_input,
         pa->salt_corrections = (salt_correction_type) tmp_int; /* added by T.Koressaar */
         continue;
       }
+      COMPARE_FLOAT("PRIMER_ANNEALING_TEMP", pa->annealing_temp);
       COMPARE_FLOAT("PRIMER_MIN_GC", pa->p_args.min_gc);
       COMPARE_FLOAT("PRIMER_MAX_GC", pa->p_args.max_gc);
       COMPARE_FLOAT("PRIMER_SALT_MONOVALENT", pa->p_args.salt_conc);
       COMPARE_FLOAT("PRIMER_SALT_DIVALENT", pa->p_args.divalent_conc);
       COMPARE_FLOAT("PRIMER_DNTP_CONC", pa->p_args.dntp_conc);
       COMPARE_FLOAT("PRIMER_DNA_CONC", pa->p_args.dna_conc);
+      COMPARE_FLOAT("PRIMER_DMSO_CONC", pa->p_args.dmso_conc);
+      COMPARE_FLOAT("PRIMER_DMSO_FACTOR", pa->p_args.dmso_fact);
+      COMPARE_FLOAT("PRIMER_FORMAMIDE_CONC", pa->p_args.formamide_conc);
       COMPARE_INT("PRIMER_MAX_NS_ACCEPTED", pa->p_args.num_ns_accepted);
       COMPARE_INT("PRIMER_PRODUCT_OPT_SIZE", pa->product_opt_size);
       COMPARE_FLOAT("PRIMER_MAX_SELF_ANY", pa->p_args.max_self_any);
@@ -367,7 +402,7 @@ read_boulder_record(FILE *file_input,
         /* check if specific tag also specified - error in this case */
         if (min_3_prime_distance_specific == 1) {
           pr_append_new_chunk(glob_err,
-                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_{LEFT/RIGHT}_MIN_THREE_PRIME_DISTANCE specified");
+                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_MIN_{LEFT/INTERNAL/RIGHT}_THREE_PRIME_DISTANCE specified");
         } else {
           min_3_prime_distance_global = 1;
           /* set up individual flags */
@@ -381,7 +416,18 @@ read_boulder_record(FILE *file_input,
         /* check if global tag also specified - error in this case */
         if (min_3_prime_distance_global == 1) {
           pr_append_new_chunk(glob_err,
-                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_{LEFT/RIGHT}_MIN_THREE_PRIME_DISTANCE specified");
+                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE specified");
+        } else {
+          min_3_prime_distance_specific = 1;
+        }
+        continue;
+      }
+      if (COMPARE("PRIMER_INTERNAL_MIN_THREE_PRIME_DISTANCE")) {
+        parse_int("PRIMER_INTERNAL_MIN_THREE_PRIME_DISTANCE", datum, &(pa->min_internal_three_prime_distance), parse_err);
+        /* check if global tag also specified - error in this case */
+        if (min_3_prime_distance_global == 1) {
+          pr_append_new_chunk(glob_err,
+                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_INTERNAL_MIN_THREE_PRIME_DISTANCE specified");
         } else {
           min_3_prime_distance_specific = 1;
         }
@@ -392,7 +438,7 @@ read_boulder_record(FILE *file_input,
         /* check if global tag also specified - error in this case */
         if (min_3_prime_distance_global == 1) {
           pr_append_new_chunk(glob_err,
-                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_{LEFT/RIGHT}_MIN_THREE_PRIME_DISTANCE specified");
+                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE specified");
         } else {
           min_3_prime_distance_specific = 1;
         }
@@ -411,13 +457,23 @@ read_boulder_record(FILE *file_input,
       COMPARE_INT("PRIMER_SEQUENCING_INTERVAL", pa->sequencing.interval);
       COMPARE_INT("PRIMER_SEQUENCING_ACCURACY", pa->sequencing.accuracy);
       if (COMPARE("PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION")) {
-        parse_int("PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION", datum, &pa->min_5_prime_overlap_of_junction, parse_err);
-        /* min_5_prime = 1; Removed 10/20/2010 */
+        parse_int("PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION", datum,
+                  &pa->p_args.min_5_prime_overlap_of_junction, parse_err);
         continue;
       }
       if (COMPARE("PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION")) {
-        parse_int("PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION", datum, &pa->min_3_prime_overlap_of_junction, parse_err);
-        /* min_3_prime = 1; Removed 10/20/2010 */
+        parse_int("PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION", datum,
+                  &pa->p_args.min_3_prime_overlap_of_junction, parse_err);
+        continue;
+      }
+      if (COMPARE("PRIMER_INTERNAL_MIN_5_PRIME_OVERLAP_OF_JUNCTION")) {
+        parse_int("PRIMER_INTERNAL_MIN_5_PRIME_OVERLAP_OF_JUNCTION", datum,
+                  &pa->o_args.min_5_prime_overlap_of_junction, parse_err);
+        continue;
+      }
+      if (COMPARE("PRIMER_INTERNAL_MIN_3_PRIME_OVERLAP_OF_JUNCTION")) {
+        parse_int("PRIMER_INTERNAL_MIN_3_PRIME_OVERLAP_OF_JUNCTION", datum,
+                  &pa->o_args.min_3_prime_overlap_of_junction, parse_err);
         continue;
       }
       COMPARE_AND_MALLOC("PRIMER_TASK", task_tmp);
@@ -433,6 +489,9 @@ read_boulder_record(FILE *file_input,
                     pa->o_args.opt_gc_content);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_TM", pa->o_args.max_tm);
       COMPARE_FLOAT("PRIMER_INTERNAL_MIN_TM", pa->o_args.min_tm);
+      COMPARE_FLOAT("PRIMER_INTERNAL_OPT_BOUND", pa->o_args.opt_bound);
+      COMPARE_FLOAT("PRIMER_INTERNAL_MAX_BOUND", pa->o_args.max_bound);
+      COMPARE_FLOAT("PRIMER_INTERNAL_MIN_BOUND", pa->o_args.min_bound);
       COMPARE_FLOAT("PRIMER_INTERNAL_MIN_GC", pa->o_args.min_gc);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_GC", pa->o_args.max_gc);
       COMPARE_FLOAT("PRIMER_INTERNAL_SALT_MONOVALENT",
@@ -442,6 +501,9 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_INTERNAL_DNTP_CONC",
                     pa->o_args.dntp_conc);
       COMPARE_FLOAT("PRIMER_INTERNAL_DNA_CONC", pa->o_args.dna_conc);
+      COMPARE_FLOAT("PRIMER_INTERNAL_DMSO_CONC", pa->o_args.dmso_conc);
+      COMPARE_FLOAT("PRIMER_INTERNAL_DMSO_FACTOR", pa->o_args.dmso_fact);
+      COMPARE_FLOAT("PRIMER_INTERNAL_FORMAMIDE_CONC", pa->o_args.formamide_conc);	 
       COMPARE_INT("PRIMER_INTERNAL_MAX_NS_ACCEPTED", pa->o_args.num_ns_accepted);
       COMPARE_INT("PRIMER_INTERNAL_MIN_QUALITY", pa->o_args.min_quality);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_SELF_ANY",
@@ -549,6 +611,8 @@ read_boulder_record(FILE *file_input,
       /* CHANGE TEMP/temp -> TM/tm */
       COMPARE_FLOAT("PRIMER_WT_TM_GT", pa->p_args.weights.temp_gt);
       COMPARE_FLOAT("PRIMER_WT_TM_LT", pa->p_args.weights.temp_lt);
+      COMPARE_FLOAT("PRIMER_WT_BOUND_GT", pa->p_args.weights.bound_gt);
+      COMPARE_FLOAT("PRIMER_WT_BOUND_LT", pa->p_args.weights.bound_lt);
       COMPARE_FLOAT("PRIMER_WT_GC_PERCENT_GT", pa->p_args.weights.gc_content_gt);
       COMPARE_FLOAT("PRIMER_WT_GC_PERCENT_LT", pa->p_args.weights.gc_content_lt);
       COMPARE_FLOAT("PRIMER_WT_SIZE_LT", pa->p_args.weights.length_lt);
@@ -573,6 +637,8 @@ read_boulder_record(FILE *file_input,
                                               pa->p_args.weights.failure_rate);                        
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_TM_GT", pa->o_args.weights.temp_gt);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_TM_LT", pa->o_args.weights.temp_lt);
+      COMPARE_FLOAT("PRIMER_INTERNAL_WT_BOUND_GT", pa->o_args.weights.bound_gt);
+      COMPARE_FLOAT("PRIMER_INTERNAL_WT_BOUND_LT", pa->o_args.weights.bound_lt);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_GC_PERCENT_GT", pa->o_args.weights.gc_content_gt);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_GC_PERCENT_LT", pa->o_args.weights.gc_content_lt);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_SIZE_LT", pa->o_args.weights.length_lt);

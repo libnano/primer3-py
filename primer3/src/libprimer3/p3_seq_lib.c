@@ -45,6 +45,10 @@ static void *p3sl_safe_malloc(size_t x);
 static void *p3sl_safe_realloc(void *p, size_t x);
 static void  p3sl_append_new_chunk(pr_append_str *x, const char *s);
 static void  p3sl_append(pr_append_str *x, const char *s);
+int   add_seq_to_seq_lib(seq_lib *sl,
+                                char *seq, 
+                                char *seq_id_plus, 
+                                const char *errfrag);
 
 static jmp_buf _jmp_buf;
 
@@ -55,6 +59,7 @@ static jmp_buf _jmp_buf;
 
 static double parse_seq_name(char *s);
 static char   upcase_and_check_char(char *s);
+void   reverse_complement_seq_lib(seq_lib  *lib);
 
 int
 add_seq_to_seq_lib(seq_lib *sl,

@@ -54,21 +54,26 @@ primerdesign.loadThermoParams(pjoin(PRIMER3_HOME, 'primer3_config/'))
 
 _THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
 
-def _setThermoArgs(mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+def _setThermoArgs(mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50, dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0,
                    temp_c=37, max_loop=30, tm_method='santalucia',
-                   salt_corrections_method='santalucia', **kwargs):
+                   salt_corrections_method='santalucia', annealing_temp=-10.0, **kwargs):
     _THERMO_ANALYSIS.mv_conc = float(mv_conc)
     _THERMO_ANALYSIS.dv_conc = float(dv_conc)
     _THERMO_ANALYSIS.dntp_conc = float(dntp_conc)
     _THERMO_ANALYSIS.dna_conc = float(dna_conc)
+    _THERMO_ANALYSIS.dmso_conc = float(dmso_conc)
+    _THERMO_ANALYSIS.dmso_fact = float(dmso_fact)
+    _THERMO_ANALYSIS.formamide_conc = float(formamide_conc)
     _THERMO_ANALYSIS.temp = float(temp_c)
     _THERMO_ANALYSIS.max_loop = float(max_loop)
     _THERMO_ANALYSIS.tm_method = tm_method
     _THERMO_ANALYSIS.salt_correction_method = salt_corrections_method
+    _THERMO_ANALYSIS.annealing_temp = annealing_temp
 
 
 def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
-                temp_c=37, max_loop=30, output_structure=False):
+                dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0,
+                temp_c=37, max_loop=30, output_structure=False, annealing_temp=-10.0):
     ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
 
     **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
@@ -98,8 +103,9 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
     return _THERMO_ANALYSIS.calcHairpin(seq, output_structure).checkExc()
 
 
-def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-                  temp_c=37, max_loop=30, output_structure=False):
+def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+                  dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, dna_conc=50,
+                  temp_c=37, max_loop=30, output_structure=False, annealing_temp=-10.0):
     ''' Calculate the homodimerization thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
@@ -114,11 +120,15 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
         mv_conc (float/int, optional)   : Monovalent cation conc. (mM)
         dv_conc (float/int, optional)   : Divalent cation conc. (mM)
         dntp_conc (float/int, optional) : dNTP conc. (mM)
+        dmso_conc (float/int, optional)  : DMSO conc. (%)
+        dmso_fact (float/int, optional)  : DMSO correction factor. (default 0.6)
+        formamide_conc (float/int, optional) : Formamide conc. (mol/l)
         dna_conc (float/int, optional)  : DNA conc. (nM)
         temp_c (int, optional)          : Simulation temperature for dG (C)
         max_loop (int, optional)        : Maximum size of loops in the
                                           structure
         output_structure (bool) : If `True`, the ASCII dimer structure is saved
+        annealing_temp : Actual annealing temperature of the PCR reaction
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -133,8 +143,8 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
 
 def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                    dna_conc=50, temp_c=37, max_loop=30,
-                    output_structure=False):
+                    dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, dna_conc=50,
+                    temp_c=37, max_loop=30, output_structure=False, annealing_temp=-10.0):
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
@@ -151,10 +161,14 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
         mv_conc (float/int)     : Monovalent cation conc. (mM)
         dv_conc (float/int)     : Divalent cation conc. (mM)
         dntp_conc (float/int)   : dNTP conc. (mM)
+        dmso_conc (float/int, optional)  : DMSO conc. (%)
+        dmso_fact (float/int, optional)  : DMSO correction factor. (default 0.6)
+        formamide_conc (float/int, optional) : Formamide conc. (mol/l)
         dna_conc (float/int)    : DNA conc. (nM)
         temp_c (int)            : Simulation temperature for dG (Celsius)
         max_loop(int)           : Maximum size of loops in the structure
         output_structure (bool) : If `True`, the ASCII dimer structure is saved
+        annealing_temp : Actual annealing temperature of the PCR reaction
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -169,7 +183,7 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 
 
 def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                     dna_conc=50, temp_c=37, max_loop=30):
+                     dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, dna_conc=50, temp_c=37, max_loop=30, annealing_temp=-10.0):
     ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
     sequence `seq2`.
 
@@ -188,10 +202,15 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
         mv_conc (float/int, optional)     : Monovalent cation conc. (mM)
         dv_conc (float/int, optional)     : Divalent cation conc. (mM)
         dntp_conc (float/int, optional)   : dNTP conc. (mM)
+        dmso_conc (float/int, optional)  : DMSO conc. (%)
+        dmso_fact (float/int, optional)  : DMSO correction factor. (default 0.6)
+        formamide_conc (float/int, optional) : Formamide conc. (mol/l)
         dna_conc (float/int, optional)    : DNA conc. (nM)
         temp_c (int, optional)            : Simulation temperature for dG (C)
         max_loop(int, optional)           : Maximum size of loops in the
                                             structure
+        annealing_temp : Actual annealing temperature of the PCR reaction
+
 
     Returns:
         A `ThermoResult` object with thermodynamic characteristics of the
@@ -205,9 +224,10 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     return _THERMO_ANALYSIS.calcEndStability(seq1, seq2).checkExc()
 
 
-def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+           dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, dna_conc=50,
            max_nn_length=60, tm_method='santalucia',
-           salt_corrections_method='santalucia'):
+           salt_corrections_method='santalucia', annealing_temp=-10.0):
     ''' Calculate the melting temperature (Tm) of a DNA sequence.
 
     Note that NN thermodynamics will be used to calculate the Tm of sequences
