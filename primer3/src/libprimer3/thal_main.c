@@ -382,8 +382,15 @@ int main(int argc, char** argv)
        tmp_ret = fprintf(stderr, "Error: %s\n", o.msg);
        exit(-1);
      }
+
      if((mode == THL_FAST) || (mode == THL_DEBUG_F))
        printf("%f\n",o.temp);
+     if ((mode == THL_GENERAL) || (mode == THL_DEBUG))
+     {
+       if (o.no_structure != 1) {
+        printf("%s", o.sec_struct);
+       }
+     }
      free(o.sec_struct);
    }
        /* cleanup */

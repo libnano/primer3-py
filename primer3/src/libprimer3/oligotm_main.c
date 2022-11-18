@@ -121,7 +121,7 @@ main(int argc, char **argv)
    double dmso = 0.0, dmso_fact = 0.6, formamide = 0.0;
    int tm_santalucia=1, salt_corrections=1;
    int i, j, len;
-   if (argc < 2 || argc > 14) {
+   if (argc < 2 || argc > 20) {
      fprintf(stderr, msg, argv[0]);       
      fprintf(stderr, "%s", copyright);
      return -1;
@@ -164,6 +164,30 @@ main(int argc, char **argv)
          exit(-1);
        }
        i++;
+     } else if (!strncmp("-dm", argv[i], 3)) {
+       if (i+1 >= argc) {
+         /* Missing value */
+         fprintf(stderr, msg, argv[0]);
+         exit(-1);
+       }
+       dmso = strtod(argv[i+1], &endptr);
+       if ('\0' != *endptr) {
+         fprintf(stderr, msg, argv[0]);
+         exit(-1);
+       }
+       i++;
+     } else if (!strncmp("-df", argv[i], 3)) {
+       if (i+1 >= argc) {
+         /* Missing value */
+         fprintf(stderr, msg, argv[0]);
+         exit(-1);
+       }
+       dmso_fact = strtod(argv[i+1], &endptr);
+       if ('\0' != *endptr) {
+         fprintf(stderr, msg, argv[0]);
+         exit(-1);
+       }
+       i++;
      } else if (!strncmp("-d", argv[i], 2)) {
        if (i+1 >= argc) {
          /* Missing value */
@@ -176,31 +200,7 @@ main(int argc, char **argv)
          exit(-1);
        }
        i++;
-     } else if (!strncmp("-dm", argv[i], 2)) {
-       if (i+1 >= argc) {
-         /* Missing value */
-         fprintf(stderr, msg, argv[0]);
-         exit(-1);
-       }
-       dmso = strtod(argv[i+1], &endptr);
-       if ('\0' != *endptr) {
-         fprintf(stderr, msg, argv[0]);
-         exit(-1);
-       }
-       i++;
-     } else if (!strncmp("-df", argv[i], 2)) {
-       if (i+1 >= argc) {
-         /* Missing value */
-         fprintf(stderr, msg, argv[0]);
-         exit(-1);
-       }
-       dmso_fact = strtod(argv[i+1], &endptr);
-       if ('\0' != *endptr) {
-         fprintf(stderr, msg, argv[0]);
-         exit(-1);
-       }
-       i++;
-     } else if (!strncmp("-fo", argv[i], 2)) {
+     } else if (!strncmp("-fo", argv[i], 3)) {
        if (i+1 >= argc) {
          /* Missing value */
          fprintf(stderr, msg, argv[0]);
@@ -243,7 +243,6 @@ main(int argc, char **argv)
      } else
        break;                /* all args processed. go on to sequences. */
    }
-   
   if(!argv[i]) { /* if no oligonucleotide sequence is specified */
     fprintf(stderr, msg, argv[0]);
     exit(-1);

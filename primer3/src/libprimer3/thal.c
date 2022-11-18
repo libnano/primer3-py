@@ -491,6 +491,7 @@ thal(const unsigned char *oligo_f,
    oligo1 = oligo2 = NULL;
    strcpy(o->msg, "");
    o->temp = THAL_ERROR_SCORE;
+   o->no_structure = 0;
    errno = 0; 
 
    if (setjmp(_jmp_buf) != 0) {
