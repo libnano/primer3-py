@@ -58,6 +58,9 @@ class TestLowLevelBindings(unittest.TestCase):
         self.dv_conc = random.uniform(0, 40)
         self.dntp_conc = random.uniform(0, 20)
         self.dna_conc = random.uniform(0, 200)
+        self.dmso_conc = random.uniform(0, 200)
+        self.dmso_fact = random.uniform(0, 200)
+        self.formamide_conc = random.uniform(0, 200)
         self.temp_c = random.randint(10, 70)
         self.max_loop = random.randint(10, 30)
 
@@ -69,14 +72,20 @@ class TestLowLevelBindings(unittest.TestCase):
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
                 dntp_conc=self.dntp_conc,
-                dna_conc=self.dna_conc
+                dna_conc=self.dna_conc,
+                dmso_conc=self.dmso_conc,
+                dmso_fact=self.dmso_fact,
+                formamide_conc=self.formamide_conc
             )
             wrapper_tm = wrappers.calcTm(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
                 dntp_conc=self.dntp_conc,
-                dna_conc=self.dna_conc
+                dna_conc=self.dna_conc,
+                dmso_conc=self.dmso_conc,
+                dmso_fact=self.dmso_fact,
+                formamide_conc=self.formamide_conc
             )
             self.assertEqual(int(binding_tm), int(wrapper_tm))
 
@@ -226,7 +235,10 @@ class TestLowLevelBindings(unittest.TestCase):
                     dntp_conc=self.dntp_conc,
                     dna_conc=self.dna_conc,
                     tm_method=tm_method,
-                    salt_corrections_method=sc_method
+                    salt_corrections_method=sc_method,
+                    dmso_conc=self.dmso_conc,
+                    dmso_fact=self.dmso_fact,
+                    formamide_conc=self.formamide_conc
                 )
                 wrapper_tm = wrappers.calcTm(
                     seq=self.seq1,
@@ -235,7 +247,10 @@ class TestLowLevelBindings(unittest.TestCase):
                     dntp_conc=self.dntp_conc,
                     dna_conc=self.dna_conc,
                     tm_method=tm_method,
-                    salt_corrections_method=sc_method
+                    salt_corrections_method=sc_method,
+                    dmso_conc=self.dmso_conc,
+                    dmso_fact=self.dmso_fact,
+                    formamide_conc=self.formamide_conc
                 )
                 self.assertEqual(int(binding_tm), int(wrapper_tm))
         self.assertRaises(

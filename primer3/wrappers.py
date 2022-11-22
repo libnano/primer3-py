@@ -68,7 +68,7 @@ _salt_corrections_methods = {
 
 
 def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-           max_nn_length=60, tm_method='santalucia',
+           dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, tm_method='santalucia',
            salt_corrections_method='santalucia'):
     ''' Return the tm of `seq` as a float.
     '''
@@ -88,6 +88,9 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
             '-d',   str(dna_conc),
             '-tp',  str(tm_meth),
             '-sc',  str(salt_meth),
+            '-dm', str(dmso_conc),
+            '-df', str(dmso_fact),
+            '-fo', str(formamide_conc),
             seq]
     tm = subprocess.check_output(args, stderr=DEV_NULL,
                                  env=os.environ)

@@ -58,7 +58,11 @@ cdef extern from "oligotm.h":
         santalucia     = 1
         owczarzy       = 2
 
-    double seqtm(const char*,
+    ctypedef struct tm_ret:
+        double Tm
+        double bound
+
+    tm_ret seqtm(const char*,
                      double,
                      double,
                      double,
@@ -264,10 +268,10 @@ cdef class ThermoAnalysis:
         self.thalargs.maxLoop = max_loop;
         self.thalargs.temponly = temp_only;
         self.thalargs.debug = debug;
-        self.thalargs.dmso_conc = dmso_conc;
-        self.thalargs.dmso_fact = dmso_fact;
-        self.thalargs.formamide_conc = formamide_conc;
-        self.thalargs.annealing_temp = annealing_temp;
+        self.dmso_conc = dmso_conc;
+        self.dmso_fact = dmso_fact;
+        self.formamide_conc = formamide_conc;
+        self.annealing_temp = annealing_temp;
 
         self.max_nn_length = max_nn_length;
 
@@ -559,19 +563,20 @@ cdef class ThermoAnalysis:
 
     cdef inline double calcTm_c(ThermoAnalysis self, char *s1):
         cdef thal_args *ta = &self.thalargs
-        return seqtm(<const char*> s1,
+        cdef tm_ret tr = seqtm(<const char*> s1,
                      ta.dna_conc,
                      ta.mv,
                      ta.dv,
                      ta.dntp,
-                     ta.dmso_conc,
-                     ta.dmso_fact,
-                     ta.formamide_conc,
+                     self.dmso_conc,
+                     self.dmso_fact,
+                     self.formamide_conc,
                      self.max_nn_length,
                      <tm_method_type>
                      self.tm_method,
                      <salt_correction_type> self.salt_correction_method,
-                     ta.annealing_temp)
+                     self.annealing_temp)
+        return tr.Tm
 
     def calcTm(ThermoAnalysis self, seq1):
         ''' Calculate the melting temperature (Tm) of a DNA sequence (deg. C).
@@ -597,6 +602,10 @@ cdef class ThermoAnalysis:
             'temp_only':    self.temp_only,
             'debug':        self.thalargs.debug,
             'max_nn_length': self.max_nn_length,
+            'dmso_conc':    self.dmso_conc,
+            'dmso_fact':    self.dmso_fact,
+            'formamide_conc':   self.formamide_conc,
+            'annealing_temp':   self.annealing_temp,
             'tm_method':    self.tm_method,
             'salt_correction_method': self.salt_correction_method
         }

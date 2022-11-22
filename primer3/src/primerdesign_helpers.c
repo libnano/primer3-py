@@ -951,8 +951,6 @@ pdh_setSeqArgs(PyObject* sa_dict, seq_args* sa) {
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_LEFT_END", sa->force_left_end);
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_RIGHT_START", sa->force_right_start);
     DICT_GET_AND_ASSIGN_INT(p_obj, sa_dict, "SEQUENCE_FORCE_RIGHT_END", sa->force_right_end);
-    /* SEQUENCE_START_CODON_SEQUENCE requires a little more time to implement so it is being skipped. */
-    sa->start_codon_seq[0] = 'X';
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
