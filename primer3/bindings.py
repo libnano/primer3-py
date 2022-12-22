@@ -72,7 +72,9 @@ def _setThermoArgs(mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50, dmso_conc=
 
 
 def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
-                temp_c=37, max_loop=30, output_structure=False):
+                temp_c=37, max_loop=30, output_structure=False,
+                dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, annealing_temp=-10.0,
+                tm_method='santalucia', salt_corrections_method='santalucia'):
     ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
 
     **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
@@ -103,7 +105,9 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
 
 
 def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-                  temp_c=37, max_loop=30, output_structure=False):
+                  temp_c=37, max_loop=30, output_structure=False,
+                  dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, annealing_temp=-10.0,
+                  tm_method='santalucia', salt_corrections_method='santalucia'):
     ''' Calculate the homodimerization thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
@@ -140,8 +144,10 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     return _THERMO_ANALYSIS.calcHomodimer(seq, output_structure).checkExc()
 
 
-def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,dna_conc=50,
-                    temp_c=37, max_loop=30, output_structure=False):
+def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+                    temp_c=37, max_loop=30, output_structure=False,
+                    dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, annealing_temp=-10.0,
+                    tm_method='santalucia', salt_corrections_method='santalucia'):
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
@@ -176,7 +182,9 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,dna_conc=50
 
 
 def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                     dna_conc=50, temp_c=37, max_loop=30):
+                     dna_conc=50, temp_c=37, max_loop=30, output_structure=False,
+                     dmso_conc=0.0, dmso_fact=0.6, formamide_conc=0.0, annealing_temp=-10.0,
+                     tm_method='santalucia', salt_corrections_method='santalucia'):
     ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
     sequence `seq2`.
 

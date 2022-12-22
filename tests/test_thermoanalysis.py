@@ -100,7 +100,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
+                dmso_conc=self.dmso_conc,
+                dmso_fact=self.dmso_fact,
+                formamide_conc=self.formamide_conc
             )
             wrapper_res = wrappers.calcHairpin(
                 seq=self.seq1,
@@ -109,7 +112,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
             self.assertEqual(
@@ -128,7 +131,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
+                dmso_conc=self.dmso_conc,
+                dmso_fact=self.dmso_fact,
+                formamide_conc=self.formamide_conc
             )
             wrapper_res = wrappers.calcHomodimer(
                 seq=self.seq1,
@@ -137,7 +143,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
             self.assertEqual(
@@ -157,7 +163,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
+                dmso_conc=self.dmso_conc,
+                dmso_fact=self.dmso_fact,
+                formamide_conc=self.formamide_conc
             )
             wrapper_res = wrappers.calcHeterodimer(
                 seq1=self.seq1,
@@ -185,7 +194,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
+                dmso_conc=self.dmso_conc,
+                dmso_fact=self.dmso_fact,
+                formamide_conc=self.formamide_conc
             )
             binding_21_res = bindings.calcHeterodimer(
                 seq1=self.seq1,
@@ -195,7 +207,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
+                dmso_conc=self.dmso_conc,
+                dmso_fact=self.dmso_fact,
+                formamide_conc=self.formamide_conc
             )
             self.assertEqual(int(binding_12_res.tm), int(binding_21_res.tm))
 
@@ -210,7 +225,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
+                dmso_conc=self.dmso_conc,
+                dmso_fact=self.dmso_fact,
+                formamide_conc=self.formamide_conc
             )
             wrapper_res = wrappers.calcEndStability(
                 seq1=self.seq1,
