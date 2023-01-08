@@ -122,7 +122,7 @@ local function intvovlp(intv, bits)
 		end
 		for i = off, #intv do -- start from off and search for overlaps
 			if intv[i][1] >= _end then return false
-			elseif intv[i][2] > _beg then return true end 
+			elseif intv[i][2] > _beg then return true end
 		end
 		return false
 	end

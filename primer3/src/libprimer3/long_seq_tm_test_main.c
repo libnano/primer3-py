@@ -35,11 +35,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/* 
+/*
 
 Test main for function long_seq_tm() in oligotm.c
 
-Usage is e.g 
+Usage is e.g
 
 long_seq_tm_test AAAAGGGCCCCCCCCTTTTTTTTTTT 3 20
 
@@ -72,16 +72,16 @@ main(int argc, const char**argv)
   int start, len;
   char *endptr;
 
-  s = argv[1]; 
+  s = argv[1];
   if (0 == s) {
     fprintf(stderr, "\n%s: incorrect arguments.\n", argv[0]);
     fprintf(stderr, "See file long_seq_tm_test_main.c for usage.\n\n");
     exit(-1);
   }
-  start = strtol(argv[2], &endptr, 10); 
+  start = strtol(argv[2], &endptr, 10);
   len = strtol(argv[3], &endptr, 10);
   printf("s=%s, start=%d, length=%d\n", s, start, len);
-  
+
   tm = long_seq_tm(s, start, len, salt_conc, divalent_conc, dntp_conc);
   printf("tm = %f\n", tm);
   return 0;

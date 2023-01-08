@@ -100,5 +100,3 @@ reverse_complement_seq_lib(seq_lib  *lib);
 seq_lib *create_empty_seq_lib(void);
 
 #endif
-
-

@@ -43,20 +43,23 @@ from . import primerdesign
 
 # ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
 
-PRIMER3_HOME = os.environ['PRIMER3HOME']
+LIBPRIMER3_PATH = os.environ['PRIMER3HOME']
 
 # ~~~~~~~~~~~~~~~~ Load thermodynamic parameters into memory ~~~~~~~~~~~~~~~~ #
 
-primerdesign.loadThermoParams(pjoin(PRIMER3_HOME, 'primer3_config/'))
+primerdesign.loadThermoParams(pjoin(LIBPRIMER3_PATH, 'primer3_config/'))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Low level bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
 _THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
 
-def _setThermoArgs(mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-                   temp_c=37, max_loop=30, tm_method='santalucia',
-                   salt_corrections_method='santalucia', **kwargs):
+
+def _setThermoArgs(
+    mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+    temp_c=37, max_loop=30, tm_method='santalucia',
+    salt_corrections_method='santalucia', **kwargs,
+):
     _THERMO_ANALYSIS.mv_conc = float(mv_conc)
     _THERMO_ANALYSIS.dv_conc = float(dv_conc)
     _THERMO_ANALYSIS.dntp_conc = float(dntp_conc)
@@ -67,13 +70,16 @@ def _setThermoArgs(mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     _THERMO_ANALYSIS.salt_correction_method = salt_corrections_method
 
 
-def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
-                temp_c=37, max_loop=30, output_structure=False):
+def calcHairpin(
+    seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
+    temp_c=37, max_loop=30, output_structure=False,
+):
     ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
 
     **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
     by the Primer3 team as the longest reasonable sequence length for which
-    a two-state NN model produces reliable results (see primer3/src/libnano/thal.h:50).
+    a two-state NN model produces reliable results
+    (see primer3/src/libnano/thal.h:50).
 
     Args:
         seq (str): DNA sequence to analyze for hairpin formation
@@ -98,8 +104,10 @@ def calcHairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, dna_conc=50.0,
     return _THERMO_ANALYSIS.calcHairpin(seq, output_structure).checkExc()
 
 
-def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-                  temp_c=37, max_loop=30, output_structure=False):
+def calcHomodimer(
+    seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+    temp_c=37, max_loop=30, output_structure=False,
+):
     ''' Calculate the homodimerization thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
@@ -132,9 +140,11 @@ def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
     return _THERMO_ANALYSIS.calcHomodimer(seq, output_structure).checkExc()
 
 
-def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                    dna_conc=50, temp_c=37, max_loop=30,
-                    output_structure=False):
+def calcHeterodimer(
+    seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+    dna_conc=50, temp_c=37, max_loop=30,
+    output_structure=False,
+):
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
@@ -165,11 +175,17 @@ def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
 
     '''
     _setThermoArgs(**locals())
-    return _THERMO_ANALYSIS.calcHeterodimer(seq1, seq2, output_structure).checkExc()
+    return _THERMO_ANALYSIS.calcHeterodimer(
+        seq1,
+        seq2,
+        output_structure,
+    ).checkExc()
 
 
-def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                     dna_conc=50, temp_c=37, max_loop=30):
+def calcEndStability(
+    seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+    dna_conc=50, temp_c=37, max_loop=30,
+):
     ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
     sequence `seq2`.
 
@@ -205,9 +221,11 @@ def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     return _THERMO_ANALYSIS.calcEndStability(seq1, seq2).checkExc()
 
 
-def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-           max_nn_length=60, tm_method='santalucia',
-           salt_corrections_method='santalucia'):
+def calcTm(
+    seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+    max_nn_length=60, tm_method='santalucia',
+    salt_corrections_method='santalucia',
+):
     ''' Calculate the melting temperature (Tm) of a DNA sequence.
 
     Note that NN thermodynamics will be used to calculate the Tm of sequences
@@ -239,16 +257,23 @@ def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Tm-only aliases ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+def calcHairpinTm(*args, **kwargs):
+    return calcHairpin(*args, **kwargs).tm
 
-calcHairpinTm = lambda *args, **kwargs: calcHairpin(*args, **kwargs).tm
-calcHomodimerTm = lambda *args, **kwargs: calcHomodimer(*args, **kwargs).tm
-calcHeterodimerTm = lambda *args, **kwargs: calcHeterodimer(*args, **kwargs).tm
 
+def calcHomodimerTm(*args, **kwargs):
+    return calcHomodimer(*args, **kwargs).tm
+
+
+def calcHeterodimerTm(*args, **kwargs):
+    return calcHeterodimer(*args, **kwargs).tm
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
-def designPrimers(seq_args, global_args=None, misprime_lib=None,
-                  mishyb_lib=None, debug=False):
+def designPrimers(
+    seq_args, global_args=None, misprime_lib=None,
+    mishyb_lib=None, debug=False,
+):
     ''' Run the Primer3 design process.
 
     If the global args have been previously set (either by a pervious
@@ -280,6 +305,7 @@ def designPrimers(seq_args, global_args=None, misprime_lib=None,
 The following functions are the modular subunits of `designPrimers` and may
 be used in cases where performance or customiziation are of high priority.
 '''
+
 
 def setP3Globals(global_args, misprime_lib=None, mishyb_lib=None):
     ''' Set the Primer3 global args and misprime/mishyb libraries.

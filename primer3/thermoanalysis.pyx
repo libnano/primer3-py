@@ -95,15 +95,17 @@ cdef inline bytes _bytes(s):
 # ~~~~~~~~~ Load base thermodynamic parameters into memory from file ~~~~~~~~ #
 
 def _loadThermoParams():
-    cdef char*           param_path
+    cdef char*           p3_cfg_path_bytes_c
     cdef thal_results    thalres
     import os
-    PRIMER3_HOME = os.environ.get('PRIMER3HOME')
-    ppath = os.path.join(PRIMER3_HOME, 'primer3_config/')
-    ppathb = ppath.encode('utf-8')
-    param_path = ppathb
-    if get_thermodynamic_values(param_path, &thalres) != 0:
-        raise IOError("Could not load thermodynamic config file %s" % ppath)
+    libprimer3_path = os.environ.get('PRIMER3HOME')
+    p3_cfg_path = os.path.join(libprimer3_path, 'primer3_config/')
+    p3_cfg_path_bytes = p3_cfg_path.encode('utf-8')
+    p3_cfg_path_bytes_c = p3_cfg_path_bytes
+    if get_thermodynamic_values(p3_cfg_path_bytes_c, &thalres) != 0:
+        raise IOError(
+            f'Could not load thermodynamic config file {p3_cfg_path}'
+        )
 
 _loadThermoParams()
 

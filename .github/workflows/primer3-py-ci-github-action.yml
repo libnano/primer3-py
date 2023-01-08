@@ -1,0 +1,36 @@
+name: build, pytest and pre-commit
+
+on: [push, pull_request]
+
+env:
+  PRIMER3HOME: "/home/runner/work/primer3-py/primer3-py/primer3/src/libprimer3"
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    defaults:
+      run:
+        shell: bash -l {0}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.3.0
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4.4.0
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pre-commit
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Test with pytest and then run pre-commit
+      run: >
+        python setup.py build_ext --inplace &&
+        pytest &&
+        pre-commit run --all-files

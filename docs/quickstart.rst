@@ -249,12 +249,27 @@ Testing
 -------
 Every commit pushed to
 `our Github repo <https://github.com/libnano/primer3-py>`_ is tested to
-insure it builds properly and passes our unit testing framework on
-`Travis CI <https://travis-ci.org/libnano/primer3-py>`_.
+ensure it builds properly and passes our unit testing framework as a GitHub action
 
 If you'd like to run the tests yourself, we suggest the following workflow::
 
     $ git clone https://github.com/libnano/primer3-py
     $ cd primer3-py
     $ python setup.py build_ext --inplace
-    $ nosetests
+    $ pytest  # NOTE: pip install this if not in your environment
+
+
+Contributing
+------------
+
+Development requires the use of [pre-commit](https://pre-commit.com) as this
+is run in CI in the GitHub action.  Install pre-commit in your python
+development environment (`virtualenv`, `conda`, etc) and install it in the repo with
+
+```bash
+pre-commit install
+```
+
+To ensure the git hook is excecuted on every commit.
+
+TODO: Add in additional contribution guidelines

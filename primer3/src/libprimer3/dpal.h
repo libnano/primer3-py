@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   /* 0 means do not exit on error. */
 
 #ifndef DPAL_MAX_ALIGN
-#define DPAL_MAX_ALIGN   1600 /* 
+#define DPAL_MAX_ALIGN   1600 /*
 			       * The maximum size of a string that can be
 			       * aligned with with generic dpal and for which
 			       * we can return a "path".  Several arrays of
@@ -59,16 +59,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #define DPAL_LOCAL        0  /* Return a local alignment. */
-#define DPAL_GLOBAL_END   1  /* 
+#define DPAL_GLOBAL_END   1  /*
 			      * Return a global alignment _anchored at the end
 			      * of the first sequence_.
 			      */
-#define DPAL_GLOBAL       2  /* 
+#define DPAL_GLOBAL       2  /*
 			      * Return an arbitrary global alignment, that is
 			      * one anchored at the end of either the first or
 			      * the second sequence.
 			      */
-#define DPAL_LOCAL_END    3   /* 
+#define DPAL_LOCAL_END    3   /*
                                * Return a local alignment that includes the
 			       * end (but not necessarily the beginning) of
 			       * the first sequence.
@@ -79,7 +79,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * and DPLAL_GLOBAL flags.
  */
 
-/* 
+/*
  * The data structure that stores the "scoring system matrix". (The socring
  * system matrix data structure is of size UCHAR_MAX + 1 by UCHAR_MAX + 1.)
  */
@@ -87,35 +87,35 @@ typedef int dpal_ssm[UCHAR_MAX + 1][UCHAR_MAX + 1];
 
 /* Structure for passing in arguments to the main function, dpal. */
 typedef struct {
-    int check_chars;        /* 
+    int check_chars;        /*
 		             * If non-0, check for and raise an error on an
 		             * illegal character in the input strings.
 			     */
-    int debug;              /* 
+    int debug;              /*
 			     * If non-0, print debugging information to
 			     * stderr.
 			     */
     int fail_stop;           /* Exit with -1 on error. */
-    int flag;                /* 
+    int flag;                /*
 			      * One of DPAL_GLOBAL, DPAL_LOCAL,
 			      * DPAL_GLOBAL_END, DPAL_LOCAL_END
 			      */
     int force_generic;      /* Force the use of the generic function. */
-    int force_long_generic; /* 
+    int force_long_generic; /*
 			     * Force the use of the long generic no-path
 			     * function.
 			     */
     int force_long_maxgap1; /* Force the use of the long maxgap 1 functions. */
     int gap;                 /* The "gap opening" penalty. */
     int gapl;                /* The "gap extension" penalty. */
-    int max_gap;             /* 
+    int max_gap;             /*
 		              * The maximum allowable size for a gap. -1
 		              * indicates that the gap can be of any size.
 			      */
     int score_max;           /* If greater than 0 stop search as soon as
 			      * score > score_max.
 			      */
-    int score_only;          /* 
+    int score_only;          /*
 			      * If non-0, only print the score on
 			      * stdout. (Incompatible with debug.)
 			      */
@@ -135,7 +135,7 @@ typedef struct {
 /* Initialize the argument to the default matrix for nucleotide matches. */
 void dpal_set_default_nt_args(dpal_args *);
 
-/* Routine primarily for testing: sets CC & GG matches to 3, AA & TT 
+/* Routine primarily for testing: sets CC & GG matches to 3, AA & TT
    matches to 2. */
 void dpal_set_h_nt_matrix(dpal_args *a);
 
@@ -148,7 +148,7 @@ void dpal_set_h_nt_matrix(dpal_args *a);
 */
 int dpal_set_ambiguity_code_matrix(dpal_args *);
 
-/* 
+/*
  * Align the first 2 arguments, using the scoring
  * matix and other arguments supplied in the dpal_args
  * argument.  Return results in argument 'out'.

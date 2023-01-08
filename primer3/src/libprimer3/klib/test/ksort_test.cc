@@ -431,7 +431,7 @@ int pivot, lTmp, rTmp;
             QStart:;
         } while (numbers[right] > pivot);
         numbers[left] = numbers[right];
-        do { 
+        do {
             left++;
             if (left >= right) {
                 left = right;

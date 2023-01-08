@@ -1,18 +1,18 @@
 --[[
   The MIT License
-  
+
   Copyright (c) 2011, Attractive Chaos <attractor@live.co.uk>
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
   in the Software without restriction, including without limitation the rights
   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
   copies of the Software, and to permit persons to whom the Software is
   furnished to do so, subject to the following conditions:
-  
+
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
-  
+
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -211,11 +211,11 @@ end
   Formulas are taken from Wiki, with additional input from Numerical
   Recipes in C (for modified Lentz's algorithm) and AS245
   (http://lib.stat.cmu.edu/apstat/245).
- 
+
   A good online calculator is available at:
- 
+
     http://www.danielsoper.com/statcalc/calc23.aspx
- 
+
   It calculates upper incomplete gamma function, which equals
   math.igamma(s,z,true)*math.exp(math.lgamma(s))
 ]]--
@@ -252,7 +252,7 @@ function math.igamma(s, z, complement)
 
 	if complement then
 		return ((z <= 1 or z < s) and 1 - _kf_gammap(s, z)) or _kf_gammaq(s, z);
-	else 
+	else
 		return ((z <= 1 or z < s) and _kf_gammap(s, z)) or (1 - _kf_gammaq(s, z));
 	end
 end
@@ -350,7 +350,7 @@ function math.fisher_exact(n11, n12, n21, n22)
 		aux[5] = hypergeo(aux[1], aux[2], aux[3], aux[4]);
 		return aux[5];
 	end
-	
+
 	-- Description: computing the P-value by Fisher's exact test
 	local max, min, left, right, n1_, n_1, n, two, p, q, i, j;
 	n1_, n_1, n = n11 + n12, n11 + n21, n11 + n12 + n21 + n22;

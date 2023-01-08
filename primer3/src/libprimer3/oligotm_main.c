@@ -85,8 +85,8 @@ main(int argc, char **argv)
     "                  2  Owczarzy et al., 2004\n\n"
     "\n\n"
     "Prints oligo's melting temperature on stdout.\n";
-   
-   const char *copyright = 
+
+   const char *copyright =
 "Copyright (c) 1996,1997,1998,1999,2000,2001,2004,2006\n"
 "Whitehead Institute for Biomedical Research, Steve Rozen\n"
 "(http://purl.com/STEVEROZEN/), Andreas Untergasser and Helen Skaletsky\n"
@@ -116,7 +116,7 @@ main(int argc, char **argv)
    int tm_santalucia=0, salt_corrections=0;
    int i, j, len;
    if (argc < 2 || argc > 14) {
-     fprintf(stderr, msg, argv[0]);       
+     fprintf(stderr, msg, argv[0]);
      fprintf(stderr, "%s", copyright);
      return -1;
    }
@@ -177,7 +177,7 @@ main(int argc, char **argv)
 	 exit(-1);
        }
        tm_santalucia = (int)strtol(argv[i+1], &endptr, 10);
-       if ('\0' != *endptr || tm_santalucia<0 || tm_santalucia>1) {	  
+       if ('\0' != *endptr || tm_santalucia<0 || tm_santalucia>1) {
 	 fprintf(stderr, msg, argv[0]);
 	 exit(-1);
        }
@@ -201,7 +201,7 @@ main(int argc, char **argv)
      } else
        break;		/* all args processed. go on to sequences. */
    }
-   
+
   if(!argv[i]) { /* if no oligonucleotide sequence is specified */
     fprintf(stderr, msg, argv[0]);
     exit(-1);
@@ -210,12 +210,12 @@ main(int argc, char **argv)
   seq = argv[i];
   len=strlen(seq);
   for(j=0;j<len;j++) seq[j]=toupper(seq[j]);
-   
+
   tm = oligotm(seq, d, mv, dv, n, (tm_method_type) tm_santalucia, (salt_correction_type) salt_corrections);
   if (OLIGOTM_ERROR == tm) {
     fprintf(stderr,
 	    "%s ERROR: length of sequence %s is less than 2 or\n"
-	    "             the sequence contains an illegal character or\n" 
+	    "             the sequence contains an illegal character or\n"
 	    "             you have specified incorrect value for concentration of divalent cations or\n"
 	    "             you have specified incorrect value for concentration of dNTPs\n",
 	    argv[0], argv[i]);

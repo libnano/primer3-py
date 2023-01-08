@@ -26,7 +26,6 @@ only be used for testing / comparison purposes.
 
 from __future__ import print_function
 
-import glob
 import os
 import re
 import subprocess
@@ -47,67 +46,88 @@ LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 if not os.environ.get('PRIMER3HOME'):
     try:
         os.environ['PRIMER3HOME'] = pjoin(LOCAL_DIR, 'src/libprimer3')
-    except:
-        raise ImportError('PRIMER3HOME environmental variable is not set.')
-PRIMER3_HOME = os.environ.get('PRIMER3HOME')
+    except BaseException:
+        raise OSError('PRIMER3HOME environmental variable is not set.')
+LIBPRIMER3_PATH = os.environ.get('PRIMER3HOME')
 
-THERMO_PATH = pjoin(PRIMER3_HOME, 'primer3_config/')
+THERMO_PATH = pjoin(LIBPRIMER3_PATH, 'primer3_config/')
 
 DEV_NULL = open(os.devnull, 'wb')
 
 _tm_methods = {
     'breslauer': 0,
-    'santalucia': 1
+    'santalucia': 1,
 }
 
 _salt_corrections_methods = {
     'schildkraut': 0,
     'santalucia': 1,
-    'owczarzy': 2
+    'owczarzy': 2,
 }
 
 
-def calcTm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-           max_nn_length=60, tm_method='santalucia',
-           salt_corrections_method='santalucia'):
+def calcTm(
+    seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+    max_nn_length=60, tm_method='santalucia',
+    salt_corrections_method='santalucia',
+):
     ''' Return the tm of `seq` as a float.
     '''
     tm_meth = _tm_methods.get(tm_method)
     if tm_meth is None:
-        raise ValueError('{} is not a valid tm calculation method'.format(
-                         tm_method))
+        raise ValueError(
+            '{} is not a valid tm calculation method'.format(
+                tm_method,
+            ),
+        )
     salt_meth = _salt_corrections_methods.get(salt_corrections_method)
     if salt_meth is None:
-        raise ValueError('{} is not a valid salt correction method'.format(
-                         salt_corrections_method))
+        raise ValueError(
+            '{} is not a valid salt correction method'.format(
+                salt_corrections_method,
+            ),
+        )
     # For whatever reason mv_conc and dna_conc have to be ints
-    args = [pjoin(PRIMER3_HOME, 'oligotm'),
-            '-mv',  str(mv_conc),
-            '-dv',  str(dv_conc),
-            '-n',   str(dntp_conc),
-            '-d',   str(dna_conc),
-            '-tp',  str(tm_meth),
-            '-sc',  str(salt_meth),
-            seq]
-    tm = subprocess.check_output(args, stderr=DEV_NULL,
-                                 env=os.environ)
+    args = [
+        pjoin(LIBPRIMER3_PATH, 'oligotm'),
+        '-mv', str(mv_conc),
+        '-dv', str(dv_conc),
+        '-n', str(dntp_conc),
+        '-d', str(dna_conc),
+        '-tp', str(tm_meth),
+        '-sc', str(salt_meth),
+        seq,
+    ]
+    tm = subprocess.check_output(
+        args, stderr=DEV_NULL,
+        env=os.environ,
+    )
     return float(tm)
 
 
-_ntthal_re = re.compile(b'dS\s+=\s+(\S+)\s+dH\s+=\s+(\S+)\s+' +
-                        b'dG\s+=\s+(\S+)\s+t\s+=\s+(\S+)')
+# _ntthal_re = re.compile(b'dS\s+=\s+(\S+)\s+dH\s+=\s+(\S+)\s+' +
+#                         b'dG\s+=\s+(\S+)\s+t\s+=\s+(\S+)')
 
-THERMORESULT = namedtuple('thermoresult', [
+_ntthal_re = re.compile(
+    r'dS\s+=\s+(\S+)\s+'
+    r'dH\s+=\s+(\S+)\s+'
+    r'dG\s+=\s+(\S+)\s+'
+    r't\s+=\s+(\S+)'.encode('utf8'),
+)
+
+THERMORESULT = namedtuple(
+    'thermoresult', [
         'result',           # True if a structure is present
         'ds',               # Entropy (cal/(K*mol))
         'dh',               # Enthalpy (kcal/mol)
         'dg',               # Gibbs free energy
         'tm',               # Melting temperature (deg. Celsius)
-        'ascii_structure'   # ASCII representation of structure
-    ]
+        'ascii_structure',   # ASCII representation of structure
+    ],
 )
 
 NULLTHERMORESULT = THERMORESULT(False, 0, 0, 0, 0, '')
+
 
 def _parse_ntthal(ntthal_output):
     ''' Helper method that uses regex to parse ntthal output. '''
@@ -122,70 +142,92 @@ def _parse_ntthal(ntthal_output):
             float(parsed_vals.group(2)),    # dH
             float(parsed_vals.group(3)),    # dG
             float(parsed_vals.group(4)),    # tm
-            ascii_structure
+            ascii_structure,
         )
     else:
         res = NULLTHERMORESULT
     return res
 
 
-def calcThermo(seq1, seq2, calc_type='ANY', mv_conc=50, dv_conc=0,
-                 dntp_conc=0.8, dna_conc=50, temp_c=37, max_loop=30,
-                 temp_only=False):
+def calcThermo(
+    seq1, seq2, calc_type='ANY', mv_conc=50, dv_conc=0,
+    dntp_conc=0.8, dna_conc=50, temp_c=37, max_loop=30,
+    temp_only=False,
+):
     """ Main subprocess wrapper for calls to the ntthal executable.
 
     Returns a named tuple with tm, ds, dh, and dg values or None if no
     structure / complex could be computed.
     """
-    args = [pjoin(PRIMER3_HOME, 'ntthal'),
-            '-a',       str(calc_type),
-            '-mv',      str(mv_conc),
-            '-dv',      str(dv_conc),
-            '-n',       str(dntp_conc),
-            '-d',       str(dna_conc),
-            '-t',       str(temp_c),
-            '-maxloop', str(max_loop),
-            '-path',    THERMO_PATH,
-            '-s1',      seq1,
-            '-s2',      seq2]
+    args = [
+        pjoin(LIBPRIMER3_PATH, 'ntthal'),
+        '-a', str(calc_type),
+        '-mv', str(mv_conc),
+        '-dv', str(dv_conc),
+        '-n', str(dntp_conc),
+        '-d', str(dna_conc),
+        '-t', str(temp_c),
+        '-maxloop', str(max_loop),
+        '-path', THERMO_PATH,
+        '-s1', seq1,
+        '-s2', seq2,
+    ]
     if temp_only:
         args += ['-r']
-    out = subprocess.check_output(args, stderr=DEV_NULL,
-                                  env=os.environ)
+    out = subprocess.check_output(
+        args, stderr=DEV_NULL,
+        env=os.environ,
+    )
     return _parse_ntthal(out)
 
 
-def calcHairpin(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-                 temp_c=37, max_loop=30, temp_only=False):
+def calcHairpin(
+    seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
+    temp_c=37, max_loop=30, temp_only=False,
+):
     ''' Return a namedtuple of the dS, dH, dG, and Tm of any hairpin struct
     present.
     '''
-    return calcThermo(seq, seq, 'HAIRPIN', mv_conc, dv_conc, dntp_conc,
-                      dna_conc, temp_c, max_loop, temp_only)
+    return calcThermo(
+        seq, seq, 'HAIRPIN', mv_conc, dv_conc, dntp_conc,
+        dna_conc, temp_c, max_loop, temp_only,
+    )
 
 
-def calcHeterodimer(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                     dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
+def calcHeterodimer(
+    seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+    dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
+):
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
     '''
-    return calcThermo(seq1, seq2, 'ANY', mv_conc, dv_conc, dntp_conc,
-                      dna_conc, temp_c, max_loop, temp_only)
+    return calcThermo(
+        seq1, seq2, 'ANY', mv_conc, dv_conc, dntp_conc,
+        dna_conc, temp_c, max_loop, temp_only,
+    )
 
 
-def calcHomodimer(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                   dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
+def calcHomodimer(
+    seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+    dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
+):
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted homodimer.
     '''
-    return calcThermo(seq, seq, 'ANY', mv_conc, dv_conc, dntp_conc,
-                      dna_conc, temp_c, max_loop, temp_only)
+    return calcThermo(
+        seq, seq, 'ANY', mv_conc, dv_conc, dntp_conc,
+        dna_conc, temp_c, max_loop, temp_only,
+    )
 
 
-def calcEndStability(seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-                     dna_conc=50, temp_c=37, max_loop=30, temp_only=False):
+def calcEndStability(
+    seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
+    dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
+):
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
     '''
-    return calcThermo(seq1, seq2, 'END1', mv_conc, dv_conc, dntp_conc,
-                      dna_conc, temp_c, max_loop, temp_only)
+    return calcThermo(
+        seq1, seq2, 'END1', mv_conc, dv_conc, dntp_conc,
+        dna_conc, temp_c, max_loop, temp_only,
+    )
 
 
 def assessOligo(seq):
@@ -206,18 +248,20 @@ def assessOligo(seq):
 if sys.version_info[0] > 2:
 
     def _formatBoulderIO(p3_args):
-        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in
-                              p3_args.items()])
+        boulder_str = ''.join([
+            '{}={}\n'.format(k, v) for k, v in
+            p3_args.items()
+        ])
         boulder_str += '=\n'
         return bytes(boulder_str, 'UTF-8')
 
     def _parseBoulderIO(boulder_str):
         data_dict = OrderedDict()
-        for line in boulder_str.decode("utf-8").split('\n'):
+        for line in boulder_str.decode('utf-8').split('\n'):
             try:
-                k,v = line.strip().split('=')
+                k, v = line.strip().split('=')
                 data_dict[k] = v
-            except:
+            except ValueError:
                 pass
         return data_dict
 
@@ -229,9 +273,9 @@ if sys.version_info[0] > 2:
             data_dict = OrderedDict()
             for line in record.split('\n'):
                 try:
-                    k,v = line.strip().split('=')
+                    k, v = line.strip().split('=')
                     data_dict[k] = v
-                except:
+                except ValueError:
                     pass
             data_dicts.append(data_dict)
         return data_dicts
@@ -239,8 +283,10 @@ if sys.version_info[0] > 2:
 else:
 
     def _formatBoulderIO(p3_args):
-        boulder_str = ''.join(['{}={}\n'.format(k,v) for k,v in
-                              p3_args.items()])
+        boulder_str = ''.join([
+            '{}={}\n'.format(k, v) for k, v in
+            p3_args.items()
+        ])
         boulder_str += '=\n'
         return boulder_str
 
@@ -248,9 +294,9 @@ else:
         data_dict = OrderedDict()
         for line in boulder_str.split('\n'):
             try:
-                k,v = line.strip().split('=')
+                k, v = line.strip().split('=')
                 data_dict[k] = v
-            except:
+            except ValueError:
                 pass
         return data_dict
 
@@ -262,9 +308,9 @@ else:
             data_dict = OrderedDict()
             for line in record.split('\n'):
                 try:
-                    k,v = line.strip().split('=')
+                    k, v = line.strip().split('=')
                     data_dict[k] = v
-                except:
+                except ValueError:
                     pass
             data_dicts.append(data_dict)
         return data_dicts
@@ -275,11 +321,15 @@ def designPrimers(p3_args, input_log=None, output_log=None, err_log=None):
 
     Returns an ordered dict of the boulderIO-format primer3 output file
     '''
-    sp = subprocess.Popen([pjoin(PRIMER3_HOME, 'primer3_core')],
-                          stdout=subprocess.PIPE, stdin=subprocess.PIPE,
-                          stderr=subprocess.STDOUT)
-    p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH',
-                       pjoin(PRIMER3_HOME, 'primer3_config/'))
+    sp = subprocess.Popen(
+        [pjoin(LIBPRIMER3_PATH, 'primer3_core')],
+        stdout=subprocess.PIPE, stdin=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    p3_args.setdefault(
+        'PRIMER_THERMODYNAMIC_PARAMETERS_PATH',
+        pjoin(LIBPRIMER3_PATH, 'primer3_config/'),
+    )
     in_str = _formatBoulderIO(p3_args)
     if input_log:
         input_log.write(in_str)

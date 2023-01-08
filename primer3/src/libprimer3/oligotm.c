@@ -98,7 +98,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /* Table 1 (old parameters):
- * See table 2 in the paper [Breslauer KJ, Frank R, Blöcker H and
+ * See table 2 in the paper [Breslauer KJ, Frank R, BlÃ¶cker H and
  * Marky LA (1986) "Predicting DNA duplex stability from the base
  * sequence" Proc Natl Acad Sci 83:4746-50
  * http://dx.doi.org/10.1073/pnas.83.11.3746]
@@ -438,7 +438,7 @@ oligotm(const  char *s,
     double div_monov_ratio;
     static double a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0;
 
-    for(i = 0; i <= len && seq != NULL && seq != '\0';) {
+    for(i = 0; i <= len && seq != NULL;) { /* Updated NC 2023.01.09 for type fix */
       if(*seq == 'C' || *seq == 'G') {
         gcPercent++;
       }
