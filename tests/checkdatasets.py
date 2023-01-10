@@ -1,16 +1,17 @@
+import glob
+import json
+import os
+import os.path
+import subprocess
+import sys
+
+import click
+
 from primer3 import __version__ as p3version
 from primer3.thermoanalysis import (
     ThermoAnalysis,
     ThermoResult,
 )
-import json
-import subprocess
-import glob
-import os.path
-import os
-import sys
-
-import click
 
 dirname = os.path.dirname
 extra = [dirname(dirname(os.path.abspath(__file__)))]

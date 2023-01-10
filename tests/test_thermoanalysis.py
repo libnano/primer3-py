@@ -23,10 +23,11 @@ Unit tests for the primer3-py low level thermodynamic calculation bindings.
 '''
 
 from __future__ import print_function
-import unittest
-from time import sleep
+
 import random
 import sys
+import unittest
+from time import sleep
 
 try:
     import resource

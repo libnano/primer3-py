@@ -40,10 +40,13 @@ Calculations are performed under the following paradigm:
 
 '''
 
-from libc.stdlib cimport malloc, free
+from cpython.version cimport PY_MAJOR_VERSION
+from libc.stdlib cimport (
+    free,
+    malloc,
+)
 from libc.string cimport strlen
 
-from cpython.version cimport PY_MAJOR_VERSION
 import atexit
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ External C declarations ~~~~~~~~~~~~~~~~~~~~~~~~~ #

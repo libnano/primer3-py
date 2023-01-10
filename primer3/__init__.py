@@ -23,14 +23,27 @@ oligonucleotide thermodynamics library.
 
 '''
 
-from . import bindings, wrappers, thermoanalysis, primerdesign
-from .bindings import (
-    calcHairpin, calcHomodimer, calcHeterodimer,
-    calcHairpinTm, calcHomodimerTm, calcHeterodimerTm,
-    calcTm, setP3Globals, setP3SeqArgs, runP3Design,
-    designPrimers,
-)
 import os
+
+from . import (
+    bindings,
+    primerdesign,
+    thermoanalysis,
+    wrappers,
+)
+from .bindings import (
+    calcHairpin,
+    calcHairpinTm,
+    calcHeterodimer,
+    calcHeterodimerTm,
+    calcHomodimer,
+    calcHomodimerTm,
+    calcTm,
+    designPrimers,
+    runP3Design,
+    setP3Globals,
+    setP3SeqArgs,
+)
 
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -57,7 +70,7 @@ def includes():
 __author__ = 'Ben Pruitt, Nick Conway'
 __copyright__ = 'Copyright 2014-2020, Ben Pruitt & Nick Conway; Wyss Institute'
 __license__ = 'GPLv2'
-__version__ = '0.6.1'
+__version__ = '1.0.0-alpha.2'
 
 __all__ = [
     # Low-level Tm-only bindings

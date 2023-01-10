@@ -14,10 +14,10 @@ repos:
         exclude: ((develop|environment).devenv.yml|meta.yaml)
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
-# -   repo: https://github.com/pycqa/isort
-#     rev: 5.11.4
-#     hooks:
-#     -   id: isort
+-   repo: https://github.com/pycqa/isort
+    rev: 5.11.4
+    hooks:
+    -   id: isort
 -   repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
