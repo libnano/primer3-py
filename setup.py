@@ -245,9 +245,36 @@ if ('build_ext' in sys.argv or 'install' in sys.argv):
         p3Build()
         P3_BUILT = True
 
+
+def try_cythonize(extension_list, *args, **kwargs):
+    '''
+    Light cythonize wrapper
+    '''
+    try:
+        from Cython.Build import cythonize
+    except (ImportError, ModuleNotFoundError):
+        def cythonize(x, **kwargs):
+            return x
+
+    cython_compiler_directives = dict(
+        # always_allow_keywords=False,
+        # boundscheck=False,
+        # embedsignature=False,
+        # initializedcheck=False,
+        # wraparound=False,
+        language_level='3',
+        c_string_encoding='utf-8',
+    )
+
+    return cythonize(
+        extension_list,
+        compiler_directives=cython_compiler_directives,
+    )
+
+
 setup(
     name='primer3-py',
-    version='1.0.0-alpha.2',
+    version='1.0.0-alpha.3',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',
@@ -258,18 +285,17 @@ setup(
         'Programming Language :: C',
         'Programming Language :: Cython',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ],
     packages=['primer3'],
-    ext_modules=[primerdesign_ext, thermoanalysis_ext],
+    ext_modules=[primerdesign_ext] + try_cythonize([thermoanalysis_ext]),
     package_data={'primer3': PACKAGE_FPS},
     cmdclass={
         'install_lib': CustomInstallLib,
@@ -277,6 +303,6 @@ setup(
         'build_clib': CustomBuildClib,
     },
     test_suite='tests',
-    setup_requires=['Cython', 'setuptools>=18.0'],
+    setup_requires=['Cython', 'setuptools>=65.6.3'],
     zip_safe=False,
 )

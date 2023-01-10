@@ -26,15 +26,23 @@ only be used for testing / comparison purposes.
 
 from __future__ import print_function
 
+import io
 import os
 import re
 import subprocess
-import sys
 from collections import (
     OrderedDict,
     namedtuple,
 )
 from os.path import join as pjoin
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PRIMER3 WRAPPERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -48,7 +56,9 @@ if not os.environ.get('PRIMER3HOME'):
         os.environ['PRIMER3HOME'] = pjoin(LOCAL_DIR, 'src/libprimer3')
     except BaseException:
         raise OSError('PRIMER3HOME environmental variable is not set.')
-LIBPRIMER3_PATH = os.environ.get('PRIMER3HOME')
+LIBPRIMER3_PATH = os.environ['PRIMER3HOME']
+if not os.path.isdir(LIBPRIMER3_PATH):
+    raise OSError(f'Path {LIBPRIMER3_PATH} does not exist')
 
 THERMO_PATH = pjoin(LIBPRIMER3_PATH, 'primer3_config/')
 
@@ -67,11 +77,30 @@ _salt_corrections_methods = {
 
 
 def calcTm(
-    seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-    max_nn_length=60, tm_method='santalucia',
-    salt_corrections_method='santalucia',
-):
+        seq: str,
+        mv_conc: Union[float, int] = 50,
+        dv_conc: Union[float, int] = 0,
+        dntp_conc: Union[float, int] = 0.8,
+        dna_conc: Union[float, int] = 50,
+        max_nn_length: int = 60,
+        tm_method: str = 'santalucia',
+        salt_corrections_method: str = 'santalucia',
+) -> float:
     ''' Return the tm of `seq` as a float.
+
+    Args:
+        seq: DNA sequence
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        max_nn_length: Maximum length for nearest-neighbor calcs
+        tm_method: Tm calculation method (breslauer or santalucia)
+        salt_corrections_method: Salt correction method (schildkraut, owczarzy,
+            santalucia)
+
+    Returns:
+        The melting temperature in degrees Celsius (float).
     '''
     tm_meth = _tm_methods.get(tm_method)
     if tm_meth is None:
@@ -105,17 +134,14 @@ def calcTm(
     return float(tm)
 
 
-# _ntthal_re = re.compile(b'dS\s+=\s+(\S+)\s+dH\s+=\s+(\S+)\s+' +
-#                         b'dG\s+=\s+(\S+)\s+t\s+=\s+(\S+)')
-
-_ntthal_re = re.compile(
+_NTTHAL_RE = re.compile(
     r'dS\s+=\s+(\S+)\s+'
     r'dH\s+=\s+(\S+)\s+'
     r'dG\s+=\s+(\S+)\s+'
     r't\s+=\s+(\S+)'.encode('utf8'),
 )
 
-THERMORESULT = namedtuple(
+THERMORESULT = namedtuple(  # type: ignore
     'thermoresult', [
         'result',           # True if a structure is present
         'ds',               # Entropy (cal/(K*mol))
@@ -129,9 +155,9 @@ THERMORESULT = namedtuple(
 NULLTHERMORESULT = THERMORESULT(False, 0, 0, 0, 0, '')
 
 
-def _parse_ntthal(ntthal_output):
+def _parse_ntthal(ntthal_output: bytes) -> THERMORESULT:
     ''' Helper method that uses regex to parse ntthal output. '''
-    parsed_vals = re.search(_ntthal_re, ntthal_output)
+    parsed_vals = re.search(_NTTHAL_RE, ntthal_output)
     if parsed_vals:
         ascii_structure = (
             ntthal_output[ntthal_output.index(b'\n') + 1:].decode('utf-8')
@@ -150,14 +176,37 @@ def _parse_ntthal(ntthal_output):
 
 
 def calcThermo(
-    seq1, seq2, calc_type='ANY', mv_conc=50, dv_conc=0,
-    dntp_conc=0.8, dna_conc=50, temp_c=37, max_loop=30,
-    temp_only=False,
-):
-    """ Main subprocess wrapper for calls to the ntthal executable.
+        seq1: str,
+        seq2: str,
+        calc_type: str = 'ANY',
+        mv_conc: Union[float, int] = 50.,
+        dv_conc: Union[float, int] = 0.,
+        dntp_conc: Union[float, int] = 0.8,
+        dna_conc: Union[float, int] = 50,
+        temp_c: Union[float, int] = 37,
+        max_loop: int = 30,
+        temp_only: bool = False,
+) -> THERMORESULT:
+    """Main subprocess wrapper for calls to the ntthal executable.
 
-    Returns a named tuple with tm, ds, dh, and dg values or None if no
-    structure / complex could be computed.
+    Args:
+        seq1: DNA sequence to analyze for 3' end  hybridization against the
+            target sequence
+        seq2: Target DNA sequence to analyze for seq1 3' end hybridization
+        calc_type: alignment type, END1, END2, ANY and HAIRPIN, by default ANY
+            (when duplex)
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop: Maximum size of loops in the structure
+        temp_only: causes the alignment NOT to be displayed on stderr,
+            _only_ Tm is printed
+
+    Returns:
+        a named tuple with tm, ds, dh, and dg values or None if no
+        structure / complex could be computed.
     """
     args = [
         pjoin(LIBPRIMER3_PATH, 'ntthal'),
@@ -182,9 +231,15 @@ def calcThermo(
 
 
 def calcHairpin(
-    seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, dna_conc=50,
-    temp_c=37, max_loop=30, temp_only=False,
-):
+    seq: str,
+    mv_conc=50,
+    dv_conc=0,
+    dntp_conc=0.8,
+    dna_conc=50,
+    temp_c=37,
+    max_loop=30,
+    temp_only=False,
+) -> THERMORESULT:
     ''' Return a namedtuple of the dS, dH, dG, and Tm of any hairpin struct
     present.
     '''
@@ -197,7 +252,7 @@ def calcHairpin(
 def calcHeterodimer(
     seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
-):
+) -> THERMORESULT:
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
     '''
     return calcThermo(
@@ -209,7 +264,7 @@ def calcHeterodimer(
 def calcHomodimer(
     seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
-):
+) -> THERMORESULT:
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted homodimer.
     '''
     return calcThermo(
@@ -221,7 +276,7 @@ def calcHomodimer(
 def calcEndStability(
     seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
     dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
-):
+) -> THERMORESULT:
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
     '''
     return calcThermo(
@@ -230,7 +285,7 @@ def calcEndStability(
     )
 
 
-def assessOligo(seq):
+def assessOligo(seq) -> Tuple[THERMORESULT, THERMORESULT]:
     '''
     Return the thermodynamic characteristics of hairpin/homodimer structures.
 
@@ -244,86 +299,63 @@ def assessOligo(seq):
 
 
 # ~~~~~~~ RUDIMENTARY PRIMER3 MAIN WRAPPER (see Primer3 docs for args) ~~~~~~ #
+def _formatBoulderIO(p3_args: Dict[str, Any]) -> bytes:
+    boulder_str = ''.join([
+        '{}={}\n'.format(k, v) for k, v in
+        p3_args.items()
+    ])
+    boulder_str += '=\n'
+    return bytes(boulder_str, 'UTF-8')
 
-if sys.version_info[0] > 2:
 
-    def _formatBoulderIO(p3_args):
-        boulder_str = ''.join([
-            '{}={}\n'.format(k, v) for k, v in
-            p3_args.items()
-        ])
-        boulder_str += '=\n'
-        return bytes(boulder_str, 'UTF-8')
+def _parseBoulderIO(boulder_str: bytes) -> Dict[str, str]:
+    data_dict = OrderedDict()
+    for line in boulder_str.decode('utf-8').split('\n'):
+        try:
+            k, v = line.strip().split('=')
+            data_dict[k] = v
+        except ValueError:
+            pass
+    return data_dict
 
-    def _parseBoulderIO(boulder_str):
+
+def parseMultiRecordBoulderIO(boulder_str: str) -> List[OrderedDict[str, str]]:
+    data_dicts = []
+    for record in re.split('=\r?\n', boulder_str):
+        if record == '':
+            continue
         data_dict = OrderedDict()
-        for line in boulder_str.decode('utf-8').split('\n'):
+        for line in record.split('\n'):
             try:
                 k, v = line.strip().split('=')
                 data_dict[k] = v
             except ValueError:
                 pass
-        return data_dict
-
-    def _parseMultiRecordBoulderIO(boulder_str):
-        data_dicts = []
-        for record in re.split('=\r?\n', boulder_str):
-            if record == '':
-                continue
-            data_dict = OrderedDict()
-            for line in record.split('\n'):
-                try:
-                    k, v = line.strip().split('=')
-                    data_dict[k] = v
-                except ValueError:
-                    pass
-            data_dicts.append(data_dict)
-        return data_dicts
-
-else:
-
-    def _formatBoulderIO(p3_args):
-        boulder_str = ''.join([
-            '{}={}\n'.format(k, v) for k, v in
-            p3_args.items()
-        ])
-        boulder_str += '=\n'
-        return boulder_str
-
-    def _parseBoulderIO(boulder_str):
-        data_dict = OrderedDict()
-        for line in boulder_str.split('\n'):
-            try:
-                k, v = line.strip().split('=')
-                data_dict[k] = v
-            except ValueError:
-                pass
-        return data_dict
-
-    def _parseMultiRecordBoulderIO(boulder_str):
-        data_dicts = []
-        for record in re.split('=\r?\n', boulder_str):
-            if record == '':
-                continue
-            data_dict = OrderedDict()
-            for line in record.split('\n'):
-                try:
-                    k, v = line.strip().split('=')
-                    data_dict[k] = v
-                except ValueError:
-                    pass
-            data_dicts.append(data_dict)
-        return data_dicts
+        data_dicts.append(data_dict)
+    return data_dicts
 
 
-def designPrimers(p3_args, input_log=None, output_log=None, err_log=None):
+def designPrimers(
+        p3_args: Dict[str, Any],
+        input_log: Optional[io.BufferedWriter] = None,
+        output_log: Optional[io.BufferedWriter] = None,
+        err_log: Optional[io.BufferedWriter] = None,
+) -> Dict[str, Any]:
     ''' Return the raw primer3_core output for the provided primer3 args.
 
-    Returns an ordered dict of the boulderIO-format primer3 output file
+    Args:
+        p3_args: Dictionarty of arguments for the primer3
+        input_log: Optional log input file descriptor
+        output_log: Optional log output file descriptor
+        err_log: Optional log error file descriptor
+
+    Returns:
+        an ordered dict of the boulderIO-format primer3 output file
     '''
     sp = subprocess.Popen(
         [pjoin(LIBPRIMER3_PATH, 'primer3_core')],
-        stdout=subprocess.PIPE, stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stdin=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
     p3_args.setdefault(

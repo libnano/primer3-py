@@ -10,8 +10,6 @@ repos:
     rev: v4.4.0
     hooks:
     -   id: double-quote-string-fixer
-    -   id: check-yaml
-        exclude: ((develop|environment).devenv.yml|meta.yaml)
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
 -   repo: https://github.com/pycqa/isort
@@ -26,8 +24,8 @@ repos:
     rev: v2.0.1
     hooks:
     -   id: autopep8
-# -   repo: https://github.com/pre-commit/mirrors-mypy
-#     rev: v0.991
-#     hooks:
-#     -   id: mypy
-#         additional_dependencies: [types-PyYAML, types-certifi, types-python-dateutil]
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.991
+    hooks:
+    -   id: mypy
+        additional_dependencies: [types-certifi]

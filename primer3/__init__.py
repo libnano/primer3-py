@@ -25,7 +25,7 @@ oligonucleotide thermodynamics library.
 
 import os
 
-from . import (
+from . import (  # type: ignore
     bindings,
     primerdesign,
     thermoanalysis,
@@ -70,7 +70,7 @@ def includes():
 __author__ = 'Ben Pruitt, Nick Conway'
 __copyright__ = 'Copyright 2014-2020, Ben Pruitt & Nick Conway; Wyss Institute'
 __license__ = 'GPLv2'
-__version__ = '1.0.0-alpha.2'
+__version__ = '1.0.0-alpha.3'
 
 __all__ = [
     # Low-level Tm-only bindings

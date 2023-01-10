@@ -15,8 +15,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
-test_primerdesign
-~~~~~~~~~~~~~~~~~
+tests.test_primerdesign
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Unit tests for the primer3-py primer design bindings.
 
@@ -29,11 +29,17 @@ import random
 import sys
 import unittest
 from time import sleep
+from typing import (
+    Any,
+    Dict,
+    List,
+    Tuple,
+)
 
 try:
     import resource
 except (ImportError, ModuleNotFoundError):  # For Windows compatibility
-    resource = None
+    resource = None  # type: ignore
 
 from primer3 import (
     bindings,
@@ -46,20 +52,37 @@ LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def _getMemUsage():
-    """ Get current process memory usage in bytes """
+    ''' Get current process memory usage in bytes '''
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
 @unittest.skipIf(
     sys.platform == 'win32',
-    "Windows doesn't support resource module and wrappers",
+    'Windows does not support resource module and wrappers',
 )
 class TestDesignBindings(unittest.TestCase):
 
     def _compareResults(
-        self, binding_res, simulated_binding_res,
-        verbose=False,
-    ):
+        self,
+        binding_res: Dict[str, Any],
+        simulated_binding_res: Dict[str, Any],
+        verbose: bool = False,
+    ) -> str:
+        '''Compare results between binding and simulated binding calls to
+        ``designPrimers``
+
+        Args:
+            binding_res: A dictionary of Primer3 results (should be identical
+                to the expected BoulderIO output from primer3_main) from the
+                bindings call
+            simulated_binding_res: A dictionary of Primer3 results (should be
+                identical to the expected BoulderIO output from primer3_main)
+                from the simulated bindings call
+            verbose: if True, print information
+
+        Returns:
+            String of disagreements between the binding and simulated results
+        '''
         keys_in_sim = set(simulated_binding_res)
         keys_in_binding = set(binding_res)
 
@@ -88,11 +111,11 @@ class TestDesignBindings(unittest.TestCase):
                     print(fmt.format(k, repr(binding_res[k])))
 
         allowable_relative_difference = 0.05
-        discrepencies = [
+        discrepencies: List[str] = [
             k for k in keys_in_binding & keys_in_sim
             if simulated_binding_res[k] != binding_res[k]
         ]
-        disagreements = []
+        disagreements_list: List[str] = []
         for ds in discrepencies:
             if (
                 isinstance(binding_res[ds], (float, int)) and
@@ -106,44 +129,57 @@ class TestDesignBindings(unittest.TestCase):
                     if simulated_binding_res[ds] == 0.0 and binding_res[ds] < 0:
                         pass
                     else:
-                        disagreements.append(ds)
+                        disagreements_list.append(ds)
 
-        if len(disagreements):
+        if len(disagreements_list):
             fmt = '{:<30} {:<25} {:<25}'
-            disagreements = '\n'.join([
+            disagreements_str = '\n'.join([
                 fmt.format(
                     k,
                     repr(simulated_binding_res[k]),
                     repr(binding_res[k]),
-                ) for k in
-                sorted(disagreements)
+                ) for k in sorted(disagreements_list)
             ])
             if verbose:
                 print('\n\n\nResults disagree:')
                 print(
                     fmt.format(
-                        'Output Key', 'SimBinding Result',
+                        'Output Key',
+                        'SimBinding Result',
                         'Binding Result',
                     ),
                 )
                 print('-' * 80)
-            return disagreements
+            return disagreements_str
         else:
             if verbose:
                 print(
-                    '\n\n\nAll the results in common ({}) agree to within '
-                    '{:.2%}'.format(
-                        len(keys_in_binding & keys_in_sim),
-                        allowable_relative_difference,
-                    ),
+                    '\n\n\nAll the results in common '
+                    f'({len(keys_in_binding & keys_in_sim)}) agree to within '
+                    f'{allowable_relative_difference:.2%}',
                 )
+            return ''
 
-    def _convertBoulderInput(self, boulder_str):
+    def _convertBoulderInput(
+            self,
+            boulder_str: str,
+    ) -> List[Tuple[Dict, Dict, Dict]]:
         ''' Convert a boulder IO-style input dictionary into bindings /
         simulated-bindings-friendly dictionaries.
+
+        Args:
+            boulder_str: Boulder formatted string of multiple records
+
+        Returns:
+            List of a tuple of dictionaries of the form::
+
+            [
+                (global_args, seq_args, p3_args),
+                ...
+            ]
         '''
-        boulder_dicts = wrappers._parseMultiRecordBoulderIO(boulder_str)
-        input_dicts = []
+        boulder_dicts = wrappers.parseMultiRecordBoulderIO(boulder_str)
+        input_dicts_list = []
         for bd in boulder_dicts:
             converted_input = [
                 simulatedbindings.unwrap(arg) for arg in
@@ -167,8 +203,8 @@ class TestDesignBindings(unittest.TestCase):
                     converted_input,
                 ),
             )
-            input_dicts.append((global_args, seq_args, p3_args))
-        return input_dicts
+            input_dicts_list.append((global_args, seq_args, p3_args))
+        return input_dicts_list
 
     def test_compareSim(self):
         sequence_template = (
@@ -219,10 +255,17 @@ class TestDesignBindings(unittest.TestCase):
             ],
         }
         simulated_binding_res = simulatedbindings.designPrimers(
-            seq_args, global_args,
+            seq_args,
+            global_args,
         )
-        binding_res = bindings.designPrimers(seq_args, global_args)
-        self._compareResults(binding_res, simulated_binding_res)
+        binding_res = bindings.designPrimers(
+            seq_args,
+            global_args,
+        )
+        self._compareResults(
+            binding_res,
+            simulated_binding_res,
+        )
 
     def test_fileBased(self):
         test_file_roots = [
@@ -255,21 +298,26 @@ class TestDesignBindings(unittest.TestCase):
         print()
         failures = []
         for fn_root in test_file_roots:
-            base_fp = os.path.join(LOCAL_DIR, 'input_files', fn_root)
-            input_fp = base_fp + '_input'
+            base_fp = os.path.join(
+                LOCAL_DIR,
+                'input_files',
+                fn_root,
+            )
+            input_fp = f'{base_fp}_input'
 
             with open(input_fp) as input_fd:
                 input_raw = input_fd.read()
             input_dicts = self._convertBoulderInput(input_raw)
 
-            sys.stdout.write('->Testing file {:<40}\r'.format(fn_root))
+            sys.stdout.write(f'->Testing file {fn_root:<40}\r')
             sys.stdout.flush()
             current_global_args = {}
             for global_args, seq_args, p3_args in input_dicts:
                 test_id = str(seq_args.get('SEQUENCE_ID', ''))
                 current_global_args.update(global_args)
                 simulated_binding_res = simulatedbindings.designPrimers(
-                    seq_args, current_global_args,
+                    seq_args,
+                    current_global_args,
                 )
                 wrapper_error = simulated_binding_res.get('PRIMER_ERROR')
                 if wrapper_error is not None:
@@ -286,23 +334,25 @@ class TestDesignBindings(unittest.TestCase):
                         )
                     except IOError:
                         if max([
-                            x in p3_args.get('P3_COMMENT', '') for x in
-                            ('complain', 'fail')
+                            x in p3_args.get('P3_COMMENT', '')
+                            for x in ('complain', 'fail')
                         ]):
                             pass
-                    disagreements = self._compareResults(
+                    disagreements_str = self._compareResults(
                         binding_res,
                         simulated_binding_res,
                     )
-                    if disagreements is not None:
-                        failures.append((fn_root, test_id, disagreements))
+                    if disagreements_str:
+                        failures.append(
+                            (fn_root, test_id, disagreements_str),
+                        )
         print(' ' * 60, end='\r')
         if len(failures):
             err_msg = (
                 'Failures occured during file testing:\n' +
                 '\n'.join([
-                    '->{}\t{}\n{}'.format(*f) for f in
-                    failures
+                    '->{}\t{}\n{}'.format(*f)
+                    for f in failures
                 ])
             )
             raise RuntimeError(err_msg)

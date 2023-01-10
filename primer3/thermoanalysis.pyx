@@ -39,8 +39,6 @@ Calculations are performed under the following paradigm:
 
 
 '''
-
-from cpython.version cimport PY_MAJOR_VERSION
 from libc.stdlib cimport (
     free,
     malloc,
@@ -48,6 +46,11 @@ from libc.stdlib cimport (
 from libc.string cimport strlen
 
 import atexit
+from typing import (
+    Any,
+    Dict,
+    Union,
+)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ External C declarations ~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -86,12 +89,9 @@ cdef inline bytes _bytes(s):
     # Note that this check gets optimized out by the C compiler and is
     # recommended over the IF/ELSE Cython compile-time directives
     # See: Cython/Includes/cpython/version.pxd
-    if PY_MAJOR_VERSION > 2:
-        if isinstance(s, str):
-            # encode to the specific encoding used inside of the module
-            return (<str>s).encode('utf8')
-        else:
-            return s
+    if isinstance(s, str):
+        # encode to the specific encoding used inside of the module
+        return (<str>s).encode('utf8')
     else:
         return s
 
@@ -130,38 +130,39 @@ cdef class ThermoResult:
     '''
 
     def __cinit__(self):
-        self.thalres.no_structure = 0;
+        self.thalres.no_structure = 0
         self.thalres.ds = self.thalres.dh = self.thalres.dg = 0.0
         self.thalres.align_end_1 = self.thalres.align_end_2 = 0
 
-    property structure_found:
+    @property
+    def structure_found(self) -> bool:
         ''' Whether or not a structure (hairpin, dimer, etc) was found as a
         result of the calculation.
         '''
-        def __get__(self):
-            return not bool(self.thalres.no_structure)
+        return not bool(self.thalres.no_structure)
 
-    property tm:
+    @property
+    def tm(self) -> float:
         ''' Melting temperature of the structure in deg. C '''
-        def __get__(self):
-            return self.thalres.temp
+        return self.thalres.temp
 
-    property ds:
+    @property
+    def ds(self) -> float:
         ''' deltaS (enthalpy) of the structure (cal/K*mol) '''
-        def __get__(self):
-            return self.thalres.ds
+        return self.thalres.ds
 
-    property dh:
+    @property
+    def dh(self) -> float:
         ''' deltaH (entropy) of the structure (cal/mol) '''
-        def __get__(self):
-            return self.thalres.dh
+        return self.thalres.dh
 
-    property dg:
+    @property
+    def dg(self) -> float:
         ''' deltaG (Gibbs free energy) of the structure (cal/mol) '''
-        def __get__(self):
-            return self.thalres.dg
+        return self.thalres.dg
 
-    property ascii_structure_lines:
+    @property
+    def ascii_structure_lines(self):
         ''' ASCII structure representation split into indivudial lines
 
         e.g.,
@@ -170,39 +171,43 @@ cdef class ThermoResult:
              u'STR\t      ACG CTAC C    CGA ACG                           ',
              u'STR\tAACCTT   T    T TTAT   G   TAGGCGAGCCACCAGCGGCATAGTAA-']
         '''
-        def __get__(self):
-            if self.ascii_structure:
-                return self.ascii_structure.strip('\n').split('\n')
-            else:
-                return None
+        if self.ascii_structure:
+            return self.ascii_structure.strip('\n').split('\n')
+        else:
+            return None
 
-    def checkExc(self):
+    def checkExc(self) -> ThermoResult:
         ''' Check the ``.msg`` attribute of the internal thalres struct and
         raise a ``RuntimeError`` exception if it is not an empty string.
         Otherwise, return a reference to the current object.
+
+        Raises:
+            RuntimeError: Message of internal C error
         '''
         if len(self.thalres.msg):
             raise RuntimeError(self.thalres.msg)
         else:
             return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         ''' Human-readable representation of the object '''
-        return 'ThermoResult(structure_found={}, tm={:0.2f}, dg={:0.2f}, ' \
-               'dh={:0.2f}, ds={:0.2f})'.format(self.structure_found,
-                    self.tm, self.dg, self.dh, self.ds)
+        return (
+            f'ThermoResult(structure_found={self.structure_found}, '
+            f'tm={self.tm:0.2f}, dg={self.dg:0.2f}, '
+            f'dh={self.dh:0.2f}, ds={self.ds:0.2f})'
+        )
 
-    def __str__(self):
+    def __str__(self) -> str:
         ''' Wraps ``__repr`` '''
         return self.__repr__()
 
-    def todict(self, pts=None):
+    def todict(self, pts=None) -> Dict[str, Any]:
         '''
         Args:
             pts: precision to round floats to
 
         Returns:
-            dictionary
+            dictionary form of the ``ThermoResult``
         '''
         return {
             'structure_found': self.structure_found,
@@ -232,129 +237,158 @@ cdef class ThermoAnalysis:
         'owczarzy': 2
     }
 
-    def __cinit__(self,
-                  thal_type=1,
-                  mv_conc=50,
-                  dv_conc=1.5,
-                  dntp_conc=0.2,
-                  dna_conc=200,
-                  temp_c=37,
-                  max_loop=30,
-                  temp_only=0,
-                  debug=0,
-                  max_nn_length=60,
-                  tm_method=1,
-                  salt_correction_method=1):
+    def __cinit__(
+            self,
+            thal_type: int = 1,
+            mv_conc: float = 50.,
+            dv_conc: float = 1.5,
+            dntp_conc: float = 0.2,
+            dna_conc: float = 200.,
+            temp_c: float = 37.,
+            max_loop: int = 30,
+            temp_only: int = 0,
+            debug: int = 0,
+            max_nn_length: int = 60,
+            tm_method: int = 1,
+            salt_correction_method: int = 1,
+        ):
         self.thalargs.type = thal_type
 
-        self.thalargs.mv = mv_conc;
-        self.thalargs.dv = dv_conc;
-        self.thalargs.dntp = dntp_conc;
-        self.thalargs.dna_conc = dna_conc;
-        self.thalargs.temp = temp_c + 273.15;
-        self.thalargs.maxLoop = max_loop;
-        self.thalargs.temponly = temp_only;
-        self.thalargs.debug = debug;
+        self.thalargs.mv = mv_conc
+        self.thalargs.dv = dv_conc
+        self.thalargs.dntp = dntp_conc
+        self.thalargs.dna_conc = dna_conc
+        self.thalargs.temp = temp_c + 273.15  # Convert to Kelvin
+        self.thalargs.maxLoop = max_loop
+        self.thalargs.temponly = temp_only
+        self.thalargs.debug = debug
 
-        self.max_nn_length = max_nn_length;
+        self.max_nn_length = max_nn_length
 
         self.tm_method = tm_method
         self.salt_correction_method = salt_correction_method
 
     # ~~~~~~~~~~~~~~~~~~~~~~ Property getters / setters ~~~~~~~~~~~~~~~~~~~~~ #
 
-    property thal_type:
+    @property
+    def thal_type(self):
         ''' The type of thermodynamic calculation '''
-        def __get__(self):
-            return self.thalargs.type
+        return self.thalargs.type
 
-    property mv_conc:
+    @property
+    def mv_conc(self):
         ''' Concentration of monovalent cations (mM) '''
-        def __get__(self):
-            return self.thalargs.mv
-        def __set__(self, value):
-            self.thalargs.mv = value
+        return self.thalargs.mv
 
-    property dv_conc:
+    @mv_conc.setter
+    def mv_conc(self, value):
+        self.thalargs.mv = value
+
+    @property
+    def dv_conc(self):
         ''' Concentration of divalent cations (mM) '''
-        def __get__(self):
-            return self.thalargs.dv
-        def __set__(self, value):
-            self.thalargs.dv = value
+        return self.thalargs.dv
 
-    property dntp_conc:
+    @dv_conc.setter
+    def dv_conc(self, value):
+        self.thalargs.dv = value
+
+    @property
+    def dntp_conc(self):
         ''' Concentration of dNTPs (mM) '''
-        def __get__(self):
-            return self.thalargs.dntp
-        def __set__(self, value):
-            self.thalargs.dntp = value
+        return self.thalargs.dntp
 
-    property dna_conc:
+    @dntp_conc.setter
+    def dntp_conc(self, value):
+        self.thalargs.dntp = value
+
+    @property
+    def dna_conc(self):
         ''' Concentration of DNA oligos (nM) '''
-        def __get__(self):
-            return self.thalargs.dna_conc
-        def __set__(self, value):
+        return self.thalargs.dna_conc
+
+    @dna_conc.setter
+    def dna_conc(self, value):
             self.thalargs.dna_conc = value
 
-    property temp:
+    @property
+    def temp(self):
         ''' Simulation temperature (deg. C) '''
-        def __get__(self):
-            return self.thalargs.temp - 273.15
-        def __set__(self, value):
-            self.thalargs.temp = value + 273.15
+        return self.thalargs.temp - 273.15
 
-    property max_loop:
+    @temp.setter
+    def temp(self, value):
+        self.thalargs.temp = value + 273.15
+
+    @property
+    def max_loop(self):
         ''' Maximum hairpin loop size (bp) '''
-        def __get__(self):
-            return self.thalargs.maxLoop
+        return self.thalargs.maxLoop
 
-        def __set__(self, value):
+    @max_loop.setter
+    def max_loop(self, value):
             self.thalargs.maxLoop = value
 
-    property tm_method:
+    @property
+    def tm_method(self):
         ''' Method used to calculate melting temperatures. May be provided as
         a string (see TM_METHODS) or the respective integer representation.
         '''
-        def __get__(self):
-            return self._tm_method
+        return self._tm_method
 
-        def __set__(self, value):
-            if isinstance(value, (int, long)):
-                self._tm_method = value
+    @tm_method.setter
+    def tm_method(self, value):
+        if isinstance(value, (int, long)):
+            self._tm_method = value
+        else:
+            int_value = ThermoAnalysis.TM_METHODS.get(value)
+            if int_value is not None:
+                self._tm_method = int_value
             else:
-                int_value = ThermoAnalysis.TM_METHODS.get(value)
-                if int_value is not None:
-                    self._tm_method = int_value
-                else:
-                    raise ValueError('{} is not a valid `tm_method` type'
-                                     ''.format(value))
+                raise ValueError(
+                    f'{value} is not a valid `tm_method` type'
+                )
 
-    property salt_correction_method:
+    @property
+    def salt_correction_method(self):
         ''' Method used for salt corrections applied to melting temperature
         calculations. May be provided as a string (see SALT_CORRECTION_METHODS)
         or the respective integer representation.
         '''
-        def __get__(self):
-            return self._salt_correction_method
+        return self._salt_correction_method
 
-        def __set__(self, value):
-            if isinstance(value, (int, long)):
-                self._salt_correction_method = value
+    @salt_correction_method.setter
+    def salt_correction_method(self, value):
+        if isinstance(value, (int, long)):
+            self._salt_correction_method = value
+        else:
+            int_value = ThermoAnalysis.SALT_CORRECTION_METHODS.get(value)
+            if int_value is not None:
+                self._salt_correction_method = int_value
             else:
-                int_value = ThermoAnalysis.SALT_CORRECTION_METHODS.get(value)
-                if int_value is not None:
-                    self._salt_correction_method = int_value
-                else:
-                    raise ValueError('{} is not a valid '
-                                     '`salt_correction_method` type'
-                                     ''.format(value))
+                raise ValueError(
+                    f'{value} is not a valid `salt_correction_method` type'
+                )
 
     # ~~~~~~~~~~~~~~ Thermodynamic calculation instance methods ~~~~~~~~~~~~~ #
 
-    cdef inline ThermoResult calcHeterodimer_c(ThermoAnalysis self,
-                                               unsigned char *s1,
-                                               unsigned char *s2,
-                                               bint output_structure):
+    cdef inline ThermoResult calcHeterodimer_c(
+            ThermoAnalysis self,
+            unsigned char *s1,
+            unsigned char *s2,
+            bint output_structure,
+    ):
+        '''
+        C only heterodimer computation
+
+        Args:
+            s1: sequence string 1
+            s2: sequence string 2
+            output_structure: If True, build output structure.
+
+        Returns:
+            Computed heterodimer result
+        '''
         cdef ThermoResult tr_obj = ThermoResult()
         cdef char* c_ascii_structure = NULL
 
@@ -363,7 +397,7 @@ cdef class ThermoAnalysis:
         if (output_structure == 1):
             c_ascii_structure = <char *>malloc(
                 (strlen(<const char*>s1) + strlen(<const char*>s2)) * 4 + 24)
-            c_ascii_structure[0] = '\0';
+            c_ascii_structure[0] = b'\0'
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s2,
@@ -379,14 +413,22 @@ cdef class ThermoAnalysis:
                 free(c_ascii_structure)
         return tr_obj
 
-    cpdef calcHeterodimer(
+    cpdef ThermoResult calcHeterodimer(
             ThermoAnalysis self,
-            seq1,
-            seq2,
-            output_structure=False
+            object seq1,
+            object seq2,
+            bint output_structure = False
         ):
         ''' Calculate the heterodimer formation thermodynamics of two DNA
         sequences, ``seq1`` and ``seq2``
+
+        Args:
+            s1: (str | bytes) sequence string 1
+            s2: (str | bytes) sequence string 2
+            output_structure: If True, build output structure.
+
+        Returns:
+            Computed heterodimer ``ThermoResult``
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *
@@ -395,42 +437,57 @@ cdef class ThermoAnalysis:
         cdef unsigned char* s1 = py_s1
         py_s2 = <bytes> _bytes(seq2)
         cdef unsigned char* s2 = py_s2
-        return ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2,
-                                                output_structure)
+        return ThermoAnalysis.calcHeterodimer_c(
+            <ThermoAnalysis> self,
+            s1,
+            s2,
+            output_structure,
+        )
 
-    cpdef misprimingCheck(ThermoAnalysis self, putative_seq, sequences,
-                                double tm_threshold):
-        """
+    cpdef tuple misprimingCheck(
+            ThermoAnalysis self,
+            object putative_seq,
+            object sequences,
+            double tm_threshold,
+    ):
+        '''
         Calculate the heterodimer formation thermodynamics of a DNA
         sequence, ``putative_seq`` with a list of sequences relative to
         a melting temperature threshold
 
         Args:
-            putative_seq (str):
-            sequences (iterable of str):
-            tm_threshold (double): melting temperature threshold
+            putative_seq: (str | bytes) sequence to check
+            sequences: (Iterable[str | bytes]) Iterable of sequence strings to
+                check against
+            tm_threshold: melting temperature threshold
 
         Returns:
-            Tuple of:
+            Tuple[bool, int, float] of form::
                 is_offtarget (bool),
                 max_offtarget_seq_idx (int),
                 max_offtarget_tm (double)
-        """
-        cdef bint is_offtarget = False
-        cdef Py_ssize_t i
-        cdef double max_offtarget_tm = 0
-        cdef double offtarget_tm
-        cdef unsigned char* s2
-        cdef Py_ssize_t max_offtarget_seq_idx = -1
+        '''
+        cdef:
+            bint is_offtarget = False
+            Py_ssize_t i
+            double max_offtarget_tm = 0
+            double offtarget_tm
+            unsigned char* s2
+            Py_ssize_t max_offtarget_seq_idx = -1
 
-        cdef bytes py_s2
-        cdef bytes py_s1 = <bytes> _bytes(putative_seq)
-        cdef unsigned char* s1 = py_s1
+            bytes py_s2
+            bytes py_s1 = <bytes> _bytes(putative_seq)
+            unsigned char* s1 = py_s1
 
         for i, seq in enumerate(sequences):
             py_s2 = <bytes> _bytes(seq)
             s2 = py_s2
-            offtarget_tm = ThermoAnalysis.calcHeterodimer_c(<ThermoAnalysis> self, s1, s2, 0).tm
+            offtarget_tm = ThermoAnalysis.calcHeterodimer_c(
+                <ThermoAnalysis> self,
+                s1,
+                s2,
+                0,
+            ).tm
             if offtarget_tm > max_offtarget_tm:
                 max_offtarget_seq_idx = i
                 max_offtarget_tm = offtarget_tm
@@ -439,19 +496,32 @@ cdef class ThermoAnalysis:
                 break
         return is_offtarget, max_offtarget_seq_idx, max_offtarget_tm
 
-    cdef inline ThermoResult calcHomodimer_c(ThermoAnalysis self,
-                                             unsigned char *s1,
-                                             bint output_structure):
-        cdef ThermoResult tr_obj = ThermoResult()
-        cdef char* c_ascii_structure = NULL
+    cdef inline ThermoResult calcHomodimer_c(
+            ThermoAnalysis self,
+            unsigned char *s1,
+            bint output_structure,
+    ):
+        '''
+        C only homodimer computation
+
+        Args:
+            s1: sequence string 1
+            output_structure: If True, build output structure.
+
+        Returns:
+            Computed homodimer ``ThermoResult``
+        '''
+        cdef:
+            ThermoResult tr_obj = ThermoResult()
+            char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1
-        if (output_structure == 1):
+        if output_structure == 1:
             c_ascii_structure = <char *>malloc(
                 (strlen(<const char*>s1) * 8 + 24)
             )
-            c_ascii_structure[0] = '\0';
+            c_ascii_structure[0] = b'\0'
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s1,
@@ -460,33 +530,60 @@ cdef class ThermoAnalysis:
             1 if c_ascii_structure else 0,
             c_ascii_structure
         )
-        if (output_structure == 1):
+        if output_structure == 1:
             try:
                 tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
             finally:
                 free(c_ascii_structure)
         return tr_obj
 
-    cpdef calcHomodimer(ThermoAnalysis self, seq1, output_structure=False):
+    cpdef ThermoResult calcHomodimer(
+            ThermoAnalysis self,
+            object seq1,
+            bint output_structure = False,
+    ):
         ''' Calculate the homodimer formation thermodynamics of a DNA
         sequence, ``seq1``
+
+        Args:
+            seq1: (str | bytes) sequence string 1
+            output_structure: If True, build output structure.
+
+        Returns:
+            Computed homodimer ``ThermoResult``
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *
         py_s1 = <bytes> _bytes(seq1)
         cdef unsigned char* s1 = py_s1
-        return ThermoAnalysis.calcHomodimer_c(<ThermoAnalysis> self, s1,
-                                              output_structure)
+        return ThermoAnalysis.calcHomodimer_c(
+            <ThermoAnalysis> self,
+            s1,
+            output_structure,
+        )
 
-    cdef inline ThermoResult calcHairpin_c(ThermoAnalysis self,
-                                           unsigned char *s1,
-                                           bint output_structure):
-        cdef ThermoResult tr_obj = ThermoResult()
-        cdef char* c_ascii_structure = NULL
+    cdef inline ThermoResult calcHairpin_c(
+            ThermoAnalysis self,
+            unsigned char *s1,
+            bint output_structure,
+    ):
+        '''
+        C only hairpin computation
+
+        Args:
+            s1: sequence string 1
+            output_structure: If True, build output structure.
+
+        Returns:
+            Computed hairpin ``ThermoResult``
+        '''
+        cdef:
+            ThermoResult tr_obj = ThermoResult()
+            char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 0
         self.thalargs.type = <thal_alignment_type> 4
-        if (output_structure == 1):
+        if output_structure == 1:
             c_ascii_structure = <char *>malloc(
                 (strlen(<const char*>s1) * 2 + 24)
             )
@@ -499,27 +596,53 @@ cdef class ThermoAnalysis:
             1 if c_ascii_structure else 0,
             c_ascii_structure
         )
-        if (output_structure == 1):
+        if output_structure == 1:
             try:
                 tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
             finally:
                 free(c_ascii_structure)
         return tr_obj
 
-    cpdef calcHairpin(ThermoAnalysis self, seq1, output_structure=False):
+    cpdef ThermoResult calcHairpin(
+            ThermoAnalysis self,
+            object seq1,
+            bint output_structure = False,
+    ):
         ''' Calculate the hairpin formation thermodynamics of a DNA
         sequence, ``seq1``
+
+        Args:
+            seq1: (str | bytes) sequence string 1
+            output_structure: If True, build output structure.
+
+        Returns:
+            Computed hairpin ``ThermoResult``
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *
         py_s1 = <bytes> _bytes(seq1)
         cdef unsigned char* s1 = py_s1
-        return ThermoAnalysis.calcHairpin_c(<ThermoAnalysis> self, s1,
-                                            output_structure)
+        return ThermoAnalysis.calcHairpin_c(
+            <ThermoAnalysis> self,
+            s1,
+            output_structure,
+        )
 
-    cdef inline ThermoResult calcEndStability_c(ThermoAnalysis self,
-                                               unsigned char *s1,
-                                               unsigned char *s2):
+    cdef inline ThermoResult calcEndStability_c(
+            ThermoAnalysis self,
+            unsigned char *s1,
+            unsigned char *s2,
+    ):
+        '''
+        C only end stability computation
+
+        Args:
+            s1: sequence string 1
+            s2: sequence string 2
+
+        Returns:
+            Computed end stability ``ThermoResult``
+        '''
         cdef ThermoResult tr_obj = ThermoResult()
 
         self.thalargs.dimer = 1
@@ -528,9 +651,20 @@ cdef class ThermoAnalysis:
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0, NULL)
         return tr_obj
 
-    def calcEndStability(ThermoAnalysis self, seq1, seq2):
+    def calcEndStability(
+            ThermoAnalysis self,
+            seq1: Union[str, bytes],
+            seq2: Union[str, bytes],
+    ) -> ThermoResult:
         ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
         sequence `seq2`
+
+        Args:
+            seq1: sequence string 1
+            seq2: sequence string 2
+
+        Returns:
+            Computed end stability ``ThermoResult``
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *
@@ -542,19 +676,35 @@ cdef class ThermoAnalysis:
         return ThermoAnalysis.calcEndStability_c(<ThermoAnalysis> self, s1, s2)
 
     cdef inline double calcTm_c(ThermoAnalysis self, char *s1):
-        cdef thal_args *ta = &self.thalargs
-        return seqtm(<const char*> s1,
-                     ta.dna_conc,
-                     ta.mv,
-                     ta.dv,
-                     ta.dntp,
-                     self.max_nn_length,
-                     <tm_method_type>
-                     self.tm_method,
-                     <salt_correction_type> self.salt_correction_method)
+        '''
+        C only Tm computation
 
-    def calcTm(ThermoAnalysis self, seq1):
+        Args:
+            s1: sequence string 1
+
+        Returns:
+            floating point Tm result
+        '''
+        cdef thal_args *ta = &self.thalargs
+        return seqtm(
+            <const char*> s1,
+            ta.dna_conc,
+            ta.mv,
+            ta.dv,
+            ta.dntp,
+            self.max_nn_length,
+            <tm_method_type> self.tm_method,
+            <salt_correction_type> self.salt_correction_method,
+        )
+
+    def calcTm(ThermoAnalysis self, seq1: Union[str, bytes]) -> float:
         ''' Calculate the melting temperature (Tm) of a DNA sequence (deg. C).
+
+        Args:
+            seq1: (str | bytes) sequence string 1
+
+        Returns:
+            floating point Tm result
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *
@@ -562,10 +712,10 @@ cdef class ThermoAnalysis:
         cdef char* s1 = py_s1
         return ThermoAnalysis.calcTm_c(<ThermoAnalysis> self, s1)
 
-    def todict(self):
+    def todict(self) -> Dict[str, Any]:
         '''
         Returns:
-            dictionary
+            dictionary form of the ``ThermoAnalysis`` instance
         '''
         return {
             'mv_conc':      self.mv_conc,
