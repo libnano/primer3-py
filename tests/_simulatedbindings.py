@@ -2,10 +2,12 @@ import primer3.wrappers as wrappers
 
 p3_args = {}
 
-interval_list_tags = set(['SEQUENCE_INCLUDED_REGION',
-                      'SEQUENCE_TARGET',
-                      'SEQUENCE_EXCLUDED_REGION',
-                      'SEQUENCE_INTERNAL_EXCLUDED_REGION'])
+interval_list_tags = set([
+    'SEQUENCE_INCLUDED_REGION',
+    'SEQUENCE_TARGET',
+    'SEQUENCE_EXCLUDED_REGION',
+    'SEQUENCE_INTERNAL_EXCLUDED_REGION',
+])
 
 size_range_list_tags = set(['PRIMER_PRODUCT_SIZE_RANGE'])
 
@@ -34,22 +36,26 @@ def wrapListOfQuads(v):
     '1,2,3,4 ; 5,6,7,8'
 
     '''
-    int_to_str = lambda i: str(i) if i > -1 else ''
+    def int_to_str(i):
+        return str(i) if i > -1 else ''
+
     try:
         rv = ';'.join(
             ','.join(map(int_to_str, quad))
-            for quad in v)
+            for quad in v
+        )
     except TypeError:
         rv = ','.join(x and str(x) or '' for x in v)
     return rv
 
 
-def wrapListWithFormat(v, fmt, sep = ' '):
+def wrapListWithFormat(v, fmt, sep=' '):
     try:
         rv = fmt % tuple(v)
     except TypeError:
         rv = sep.join(fmt % tuple(x) for x in v)
     return rv
+
 
 def wrap(t):
     '''Convert a primer3 input in python-friendly bindings-style form
@@ -70,11 +76,11 @@ def wrap(t):
     >>> wrap(('PRIMER_PRODUCT_SIZE_RANGE', (7,11)))
     ('PRIMER_PRODUCT_SIZE_RANGE', '7-11')
     '''
-    k,v = t
+    k, v = t
 
     if isinstance(v, (list, tuple)):
         if len(v) == 0:
-            rv = ""
+            rv = ''
         else:
             if k in semi_quad_tags:
                 rv = wrapListOfQuads(v)
@@ -91,6 +97,7 @@ def wrap(t):
     else:
         rv = v
     return k, rv
+
 
 def unwrap(t):
     '''convert a wrapper result into the intended form of the
@@ -117,24 +124,36 @@ def unwrap(t):
     >>> unwrap(('A_SEQUENCE', 'ATCG'))
     ('A_SEQUENCE', 'ATCG')
     '''
-    k,v = t
+    k, v = t
     rv = v
-    condInt = lambda s: int(s) if s != '' else -1
-    for lam in [lambda x: int(x),
-                lambda x: float(x),
-                lambda x: tuple(int(s) for s in x.split(' ')),
-                lambda x: tuple(int(s) for s in x.split('-')),
-                lambda x: tuple(int(s) for s in x.split(',')),
-                lambda x: tuple(tuple(int(ss) for ss in s.split('-')) 
-                                for s in x.split(' ')),
-                lambda x: tuple(tuple(condInt(ss) for ss in s.split(',')) 
-                                for s in x.split(' ')),
-                lambda x: tuple(tuple(condInt(ss) for ss in 
-                                s.strip().split(',')) for s in x.split(';'))
+
+    def condInt(s):
+        return int(s) if s != '' else -1
+
+    for lam in [
+        lambda x: int(x),
+        lambda x: float(x),
+        lambda x: tuple(int(s) for s in x.split(' ')),
+        lambda x: tuple(int(s) for s in x.split('-')),
+        lambda x: tuple(int(s) for s in x.split(',')),
+        lambda x: tuple(
+            tuple(int(ss) for ss in s.split('-'))
+            for s in x.split(' ')
+        ),
+        lambda x: tuple(
+            tuple(condInt(ss) for ss in s.split(','))
+            for s in x.split(' ')
+        ),
+        lambda x: tuple(
+            tuple(
+                condInt(ss) for ss in
+                s.strip().split(',')
+            ) for s in x.split(';')
+        ),
     ]:
         try:
             rv = lam(v)
-        except:
+        except BaseException:
             pass
         else:
             break
@@ -154,14 +173,16 @@ def unwrap(t):
                 except ValueError:
                     rv = v
 """
-    return k,rv
+    return k, rv
 
 
 def setGlobals(global_args, misprime_lib, mishyb_lib):
     p3_args.update(dict(wrap(v) for v in global_args.items()))
 
+
 def setSeqArgs(seq_args):
-    p3_args.update(dict(wrap(v) for v in  seq_args.items()))
+    p3_args.update(dict(wrap(v) for v in seq_args.items()))
+
 
 def convertResult(result):
     return dict(unwrap(v) for v in result.items())
@@ -169,11 +190,13 @@ def convertResult(result):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
-def designPrimers(seq_args, global_args=None, reset_args=True,
-                  misprime_lib=None, mishyb_lib=None, input_log=None, 
-                  output_log=None, err_log=None):
+def designPrimers(
+    seq_args, global_args=None, reset_args=True,
+    misprime_lib=None, mishyb_lib=None, input_log=None,
+    output_log=None, err_log=None,
+):
     ''' Run the Primer3 design process, with the same interface as the bindings,
-    using the wrapped subprocess of primer3_core to do the work. 
+    using the wrapped subprocess of primer3_core to do the work.
 
     If the global args have been previously set (either by a pervious
     `designPrimers` call or by a `setGlobals` call), `designPrimers` may be
@@ -198,12 +221,15 @@ def designPrimers(seq_args, global_args=None, reset_args=True,
         p3_args.clear()
     setGlobals(global_args, misprime_lib, mishyb_lib)
     setSeqArgs(seq_args)
-    result = wrappers.designPrimers(p3_args,
-                                    input_log=input_log,
-                                    output_log=output_log,
-                                    err_log=err_log)
+    result = wrappers.designPrimers(
+        p3_args,
+        input_log=input_log,
+        output_log=output_log,
+        err_log=err_log,
+    )
     return convertResult(result)
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     import doctest
     doctest.testmod()

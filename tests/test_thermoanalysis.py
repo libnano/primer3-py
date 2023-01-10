@@ -30,12 +30,12 @@ import sys
 
 try:
     import resource
-except: # For Windows compatibility
+except (ImportError, ModuleNotFoundError):  # For Windows compatibility
     resource = None
 
 from primer3 import (
     bindings,
-    wrappers
+    wrappers,
 )
 
 
@@ -45,15 +45,20 @@ def _getMemUsage():
 
 
 @unittest.skipIf(
-    sys.platform=='win32',
-    "Windows doesn't support resource module and wrappers")
+    sys.platform == 'win32',
+    "Windows doesn't support resource module and wrappers",
+)
 class TestLowLevelBindings(unittest.TestCase):
 
     def randArgs(self):
-        self.seq1 = ''.join([random.choice('ATGC') for _ in
-                             range(random.randint(20, 59))])
-        self.seq2 = ''.join([random.choice('ATGC') for _ in
-                             range(random.randint(20, 59))])
+        self.seq1 = ''.join([
+            random.choice('ATGC') for _ in
+            range(random.randint(20, 59))
+        ])
+        self.seq2 = ''.join([
+            random.choice('ATGC') for _ in
+            range(random.randint(20, 59))
+        ])
         self.mv_conc = random.uniform(1, 200)
         self.dv_conc = random.uniform(0, 40)
         self.dntp_conc = random.uniform(0, 20)
@@ -69,14 +74,14 @@ class TestLowLevelBindings(unittest.TestCase):
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
                 dntp_conc=self.dntp_conc,
-                dna_conc=self.dna_conc
+                dna_conc=self.dna_conc,
             )
             wrapper_tm = wrappers.calcTm(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
                 dntp_conc=self.dntp_conc,
-                dna_conc=self.dna_conc
+                dna_conc=self.dna_conc,
             )
             self.assertEqual(int(binding_tm), int(wrapper_tm))
 
@@ -91,7 +96,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
             )
             wrapper_res = wrappers.calcHairpin(
                 seq=self.seq1,
@@ -100,12 +105,12 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
             self.assertEqual(
                 binding_res.ascii_structure,
-                wrapper_res.ascii_structure
+                wrapper_res.ascii_structure,
             )
 
     def test_calcHomodimer(self):
@@ -119,7 +124,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
             )
             wrapper_res = wrappers.calcHomodimer(
                 seq=self.seq1,
@@ -128,12 +133,12 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
             self.assertEqual(
                 binding_res.ascii_structure,
-                wrapper_res.ascii_structure
+                wrapper_res.ascii_structure,
             )
 
     def test_calcHeterodimer(self):
@@ -148,7 +153,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
             )
             wrapper_res = wrappers.calcHeterodimer(
                 seq1=self.seq1,
@@ -158,12 +163,12 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
             self.assertEqual(
                 binding_res.ascii_structure,
-                wrapper_res.ascii_structure
+                wrapper_res.ascii_structure,
             )
             # Ensure that order of sequences does not matter
             # Should be fixed as of Primer3 2.3.7 update
@@ -176,7 +181,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
             )
             binding_21_res = bindings.calcHeterodimer(
                 seq1=self.seq1,
@@ -186,7 +191,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
             )
             self.assertEqual(int(binding_12_res.tm), int(binding_21_res.tm))
 
@@ -201,7 +206,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
             )
             wrapper_res = wrappers.calcEndStability(
                 seq1=self.seq1,
@@ -211,7 +216,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 dntp_conc=self.dntp_conc,
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
-                max_loop=self.max_loop
+                max_loop=self.max_loop,
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
@@ -226,7 +231,7 @@ class TestLowLevelBindings(unittest.TestCase):
                     dntp_conc=self.dntp_conc,
                     dna_conc=self.dna_conc,
                     tm_method=tm_method,
-                    salt_corrections_method=sc_method
+                    salt_corrections_method=sc_method,
                 )
                 wrapper_tm = wrappers.calcTm(
                     seq=self.seq1,
@@ -235,7 +240,7 @@ class TestLowLevelBindings(unittest.TestCase):
                     dntp_conc=self.dntp_conc,
                     dna_conc=self.dna_conc,
                     tm_method=tm_method,
-                    salt_corrections_method=sc_method
+                    salt_corrections_method=sc_method,
                 )
                 self.assertEqual(int(binding_tm), int(wrapper_tm))
         self.assertRaises(
@@ -246,12 +251,13 @@ class TestLowLevelBindings(unittest.TestCase):
             dv_conc=self.dv_conc,
             dntp_conc=self.dntp_conc,
             dna_conc=self.dna_conc,
-            tm_method='not_a_tm_method'
+            tm_method='not_a_tm_method',
         )
 
     def test_memoryLeaks(self):
         sm = _getMemUsage()
-        for x in range(100):
+        run_count = 100
+        for x in range(run_count):
             self.randArgs()
             bindings.calcHeterodimer(
                 seq1=self.seq1,
@@ -262,23 +268,32 @@ class TestLowLevelBindings(unittest.TestCase):
                 dna_conc=self.dna_conc,
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
-                output_structure=True
+                output_structure=True,
             )
         sleep(0.1)  # Pause for any GC
         em = _getMemUsage()
-        print('\n\tMemory usage before 1k runs of calcHeterodimer: ', sm)
-        print('\tMemory usage after 1k runs of calcHeterodimer:  ', em)
-        print('\t\t\t\t\tDifference: \t', em-sm)
-        if em-sm > 500:
-            raise AssertionError('Memory usage increase after 1k runs of \n\t'
-                                 'calcHeterodimer > 500 bytes -- potential \n\t'
-                                 'memory leak (mem increase: {})'.format(em-sm))
+        print(
+            f'\n\tMemory usage before {run_count} runs of '
+            f'calcHeterodimer: {sm}',
+        )
+        print(
+            f'\tMemory usage after {run_count} runs of calcHeterodimer: {em}',
+        )
+        print(f'\t\t\t\t\tDifference: {em - sm}\t')
+        delta_bytes_limit = 500
+        if em - sm > delta_bytes_limit:
+            raise AssertionError(
+                f'Memory usage increase after {run_count} runs of \n\t'
+                f'calcHeterodimer > {delta_bytes_limit} bytes -- potential \n\t'
+                f'memory leak (mem increase: {em - sm})',
+            )
 
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(TestLowLevelBindings())
     return suite
+
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()

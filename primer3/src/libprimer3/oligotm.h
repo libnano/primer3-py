@@ -72,14 +72,14 @@ double end_oligodg(const char *oligo, int len, int tm_method);
    since mM is the usual units in PCR applications.
 
  */
-double long_seq_tm(const char *seq, 
-                   int start, 
-                   int length, 
-                   double salt_conc, 
-                   double divalent_conc, 
+double long_seq_tm(const char *seq,
+                   int start,
+                   int length,
+                   double salt_conc,
+                   double divalent_conc,
                    double dntp_conc);
 
-/* 
+/*
    For olgigotm() and seqtm()
 
    Both functions return the melting temperature of the given oligo
@@ -104,7 +104,7 @@ typedef enum salt_correction_type {
         owczarzy       = 2,
 } salt_correction_type;
 
-/* 
+/*
    If tm_method==santalucia_auto, then the table of
    nearest-neighbor thermodynamic parameters and method for Tm
    calculation in the paper [SantaLucia JR (1998) "A unified view of
@@ -112,7 +112,7 @@ typedef enum salt_correction_type {
    thermodynamics", Proc Natl Acad Sci 95:1460-65
    http://dx.doi.org/10.1073/pnas.95.4.1460] is used.
    *THIS IS THE RECOMMENDED VALUE*.
-  
+
    If tm_method==breslauer_auto, then method for Tm
    calculations in the paper [Rychlik W, Spencer WJ and Rhoads RE
    (1990) "Optimization of the annealing temperature for DNA
@@ -124,7 +124,7 @@ typedef enum salt_correction_type {
    http://dx.doi.org/10.1073/pnas.83.11.3746], are is used.  This is
    the method and the table that primer3 used up to and including
    version 1.0.1
- 
+
    If salt_corrections==schildkraut, then formula for
    salt correction in the paper [Schildkraut, C, and Lifson, S (1965)
    "Dependence of the melting temperature of DNA on salt
@@ -138,14 +138,14 @@ typedef enum salt_correction_type {
    nearest-neighbor thermodynamics", Proc Natl Acad Sci 95:1460-65
    http://dx.doi.org/10.1073/pnas.95.4.1460] is used.
 
-   *THIS IS THE RECOMMENDED VALUE*. 
-  
+   *THIS IS THE RECOMMENDED VALUE*.
+
    If salt_corrections==owczarzy, then formula for
-   salt correction in the paper [Owczarzy, R., Moreira, B.G., You, Y., 
-   Behlke, M.A., and Walder, J.A. (2008) "Predicting stability of DNA 
-   duplexes in solutions containing magnesium and monovalent cations", 
+   salt correction in the paper [Owczarzy, R., Moreira, B.G., You, Y.,
+   Behlke, M.A., and Walder, J.A. (2008) "Predicting stability of DNA
+   duplexes in solutions containing magnesium and monovalent cations",
    Biochemistry 47:5336-53 http://dx.doi.org/10.1021/bi702363u] is used.
- 
+
  */
 
 double oligotm(const  char *seq,     /* The sequence. */
@@ -177,13 +177,13 @@ double seqtm(const  char *seq,  /* The sequence. */
              salt_correction_type salt_corrections /* See description above. */
              );
 
-     
+
 /* Return the delta G of disruption of oligo using the nearest neighbor model.
-   The length of seq should be relatively short, 
+   The length of seq should be relatively short,
    given the characteristics of the nearest
    neighbor model.
 */
-double oligodg(const char *seq, 
+double oligodg(const char *seq,
                int tm_method /* See description above. */
                );
 

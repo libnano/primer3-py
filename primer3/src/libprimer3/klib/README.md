@@ -102,7 +102,7 @@ like:
           free(h->keys); free(h->flags); free(h->vals); free(h); \
         } \
       }
-    
+
     #define _int_hf(key) (unsigned)(key)
     #define _int_heq(a, b) (a == b)
     #define khash_t(name) kh_##name##_t

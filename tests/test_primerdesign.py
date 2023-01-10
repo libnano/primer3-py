@@ -32,12 +32,12 @@ from time import sleep
 
 try:
     import resource
-except: # For Windows compatibility
+except (ImportError, ModuleNotFoundError):  # For Windows compatibility
     resource = None
 
 from primer3 import (
     bindings,
-    wrappers
+    wrappers,
 )
 
 from . import _simulatedbindings as simulatedbindings
@@ -49,45 +49,59 @@ def _getMemUsage():
     """ Get current process memory usage in bytes """
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
+
 @unittest.skipIf(
-    sys.platform=='win32',
-    "Windows doesn't support resource module and wrappers")
+    sys.platform == 'win32',
+    "Windows doesn't support resource module and wrappers",
+)
 class TestDesignBindings(unittest.TestCase):
 
-    def _compareResults(self, binding_res, simulated_binding_res,
-                        verbose=False):
+    def _compareResults(
+        self, binding_res, simulated_binding_res,
+        verbose=False,
+    ):
         keys_in_sim = set(simulated_binding_res)
         keys_in_binding = set(binding_res)
 
         if keys_in_sim - keys_in_binding:
             if verbose:
-                print('\n\n\nIn wrapper simulation result but missing'
-                      ' from binding:')
+                print(
+                    '\n\n\nIn wrapper simulation result but missing'
+                    ' from binding:',
+                )
                 fmt = '{:<30} {:<50}'
                 print(fmt.format('Output Key', 'SimBinding Result'))
-                print('-'*80)
+                print('-' * 80)
                 for k in sorted(keys_in_sim - keys_in_binding):
                     print(fmt.format(k, repr(simulated_binding_res[k])))
 
         if keys_in_binding - keys_in_sim:
             if verbose:
-                print('\n\n\nIn binding result but missing from wrapper '
-                      'simulation:')
+                print(
+                    '\n\n\nIn binding result but missing from wrapper '
+                    'simulation:',
+                )
                 fmt = '{:<30} {:<50}'
                 print(fmt.format('Output Key', 'Binding Result'))
-                print('-'*80)
+                print('-' * 80)
                 for k in sorted(keys_in_binding - keys_in_sim):
                     print(fmt.format(k, repr(binding_res[k])))
 
         allowable_relative_difference = 0.05
-        discrepencies = [k for k in keys_in_binding & keys_in_sim
-                         if simulated_binding_res[k] != binding_res[k]]
+        discrepencies = [
+            k for k in keys_in_binding & keys_in_sim
+            if simulated_binding_res[k] != binding_res[k]
+        ]
         disagreements = []
         for ds in discrepencies:
-            if (isinstance(binding_res[ds], (float, int)) and
-                    binding_res[ds] != 0):
-                percent_diff = abs((binding_res[ds] - simulated_binding_res[ds])
-                                    / binding_res[ds])
+            if (
+                isinstance(binding_res[ds], (float, int)) and
+                binding_res[ds] != 0
+            ):
+                percent_diff = abs(
+                    (binding_res[ds] - simulated_binding_res[ds]) /
+                    binding_res[ds],
+                )
                 if percent_diff > allowable_relative_difference:
                     if simulated_binding_res[ds] == 0.0 and binding_res[ds] < 0:
                         pass
@@ -96,21 +110,33 @@ class TestDesignBindings(unittest.TestCase):
 
         if len(disagreements):
             fmt = '{:<30} {:<25} {:<25}'
-            disagreements = '\n'.join([fmt.format(k,
-                                        repr(simulated_binding_res[k]),
-                                        repr(binding_res[k])) for k in
-                                        sorted(disagreements)])
+            disagreements = '\n'.join([
+                fmt.format(
+                    k,
+                    repr(simulated_binding_res[k]),
+                    repr(binding_res[k]),
+                ) for k in
+                sorted(disagreements)
+            ])
             if verbose:
                 print('\n\n\nResults disagree:')
-                print(fmt.format('Output Key', 'SimBinding Result',
-                                 'Binding Result'))
-                print('-'*80)
+                print(
+                    fmt.format(
+                        'Output Key', 'SimBinding Result',
+                        'Binding Result',
+                    ),
+                )
+                print('-' * 80)
             return disagreements
         else:
             if verbose:
-                print('\n\n\nAll the results in common ({}) agree to within '
-                      '{:.2%}'.format(len(keys_in_binding & keys_in_sim),
-                                      allowable_relative_difference))
+                print(
+                    '\n\n\nAll the results in common ({}) agree to within '
+                    '{:.2%}'.format(
+                        len(keys_in_binding & keys_in_sim),
+                        allowable_relative_difference,
+                    ),
+                )
 
     def _convertBoulderInput(self, boulder_str):
         ''' Convert a boulder IO-style input dictionary into bindings /
@@ -119,26 +145,49 @@ class TestDesignBindings(unittest.TestCase):
         boulder_dicts = wrappers._parseMultiRecordBoulderIO(boulder_str)
         input_dicts = []
         for bd in boulder_dicts:
-            converted_input = [simulatedbindings.unwrap(arg) for arg in
-                               bd.items()]
-            global_args = dict(filter(lambda arg: "PRIMER_" == arg[0][:7],
-                                      converted_input))
-            seq_args = dict(filter(lambda arg: "SEQUENCE_" == arg[0][:9],
-                                    converted_input))
-            p3_args = dict(filter(lambda arg: "P3_" == arg[0][:3],
-                                    converted_input))
+            converted_input = [
+                simulatedbindings.unwrap(arg) for arg in
+                bd.items()
+            ]
+            global_args = dict(
+                filter(
+                    lambda arg: 'PRIMER_' == arg[0][:7],
+                    converted_input,
+                ),
+            )
+            seq_args = dict(
+                filter(
+                    lambda arg: 'SEQUENCE_' == arg[0][:9],
+                    converted_input,
+                ),
+            )
+            p3_args = dict(
+                filter(
+                    lambda arg: 'P3_' == arg[0][:3],
+                    converted_input,
+                ),
+            )
             input_dicts.append((global_args, seq_args, p3_args))
         return input_dicts
 
-
     def test_compareSim(self):
-        sequence_template = 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
-        quality_list = [random.randint(20,90) for i in range(len(sequence_template))]
+        sequence_template = (
+            'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCAT'
+            'GCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGG'
+            'AGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNA'
+            'AAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAA'
+            'TGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCA'
+            'CACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
+        )
+        quality_list = [
+            random.randint(20, 90)
+            for i in range(len(sequence_template))
+        ]
         seq_args = {
             'SEQUENCE_ID': 'MH1000',
             'SEQUENCE_TEMPLATE': sequence_template,
             'SEQUENCE_QUALITY': quality_list,
-            'SEQUENCE_INCLUDED_REGION': [36,342]
+            'SEQUENCE_INCLUDED_REGION': [36, 342],
         }
         global_args = {
             'PRIMER_OPT_SIZE': 20,
@@ -160,9 +209,18 @@ class TestDesignBindings(unittest.TestCase):
             'PRIMER_MAX_SELF_END': 8,
             'PRIMER_PAIR_MAX_COMPL_ANY': 12,
             'PRIMER_PAIR_MAX_COMPL_END': 8,
-            'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
+            'PRIMER_PRODUCT_SIZE_RANGE': [
+                [75, 100],
+                [100, 125],
+                [125, 150],
+                [150, 175],
+                [175, 200],
+                [200, 225],
+            ],
         }
-        simulated_binding_res = simulatedbindings.designPrimers(seq_args, global_args)
+        simulated_binding_res = simulatedbindings.designPrimers(
+            seq_args, global_args,
+        )
         binding_res = bindings.designPrimers(seq_args, global_args)
         self._compareResults(binding_res, simulated_binding_res)
 
@@ -192,7 +250,7 @@ class TestDesignBindings(unittest.TestCase):
             'primer_check',
             'primer_end_pathology',
             'long_seq',
-            'p3-tmpl-mispriming'
+            'p3-tmpl-mispriming',
         ]
         print()
         failures = []
@@ -211,39 +269,62 @@ class TestDesignBindings(unittest.TestCase):
                 test_id = str(seq_args.get('SEQUENCE_ID', ''))
                 current_global_args.update(global_args)
                 simulated_binding_res = simulatedbindings.designPrimers(
-                                            seq_args, current_global_args)
+                    seq_args, current_global_args,
+                )
                 wrapper_error = simulated_binding_res.get('PRIMER_ERROR')
                 if wrapper_error is not None:
                     with self.assertRaises(IOError):
-                        binding_res = bindings.designPrimers(seq_args,
-                                                            current_global_args)
+                        binding_res = bindings.designPrimers(
+                            seq_args,
+                            current_global_args,
+                        )
                 else:
                     try:
-                        binding_res = bindings.designPrimers(seq_args,
-                                                            current_global_args)
+                        binding_res = bindings.designPrimers(
+                            seq_args,
+                            current_global_args,
+                        )
                     except IOError:
-                        if max([x in p3_args.get('P3_COMMENT', '') for x in
-                                ('complain', 'fail')]):
+                        if max([
+                            x in p3_args.get('P3_COMMENT', '') for x in
+                            ('complain', 'fail')
+                        ]):
                             pass
-                    disagreements = self._compareResults(binding_res,
-                                                         simulated_binding_res)
+                    disagreements = self._compareResults(
+                        binding_res,
+                        simulated_binding_res,
+                    )
                     if disagreements is not None:
                         failures.append((fn_root, test_id, disagreements))
-        print(' '* 60, end='\r')
+        print(' ' * 60, end='\r')
         if len(failures):
-            err_msg = ('Failures occured during file testing:\n' +
-                      '\n'.join(['->{}\t{}\n{}'.format(*f) for f in
-                                 failures]))
+            err_msg = (
+                'Failures occured during file testing:\n' +
+                '\n'.join([
+                    '->{}\t{}\n{}'.format(*f) for f in
+                    failures
+                ])
+            )
             raise RuntimeError(err_msg)
 
     def test_memoryLeaks(self):
         sm = _getMemUsage()
-        for x in range(100):
+        run_count = 100
+        for x in range(run_count):
             bindings.designPrimers(
                 {
                     'SEQUENCE_ID': 'MH1000',
-                    'SEQUENCE_TEMPLATE': 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG',
-                    'SEQUENCE_INCLUDED_REGION': [36,342]
+                    'SEQUENCE_TEMPLATE': (
+                        'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAG'
+                        'TGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAA'
+                        'GTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTC'
+                        'TGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGT'
+                        'GTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAG'
+                        'GCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTA'
+                        'TGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCT'
+                        'CTAGTAG'
+                    ),
+                    'SEQUENCE_INCLUDED_REGION': [36, 342],
                 },
                 {
                     'PRIMER_OPT_SIZE': 20,
@@ -265,22 +346,43 @@ class TestDesignBindings(unittest.TestCase):
                     'PRIMER_MAX_SELF_END': 8,
                     'PRIMER_PAIR_MAX_COMPL_ANY': 12,
                     'PRIMER_PAIR_MAX_COMPL_END': 8,
-                    'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
-                })
+                    'PRIMER_PRODUCT_SIZE_RANGE': [
+                        [75, 100],
+                        [100, 125],
+                        [125, 150],
+                        [150, 175],
+                        [175, 200],
+                        [200, 225],
+                    ],
+                },
+            )
         sleep(0.1)  # Pause for any GC
         em = _getMemUsage()
-        print('\n\tMemory usage before 1k runs of designPrimers: ', sm)
-        print('\tMemory usage after 1k runs of designPrimers:  ', em)
-        print('\t\t\t\t\tDifference: \t', em-sm)
-        if em-sm > 1000:
-            raise AssertionError('Memory usage increase after 1k runs of \n\t'
-                                 'designPrimers > 1000 bytes -- potential \n\t'
-                                 'memory leak (mem increase: {})'.format(em-sm))
+        print(
+            f'\n\tMemory usage before {run_count} runs of designPrimers: {sm}',
+        )
+        print(
+            f'\tMemory usage after {run_count} runs of designPrimers: {em}',
+        )
+        print(f'\t\t\t\t\tDifference: \t {em - sm}')
+
+        # NOTE: MacOS has a different allocation strategy than Linux
+        # Periodically revisit this. 2023.01.09
+        delta_bytes_limit = 1000 if sys.platform == 'linux' else 10000
+
+        if em - sm > delta_bytes_limit:
+            raise AssertionError(
+                f'Memory usage increase after {run_count} runs of \n\t'
+                f'designPrimers > {delta_bytes_limit} bytes -- potential \n\t'
+                f'memory leak (mem increase: {em - sm})',
+            )
+
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(TestDesignBindings())
     return suite
+
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()

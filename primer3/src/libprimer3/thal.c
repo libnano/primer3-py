@@ -451,12 +451,12 @@ thal(const unsigned char *oligo_f,
               "Illegal type");
   o->align_end_1 = -1;
   o->align_end_2 = -1;
-  if ('\0' == oligo_f) {
+  if (oligo_f == NULL) { /* Updated NC 2023.01.09 for type fix */
     strcpy(o->msg, "Empty first sequence");
     o->temp = 0.0;
     return;
   }
-  if ('\0' == oligo_r) {
+  if (oligo_r == NULL) { /* Updated NC 2023.01.09 for type fix */
     strcpy(o->msg, "Empty second sequence");
     o->temp = 0.0;
     return;
@@ -3149,4 +3149,3 @@ strcatc(char* str, char c)
   str[strlen(str) + 1] = 0;
   str[strlen(str)] = c;
 }
-

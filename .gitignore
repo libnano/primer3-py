@@ -10,9 +10,17 @@ ntthal
 oligotm
 primer3_core
 
+# cython artifacts
+primer3/thermoanalysis.c
+
+# test artifacts
+primer3/src/libprimer3/long_seq_tm_test.dSYM/
+primer3/src/libprimer3/oligotm.dSYM/
+
 # Packages
 *.egg
 *.egg-info
+.eggs/
 dist
 build
 eggs
@@ -32,7 +40,6 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
-nosetests.xml
 
 # Translations
 *.mo
@@ -44,4 +51,3 @@ nosetests.xml
 
 # OS X
 .DS_Store
-

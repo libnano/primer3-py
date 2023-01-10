@@ -948,4 +948,3 @@ format_oligos(FILE *f,
     exit(-1);
   }
 }
-

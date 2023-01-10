@@ -104,6 +104,7 @@ PACKAGE_FPS = (
 
 # ~~~~~~~~~~~~~~~~~~~~~ Primer3 C library build helpers ~~~~~~~~~~~~~~~~~~~~~ #
 
+
 def p3Clean():
     '''
     Run `make clean` for libprimer3 in a platform-dependent manner
@@ -134,7 +135,7 @@ def makeExecutable(fp):
     Adds the executable bit to the file at filepath `fp`
     '''
     mode = ((os.stat(fp).st_mode) | 0o555) & 0o7777
-    setup_log.info("Adding executable bit to %s (mode is now %o)", fp, mode)
+    setup_log.info('Adding executable bit to %s (mode is now %o)', fp, mode)
     os.chmod(fp, mode)
 
 
@@ -145,6 +146,7 @@ class CustomInstallLib(install_lib.install_lib):
 
     Installed and invoked internally by `setuptools`/`distutils`
     '''
+
     def run(self):
         global P3_BUILT
         super().run()
@@ -173,6 +175,7 @@ class CustomSdist(sdist.sdist):
 
     Installed and invoked internally by `setuptools`/`distutils`
     '''
+
     def run(self):
         global P3_BUILT
         # Clean up the primer3 build prior to sdist command to remove
@@ -191,6 +194,7 @@ class CustomBuildClib(build_clib.build_clib):
 
     Installed and invoked internally by `setuptools`/`distutils`
     '''
+
     def run(self):
         global P3_BUILT
         # Build primer3 prior to building the extension, if not already built
@@ -213,7 +217,7 @@ else:
 
 primerdesign_ext = Extension(
     'primer3.primerdesign',
-    sources=[pjoin('primer3','src','primerdesign_py.c')] + LIBPRIMER3_FPS,
+    sources=[pjoin('primer3', 'src', 'primerdesign_py.c')] + LIBPRIMER3_FPS,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
     extra_compile_args=EXTRA_COMPILE_ARGS,
 )
@@ -221,7 +225,7 @@ primerdesign_ext = Extension(
 
 thermoanalysis_ext = Extension(
     'primer3.thermoanalysis',
-    sources=[pjoin('primer3','thermoanalysis.pyx')] + LIBPRIMER3_FPS,
+    sources=[pjoin('primer3', 'thermoanalysis.pyx')] + LIBPRIMER3_FPS,
     include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
     extra_compile_args=EXTRA_COMPILE_ARGS,
 )
@@ -256,7 +260,7 @@ setup(
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
-        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)'
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ],
     packages=['primer3'],
     ext_modules=[primerdesign_ext, thermoanalysis_ext],

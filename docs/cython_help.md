@@ -1,4 +1,4 @@
-# Buiding against cython pxd headers for primer3-py installed in your environment 
+# Buiding against cython pxd headers for primer3-py installed in your environment
 
 Write your code like this below:
 
@@ -10,7 +10,7 @@ cimport primer3.thermoanalysis as thermoanalysis
 """
 # but below does not
 from primer3 cimport thermoanalysis
-as You MUST use absolute package paths in cimports i.e. 
+as You MUST use absolute package paths in cimports i.e.
 cimport A.B and not from A cimport B
 """
 
@@ -35,5 +35,5 @@ and to build/install using a standard `setup.py` add the lines (fill in the ...s
         include_dirs=primer3.includes()
         ...)
 
- 
+
  and it should work

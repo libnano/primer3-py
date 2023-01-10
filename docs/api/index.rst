@@ -1,8 +1,8 @@
 API Documentation
 =================
 
-This includes a thorough documentation of all pertinent modules, functions, 
-and classes contained within **primer3-py**. 
+This includes a thorough documentation of all pertinent modules, functions,
+and classes contained within **primer3-py**.
 
 
 .. toctree::
@@ -10,4 +10,3 @@ and classes contained within **primer3-py**.
 
    bindings
    thermoanalysis
-
