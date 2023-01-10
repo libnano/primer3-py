@@ -40,14 +40,20 @@ import subprocess
 import sys
 
 try:
-    from setuptools import setup, Extension
-    from setuptools.command import install_lib, sdist, build_clib
+    from setuptools import (
+        Extension,
+        setup,
+    )
+    from setuptools.command import (
+        build_clib,
+        install_lib,
+        sdist,
+    )
 except ImportError:
     from distutils.core import setup, Extension
     from distutils.command import install_lib, sdist, build_clib
 
 from distutils import log as setup_log
-
 from os.path import join as pjoin
 from os.path import relpath as rpath
 
@@ -241,7 +247,7 @@ if ('build_ext' in sys.argv or 'install' in sys.argv):
 
 setup(
     name='primer3-py',
-    version='0.6.1',
+    version='1.0.0-alpha.2',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',

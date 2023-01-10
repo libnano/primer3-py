@@ -30,11 +30,11 @@ import os
 import re
 import subprocess
 import sys
-
-from collections import OrderedDict, namedtuple
-
+from collections import (
+    OrderedDict,
+    namedtuple,
+)
 from os.path import join as pjoin
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PRIMER3 WRAPPERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 

@@ -34,12 +34,12 @@ and/or Cython modules directly. See the docs for more details.
 '''
 
 import os
-
 from os.path import join as pjoin
 
-from . import thermoanalysis
-from . import primerdesign
-
+from . import (
+    primerdesign,
+    thermoanalysis,
+)
 
 # ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
 
