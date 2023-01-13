@@ -54,12 +54,14 @@ cdef extern from "thal.h":
 
 
 
-    void thal(  const unsigned char*,
-                const unsigned char*,
-                const thal_args*,
-                thal_results*,
-                const int,
-                char*)
+    void thal(
+        const unsigned char*,
+        const unsigned char*,
+        const thal_args*,
+        thal_results*,
+        const int,
+        char*,
+    )
 
     int get_thermodynamic_values(const char*, thal_results *)
 
@@ -78,34 +80,54 @@ cdef class ThermoAnalysis:
     cdef public int _salt_correction_method
 
     cdef inline ThermoResult calcHeterodimer_c(
-        ThermoAnalysis self,
-        unsigned char*s1,
-        unsigned char* s2,
-        bint output_structure
+            ThermoAnalysis self,
+            unsigned char* s1,
+            unsigned char* s2,
+            bint output_structure
     )
 
     cdef inline ThermoResult calcHomodimer_c(
-        ThermoAnalysis self,
-        unsigned char*s1,
-        bint output_structure
+            ThermoAnalysis self,
+            unsigned char* s1,
+            bint output_structure
     )
 
     cdef inline ThermoResult calcHairpin_c(
-        ThermoAnalysis self,
-        unsigned char*s1,
-        bint output_structure
+            ThermoAnalysis self,
+            unsigned char* s1,
+            bint output_structure
     )
 
-    cdef inline ThermoResult calcEndStability_c(ThermoAnalysis self,
-                                                unsigned char*s1,
-                                                unsigned char* s2)
+    cdef inline ThermoResult calcEndStability_c(
+            ThermoAnalysis self,
+            unsigned char* s1,
+            unsigned char* s2,
+    )
 
     cdef inline double calcTm_c(ThermoAnalysis self, char* s1)
 
-    cpdef calcHeterodimer(ThermoAnalysis self, seq1, seq2, output_structure=*)
+    cpdef ThermoResult calcHeterodimer(
+            ThermoAnalysis self,
+            object seq1,
+            object seq2,
+            bint output_structure = *,
+    )
 
-    cpdef calcHomodimer(ThermoAnalysis self, seq1, output_structure=*)
+    cpdef ThermoResult calcHomodimer(
+            ThermoAnalysis self,
+            object seq1,
+            bint output_structure = *,
+    )
 
-    cpdef calcHairpin(ThermoAnalysis self, seq1, output_structure=*)
+    cpdef ThermoResult calcHairpin(
+            ThermoAnalysis self,
+            object seq1,
+            bint output_structure = *,
+    )
 
-    cpdef misprimingCheck(ThermoAnalysis self, putative_seq, sequences,  double tm_threshold)
+    cpdef tuple misprimingCheck(
+            ThermoAnalysis self,
+            object putative_seq,
+            object sequences,
+            double tm_threshold,
+    )

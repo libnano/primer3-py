@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+# type: ignore
 # primer3-py documentation build configuration file, created by
 # sphinx-quickstart on Tue Nov 25 12:19:07 2014.
 #

@@ -64,7 +64,7 @@ PyDoc_STRVAR(loadThermoParams__doc__,
 
 PyDoc_STRVAR(setGlobals__doc__,
 "Set the Primer3 global args and add a mispriming and/or mishyb libary\n\n"
-"global_args: dictionary of Primer3 args\n"
+"global_args: dictionary of Primer3 global args\n"
 "misprime_lib: mispriming library dictionary\n"
 "mishyb_lib: mishybridization library dictionary\n"
 );

@@ -15,8 +15,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
-test_thermoanalysis
-~~~~~~~~~~~~~~~~~~~
+tests.test_thermoanalysis
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Unit tests for the primer3-py low level thermodynamic calculation bindings.
 
@@ -32,7 +32,7 @@ from time import sleep
 try:
     import resource
 except (ImportError, ModuleNotFoundError):  # For Windows compatibility
-    resource = None
+    resource = None  # type: ignore
 
 from primer3 import (
     bindings,
@@ -41,13 +41,13 @@ from primer3 import (
 
 
 def _getMemUsage():
-    """ Get current process memory usage in bytes """
+    ''' Get current process memory usage in bytes '''
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
 @unittest.skipIf(
     sys.platform == 'win32',
-    "Windows doesn't support resource module and wrappers",
+    'Windows does not support resource module and wrappers',
 )
 class TestLowLevelBindings(unittest.TestCase):
 
@@ -68,7 +68,7 @@ class TestLowLevelBindings(unittest.TestCase):
         self.max_loop = random.randint(10, 30)
 
     def test_calcTm(self):
-        for x in range(100):
+        for _ in range(100):
             self.randArgs()
             binding_tm = bindings.calcTm(
                 seq=self.seq1,
@@ -243,7 +243,10 @@ class TestLowLevelBindings(unittest.TestCase):
                     tm_method=tm_method,
                     salt_corrections_method=sc_method,
                 )
-                self.assertEqual(int(binding_tm), int(wrapper_tm))
+                self.assertEqual(
+                    int(binding_tm),
+                    int(wrapper_tm),
+                )
         self.assertRaises(
             ValueError,
             bindings.calcTm,

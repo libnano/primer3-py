@@ -1,6 +1,36 @@
+# Copyright (C) 2014-2020. Ben Pruitt & Nick Conway; Wyss Institute
+# See LICENSE for full GPLv2 license.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+'''
+tests._simulatedbindings
+~~~~~~~~~~~~~~~~~~~~~~~
+'''
+import io
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
+
 import primer3.wrappers as wrappers
 
-p3_args = {}
+P3_ARGS: Dict[str, Any] = {}
 
 interval_list_tags = set([
     'SEQUENCE_INCLUDED_REGION',
@@ -14,8 +44,11 @@ size_range_list_tags = set(['PRIMER_PRODUCT_SIZE_RANGE'])
 #  (semicolon separated list of integer "quadruples"; default empty)
 semi_quad_tags = ['SEQUENCE_PRIMER_PAIR_OK_REGION_LIST']
 
+Sequence_T = Union[List[Any], Tuple[Any, ...]]
+Str_Bytes_T = Union[str, bytes]
 
-def wrapListOfQuads(v):
+
+def wrapListOfQuads(v: Sequence_T) -> str:
     ''' Wrap a list of ordered quads, potentially containing None's
     Produces a string 'list of semicolon separated list of integer "quadruples"'
     Used for SEQUENCE_PRIMER_PAIR_OK_REGION_LIST
@@ -35,6 +68,11 @@ def wrapListOfQuads(v):
     >>> wrapListOfQuads(((1,2,3,4), [5,6,7,8]))
     '1,2,3,4 ; 5,6,7,8'
 
+    Args:
+        v: Sequence of items to wrap or Sequence of lists/tuples to wrap
+
+    Returns:
+        Specially string formatted sequence
     '''
     def int_to_str(i):
         return str(i) if i > -1 else ''
@@ -49,7 +87,18 @@ def wrapListOfQuads(v):
     return rv
 
 
-def wrapListWithFormat(v, fmt, sep=' '):
+def _wrapListWithFormat(v: Sequence_T, fmt: str, sep: str = ' ') -> str:
+    '''
+    Specially format a list as a string
+
+    Args:
+        v: Sequence of items to format
+        fmt: format string
+        sep: Optional separator
+
+    Returns:
+        string formatted list
+    '''
     try:
         rv = fmt % tuple(v)
     except TypeError:
@@ -57,7 +106,7 @@ def wrapListWithFormat(v, fmt, sep=' '):
     return rv
 
 
-def wrap(t):
+def wrap(t: Tuple[str, Any]) -> Tuple[str, str]:
     '''Convert a primer3 input in python-friendly bindings-style form
     to a string form for use by the process wrapper
 
@@ -75,6 +124,12 @@ def wrap(t):
 
     >>> wrap(('PRIMER_PRODUCT_SIZE_RANGE', (7,11)))
     ('PRIMER_PRODUCT_SIZE_RANGE', '7-11')
+
+    Args:
+        t: Key, Value tuple where the value is correctly typed in python
+
+    Returns
+        Key, Value tuple where the value is always a string
     '''
     k, v = t
 
@@ -85,21 +140,21 @@ def wrap(t):
             if k in semi_quad_tags:
                 rv = wrapListOfQuads(v)
             elif k in interval_list_tags:
-                rv = wrapListWithFormat(v, '%d,%d')
+                rv = _wrapListWithFormat(v, '%d,%d')
             elif k in size_range_list_tags:
-                rv = wrapListWithFormat(v, '%d-%d')
+                rv = _wrapListWithFormat(v, '%d-%d')
             elif isinstance(v[0], (list, tuple)):
-                rv = wrapListWithFormat(v, '%d-%d')
+                rv = _wrapListWithFormat(v, '%d-%d')
             elif isinstance(v[0], int):
                 rv = ' '.join(map(str, v))
             else:
-                rv = v
+                rv = v  # type: ignore
     else:
         rv = v
     return k, rv
 
 
-def unwrap(t):
+def unwrap(t: Tuple[str, str]) -> Tuple[str, Any]:
     '''convert a wrapper result into the intended form of the
     bindings result
 
@@ -123,6 +178,12 @@ def unwrap(t):
 
     >>> unwrap(('A_SEQUENCE', 'ATCG'))
     ('A_SEQUENCE', 'ATCG')
+
+    Args:
+        t: Key, Value tuple where the value is always a string
+
+    Returns
+        Key, Value tuple where the value is correctly typed in python
     '''
     k, v = t
     rv = v
@@ -152,36 +213,43 @@ def unwrap(t):
         ),
     ]:
         try:
-            rv = lam(v)
+            rv = lam(v)  # type: ignore
         except BaseException:
             pass
         else:
             break
-    """
-
-    try:
-        rv = int(v)
-    except ValueError:
-        try:
-            rv = float(v)
-        except ValueError:
-            try:
-                rv = tuple(int(s) for s in v.split(','))
-            except ValueError:
-                try:
-                    rv = [int(x) for x in v.split()]
-                except ValueError:
-                    rv = v
-"""
     return k, rv
 
 
-def setGlobals(global_args, misprime_lib, mishyb_lib):
-    p3_args.update(dict(wrap(v) for v in global_args.items()))
+def setGlobals(
+        global_args: Dict[str, Any],
+        misprime_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]],  # NOTE: unused
+        mishyb_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]],   # NOTE: unused
+) -> None:
+    '''Update global Primer3 global, mispriming, and mishybridization args in
+    ``P3_ARGS``
+
+    Args:
+        seq_args:  dictionary of Primer3 global args
+        misprime_lib: mispriming library dictionary
+        mishyb_lib: mishybridization library dictionary
+
+    Returns:
+        None
+    '''
+    P3_ARGS.update(dict(wrap(v) for v in global_args.items()))
 
 
-def setSeqArgs(seq_args):
-    p3_args.update(dict(wrap(v) for v in seq_args.items()))
+def setSeqArgs(seq_args: Dict[str, Any]) -> None:
+    '''Update global Primer3 sequence args in ``P3_ARGS``
+
+    Args:
+        seq_args: dictionary of Primer3 sequence args
+
+    Returns:
+        None
+    '''
+    P3_ARGS.update(dict(wrap(v) for v in seq_args.items()))
 
 
 def convertResult(result):
@@ -191,10 +259,15 @@ def convertResult(result):
 
 
 def designPrimers(
-    seq_args, global_args=None, reset_args=True,
-    misprime_lib=None, mishyb_lib=None, input_log=None,
-    output_log=None, err_log=None,
-):
+        seq_args: Dict[str, Any],
+        global_args: Optional[Dict[str, Any]] = None,
+        reset_args: bool = True,
+        misprime_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
+        mishyb_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
+        input_log: Optional[io.BufferedWriter] = None,
+        output_log: Optional[io.BufferedWriter] = None,
+        err_log: Optional[io.BufferedWriter] = None,
+) -> Dict[str, Any]:
     ''' Run the Primer3 design process, with the same interface as the bindings,
     using the wrapped subprocess of primer3_core to do the work.
 
@@ -203,14 +276,16 @@ def designPrimers(
     called with seqArgs alone (as a means of optimization).
 
     Args:
-        seq_args (dict)     :   Primer3 sequence/design args as per Primer3 docs
-
-    Kwargs:
-        global_args (dict)  :   Primer3 global args as per Primer3 docs
-        misprime_lib (dict) :   `Sequence name: sequence` dictionary for
-                                mispriming checks.
-        mishyb_lib (dict)   :   `Sequence name: sequence` dictionary for
-                                mishybridization checks.
+        seq_args: Primer3 sequence/design args as per Primer3 docs
+        global_args: Primer3 global args as per Primer3 docs
+        reset_args:
+        misprime_lib: `Sequence name: sequence` dictionary for mispriming
+            checks.
+        mishyb_lib: `Sequence name: sequence` dictionary for mishybridization
+            checks.
+        input_log: Optional log input file descriptor
+        output_log: Optional log output file descriptor
+        err_log: Optional log error file descriptor
 
     Returns:
         A dictionary of Primer3 results (should be identical to the expected
@@ -218,11 +293,12 @@ def designPrimers(
 
     '''
     if reset_args:
-        p3_args.clear()
-    setGlobals(global_args, misprime_lib, mishyb_lib)
+        P3_ARGS.clear()
+    if global_args:
+        setGlobals(global_args, misprime_lib, mishyb_lib)
     setSeqArgs(seq_args)
     result = wrappers.designPrimers(
-        p3_args,
+        P3_ARGS,
         input_log=input_log,
         output_log=output_log,
         err_log=err_log,

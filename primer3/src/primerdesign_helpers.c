@@ -31,19 +31,6 @@ and the Primer3 library.
 #include    "p3_seq_lib.h"
 
 
-#if PY_MAJOR_VERSION < 3
-/* see http://python3porting.com/cextensions.html */
-    #ifdef PyLong_Check
-        #undef PyLong_Check
-    #endif
-    #ifdef PyLong_AsLong
-        #undef PyLong_AsLong
-    #endif
-    #define PyLong_Check PyInt_Check
-    #define PyLong_AsLong PyInt_AsLong
-#endif
-
-
 // Check python dictionary `d` for key `k` and (if it exists) assign the
 // value to Py_Object o. Return 1 on success or 0 if the key is not in the dict
 #define DICT_GET_OBJ(o, d, k) ((o = PyDict_GetItemString(d, k)) != NULL)
@@ -91,65 +78,38 @@ and the Primer3 library.
 // PyString_AsString exposes the internal buffer of the string (null terminated)
 // It must not be changed or freed, so we have to malloc new memory for the
 // param value.
-#if PY_MAJOR_VERSION < 3
-    #define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
-        if (DICT_GET_OBJ(o, d, k)) {                                           \
-            int from_int = 0;                                                  \
-            if (!PyString_Check(o)){                                           \
-                if (PyLong_Check(o)) {                                         \
-                    *st = (char *) malloc(20 * sizeof(char));                  \
-                    sprintf(*st, "%d", (int)PyLong_AsLong(o));                 \
-                    from_int = 1;                                              \
-                } else {                                                       \
-                    PyErr_Format(PyExc_TypeError,                              \
-                                 "Value of %s is not of type string", k);      \
-                return -1;}                                                    \
-            }                                                                  \
-            if (from_int == 0) {                                               \
-                if (PyString_AsStringAndSize(o, &tc, &ss) == -1) {             \
-                    return -1;}                                                \
-                *st = (char *) malloc((ss + 1) * sizeof(char));                \
-                if (*st == NULL) {                                             \
-                    PyErr_Format(PyExc_IOError,                                \
-                        "Could not allocate memory while copying %s", k);      \
-                    return -1;}                                                \
-                memcpy(*st, tc, (int)(ss + 1));                                \
-            }                                                                  \
-        }
-#else
-    #define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
-        if (DICT_GET_OBJ(o, d, k)) {                                           \
-            int from_int = 0;                                                  \
-            if (PyUnicode_Check(o)) {                                          \
-                tc = (char *)PyUnicode_AsUTF8AndSize(o, &ss);                  \
-            } else if (PyBytes_Check(o)){                                      \
-                if (PyBytes_AsStringAndSize(o, &tc, &ss) == -1) {              \
-                    return -1;}                                                \
-            } else {                                                           \
-                if (PyLong_Check(o)) {                                         \
-                    *st = (char *) malloc(20 * sizeof(char));                  \
-                    sprintf(*st, "%d", (int)PyLong_AsLong(o));                 \
-                    from_int = 1;                                              \
-                } else {                                                       \
-                    PyErr_Format(PyExc_TypeError,                              \
-                        "Value of %s is not of type unicode or bytes", k);     \
-                    return -1;}                                                \
-            }                                                                  \
-            if (tc == NULL){                                                   \
-                    PyErr_Format(PyExc_TypeError,                              \
-                            "Error processing string in %s", k);               \
-                    return -1;                                                 \
-                }                                                              \
-            if (from_int == 0) {                                               \
-                *st = (char *) malloc((ss + 1 ) * sizeof(char));               \
-                if (*st == NULL) {                                             \
-                    PyErr_Format(PyExc_IOError,                                \
-                        "Could not allocate memory while copying %s", k);      \
-                    return -1;}                                                \
-                memcpy(*st, tc, (int)(ss + 1));                                \
-            }                                                                  \
-        }
-#endif
+#define DICT_GET_AND_COPY_STR(o, d, k, st, tc, ss)                         \
+    if (DICT_GET_OBJ(o, d, k)) {                                           \
+        int from_int = 0;                                                  \
+        if (PyUnicode_Check(o)) {                                          \
+            tc = (char *)PyUnicode_AsUTF8AndSize(o, &ss);                  \
+        } else if (PyBytes_Check(o)){                                      \
+            if (PyBytes_AsStringAndSize(o, &tc, &ss) == -1) {              \
+                return -1;}                                                \
+        } else {                                                           \
+            if (PyLong_Check(o)) {                                         \
+                *st = (char *) malloc(20 * sizeof(char));                  \
+                sprintf(*st, "%d", (int)PyLong_AsLong(o));                 \
+                from_int = 1;                                              \
+            } else {                                                       \
+                PyErr_Format(PyExc_TypeError,                              \
+                    "Value of %s is not of type unicode or bytes", k);     \
+                return -1;}                                                \
+        }                                                                  \
+        if (tc == NULL){                                                   \
+                PyErr_Format(PyExc_TypeError,                              \
+                        "Error processing string in %s", k);               \
+                return -1;                                                 \
+            }                                                              \
+        if (from_int == 0) {                                               \
+            *st = (char *) malloc((ss + 1 ) * sizeof(char));               \
+            if (*st == NULL) {                                             \
+                PyErr_Format(PyExc_IOError,                                \
+                    "Could not allocate memory while copying %s", k);      \
+                return -1;}                                                \
+            memcpy(*st, tc, (int)(ss + 1));                                \
+        }                                                                  \
+    }
 
 #define DICT_GET_AND_COPY_ARRAY(o, d, k, st, arr_len)                          \
     if (DICT_GET_OBJ(o, d, k)) {                                               \
@@ -575,49 +535,28 @@ pdh_createSeqLib(PyObject *seq_dict){
 
     pos = 0;
     while (PyDict_Next(seq_dict, &pos, &py_seq_name, &py_seq)) {
-#if PY_MAJOR_VERSION < 3
-            if (PyString_Check(py_seq_name)) {
-                seq_name = PyString_AsString(py_seq_name);
-            } else {
-                PyErr_SetString(PyExc_TypeError,
-                    "Cannot add seq name with non-String type to seq_lib");
-                goto err_create_seq_lib;
-            }
-            if (PyString_Check(py_seq)) {
-                seq = PyString_AsString(py_seq);
-            } else {
-                PyErr_SetString(PyExc_TypeError,
-                    "Cannot add seq with non-String type to seq_lib");
-                goto err_create_seq_lib;
-            }
-            if (add_seq_to_seq_lib(sl, seq, seq_name, errfrag)) {
-                PyErr_SetString(PyExc_IOError, errfrag);
-                goto err_create_seq_lib;
-            }
-#else
-            if (PyUnicode_Check(py_seq_name)) {
-                seq_name = (char *)PyUnicode_AsUTF8(py_seq_name);
-            } else if (PyBytes_Check(py_seq_name)){
-                seq_name = PyBytes_AsString(py_seq_name);
-            } else {
-                PyErr_SetString(PyExc_TypeError,
-                    "Cannot add seq name with non-Unicode/Bytes type to seq_lib");
-                goto err_create_seq_lib;
-            }
-            if (PyUnicode_Check(py_seq)) {
-                seq = (char *)PyUnicode_AsUTF8(py_seq);
-            } else if (PyBytes_Check(py_seq)){
-                seq = PyBytes_AsString(py_seq);
-            } else {
-                PyErr_SetString(PyExc_TypeError,
-                    "Cannot add seq with non-Unicode/Bytes type to seq_lib");
-                goto err_create_seq_lib;
-            }
-            if (add_seq_to_seq_lib(sl, seq, seq_name, errfrag)) {
-                PyErr_SetString(PyExc_IOError, errfrag);
-                goto err_create_seq_lib;
-            }
-#endif
+        if (PyUnicode_Check(py_seq_name)) {
+            seq_name = (char *)PyUnicode_AsUTF8(py_seq_name);
+        } else if (PyBytes_Check(py_seq_name)){
+            seq_name = PyBytes_AsString(py_seq_name);
+        } else {
+            PyErr_SetString(PyExc_TypeError,
+                "Cannot add seq name with non-Unicode/Bytes type to seq_lib");
+            goto err_create_seq_lib;
+        }
+        if (PyUnicode_Check(py_seq)) {
+            seq = (char *)PyUnicode_AsUTF8(py_seq);
+        } else if (PyBytes_Check(py_seq)){
+            seq = PyBytes_AsString(py_seq);
+        } else {
+            PyErr_SetString(PyExc_TypeError,
+                "Cannot add seq with non-Unicode/Bytes type to seq_lib");
+            goto err_create_seq_lib;
+        }
+        if (add_seq_to_seq_lib(sl, seq, seq_name, errfrag)) {
+            PyErr_SetString(PyExc_IOError, errfrag);
+            goto err_create_seq_lib;
+        }
     }
     reverse_complement_seq_lib(sl);
     return sl;
@@ -825,23 +764,13 @@ pdh_setSeqArgs(PyObject *sa_dict, seq_args *sa) {
     SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)                                    \
 
 
-#if PY_MAJOR_VERSION < 3
-    #define SET_DICT_KEY_TO_STR(dict, key, str, obj_ptr)                       \
-        if ((obj_ptr = PyString_FromString(str)) == NULL){                     \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not convert value for %s to PyString", key);   \
-            return NULL;                                                       \
-        }                                                                      \
-        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
-#else
-    #define SET_DICT_KEY_TO_STR(dict, key, str, obj_ptr)                       \
-        if ((obj_ptr = PyUnicode_FromString(str)) == NULL){                    \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not convert value for %s to PyUnicode", key);  \
-            return NULL;                                                       \
-        }                                                                      \
-        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
-#endif
+#define SET_DICT_KEY_TO_STR(dict, key, str, obj_ptr)                \
+    if ((obj_ptr = PyUnicode_FromString(str)) == NULL){             \
+        PyErr_Format(PyExc_IOError,                                 \
+            "Could not convert value for %s to PyUnicode", key);    \
+        return NULL;                                                \
+    }                                                               \
+    SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
 
 // Note that PyTuple_SetItem steals a ref so the PyLong objs don't need to be
 // Py_DECREF'd
@@ -862,77 +791,40 @@ pdh_setSeqArgs(PyObject *sa_dict, seq_args *sa) {
     }                                                                          \
     SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
 
-#if PY_MAJOR_VERSION < 3
-    #define SET_DICT_KEY_TO_TUPLE_OF_LONG_AND_STR(dict, key, num, str, obj_ptr)\
-        if ((obj_ptr = PyTuple_New(2)) == NULL) {                              \
-            PyErr_Format(PyExc_IOError, "Could not create tuple for %s ", key);\
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyTuple_SetItem(obj_ptr, 0, PyLong_FromLong(num))) {               \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not pack value 1 for %s into tuple", key);     \
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyTuple_SetItem(obj_ptr, 1, PyString_FromString(str))) {           \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not pack value 2 for %s into tuple",key);      \
-            return NULL;                                                       \
-        }                                                                      \
-        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
-#else
-    #define SET_DICT_KEY_TO_TUPLE_OF_LONG_AND_STR(dict, key, num, str, obj_ptr)\
-        if ((obj_ptr = PyTuple_New(2)) == NULL) {                              \
-            PyErr_Format(PyExc_IOError, "Could not create tuple for %s ", key);\
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyTuple_SetItem(obj_ptr, 0, PyLong_FromLong(num))) {               \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not pack value 1 for %s into tuple", key);     \
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyTuple_SetItem(obj_ptr, 1, PyUnicode_FromString(str))) {          \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not pack value 2 for %s into tuple",key);      \
-            return NULL;                                                       \
-        }                                                                      \
-        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
-#endif
+#define SET_DICT_KEY_TO_TUPLE_OF_LONG_AND_STR(dict, key, num, str, obj_ptr) \
+    if ((obj_ptr = PyTuple_New(2)) == NULL) {                               \
+        PyErr_Format(PyExc_IOError, "Could not create tuple for %s ", key); \
+        return NULL;                                                        \
+    }                                                                       \
+    if (PyTuple_SetItem(obj_ptr, 0, PyLong_FromLong(num))) {                \
+        PyErr_Format(PyExc_IOError,                                         \
+                        "Could not pack value 1 for %s into tuple", key);   \
+        return NULL;                                                        \
+    }                                                                       \
+    if (PyTuple_SetItem(obj_ptr, 1, PyUnicode_FromString(str))) {           \
+        PyErr_Format(PyExc_IOError,                                         \
+                        "Could not pack value 2 for %s into tuple",key);    \
+        return NULL;                                                        \
+    }                                                                       \
+    SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
 
-#if PY_MAJOR_VERSION < 3
-    #define SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(dict, key, num, str, obj_ptr)\
-        if ((obj_ptr = PyTuple_New(2)) == NULL) {                              \
-            PyErr_Format(PyExc_IOError, "Could not create tuple for %s ", key);\
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyTuple_SetItem(obj_ptr, 0, PyFloat_FromDouble(num))) {            \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not pack value 1 for %s into tuple", key);     \
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyTuple_SetItem(obj_ptr, 1, PyString_FromString(str))) {           \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not pack value 2 for %s into tuple",key);      \
-            return NULL;                                                       \
-        }                                                                      \
-        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
-#else
-    #define SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(dict, key, num, str, obj_ptr)\
-        if ((obj_ptr = PyTuple_New(2)) == NULL) {                              \
-            PyErr_Format(PyExc_IOError, "Could not create tuple for %s ", key);\
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyTuple_SetItem(obj_ptr, 0, PyFloat_FromDouble(num))) {            \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not pack value 1 for %s into tuple", key);     \
-            return NULL;                                                       \
-        }                                                                      \
-        if (PyTuple_SetItem(obj_ptr, 1, PyUnicode_FromString(str))) {          \
-            PyErr_Format(PyExc_IOError,                                        \
-                         "Could not pack value 2 for %s into tuple",key);      \
-            return NULL;                                                       \
-        }                                                                      \
-        SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
-#endif
+
+#define SET_DICT_KEY_TO_TUPLE_OF_FLOAT_AND_STR(dict, key, num, str, obj_ptr)\
+    if ((obj_ptr = PyTuple_New(2)) == NULL) {                               \
+        PyErr_Format(PyExc_IOError, "Could not create tuple for %s ", key); \
+        return NULL;                                                        \
+    }                                                                       \
+    if (PyTuple_SetItem(obj_ptr, 0, PyFloat_FromDouble(num))) {             \
+        PyErr_Format(PyExc_IOError,                                         \
+                        "Could not pack value 1 for %s into tuple", key);   \
+        return NULL;                                                        \
+    }                                                                       \
+    if (PyTuple_SetItem(obj_ptr, 1, PyUnicode_FromString(str))) {           \
+        PyErr_Format(PyExc_IOError,                                         \
+                        "Could not pack value 2 for %s into tuple",key);    \
+        return NULL;                                                        \
+    }                                                                       \
+    SET_DICT_KEY_TO_OBJ(dict, key, obj_ptr)
 
 PyObject*
 pdh_outputToDict(const p3_global_settings *pa, const seq_args *sa,
