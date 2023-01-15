@@ -52,6 +52,10 @@ from typing import (
     Union,
 )
 
+from .argdefaults import Primer3PyArguments
+
+DEFAULT_P3_ARGS = Primer3PyArguments()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ External C declarations ~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 cdef extern from "oligotm.h":
@@ -64,18 +68,19 @@ cdef extern from "oligotm.h":
         santalucia     = 1
         owczarzy       = 2
 
-    double seqtm(const char*,
-                     double,
-                     double,
-                     double,
-                     double,
-                     int,
-                     tm_method_type,
-                     salt_correction_type,
-                     )
+    double seqtm(
+            const char*,
+            double,
+            double,
+            double,
+            double,
+            int,
+            tm_method_type,
+            salt_correction_type,
+    )
 
 
-# ~~~~~~~~~~~~~~~ Utility functions to enforce UTF-8 encoding ~~~~~~~~~~~~~~~ #
+# ~~~~~~~~~~~~~~~ Utility functions to enforce utf8 encoding ~~~~~~~~~~~~~~~ #
 
 cdef unsigned char[:] _chars(s):
     cdef unsigned char[:] o
@@ -219,6 +224,39 @@ cdef class ThermoResult:
         }
 
 
+def _conditional_get_enum_int(
+        arg_name: str,
+        arg_value: Union[str, int],
+        dict_obj: Dict[str, int],
+) -> int:
+    '''Helper function to conditionally resolve an argument value enum value
+    using either key or to just return the key if it is an integer
+
+    Args:
+        arg_name: Name of argument resolving
+        arg_value: integer value or string name key mapping to an integer
+        dict_obj: dictionary mapping the string to an int
+
+    Returns:
+        integer value for the key in the map
+
+    Raises:
+        ValueError: arg_value missing in the map ``dict_obj``
+        TypeError: invalid type for the key
+    '''
+    if isinstance(arg_value, (int, long)):
+        return arg_value
+    elif isinstance(arg_value, str):
+        if arg_value not in dict_obj:
+            raise ValueError(
+                f'{arg_name}: {arg_value} argument not in {dict_obj}',
+            )
+        return dict_obj[arg_value]
+    raise TypeError(
+        f'{arg_name}: {arg_value} invalid type {type(arg_value)}',
+    )
+
+
 cdef class ThermoAnalysis:
     ''' Python class that serves as the entry point for thermodynamic
     calculations. Should be instantiated with the proper thermodynamic
@@ -226,34 +264,81 @@ cdef class ThermoAnalysis:
     methods, limits, etc.). See module docstring for more information.
     '''
 
-    TM_METHODS = {
+    tm_methods_dict = {
         'breslauer': 0,
         'santalucia': 1
     }
 
-    SALT_CORRECTION_METHODS = {
+    salt_correction_methods_dict = {
         'schildkraut': 0,
         'santalucia': 1,
         'owczarzy': 2
     }
+    # NOTE: Unused but here as a reference
+    thal_alignment_types_dict = {
+        'thal_alignment_any': 1,
+        'thal_alignment_end1': 2,
+        'thal_alignment_end2': 3,
+        'thal_alignment_hairpin': 4,
+    }
 
     def __cinit__(
-            self,
-            thal_type: int = 1,
-            mv_conc: float = 50.,
-            dv_conc: float = 1.5,
-            dntp_conc: float = 0.2,
-            dna_conc: float = 200.,
-            temp_c: float = 37.,
-            max_loop: int = 30,
-            temp_only: int = 0,
-            debug: int = 0,
-            max_nn_length: int = 60,
-            tm_method: int = 1,
-            salt_correction_method: int = 1,
+                self,
+                mv_conc: float = DEFAULT_P3_ARGS.mv_conc,
+                dv_conc: float = DEFAULT_P3_ARGS.dv_conc,
+                dntp_conc: float = DEFAULT_P3_ARGS.dntp_conc,
+                dna_conc: float = DEFAULT_P3_ARGS.dna_conc,
+                temp_c: float = DEFAULT_P3_ARGS.temp_c,
+                max_loop: int = DEFAULT_P3_ARGS.max_loop,
+                temp_only: int = DEFAULT_P3_ARGS.temp_only,
+                debug: int = 0,
+                max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
+                tm_method: Union[int, str] = DEFAULT_P3_ARGS.tm_method_int,
+                salt_correction_method: Union[int, str] = \
+                    DEFAULT_P3_ARGS.salt_corrections_method_int,
         ):
-        self.thalargs.type = thal_type
-
+        '''
+        NOTE: this class uses properties to enable multi type value assignment
+        as a convenience to enable string keys to set the integer values of
+        struct fields required in the `thalargs` fields
+        Args:
+            thal_type: type of thermodynamic alignment, a string name key or
+                integer value member of the thal_alignment_types_dict dict::
+                {
+                    'thal_alignment_any': 1,
+                    'thal_alignment_end1': 2,
+                    'thal_alignment_end2': 3,
+                    'thal_alignment_hairpin': 4,
+                }
+            mv_conc: concentration of monovalent cations (mM)
+            dv_conc: concentration of divalent cations (mM)
+            dntp_conc: concentration of dNTP-s (mM)
+            dna_conc: concentration of oligonucleotides (mM)
+            temp_c: temperature from which hairpin structures will be
+                calculated (C)
+            max_loop: maximum size of loop size of bases to consider in calcs
+            temp_only: print only temp to stderr
+            debug: if non zero, print debugging info to stderr
+            max_nn_length: The maximum sequence length for using the nearest
+                neighbor model (as implemented in oligotm.  For
+                sequences longer than this, `seqtm` uses the "GC%" formula
+                implemented in long_seq_tm.  Use only when calling the
+                ``ThermoAnalysis.calcTm`` method
+            tm_method: Type of temperature method, a string name key or integer
+                value member of the tm_methods_dict dict::
+                {
+                    'breslauer': 0,
+                    'santalucia': 1
+                }
+            salt_correction_method: Type of salt correction method, a string
+                name key or integer value member of the
+                salt_correction_methods_dict::
+                {
+                    'schildkraut': 0,
+                    'santalucia': 1,
+                    'owczarzy': 2
+                }
+            '''
         self.thalargs.mv = mv_conc
         self.thalargs.dv = dv_conc
         self.thalargs.dntp = dntp_conc
@@ -268,107 +353,105 @@ cdef class ThermoAnalysis:
         self.tm_method = tm_method
         self.salt_correction_method = salt_correction_method
 
+        # Create reverse maps for properties
+        self._tm_methods_int_dict = {
+            v: k
+            for k, v in self.tm_methods_dict.items()
+        }
+        self._salt_correction_methods_int_dict = {
+            v: k
+            for k, v in self.salt_correction_methods_dict.items()
+        }
+
     # ~~~~~~~~~~~~~~~~~~~~~~ Property getters / setters ~~~~~~~~~~~~~~~~~~~~~ #
-
     @property
-    def thal_type(self):
-        ''' The type of thermodynamic calculation '''
-        return self.thalargs.type
-
-    @property
-    def mv_conc(self):
+    def mv_conc(self) -> float:
         ''' Concentration of monovalent cations (mM) '''
         return self.thalargs.mv
 
     @mv_conc.setter
-    def mv_conc(self, value):
+    def mv_conc(self, value: float):
         self.thalargs.mv = value
 
     @property
-    def dv_conc(self):
+    def dv_conc(self) -> float:
         ''' Concentration of divalent cations (mM) '''
         return self.thalargs.dv
 
     @dv_conc.setter
-    def dv_conc(self, value):
+    def dv_conc(self, value: float):
         self.thalargs.dv = value
 
     @property
-    def dntp_conc(self):
+    def dntp_conc(self) -> float:
         ''' Concentration of dNTPs (mM) '''
         return self.thalargs.dntp
 
     @dntp_conc.setter
-    def dntp_conc(self, value):
+    def dntp_conc(self, value: float):
         self.thalargs.dntp = value
 
     @property
-    def dna_conc(self):
+    def dna_conc(self) -> float:
         ''' Concentration of DNA oligos (nM) '''
         return self.thalargs.dna_conc
 
     @dna_conc.setter
-    def dna_conc(self, value):
+    def dna_conc(self, value: float):
             self.thalargs.dna_conc = value
 
     @property
-    def temp(self):
+    def temp(self) -> float:
         ''' Simulation temperature (deg. C) '''
         return self.thalargs.temp - 273.15
 
     @temp.setter
-    def temp(self, value):
+    def temp(self, value: Union[int, float]):
+        ''' Store in degrees Kelvin '''
         self.thalargs.temp = value + 273.15
 
     @property
-    def max_loop(self):
-        ''' Maximum hairpin loop size (bp) '''
+    def max_loop(self) -> int:
+        ''' Maximum hairpin loop size (bp) '''  # TODO: Is bp correct here?
         return self.thalargs.maxLoop
 
     @max_loop.setter
-    def max_loop(self, value):
+    def max_loop(self, value: int):
+        if 0 <= value < 31:
             self.thalargs.maxLoop = value
+        else:
+            raise ValueError(f'max_loop must be less than 31, received {value}')
 
     @property
-    def tm_method(self):
-        ''' Method used to calculate melting temperatures. May be provided as
-        a string (see TM_METHODS) or the respective integer representation.
+    def tm_method(self) -> str:
+        '''Method used to calculate melting temperatures. May be provided as
+        a string (see tm_methods_dict) or the respective integer representation.
         '''
-        return self._tm_method
+        return self._tm_methods_int_dict[self._tm_method]
 
     @tm_method.setter
-    def tm_method(self, value):
-        if isinstance(value, (int, long)):
-            self._tm_method = value
-        else:
-            int_value = ThermoAnalysis.TM_METHODS.get(value)
-            if int_value is not None:
-                self._tm_method = int_value
-            else:
-                raise ValueError(
-                    f'{value} is not a valid `tm_method` type'
-                )
+    def tm_method(self, value: Union[int, str]):
+        self._tm_method = _conditional_get_enum_int(
+            'tm_method',
+            value,
+            ThermoAnalysis.tm_methods_dict,
+        )
 
     @property
-    def salt_correction_method(self):
+    def salt_correction_method(self) -> str:
         ''' Method used for salt corrections applied to melting temperature
-        calculations. May be provided as a string (see SALT_CORRECTION_METHODS)
-        or the respective integer representation.
+        calculations. May be provided as a string (see
+        salt_correction_methods_dict) or the respective integer representation.
         '''
         return self._salt_correction_method
 
     @salt_correction_method.setter
-    def salt_correction_method(self, value):
-        if isinstance(value, (int, long)):
-            self._salt_correction_method = value
-        else:
-            int_value = ThermoAnalysis.SALT_CORRECTION_METHODS.get(value)
-            if int_value is not None:
-                self._salt_correction_method = int_value
-            else:
-                raise ValueError(
-                    f'{value} is not a valid `salt_correction_method` type'
-                )
+    def salt_correction_method(self, value: Union[int, str]):
+        self._salt_correction_method = _conditional_get_enum_int(
+            'salt_correction_method',
+            value,
+            ThermoAnalysis.salt_correction_methods_dict,
+        )
 
     # ~~~~~~~~~~~~~~ Thermodynamic calculation instance methods ~~~~~~~~~~~~~ #
 
@@ -393,7 +476,7 @@ cdef class ThermoAnalysis:
         cdef char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 1
-        self.thalargs.type = <thal_alignment_type> 1
+        self.thalargs.type = <thal_alignment_type> 1 # thal_alignment_any
         if (output_structure == 1):
             c_ascii_structure = <char *>malloc(
                 (strlen(<const char*>s1) + strlen(<const char*>s2)) * 4 + 24)
@@ -408,7 +491,7 @@ cdef class ThermoAnalysis:
         )
         if (output_structure == 1):
             try:
-                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
+                tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
                 free(c_ascii_structure)
         return tr_obj
@@ -431,8 +514,8 @@ cdef class ThermoAnalysis:
             Computed heterodimer ``ThermoResult``
         '''
         # first convert any unicode to a byte string and then
-        # cooerce to a unsigned char *
-        # see http://docs.cython.org/src/tutorial/strings.html#encoding-text-to-bytes
+        # cooerce to a unsigned char * see:
+        # http://docs.cython.org/src/tutorial/strings.html#encoding-text-to-bytes
         py_s1 = <bytes> _bytes(seq1)
         cdef unsigned char* s1 = py_s1
         py_s2 = <bytes> _bytes(seq2)
@@ -516,7 +599,7 @@ cdef class ThermoAnalysis:
             char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 1
-        self.thalargs.type = <thal_alignment_type> 1
+        self.thalargs.type = <thal_alignment_type> 1 # thal_alignment_any
         if output_structure == 1:
             c_ascii_structure = <char *>malloc(
                 (strlen(<const char*>s1) * 8 + 24)
@@ -532,7 +615,7 @@ cdef class ThermoAnalysis:
         )
         if output_structure == 1:
             try:
-                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
+                tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
                 free(c_ascii_structure)
         return tr_obj
@@ -582,7 +665,7 @@ cdef class ThermoAnalysis:
             char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 0
-        self.thalargs.type = <thal_alignment_type> 4
+        self.thalargs.type = <thal_alignment_type> 4 # thal_alignment_hairpin
         if output_structure == 1:
             c_ascii_structure = <char *>malloc(
                 (strlen(<const char*>s1) * 2 + 24)
@@ -598,7 +681,7 @@ cdef class ThermoAnalysis:
         )
         if output_structure == 1:
             try:
-                tr_obj.ascii_structure = c_ascii_structure.decode('UTF-8')
+                tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
                 free(c_ascii_structure)
         return tr_obj
@@ -646,7 +729,7 @@ cdef class ThermoAnalysis:
         cdef ThermoResult tr_obj = ThermoResult()
 
         self.thalargs.dimer = 1
-        self.thalargs.type = <thal_alignment_type> 2
+        self.thalargs.type = <thal_alignment_type> 2 # thal_alignment_end1
         thal(<const unsigned char*> s1, <const unsigned char*> s2,
          <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0, NULL)
         return tr_obj
@@ -667,8 +750,8 @@ cdef class ThermoAnalysis:
             Computed end stability ``ThermoResult``
         '''
         # first convert any unicode to a byte string and then
-        # cooerce to a unsigned char *
-        # see http://docs.cython.org/src/tutorial/strings.html#encoding-text-to-bytes
+        # cooerce to a unsigned char * see:
+        # http://docs.cython.org/src/tutorial/strings.html#encoding-text-to-bytes
         py_s1 = <bytes> _bytes(seq1)
         cdef unsigned char* s1 = py_s1
         py_s2 = <bytes> _bytes(seq2)
@@ -693,8 +776,8 @@ cdef class ThermoAnalysis:
             ta.dv,
             ta.dntp,
             self.max_nn_length,
-            <tm_method_type> self.tm_method,
-            <salt_correction_type> self.salt_correction_method,
+            <tm_method_type> self._tm_method,
+            <salt_correction_type> self._salt_correction_method,
         )
 
     def calcTm(ThermoAnalysis self, seq1: Union[str, bytes]) -> float:

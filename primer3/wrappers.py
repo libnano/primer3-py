@@ -44,6 +44,10 @@ from typing import (
     Union,
 )
 
+from .argdefaults import Primer3PyArguments
+
+DEFAULT_P3_ARGS = Primer3PyArguments()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PRIMER3 WRAPPERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
@@ -78,13 +82,13 @@ _salt_corrections_methods = {
 
 def calcTm(
         seq: str,
-        mv_conc: Union[float, int] = 50,
-        dv_conc: Union[float, int] = 0,
-        dntp_conc: Union[float, int] = 0.8,
-        dna_conc: Union[float, int] = 50,
-        max_nn_length: int = 60,
-        tm_method: str = 'santalucia',
-        salt_corrections_method: str = 'santalucia',
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
+        tm_method: str = DEFAULT_P3_ARGS.tm_method,
+        salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
 ) -> float:
     ''' Return the tm of `seq` as a float.
 
@@ -160,7 +164,7 @@ def _parse_ntthal(ntthal_output: bytes) -> THERMORESULT:
     parsed_vals = re.search(_NTTHAL_RE, ntthal_output)
     if parsed_vals:
         ascii_structure = (
-            ntthal_output[ntthal_output.index(b'\n') + 1:].decode('utf-8')
+            ntthal_output[ntthal_output.index(b'\n') + 1:].decode('utf8')
         )
         res = THERMORESULT(
             True,                           # Structure found
@@ -178,16 +182,16 @@ def _parse_ntthal(ntthal_output: bytes) -> THERMORESULT:
 def calcThermo(
         seq1: str,
         seq2: str,
-        calc_type: str = 'ANY',
-        mv_conc: Union[float, int] = 50.,
-        dv_conc: Union[float, int] = 0.,
-        dntp_conc: Union[float, int] = 0.8,
-        dna_conc: Union[float, int] = 50,
-        temp_c: Union[float, int] = 37,
-        max_loop: int = 30,
-        temp_only: bool = False,
+        calc_type: str = DEFAULT_P3_ARGS.calc_type_wrapper,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        temp_only: Union[bool, int] = DEFAULT_P3_ARGS.temp_only,
 ) -> THERMORESULT:
-    """Main subprocess wrapper for calls to the ntthal executable.
+    '''Main subprocess wrapper for calls to the ntthal executable.
 
     Args:
         seq1: DNA sequence to analyze for 3' end  hybridization against the
@@ -207,7 +211,7 @@ def calcThermo(
     Returns:
         a named tuple with tm, ds, dh, and dg values or None if no
         structure / complex could be computed.
-    """
+    '''
     args = [
         pjoin(LIBPRIMER3_PATH, 'ntthal'),
         '-a', str(calc_type),
@@ -231,66 +235,181 @@ def calcThermo(
 
 
 def calcHairpin(
-    seq: str,
-    mv_conc=50,
-    dv_conc=0,
-    dntp_conc=0.8,
-    dna_conc=50,
-    temp_c=37,
-    max_loop=30,
-    temp_only=False,
+        seq: str,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        temp_only: Union[bool, int] = DEFAULT_P3_ARGS.temp_only,
 ) -> THERMORESULT:
     ''' Return a namedtuple of the dS, dH, dG, and Tm of any hairpin struct
     present.
+
+    Args:
+        seq: DNA sequence to analyze for hairpin formation
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop(int, optional): Maximum size of loops in the structure
+        temp_only:
+        temp_only: print only temp to stderr
+
+    Returns:
+       ``THERMORESULT`` tuple
     '''
     return calcThermo(
-        seq, seq, 'HAIRPIN', mv_conc, dv_conc, dntp_conc,
-        dna_conc, temp_c, max_loop, temp_only,
+        seq,
+        seq,
+        'HAIRPIN',
+        mv_conc,
+        dv_conc,
+        dntp_conc,
+        dna_conc,
+        temp_c,
+        max_loop,
+        temp_only,
     )
 
 
 def calcHeterodimer(
-    seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-    dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
+        seq1: str,
+        seq2: str,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        temp_only: Union[bool, int] = DEFAULT_P3_ARGS.temp_only,
 ) -> THERMORESULT:
-    ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
+    '''Returns a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
+
+    Args:
+        seq1: DNA sequence to analyze for heterodimer formation
+        seq2: DNA sequence to analyze for heterodimer formation
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop(int, optional): Maximum size of loops in the structure
+        temp_only:
+        temp_only: print only temp to stderr
+
+    Returns:
+       ``THERMORESULT`` tuple
     '''
     return calcThermo(
-        seq1, seq2, 'ANY', mv_conc, dv_conc, dntp_conc,
-        dna_conc, temp_c, max_loop, temp_only,
+        seq1,
+        seq2,
+        'ANY',
+        mv_conc,
+        dv_conc,
+        dntp_conc,
+        dna_conc,
+        temp_c,
+        max_loop,
+        temp_only,
     )
 
 
 def calcHomodimer(
-    seq, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-    dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
+        seq: str,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        temp_only: Union[bool, int] = DEFAULT_P3_ARGS.temp_only,
 ) -> THERMORESULT:
     ''' Return a tuple of the dS, dH, dG, and Tm of any predicted homodimer.
+
+    Args:
+        seq: DNA sequence to analyze for homodimer formation
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop(int, optional): Maximum size of loops in the structure
+        temp_only:
+        temp_only: print only temp to stderr
+
+    Returns:
+       ``THERMORESULT`` tuple
     '''
     return calcThermo(
-        seq, seq, 'ANY', mv_conc, dv_conc, dntp_conc,
-        dna_conc, temp_c, max_loop, temp_only,
+        seq,
+        seq,
+        'ANY',
+        mv_conc,
+        dv_conc,
+        dntp_conc,
+        dna_conc,
+        temp_c,
+        max_loop,
+        temp_only,
     )
 
 
 def calcEndStability(
-    seq1, seq2, mv_conc=50, dv_conc=0, dntp_conc=0.8,
-    dna_conc=50, temp_c=37, max_loop=30, temp_only=False,
+        seq1: str,
+        seq2: str,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        temp_only: Union[bool, int] = DEFAULT_P3_ARGS.temp_only,
 ) -> THERMORESULT:
-    ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer.
+    ''' Return a tuple of the dS, dH, dG, and Tm of any predicted heterodimer
+    end stability
+
+    Args:
+        seq1: DNA sequence to analyze for end stability
+        seq2: DNA sequence to analyze for end stability
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop(int, optional): Maximum size of loops in the structure
+        temp_only:
+        temp_only: print only temp to stderr
+
+    Returns:
+       ``THERMORESULT`` tuple
     '''
     return calcThermo(
-        seq1, seq2, 'END1', mv_conc, dv_conc, dntp_conc,
-        dna_conc, temp_c, max_loop, temp_only,
+        seq1,
+        seq2,
+        'END1',
+        mv_conc,
+        dv_conc,
+        dntp_conc,
+        dna_conc,
+        temp_c,
+        max_loop,
+        temp_only,
     )
 
 
-def assessOligo(seq) -> Tuple[THERMORESULT, THERMORESULT]:
+def assessOligo(seq: str) -> Tuple[THERMORESULT, THERMORESULT]:
     '''
     Return the thermodynamic characteristics of hairpin/homodimer structures.
 
-    Returns a tuple of namedtuples (hairpin data, homodimer data) in which each
-    individual tuple is structured (dS, dH, dG, Tm).
+    Args:
+        seq: DNA sequence to analyze
+
+    Returns:
+        A tuple of namedtuples (hairpin data, homodimer data) in which each
+        individual tuple is structured (dS, dH, dG, Tm).
 
     '''
     hairpin_out = calcHairpin(seq)
@@ -300,17 +419,32 @@ def assessOligo(seq) -> Tuple[THERMORESULT, THERMORESULT]:
 
 # ~~~~~~~ RUDIMENTARY PRIMER3 MAIN WRAPPER (see Primer3 docs for args) ~~~~~~ #
 def _formatBoulderIO(p3_args: Dict[str, Any]) -> bytes:
+    '''Convert argument dictionary to boulder formatted bytes
+
+    Args:
+        p3_args: primer3 arguments to format boulder style
+
+    Returns:
+        Boulder formatted byte string
+    '''
     boulder_str = ''.join([
         '{}={}\n'.format(k, v) for k, v in
         p3_args.items()
     ])
-    boulder_str += '=\n'
-    return bytes(boulder_str, 'UTF-8')
+    boulder_str = f'{boulder_str}=\n'
+    return boulder_str.encode('utf8')
 
 
-def _parseBoulderIO(boulder_str: bytes) -> Dict[str, str]:
+def _parseBoulderIO(boulder_bytes: bytes) -> Dict[str, str]:
+    '''Convert boulder info to a key/value dictionary
+    Args:
+        boulder_bytes: Bytes of boulder formatted information to parse
+
+    Returns:
+        Dictionary of key/values
+    '''
     data_dict = OrderedDict()
-    for line in boulder_str.decode('utf-8').split('\n'):
+    for line in boulder_bytes.decode('utf8').split('\n'):
         try:
             k, v = line.strip().split('=')
             data_dict[k] = v
@@ -320,6 +454,13 @@ def _parseBoulderIO(boulder_str: bytes) -> Dict[str, str]:
 
 
 def parseMultiRecordBoulderIO(boulder_str: str) -> List[OrderedDict[str, str]]:
+    '''
+    Args:
+        boulder_str: boulder string to parse with multiple records
+
+    Returns:
+        List of OrderedDicts per record
+    '''
     data_dicts = []
     for record in re.split('=\r?\n', boulder_str):
         if record == '':

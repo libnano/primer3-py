@@ -74,10 +74,16 @@ cdef class ThermoResult:
 
 
 cdef class ThermoAnalysis:
-    cdef thal_args thalargs
-    cdef public int max_nn_length
-    cdef public int _tm_method
-    cdef public int _salt_correction_method
+    cdef:
+        thal_args thalargs
+
+        public int max_nn_length
+        public int _tm_method
+        public object _tm_methods_int_dict
+
+        public int _salt_correction_method
+        public object _salt_correction_methods_int_dict
+
 
     cdef inline ThermoResult calcHeterodimer_c(
             ThermoAnalysis self,

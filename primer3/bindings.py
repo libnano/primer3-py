@@ -46,6 +46,9 @@ from . import (  # type: ignore
     primerdesign,
     thermoanalysis,
 )
+from .argdefaults import Primer3PyArguments
+
+DEFAULT_P3_ARGS = Primer3PyArguments()
 
 # ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
 
@@ -64,14 +67,14 @@ _THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
 
 
 def _setThermoArgs(
-        mv_conc: Union[float, int] = 50.,
-        dv_conc: Union[float, int] = 0.,
-        dntp_conc: Union[float, int] = 0.8,
-        dna_conc: Union[float, int] = 50.,
-        temp_c: Union[float, int] = 37.,
-        max_loop: int = 30,
-        tm_method: str = 'santalucia',
-        salt_corrections_method: str = 'santalucia',
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        tm_method: str = DEFAULT_P3_ARGS.tm_method,
+        salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
         **kwargs,
 ):
     _THERMO_ANALYSIS.mv_conc = float(mv_conc)
@@ -86,12 +89,12 @@ def _setThermoArgs(
 
 def calcHairpin(
         seq: str,
-        mv_conc: Union[float, int] = 50.0,
-        dv_conc: Union[float, int] = 0.0,
-        dntp_conc: Union[float, int] = 0.8,
-        dna_conc: Union[float, int] = 50.0,
-        temp_c: Union[float, int] = 37.,
-        max_loop: int = 30,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ):
     ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
@@ -102,7 +105,7 @@ def calcHairpin(
     (see primer3/src/libnano/thal.h:50).
 
     Args:
-        seq (str): DNA sequence to analyze for hairpin formation
+        seq: DNA sequence to analyze for hairpin formation
         mv_conc: Monovalent cation conc. (mM)
         dv_conc: Divalent cation conc. (mM)
         dntp_conc: dNTP conc. (mM)
@@ -124,14 +127,14 @@ def calcHairpin(
 
 
 def calcHomodimer(
-    seq: str,
-    mv_conc: Union[float, int] = 50.,
-    dv_conc: Union[float, int] = 0.,
-    dntp_conc: Union[float, int] = 0.8,
-    dna_conc: Union[float, int] = 50.,
-    temp_c: Union[float, int] = 37.,
-    max_loop: int = 30,
-    output_structure: bool = False,
+        seq: str,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        output_structure: bool = False,
 ):
     ''' Calculate the homodimerization thermodynamics of a DNA sequence.
 
@@ -164,15 +167,15 @@ def calcHomodimer(
 
 
 def calcHeterodimer(
-    seq1: str,
-    seq2: str,
-    mv_conc: Union[float, int] = 50.,
-    dv_conc: Union[float, int] = 0.,
-    dntp_conc: Union[float, int] = 0.8,
-    dna_conc: Union[float, int] = 50.,
-    temp_c: Union[float, int] = 37.,
-    max_loop: int = 30,
-    output_structure: bool = False,
+        seq1: str,
+        seq2: str,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        output_structure: bool = False,
 ):
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
 
@@ -211,12 +214,12 @@ def calcHeterodimer(
 def calcEndStability(
         seq1: str,
         seq2: str,
-        mv_conc: Union[float, int] = 50.,
-        dv_conc: Union[float, int] = 0.,
-        dntp_conc: Union[float, int] = 0.8,
-        dna_conc: Union[float, int] = 50,
-        temp_c: Union[float, int] = 37,
-        max_loop: int = 30,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
 ) -> thermoanalysis.ThermoResult:
     ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
     sequence `seq2`.
@@ -251,13 +254,13 @@ def calcEndStability(
 
 def calcTm(
         seq: str,
-        mv_conc: Union[float, int] = 50.,
-        dv_conc: Union[float, int] = 0.,
-        dntp_conc: Union[float, int] = 0.8,
-        dna_conc: Union[float, int] = 50,
-        max_nn_length: int = 60,
-        tm_method: str = 'santalucia',
-        salt_corrections_method: str = 'santalucia',
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
+        tm_method: str = DEFAULT_P3_ARGS.tm_method,
+        salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
 ) -> float:
     ''' Calculate the melting temperature (Tm) of a DNA sequence.
 

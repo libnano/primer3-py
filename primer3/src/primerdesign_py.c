@@ -42,40 +42,43 @@ function call overhead is of concern.
 // Helper functions for parameter + output parsing
 #include "primerdesign_helpers.h"
 
-#if PY_MAJOR_VERSION >= 3
 /* see http://python3porting.com/cextensions.html */
-    #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
-#else
-    #define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
-#endif
+#define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
+
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 /* module doc string */
-PyDoc_STRVAR(primerdesign__doc__, "Python C API bindings for the Primer3 "
-                                  "design engine\n");
+PyDoc_STRVAR(
+    primerdesign__doc__,
+    "Python C API bindings for the Primer3 design engine\n"
+);
 
 /* function doc strings */
-PyDoc_STRVAR(loadThermoParams__doc__,
-"Load the Primer3 thermodynamic parameters into memory.\n\n"
-"Should only need to be called once on module import\n"
-"path: path to the parameter directory"
+PyDoc_STRVAR(
+    loadThermoParams__doc__,
+    "Load the Primer3 thermodynamic parameters into memory.\n\n"
+    "Should only need to be called once on module import\n"
+    "path: path to the parameter directory"
 );
 
-PyDoc_STRVAR(setGlobals__doc__,
-"Set the Primer3 global args and add a mispriming and/or mishyb libary\n\n"
-"global_args: dictionary of Primer3 global args\n"
-"misprime_lib: mispriming library dictionary\n"
-"mishyb_lib: mishybridization library dictionary\n"
+PyDoc_STRVAR(
+    setGlobals__doc__,
+    "Set the Primer3 global args and add a mispriming and/or mishyb libary\n\n"
+    "global_args: dictionary of Primer3 global args\n"
+    "misprime_lib: mispriming library dictionary\n"
+    "mishyb_lib: mishybridization library dictionary\n"
 );
 
-PyDoc_STRVAR(setSeqArgs__doc__,
-"Set the Primer3 sequence args\n\n"
-"seq_args: dictionary of Primer3 sequence args\n"
+PyDoc_STRVAR(
+    setSeqArgs__doc__,
+    "Set the Primer3 sequence args\n\n"
+    "seq_args: dictionary of Primer3 sequence args\n"
 );
 
-PyDoc_STRVAR(runDesign__doc__,
-"Design primers using the internal Primer3 design engine\n\n"
+PyDoc_STRVAR(
+    runDesign__doc__,
+    "Design primers using the internal Primer3 design engine\n\n"
 );
 
 
@@ -280,25 +283,19 @@ static PyMethodDef primerdesign_methods[] = {
 };
 
 MOD_INIT(primerdesign){
-#if PY_MAJOR_VERSION >= 3
     PyObject* m;
     static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
-        "primerdesign",           /* m_name */
-        primerdesign__doc__,      /* m_doc */
-        -1,                 /* m_size */
-        primerdesign_methods,     /* m_methods */
-        NULL,               /* m_reload */
-        NULL,               /* m_traverse */
-        NULL,               /* m_clear */
-        NULL,               /* m_free */
+        "primerdesign",         /* m_name */
+        primerdesign__doc__,    /* m_doc */
+        -1,                     /* m_size */
+        primerdesign_methods,   /* m_methods */
+        NULL,                   /* m_reload */
+        NULL,                   /* m_traverse */
+        NULL,                   /* m_clear */
+        NULL,                   /* m_free */
     };
     Py_AtExit(&cleanUp);
     m = PyModule_Create(&moduledef);
     return m;
-#else
-    Py_AtExit(&cleanUp);
-    Py_InitModule3("primerdesign", primerdesign_methods, primerdesign__doc__);
-#endif
-
 }
