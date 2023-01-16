@@ -24,6 +24,7 @@ oligonucleotide thermodynamics library.
 '''
 
 import os
+from typing import List
 
 from . import (  # type: ignore
     bindings,
@@ -47,24 +48,13 @@ from .bindings import (
 
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
-# ~~~~~~~~~ Get / set the environ. variable for the libprimer3 path ~~~~~~~~~ #
 
-if not os.environ.get('PRIMER3HOME'):
-    libprimer3_path = os.path.join(LOCAL_DIR, 'src/libprimer3')
-    if not os.path.exists(libprimer3_path):
-        raise OSError(
-            'PRIMER3HOME environmental variable is not set '
-            'and a path to libprimer3 could not be found: '
-            '<%s>' % libprimer3_path,
-        )
-    os.environ['PRIMER3HOME'] = libprimer3_path
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-
-
-def includes():
-    return [LOCAL_DIR, os.environ['PRIMER3HOME']]
+def includes() -> List[str]:
+    '''
+    Returns:
+        List of directories to include in egg/wheel during packaging
+    '''
+    return [LOCAL_DIR, os.path.join(LOCAL_DIR, 'src', 'libprimer3')]
 
 
 __author__ = 'Ben Pruitt, Nick Conway'

@@ -2,9 +2,6 @@ name: build, pytest and pre-commit
 
 on: [push, pull_request]
 
-env:
-  PRIMER3HOME: "/home/runner/work/primer3-py/primer3-py/primer3/src/libprimer3"
-
 jobs:
   build-linux:
     runs-on: ubuntu-latest
