@@ -9,6 +9,8 @@ ntdpal
 ntthal
 oligotm
 primer3_core
+amplicon3_core
+primer3_masker
 
 # cython artifacts
 primer3/thermoanalysis.c
@@ -16,6 +18,8 @@ primer3/thermoanalysis.c
 # test artifacts
 primer3/src/libprimer3/long_seq_tm_test.dSYM/
 primer3/src/libprimer3/oligotm.dSYM/
+primer3/src/libprimer3/amplicon3_core.dSYM/
+primer3/src/libprimer3/primer3_masker.dSYM/
 
 # Packages
 *.egg
@@ -51,3 +55,5 @@ pip-log.txt
 
 # OS X
 .DS_Store
+
+.vscode/

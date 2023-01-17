@@ -1,3 +1,4 @@
+# cython: language_level=3
 # Copyright (C) 2014-2020. Ben Pruitt & Nick Conway; Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
@@ -56,30 +57,41 @@ from typing import (
 from .argdefaults import Primer3PyArguments
 
 DEFAULT_P3_ARGS = Primer3PyArguments()
+_DID_LOAD_THERM_PARAMS = False
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ External C declarations ~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 cdef extern from "oligotm.h":
     ctypedef enum tm_method_type:
-        breslauer_auto      = 0
+        breslauer_auto      = 0,
         santalucia_auto     = 1
 
     ctypedef enum salt_correction_type:
-        schildkraut    = 0
-        santalucia     = 1
+        schildkraut    = 0,
+        santalucia     = 1,
         owczarzy       = 2
 
-    double seqtm(
-            const char*,
-            double,
-            double,
-            double,
-            double,
-            int,
-            tm_method_type,
-            salt_correction_type,
+    ctypedef struct tm_ret:
+        double Tm
+        double bound
+
+    tm_ret seqtm(
+            const char* seq,        # The sequence
+            double dna_conc,        # DNA concentration (nanomolar).
+            double salt_conc,       # Concentration of divalent cations (millimolar).
+            double divalent_conc,   # Concentration of divalent cations (millimolar)
+            double dntp_conc,       # Concentration of dNTPs (millimolar)
+            double dmso_conc,       # Concentration of DMSO (%) default 0
+            double dmso_fact,       # DMSO correction factor, default 0.6
+            double formamide_conc,  # Concentration of formamide (mol/l)
+            int    nn_max_len,      # The maximum sequence length for nn model
+            tm_method_type  tm_method,              # See description above.
+            salt_correction_type salt_corrections,  # See description above.
+            double annealing_temp  # Actual annealing temperature of the PCR reaction
     )
 
+cdef extern from "oligotm.h":
+    int set_default_thal_parameters(thal_parameters *a)
 
 # ~~~~~~~~~~~~~~~ Utility functions to enforce utf8 encoding ~~~~~~~~~~~~~~~ #
 
@@ -102,11 +114,17 @@ cdef inline bytes _bytes(s):
         return s
 
 # ~~~~~~~~~ Load base thermodynamic parameters into memory from file ~~~~~~~~ #
+def load_thermo_params():
+    global _DID_LOAD_THERM_PARAMS
 
-# TODO: remove after update to primer3 >= 2.5.0
-def _loadThermoParams():
-    cdef char*           p3_cfg_path_bytes_c
-    cdef thal_results    thalres
+    cdef:
+        char*           p3_cfg_path_bytes_c
+        thal_results    thalres
+        thal_parameters thermodynamic_parameters
+
+    if _DID_LOAD_THERM_PARAMS is True:
+        return
+
     p3_cfg_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         'src',
@@ -114,14 +132,22 @@ def _loadThermoParams():
         'primer3_config',
         '',  # Add trailing slash (OS-ind) req'd by primer3 lib
     )
+
+    # read default thermodynamic parameters
     p3_cfg_path_bytes = p3_cfg_path.encode('utf-8')
     p3_cfg_path_bytes_c = p3_cfg_path_bytes
-    if get_thermodynamic_values(p3_cfg_path_bytes_c, &thalres) != 0:
-        raise IOError(
-            f'Could not load thermodynamic config file {p3_cfg_path}'
-        )
 
-_loadThermoParams()
+    thal_set_null_parameters(&thermodynamic_parameters)
+    thal_load_parameters(p3_cfg_path_bytes_c, &thermodynamic_parameters, &thalres)
+    # set_default_thal_parameters(&thermodynamic_parameters)
+    try:
+        if get_thermodynamic_values(&thermodynamic_parameters, &thalres) != 0:
+            raise OSError(
+                f'Could not load thermodynamic config file {p3_cfg_path}'
+            )
+    finally:
+        thal_free_parameters(&thermodynamic_parameters)
+    _DID_LOAD_THERM_PARAMS = True
 
 def _cleanup():
     destroy_thal_structures()
@@ -144,6 +170,7 @@ cdef class ThermoResult:
         self.thalres.no_structure = 0
         self.thalres.ds = self.thalres.dh = self.thalres.dg = 0.0
         self.thalres.align_end_1 = self.thalres.align_end_2 = 0
+        self.thalres.sec_struct = NULL
 
     @property
     def structure_found(self) -> bool:
@@ -294,6 +321,10 @@ cdef class ThermoAnalysis:
                 dv_conc: float = DEFAULT_P3_ARGS.dv_conc,
                 dntp_conc: float = DEFAULT_P3_ARGS.dntp_conc,
                 dna_conc: float = DEFAULT_P3_ARGS.dna_conc,
+                dmso_conc: float = DEFAULT_P3_ARGS.dmso_conc,
+                dmso_fact: float = DEFAULT_P3_ARGS.dmso_fact,
+                formamide_conc: float = DEFAULT_P3_ARGS.formamide_conc,
+                annealing_temp_c: float = DEFAULT_P3_ARGS.annealing_temp_c,
                 temp_c: float = DEFAULT_P3_ARGS.temp_c,
                 max_loop: int = DEFAULT_P3_ARGS.max_loop,
                 temp_only: int = DEFAULT_P3_ARGS.temp_only,
@@ -320,6 +351,11 @@ cdef class ThermoAnalysis:
             dv_conc: concentration of divalent cations (mM)
             dntp_conc: concentration of dNTP-s (mM)
             dna_conc: concentration of oligonucleotides (mM)
+            dmso_conc: Concentration of DMSO (%)
+            dmso_fact: DMSO correction factor, default 0.6
+            formamide_conc: Concentration of formamide (mol/l)
+            annealing_temp_c: Actual annealing temperature of the PCR reaction
+                in (C)
             temp_c: temperature from which hairpin structures will be
                 calculated (C)
             max_loop: maximum size of loop size of bases to consider in calcs
@@ -351,8 +387,19 @@ cdef class ThermoAnalysis:
         self.thalargs.dna_conc = dna_conc
         self.thalargs.temp = temp_c + 273.15  # Convert to Kelvin
         self.thalargs.maxLoop = max_loop
-        self.thalargs.temponly = temp_only
-        self.thalargs.debug = debug
+        if temp_only:
+            if debug:
+                self.eval_mode = thal_mode.THL_DEBUG_F
+            else:
+                self.eval_mode = thal_mode.THL_FAST
+        else:
+            if debug:
+                self.eval_mode = thal_mode.THL_DEBUG
+            else:
+                self.eval_mode = thal_mode.THL_GENERAL
+
+        # self.thalargs.temponly = temp_only
+        # self.thalargs.debug = debug
 
         self.max_nn_length = max_nn_length
 
@@ -368,6 +415,12 @@ cdef class ThermoAnalysis:
             v: k
             for k, v in self.salt_correction_methods_dict.items()
         }
+
+        self.dmso_conc = dmso_conc
+        self.dmso_fact = dmso_fact
+        self.formamide_conc = formamide_conc
+        self.annealing_temp_c = annealing_temp_c
+        load_thermo_params()
 
     # ~~~~~~~~~~~~~~~~~~~~~~ Property getters / setters ~~~~~~~~~~~~~~~~~~~~~ #
     @property
@@ -407,12 +460,12 @@ cdef class ThermoAnalysis:
             self.thalargs.dna_conc = value
 
     @property
-    def temp(self) -> float:
+    def temp_c(self) -> float:
         ''' Simulation temperature (deg. C) '''
         return self.thalargs.temp - 273.15
 
-    @temp.setter
-    def temp(self, value: Union[int, float]):
+    @temp_c.setter
+    def temp_c(self, value: Union[int, float]):
         ''' Store in degrees Kelvin '''
         self.thalargs.temp = value + 273.15
 
@@ -459,6 +512,59 @@ cdef class ThermoAnalysis:
             ThermoAnalysis.salt_correction_methods_dict,
         )
 
+    def set_thermo_args(
+            self,
+            mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+            dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+            dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+            dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+            dmso_conc: float = DEFAULT_P3_ARGS.dmso_conc,
+            dmso_fact: float = DEFAULT_P3_ARGS.dmso_fact,
+            formamide_conc: float = DEFAULT_P3_ARGS.formamide_conc,
+            annealing_temp_c: float = DEFAULT_P3_ARGS.annealing_temp_c,
+            temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+            max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
+            max_loop: int = DEFAULT_P3_ARGS.max_loop,
+            tm_method: str = DEFAULT_P3_ARGS.tm_method,
+            salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
+            **kwargs,
+    ):
+        '''
+        Set parameters in global ``ThermoAnalysis`` instance
+
+        Args:
+            mv_conc: Monovalent cation conc. (mM)
+            dv_conc: Divalent cation conc. (mM)
+            dntp_conc: dNTP conc. (mM)
+            dna_conc: DNA conc. (nM)
+            dmso_conc: Concentration of DMSO (%)
+            dmso_fact: DMSO correction factor, default 0.6
+            formamide_conc: Concentration of formamide (mol/l)
+            annealing_temp_c: Actual annealing temperature of the PCR reaction
+                in (C)
+            temp_c: Simulation temperature for dG (Celsius)
+            max_nn_length: Maximum length for nearest-neighbor calcs
+            tm_method: Tm calculation method (breslauer or santalucia)
+            salt_corrections_method: Salt correction method (schildkraut, owczarzy,
+                santalucia)
+        '''
+        self.mv_conc = float(mv_conc)
+        self.dv_conc = float(dv_conc)
+        self.dntp_conc = float(dntp_conc)
+        self.dna_conc = float(dna_conc)
+
+        self.dmso_conc = float(dmso_conc)
+        self.dmso_fact = float(dmso_fact)
+        self.formamide_conc = float(formamide_conc)
+        self.annealing_temp_c = float(annealing_temp_c)
+
+        self.temp_c = float(temp_c)
+        self.max_loop = int(max_loop)
+        self.tm_method = tm_method
+        self.salt_correction_method = salt_corrections_method
+
+        self.max_nn_length = int(max_nn_length)
+
     # ~~~~~~~~~~~~~~ Thermodynamic calculation instance methods ~~~~~~~~~~~~~ #
 
     cdef inline ThermoResult calcHeterodimer_c(
@@ -478,28 +584,32 @@ cdef class ThermoAnalysis:
         Returns:
             Computed heterodimer result
         '''
-        cdef ThermoResult tr_obj = ThermoResult()
-        cdef char* c_ascii_structure = NULL
+        cdef:
+            ThermoResult tr_obj = ThermoResult()
+            char* c_ascii_structure = NULL
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1 # thal_alignment_any
-        if (output_structure == 1):
+        if output_structure:
             c_ascii_structure = <char *>malloc(
                 (strlen(<const char*>s1) + strlen(<const char*>s2)) * 4 + 24)
             c_ascii_structure[0] = b'\0'
+            tr_obj.thalres.sec_struct = c_ascii_structure
+
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s2,
             <const thal_args *> &(self.thalargs),
+            <const thal_mode> self.eval_mode,
             &(tr_obj.thalres),
-            1 if c_ascii_structure else 0,
-            c_ascii_structure
+            1 if output_structure else 0,
         )
-        if (output_structure == 1):
+        if output_structure:
             try:
                 tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
-                free(c_ascii_structure)
+                free(tr_obj.thalres.sec_struct)
+                tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
     cpdef ThermoResult calcHeterodimer(
@@ -606,24 +716,26 @@ cdef class ThermoAnalysis:
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1 # thal_alignment_any
-        if output_structure == 1:
-            c_ascii_structure = <char *>malloc(
-                (strlen(<const char*>s1) * 8 + 24)
+        if output_structure:
+            c_ascii_structure = <char *> malloc(
+                (strlen(<const char*> s1) * 8 + 24)
             )
             c_ascii_structure[0] = b'\0'
+            tr_obj.thalres.sec_struct = c_ascii_structure
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s1,
             <const thal_args *> &(self.thalargs),
+            <const thal_mode> self.eval_mode,
             &(tr_obj.thalres),
-            1 if c_ascii_structure else 0,
-            c_ascii_structure
+            1 if output_structure else 0,
         )
-        if output_structure == 1:
+        if output_structure:
             try:
                 tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
                 free(c_ascii_structure)
+                tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
     cpdef ThermoResult calcHomodimer(
@@ -672,24 +784,27 @@ cdef class ThermoAnalysis:
 
         self.thalargs.dimer = 0
         self.thalargs.type = <thal_alignment_type> 4 # thal_alignment_hairpin
-        if output_structure == 1:
-            c_ascii_structure = <char *>malloc(
-                (strlen(<const char*>s1) * 2 + 24)
+        if output_structure:
+            c_ascii_structure = <char *> malloc(
+                (strlen(<const char*> s1) * 2 + 64)
             )
-            c_ascii_structure[0] = b'\0';
+            c_ascii_structure[0] = b'\0'
+            tr_obj.thalres.sec_struct = c_ascii_structure
+
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s1,
             <const thal_args *> &(self.thalargs),
+            <const thal_mode> self.eval_mode,
             &(tr_obj.thalres),
-            1 if c_ascii_structure else 0,
-            c_ascii_structure
+            1 if output_structure else 0,
         )
-        if output_structure == 1:
+        if output_structure:
             try:
                 tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
                 free(c_ascii_structure)
+                tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
     cpdef ThermoResult calcHairpin(
@@ -717,6 +832,7 @@ cdef class ThermoAnalysis:
             output_structure,
         )
 
+
     cdef inline ThermoResult calcEndStability_c(
             ThermoAnalysis self,
             unsigned char *s1,
@@ -736,8 +852,14 @@ cdef class ThermoAnalysis:
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 2 # thal_alignment_end1
-        thal(<const unsigned char*> s1, <const unsigned char*> s2,
-         <const thal_args *> &(self.thalargs), &(tr_obj.thalres), 0, NULL)
+        thal(
+            <const unsigned char*> s1,
+            <const unsigned char*> s2,
+            <const thal_args *> &(self.thalargs),
+            <const thal_mode> self.eval_mode,
+            &(tr_obj.thalres),
+            0,
+        )
         return tr_obj
 
     def calcEndStability(
@@ -774,17 +896,25 @@ cdef class ThermoAnalysis:
         Returns:
             floating point Tm result
         '''
-        cdef thal_args *ta = &self.thalargs
-        return seqtm(
+        cdef:
+            thal_args *ta = &self.thalargs
+            tm_ret tm_val
+
+        tm_val = seqtm(
             <const char*> s1,
             ta.dna_conc,
             ta.mv,
             ta.dv,
             ta.dntp,
+            self.dmso_conc,
+            self.dmso_fact,
+            self.formamide_conc,
             self.max_nn_length,
             <tm_method_type> self._tm_method,
             <salt_correction_type> self._salt_correction_method,
+            self.annealing_temp_c,
         )
+        return tm_val.Tm
 
     def calcTm(ThermoAnalysis self, seq1: Union[str, bytes]) -> float:
         ''' Calculate the melting temperature (Tm) of a DNA sequence (deg. C).
@@ -813,8 +943,8 @@ cdef class ThermoAnalysis:
             'dna_conc':     self.dna_conc,
             'temp_c':       self.temp,
             'max_loop':     self.max_loop,
-            'temp_only':    self.temp_only,
-            'debug':        self.thalargs.debug,
+            # 'temp_only':    self.temp_only,
+            # 'debug':        self.thalargs.debug,
             'max_nn_length': self.max_nn_length,
             'tm_method':    self.tm_method,
             'salt_correction_method': self.salt_correction_method

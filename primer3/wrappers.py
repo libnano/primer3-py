@@ -30,21 +30,21 @@ import io
 import os
 import re
 import subprocess
-from collections import (
-    OrderedDict,
-    namedtuple,
-)
+from collections import namedtuple
 from os.path import join as pjoin
 from typing import (
     Any,
     Dict,
-    List,
     Optional,
     Tuple,
     Union,
 )
 
-from .argdefaults import Primer3PyArguments
+from .argdefaults import (
+    Primer3PyArguments,
+    format_boulder_io,
+    parse_boulder_io,
+)
 
 DEFAULT_P3_ARGS = Primer3PyArguments()
 
@@ -79,6 +79,10 @@ def calcTm(
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
         dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
         dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        dmso_conc: float = DEFAULT_P3_ARGS.dmso_conc,
+        dmso_fact: float = DEFAULT_P3_ARGS.dmso_fact,
+        formamide_conc: float = DEFAULT_P3_ARGS.formamide_conc,
+        annealing_temp_c: float = DEFAULT_P3_ARGS.annealing_temp_c,
         max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
         tm_method: str = DEFAULT_P3_ARGS.tm_method,
         salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
@@ -91,6 +95,11 @@ def calcTm(
         dv_conc: Divalent cation conc. (mM)
         dntp_conc: dNTP conc. (mM)
         dna_conc: DNA conc. (nM)
+        dmso_conc: Concentration of DMSO (%)
+        dmso_fact: DMSO correction factor, default 0.6
+        formamide_conc: Concentration of formamide (mol/l)
+        annealing_temp_c: Actual annealing temperature of the PCR reaction
+            in (C)
         max_nn_length: Maximum length for nearest-neighbor calcs
         tm_method: Tm calculation method (breslauer or santalucia)
         salt_corrections_method: Salt correction method (schildkraut, owczarzy,
@@ -102,16 +111,12 @@ def calcTm(
     tm_meth = _tm_methods.get(tm_method)
     if tm_meth is None:
         raise ValueError(
-            '{} is not a valid tm calculation method'.format(
-                tm_method,
-            ),
+            f'{tm_method} is not a valid tm calculation method',
         )
     salt_meth = _salt_corrections_methods.get(salt_corrections_method)
     if salt_meth is None:
         raise ValueError(
-            '{} is not a valid salt correction method'.format(
-                salt_corrections_method,
-            ),
+            f'{salt_corrections_method} is not a valid salt correction method',
         )
     # For whatever reason mv_conc and dna_conc have to be ints
     args = [
@@ -122,6 +127,9 @@ def calcTm(
         '-d', str(dna_conc),
         '-tp', str(tm_meth),
         '-sc', str(salt_meth),
+        '-dm', str(dmso_conc),
+        '-df', str(dmso_fact),
+        '-fo', str(formamide_conc),
         seq,
     ]
     tm = subprocess.check_output(
@@ -248,7 +256,6 @@ def calcHairpin(
         dna_conc: DNA conc. (nM)
         temp_c: Simulation temperature for dG (Celsius)
         max_loop(int, optional): Maximum size of loops in the structure
-        temp_only:
         temp_only: print only temp to stderr
 
     Returns:
@@ -410,65 +417,6 @@ def assessOligo(seq: str) -> Tuple[THERMORESULT, THERMORESULT]:
     return (hairpin_out, homodimer_out)
 
 
-# ~~~~~~~ RUDIMENTARY PRIMER3 MAIN WRAPPER (see Primer3 docs for args) ~~~~~~ #
-def _formatBoulderIO(p3_args: Dict[str, Any]) -> bytes:
-    '''Convert argument dictionary to boulder formatted bytes
-
-    Args:
-        p3_args: primer3 arguments to format boulder style
-
-    Returns:
-        Boulder formatted byte string
-    '''
-    boulder_str = ''.join([
-        '{}={}\n'.format(k, v) for k, v in
-        p3_args.items()
-    ])
-    boulder_str = f'{boulder_str}=\n'
-    return boulder_str.encode('utf8')
-
-
-def _parseBoulderIO(boulder_bytes: bytes) -> Dict[str, str]:
-    '''Convert boulder info to a key/value dictionary
-    Args:
-        boulder_bytes: Bytes of boulder formatted information to parse
-
-    Returns:
-        Dictionary of key/values
-    '''
-    data_dict = OrderedDict()
-    for line in boulder_bytes.decode('utf8').split('\n'):
-        try:
-            k, v = line.strip().split('=')
-            data_dict[k] = v
-        except ValueError:
-            pass
-    return data_dict
-
-
-def parseMultiRecordBoulderIO(boulder_str: str) -> List[OrderedDict[str, str]]:
-    '''
-    Args:
-        boulder_str: boulder string to parse with multiple records
-
-    Returns:
-        List of OrderedDicts per record
-    '''
-    data_dicts = []
-    for record in re.split('=\r?\n', boulder_str):
-        if record == '':
-            continue
-        data_dict = OrderedDict()
-        for line in record.split('\n'):
-            try:
-                k, v = line.strip().split('=')
-                data_dict[k] = v
-            except ValueError:
-                pass
-        data_dicts.append(data_dict)
-    return data_dicts
-
-
 def designPrimers(
         p3_args: Dict[str, Any],
         input_log: Optional[io.BufferedWriter] = None,
@@ -493,7 +441,7 @@ def designPrimers(
         stderr=subprocess.STDOUT,
     )
     p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH', THERMO_PATH)
-    in_str = _formatBoulderIO(p3_args)
+    in_str = format_boulder_io(p3_args)
     if input_log:
         input_log.write(in_str)
         input_log.flush()
@@ -504,4 +452,4 @@ def designPrimers(
     if err_log and err_str is not None:
         err_log.write(err_str)
         err_log.flush()
-    return _parseBoulderIO(out_str)
+    return parse_boulder_io(out_str)

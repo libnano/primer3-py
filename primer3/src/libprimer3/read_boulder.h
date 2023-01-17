@@ -50,8 +50,7 @@ typedef struct read_boulder_record_results {
   int file_flag;
 } read_boulder_record_results;
 
-extern char *thermodynamic_params_path; /* path to thermodynamic parameter files */
-extern int   thermodynamic_path_changed;/* if this is set to 1, we need to re-read the thermodynamic parameters from new path */
+extern char *kmer_lists_path; /* path to kmer lists files */
 
 /*
  * Read data from file_input until a "=" line occurs.  Assign
@@ -70,20 +69,22 @@ int read_boulder_record(FILE *file_input,
                         seq_args *sarg,
                         pr_append_str *fatal_err,
                         pr_append_str *nonfatal_err,
-			pr_append_str *warnings,
-                        read_boulder_record_results *);
+                        pr_append_str *warnings,
+                        read_boulder_record_results *,
+                        char* /* Added NC */
+                        );
 
 /* Return null on error. */
 /* pr_append_str is an append-only string ADT. */
 int read_p3_file(const char *file_name,
                  const p3_file_type file_type,
-		 int echo_output,
-		 int strict_tags,
+                 int echo_output,
+                 int strict_tags,
                  p3_global_settings *pa,
                  seq_args *sarg,
                  pr_append_str *fatal_err,
                  pr_append_str *nonfatal_err,
-		 pr_append_str *warnings,
+                 pr_append_str *warnings,
                  read_boulder_record_results *read_boulder_record_res);
 
 #endif
