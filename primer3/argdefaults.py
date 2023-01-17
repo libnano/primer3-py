@@ -21,7 +21,7 @@ primer3.argdefaults
 import dataclasses
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass()
 class Primer3PyArguments:
     '''Class containing the defaults values for the system
 
