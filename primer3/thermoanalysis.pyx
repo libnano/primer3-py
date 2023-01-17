@@ -46,6 +46,7 @@ from libc.stdlib cimport (
 from libc.string cimport strlen
 
 import atexit
+import os.path
 from typing import (
     Any,
     Dict,
@@ -102,12 +103,17 @@ cdef inline bytes _bytes(s):
 
 # ~~~~~~~~~ Load base thermodynamic parameters into memory from file ~~~~~~~~ #
 
+# TODO: remove after update to primer3 >= 2.5.0
 def _loadThermoParams():
     cdef char*           p3_cfg_path_bytes_c
     cdef thal_results    thalres
-    import os
-    libprimer3_path = os.environ.get('PRIMER3HOME')
-    p3_cfg_path = os.path.join(libprimer3_path, 'primer3_config/')
+    p3_cfg_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'src',
+        'libprimer3',
+        'primer3_config',
+        '',  # Add trailing slash (OS-ind) req'd by primer3 lib
+    )
     p3_cfg_path_bytes = p3_cfg_path.encode('utf-8')
     p3_cfg_path_bytes_c = p3_cfg_path_bytes
     if get_thermodynamic_values(p3_cfg_path_bytes_c, &thalres) != 0:
@@ -670,7 +676,7 @@ cdef class ThermoAnalysis:
             c_ascii_structure = <char *>malloc(
                 (strlen(<const char*>s1) * 2 + 24)
             )
-            c_ascii_structure[0] = '\0';
+            c_ascii_structure[0] = b'\0';
         thal(
             <const unsigned char*> s1,
             <const unsigned char*> s1,

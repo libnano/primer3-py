@@ -50,13 +50,18 @@ from .argdefaults import Primer3PyArguments
 
 DEFAULT_P3_ARGS = Primer3PyArguments()
 
-# ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
-
-LIBPRIMER3_PATH = os.environ['PRIMER3HOME']
-
 # ~~~~~~~~~~~~~~~~ Load thermodynamic parameters into memory ~~~~~~~~~~~~~~~~ #
 
-primerdesign.loadThermoParams(pjoin(LIBPRIMER3_PATH, 'primer3_config/'))
+# TODO: remove after update to primer3 >= 2.5.0
+LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
+THERMO_PATH = pjoin(
+    LOCAL_DIR,
+    'src',
+    'libprimer3',
+    'primer3_config',
+    '',  # Add trailing slash (OS-ind) req'd by primer3 lib
+)
+primerdesign.loadThermoParams(THERMO_PATH)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Low level bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 

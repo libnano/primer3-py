@@ -50,21 +50,14 @@ DEFAULT_P3_ARGS = Primer3PyArguments()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PRIMER3 WRAPPERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
-
-# ~~~~~~~ Check to insure that the environment is properly configured ~~~~~~~ #
-
+# TODO: remove after update to primer3 >= 2.5.0
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
-
-if not os.environ.get('PRIMER3HOME'):
-    try:
-        os.environ['PRIMER3HOME'] = pjoin(LOCAL_DIR, 'src/libprimer3')
-    except BaseException:
-        raise OSError('PRIMER3HOME environmental variable is not set.')
-LIBPRIMER3_PATH = os.environ['PRIMER3HOME']
-if not os.path.isdir(LIBPRIMER3_PATH):
-    raise OSError(f'Path {LIBPRIMER3_PATH} does not exist')
-
-THERMO_PATH = pjoin(LIBPRIMER3_PATH, 'primer3_config/')
+LIBPRIMER3_PATH = pjoin(LOCAL_DIR, 'src', 'libprimer3')
+THERMO_PATH = pjoin(
+    LIBPRIMER3_PATH,
+    'primer3_config',
+    '',  # Add trailing slash (OS-ind) req'd by primer3 lib
+)
 
 DEV_NULL = open(os.devnull, 'wb')
 
@@ -499,10 +492,7 @@ def designPrimers(
         stdin=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-    p3_args.setdefault(
-        'PRIMER_THERMODYNAMIC_PARAMETERS_PATH',
-        pjoin(LIBPRIMER3_PATH, 'primer3_config/'),
-    )
+    p3_args.setdefault('PRIMER_THERMODYNAMIC_PARAMETERS_PATH', THERMO_PATH)
     in_str = _formatBoulderIO(p3_args)
     if input_log:
         input_log.write(in_str)
