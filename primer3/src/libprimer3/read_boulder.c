@@ -36,12 +36,18 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/* Check on which OS we compile */
+#if defined(_WIN32) || defined(WIN32) || defined (__WIN32__) || defined(__CYGWIN__) || defined(__MINGW32__)
+#define OS_WIN
+#endif
+
 #include <limits.h>
 #include <stdlib.h>  /* strtod, strtol,... */
 #include <ctype.h> /* toupper, isspace */
 #include <string.h> /* memset, strlen,  strcmp, ... */
 #include <float.h>
 #include "read_boulder.h"
+#include "masker.h"
 
 #define INIT_BUF_SIZE 1024
 #define INIT_LIB_SIZE  500
@@ -49,6 +55,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 char *thermodynamic_params_path = NULL;
 int   thermodynamic_path_changed = 1;
+
+char *kmer_lists_path = NULL;
 
 /* Static functions. */
 static void *_rb_safe_malloc(size_t x);
@@ -64,8 +72,8 @@ static const char *parse_int_pair(const char *, const char *,
                                   pr_append_str *);
 
 static char  *parse_2_int_pair(const char*, char*, char,
-			       char, int*, int*, int*, int*,
-			       pr_append_str*);
+                               char, int*, int*, int*, int*,
+                               pr_append_str*);
 
 static void   parse_interval_list(const char *tag_name,
                                   const char *datum,
@@ -73,9 +81,9 @@ static void   parse_interval_list(const char *tag_name,
                                   pr_append_str *err);
 
 static void   parse_2_interval_list(const char *tag_name,
-				    char *datum,
-				    interval_array_t4 *interval_arr,
-				    pr_append_str *err);
+                                    char *datum,
+                                    interval_array_t4 *interval_arr,
+                                    pr_append_str *err);
 
 static int    parse_intron_list(char *, int *, int *);
 
@@ -121,7 +129,7 @@ extern double strtod();
 #define OVERWRITE_COMPARE_AND_MALLOC(TAG,T)        \
    if (COMPARE(TAG)) {                             \
        if (T) {                                    \
-	 free(T);				   \
+         free(T);                                   \
        }                                           \
        T = (char*) _rb_safe_malloc(datum_len + 1); \
        strcpy(T, datum);                           \
@@ -166,6 +174,22 @@ extern double strtod();
        continue;                                           \
    }
 
+
+/* NOTE: NC for fast new-line parsing a character string
+* Adapted from https://stackoverflow.com/a/17983619 answer by
+* Jeremy Friesner edited 12/4/2015 CC BY-SA license
+*/
+int get_next_line(char** cur_line_ptr, char* next_line,  int* check) {
+  if (*check == 0) {
+    *check = 1;
+  } else {
+    if (next_line) { *next_line = '\n'; }
+    *cur_line_ptr = next_line ? (next_line+1) : NULL;
+  }
+  return 1;
+}
+
+
 /* c-basic-offset in emacs is set to 2 */
 /*
  * See read_boulder.h for description.
@@ -180,12 +204,14 @@ read_boulder_record(FILE *file_input,
                     seq_args *sa,
                     pr_append_str *glob_err,  /* Really should be called fatal_parse_err */
                     pr_append_str *nonfatal_parse_err,
-		    pr_append_str *warnings,
-                    read_boulder_record_results *res)
-{
+                    pr_append_str *warnings,
+                    read_boulder_record_results *res,
+                    char* in_buffer
+) {
   int line_len;
   int tag_len, datum_len;
   int data_found = 0;
+  int read_start_codon = 0;
   char *s, *n, *datum, *task_tmp = NULL;
   const char *p;
   pr_append_str *parse_err;
@@ -200,15 +226,36 @@ read_boulder_record(FILE *file_input,
 
   non_fatal_err = nonfatal_parse_err;
 
-  while (((s = p3_read_line(file_input)) != NULL) && (strcmp(s,"="))) {
+  char* cur_line = NULL;
+  char* next_line = NULL;
+  int did_start_in_buffer_read = 0;
+
+  if (in_buffer != NULL) {
+      cur_line = in_buffer;
+  }
+
+  while (
+      (
+          (file_input != NULL) &&
+          ((s = p3_read_line(file_input)) != NULL) && (strcmp(s,"="))
+      ) || (
+          (cur_line != NULL) && get_next_line(&cur_line, next_line, &did_start_in_buffer_read) &&
+          ((next_line = strchr(cur_line, '\n')) != NULL) && (strcmp(cur_line, "="))
+      )
+  ) {
+    /* Added NC */
+    if (next_line) {
+      *next_line = '\0';  // temporarily terminate the current line
+      s = cur_line;
+    }
     /* If we are reading from a settings file, then skip every
        line except those begining "PRIMER_" or "P3_FILE_ID".
        Hint: strncomp returns 0 if both strings are equal */
      if (file_type == settings
-	 && strncmp(s, "PRIMER_", 7) /* "s does not begin with 'PRIMER_'" */
-	 && strncmp(s, "P3_FILE_ID", 10) /* "s does not begin with
-					    'P3_FILE_ID'" */
-	 ) {
+         && strncmp(s, "PRIMER_", 7) /* "s does not begin with 'PRIMER_'" */
+         && strncmp(s, "P3_FILE_ID", 10) /* "s does not begin with
+                                            'P3_FILE_ID'" */
+         ) {
       continue;
     }
     /* Silently ignore all primer3plus tags */
@@ -262,44 +309,82 @@ read_boulder_record(FILE *file_input,
       COMPARE_AND_MALLOC("SEQUENCE_PRIMER", sa->left_input);
       COMPARE_AND_MALLOC("SEQUENCE_PRIMER_REVCOMP", sa->right_input);
       COMPARE_AND_MALLOC("SEQUENCE_INTERNAL_OLIGO", sa->internal_input);
+      COMPARE_AND_MALLOC("SEQUENCE_OVERHANG_LEFT", sa->overhang_left);
+      COMPARE_AND_MALLOC("SEQUENCE_OVERHANG_RIGHT", sa->overhang_right);
       COMPARE_2_INTERVAL_LIST("SEQUENCE_PRIMER_PAIR_OK_REGION_LIST", &sa->ok_regions);
       COMPARE_INTERVAL_LIST("SEQUENCE_TARGET", &sa->tar2);
       COMPARE_INTERVAL_LIST("SEQUENCE_EXCLUDED_REGION", &sa->excl2);
       COMPARE_INTERVAL_LIST("SEQUENCE_INTERNAL_EXCLUDED_REGION",
                               &sa->excl_internal2);
       if (COMPARE("SEQUENCE_OVERLAP_JUNCTION_LIST")) {
-	if (parse_intron_list(datum, sa->primer_overlap_junctions,
-			      &sa->primer_overlap_junctions_count) == 0) {
+        if (parse_intron_list(datum, sa->primer_overlap_junctions,
+                              &sa->primer_overlap_junctions_count) == 0) {
           pr_append_new_chunk(parse_err,
-			      "Error in SEQUENCE_PRIMER_OVERLAP_JUNCTION_LIST");
+                              "Error in SEQUENCE_OVERLAP_JUNCTION_LIST");
+        }
+        continue;
+      }
+      if (COMPARE("SEQUENCE_INTERNAL_OVERLAP_JUNCTION_LIST")) {
+        if (parse_intron_list(datum, sa->intl_overlap_junctions,
+                              &sa->intl_overlap_junctions_count) == 0) {
+          pr_append_new_chunk(parse_err,
+                              "Error in SEQUENCE_INTERNAL_OVERLAP_JUNCTION_LIST");
         }
         continue;
       }
       if (COMPARE("SEQUENCE_INCLUDED_REGION")) {
         p = parse_int_pair("SEQUENCE_INCLUDED_REGION", datum, ',',
                            &sa->incl_s, &sa->incl_l, parse_err);
-        if (NULL == p) /* An error; the message is already
+        if (NULL == p) { /* An error; the message is already
                         * in parse_err.  */
           continue;
-        while (' ' == *p || '\t' == *p) p++;
-        if (*p != '\n' && *p != '\0')
+        }
+        while (' ' == *p || '\t' == *p) { p++; }
+        if (*p != '\n' && *p != '\0') {
             tag_syntax_error("SEQUENCE_INCLUDED_REGION", datum,
                              parse_err);
-          continue;
+        }
+        continue;
       }
       COMPARE_INT("SEQUENCE_START_CODON_POSITION", sa->start_codon_pos);
+      if ((!strncmp(s, "SEQUENCE_START_CODON_SEQUENCE", tag_len)
+          && ('=' == s[tag_len] || ' ' == s[tag_len])
+          && '\0' == "SEQUENCE_START_CODON_SEQUENCE"[tag_len])) {
+        if (read_start_codon) {
+           pr_append_new_chunk(parse_err, "Duplicate tag: SEQUENCE_START_CODON_SEQUENCE");
+        } else {
+           read_start_codon = 1;
+           if (datum_len == 3) {
+             sa->start_codon_seq[0] = toupper(s[tag_len + 1]);
+             sa->start_codon_seq[1] = toupper(s[tag_len + 2]);
+             sa->start_codon_seq[2] = toupper(s[tag_len + 3]);
+           } else {
+             sa->start_codon_seq[0] = 'X';
+           }
+        }
+        continue;
+       }
       COMPARE_INT("SEQUENCE_FORCE_LEFT_START", sa->force_left_start);
       COMPARE_INT("SEQUENCE_FORCE_LEFT_END", sa->force_left_end);
       COMPARE_INT("SEQUENCE_FORCE_RIGHT_START", sa->force_right_start);
       COMPARE_INT("SEQUENCE_FORCE_RIGHT_END", sa->force_right_end);
+
       /* Process "Global" Arguments (those that persist between boulder
        * records). */
       parse_err = glob_err;  /* These errors are considered fatal. */
       if (COMPARE("PRIMER_PRODUCT_SIZE_RANGE")) {
         parse_product_size("PRIMER_PRODUCT_SIZE_RANGE", datum, pa,
                            parse_err);
+
         continue;
       }
+
+      /* NOTE: NC Added parsing for LOGGING Input*/
+      if (strncmp(s, "DO_LOG_SETTINGS=1", 17) == 0) {
+        pa->do_log_settings = 1;
+      }
+      COMPARE_AND_MALLOC("LOG_SETTINGS_PATH", pa->log_settings_path);
+
       COMPARE_INT("PRIMER_OPT_SIZE", pa->p_args.opt_size);
       COMPARE_INT("PRIMER_MIN_SIZE", pa->p_args.min_size);
       COMPARE_INT("PRIMER_MAX_SIZE", pa->p_args.max_size);
@@ -308,6 +393,9 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_OPT_GC_PERCENT", pa->p_args.opt_gc_content);
       COMPARE_FLOAT("PRIMER_MIN_TM", pa->p_args.min_tm);
       COMPARE_FLOAT("PRIMER_MAX_TM", pa->p_args.max_tm);
+      COMPARE_FLOAT("PRIMER_OPT_BOUND", pa->p_args.opt_bound);
+      COMPARE_FLOAT("PRIMER_MIN_BOUND", pa->p_args.min_bound);
+      COMPARE_FLOAT("PRIMER_MAX_BOUND", pa->p_args.max_bound);
       COMPARE_FLOAT("PRIMER_PAIR_MAX_DIFF_TM", pa->max_diff_tm);
       if (COMPARE("PRIMER_TM_FORMULA")) {
           parse_int("PRIMER_TM_FORMULA", datum, &tmp_int, parse_err);
@@ -319,24 +407,27 @@ read_boulder_record(FILE *file_input,
         pa->salt_corrections = (salt_correction_type) tmp_int; /* added by T.Koressaar */
         continue;
       }
+      COMPARE_FLOAT("PRIMER_ANNEALING_TEMP", pa->annealing_temp);
       COMPARE_FLOAT("PRIMER_MIN_GC", pa->p_args.min_gc);
       COMPARE_FLOAT("PRIMER_MAX_GC", pa->p_args.max_gc);
       COMPARE_FLOAT("PRIMER_SALT_MONOVALENT", pa->p_args.salt_conc);
       COMPARE_FLOAT("PRIMER_SALT_DIVALENT", pa->p_args.divalent_conc);
       COMPARE_FLOAT("PRIMER_DNTP_CONC", pa->p_args.dntp_conc);
       COMPARE_FLOAT("PRIMER_DNA_CONC", pa->p_args.dna_conc);
+      COMPARE_FLOAT("PRIMER_DMSO_CONC", pa->p_args.dmso_conc);
+      COMPARE_FLOAT("PRIMER_DMSO_FACTOR", pa->p_args.dmso_fact);
+      COMPARE_FLOAT("PRIMER_FORMAMIDE_CONC", pa->p_args.formamide_conc);
       COMPARE_INT("PRIMER_MAX_NS_ACCEPTED", pa->p_args.num_ns_accepted);
       COMPARE_INT("PRIMER_PRODUCT_OPT_SIZE", pa->product_opt_size);
       COMPARE_FLOAT("PRIMER_MAX_SELF_ANY", pa->p_args.max_self_any);
 
       /* COMPARE_FLOAT("PRIMER_MAX_SELF_END", pa->p_args.max_self_end); */
       /* NEW */ COMPARE_FLOAT_USE_FN("PRIMER_MAX_SELF_END", p3_set_gs_primer_self_end)
-	/* if (COMPARE("PRIMER_MAX_SELF_END")) {
-	  parse_double("PRIMER_MAX_SELF_END", datum, &tmp_double, parse_err);
-	  p3_set_gs_primer_self_end(pa, tmp_double);
-	  continue;
-	  } */
-
+        /* if (COMPARE("PRIMER_MAX_SELF_END")) {
+          parse_double("PRIMER_MAX_SELF_END", datum, &tmp_double, parse_err);
+          p3_set_gs_primer_self_end(pa, tmp_double);
+          continue;
+          } */
       COMPARE_FLOAT("PRIMER_MAX_SELF_ANY_TH", pa->p_args.max_self_any_th);
       COMPARE_FLOAT("PRIMER_MAX_SELF_END_TH", pa->p_args.max_self_end_th);
       COMPARE_FLOAT("PRIMER_MAX_HAIRPIN_TH", pa->p_args.max_hairpin_th);
@@ -355,43 +446,57 @@ read_boulder_record(FILE *file_input,
       COMPARE_INT("PRIMER_MIN_QUALITY", pa->p_args.min_quality);
       COMPARE_INT("PRIMER_MIN_END_QUALITY", pa->p_args.min_end_quality);
       if (COMPARE("PRIMER_MIN_THREE_PRIME_DISTANCE")) {
-	parse_int("PRIMER_MIN_THREE_PRIME_DISTANCE", datum, &(min_three_prime_distance), parse_err);
-	/* check if specific tag also specified - error in this case */
-	if (min_3_prime_distance_specific == 1) {
-	  pr_append_new_chunk(glob_err,
-                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_{LEFT/RIGHT}_MIN_THREE_PRIME_DISTANCE specified");
-	} else {
-	  min_3_prime_distance_global = 1;
-	  /* set up individual flags */
-	  pa->min_left_three_prime_distance = min_three_prime_distance;
-	  pa->min_right_three_prime_distance = min_three_prime_distance;
-	}
-	continue;
+        parse_int("PRIMER_MIN_THREE_PRIME_DISTANCE", datum, &(min_three_prime_distance), parse_err);
+        /* check if specific tag also specified - error in this case */
+        if (min_3_prime_distance_specific == 1) {
+          pr_append_new_chunk(glob_err,
+                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_MIN_{LEFT/INTERNAL/RIGHT}_THREE_PRIME_DISTANCE specified");
+        } else {
+          min_3_prime_distance_global = 1;
+          /* set up individual flags */
+          pa->min_left_three_prime_distance = min_three_prime_distance;
+          pa->min_internal_three_prime_distance = min_three_prime_distance;
+          pa->min_right_three_prime_distance = min_three_prime_distance;
+        }
+        continue;
       }
       if (COMPARE("PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE")) {
-	parse_int("PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE", datum, &(pa->min_left_three_prime_distance), parse_err);
-	/* check if global tag also specified - error in this case */
-	if (min_3_prime_distance_global == 1) {
-	  pr_append_new_chunk(glob_err,
-                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_{LEFT/RIGHT}_MIN_THREE_PRIME_DISTANCE specified");
-	} else {
-	  min_3_prime_distance_specific = 1;
-	}
-	continue;
+        parse_int("PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE", datum, &(pa->min_left_three_prime_distance), parse_err);
+        /* check if global tag also specified - error in this case */
+        if (min_3_prime_distance_global == 1) {
+          pr_append_new_chunk(glob_err,
+                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE specified");
+        } else {
+          min_3_prime_distance_specific = 1;
+        }
+        continue;
+      }
+      if (COMPARE("PRIMER_INTERNAL_MIN_THREE_PRIME_DISTANCE")) {
+        parse_int("PRIMER_INTERNAL_MIN_THREE_PRIME_DISTANCE", datum, &(pa->min_internal_three_prime_distance), parse_err);
+        /* check if global tag also specified - error in this case */
+        if (min_3_prime_distance_global == 1) {
+          pr_append_new_chunk(glob_err,
+                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_INTERNAL_MIN_THREE_PRIME_DISTANCE specified");
+        } else {
+          min_3_prime_distance_specific = 1;
+        }
+        continue;
       }
       if (COMPARE("PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE")) {
-	parse_int("PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE", datum, &(pa->min_right_three_prime_distance), parse_err);
-	/* check if global tag also specified - error in this case */
-	if (min_3_prime_distance_global == 1) {
-	  pr_append_new_chunk(glob_err,
-                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_{LEFT/RIGHT}_MIN_THREE_PRIME_DISTANCE specified");
-	} else {
-	  min_3_prime_distance_specific = 1;
-	}
-	continue;
+        parse_int("PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE", datum, &(pa->min_right_three_prime_distance), parse_err);
+        /* check if global tag also specified - error in this case */
+        if (min_3_prime_distance_global == 1) {
+          pr_append_new_chunk(glob_err,
+                              "Both PRIMER_MIN_THREE_PRIME_DISTANCE and PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE specified");
+        } else {
+          min_3_prime_distance_specific = 1;
+        }
+        continue;
       }
       if (file_type == settings) {
-        if (COMPARE("P3_FILE_ID")) continue;
+        if (COMPARE("P3_FILE_ID")) {
+          continue;
+        }
       }
       COMPARE_INT("PRIMER_QUALITY_RANGE_MIN", pa->quality_range_min);
       COMPARE_INT("PRIMER_QUALITY_RANGE_MAX", pa->quality_range_max);
@@ -403,14 +508,24 @@ read_boulder_record(FILE *file_input,
       COMPARE_INT("PRIMER_SEQUENCING_INTERVAL", pa->sequencing.interval);
       COMPARE_INT("PRIMER_SEQUENCING_ACCURACY", pa->sequencing.accuracy);
       if (COMPARE("PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION")) {
-	parse_int("PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION", datum, &pa->min_5_prime_overlap_of_junction, parse_err);
-	/* min_5_prime = 1; Removed 10/20/2010 */
-	continue;
+        parse_int("PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION", datum,
+                  &pa->p_args.min_5_prime_overlap_of_junction, parse_err);
+        continue;
       }
       if (COMPARE("PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION")) {
-	parse_int("PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION", datum, &pa->min_3_prime_overlap_of_junction, parse_err);
-	/* min_3_prime = 1; Removed 10/20/2010 */
-	continue;
+        parse_int("PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION", datum,
+                  &pa->p_args.min_3_prime_overlap_of_junction, parse_err);
+        continue;
+      }
+      if (COMPARE("PRIMER_INTERNAL_MIN_5_PRIME_OVERLAP_OF_JUNCTION")) {
+        parse_int("PRIMER_INTERNAL_MIN_5_PRIME_OVERLAP_OF_JUNCTION", datum,
+                  &pa->o_args.min_5_prime_overlap_of_junction, parse_err);
+        continue;
+      }
+      if (COMPARE("PRIMER_INTERNAL_MIN_3_PRIME_OVERLAP_OF_JUNCTION")) {
+        parse_int("PRIMER_INTERNAL_MIN_3_PRIME_OVERLAP_OF_JUNCTION", datum,
+                  &pa->o_args.min_3_prime_overlap_of_junction, parse_err);
+        continue;
       }
       COMPARE_AND_MALLOC("PRIMER_TASK", task_tmp);
       COMPARE_INT("PRIMER_PICK_RIGHT_PRIMER", pa->pick_right_primer);
@@ -425,6 +540,9 @@ read_boulder_record(FILE *file_input,
                     pa->o_args.opt_gc_content);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_TM", pa->o_args.max_tm);
       COMPARE_FLOAT("PRIMER_INTERNAL_MIN_TM", pa->o_args.min_tm);
+      COMPARE_FLOAT("PRIMER_INTERNAL_OPT_BOUND", pa->o_args.opt_bound);
+      COMPARE_FLOAT("PRIMER_INTERNAL_MAX_BOUND", pa->o_args.max_bound);
+      COMPARE_FLOAT("PRIMER_INTERNAL_MIN_BOUND", pa->o_args.min_bound);
       COMPARE_FLOAT("PRIMER_INTERNAL_MIN_GC", pa->o_args.min_gc);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_GC", pa->o_args.max_gc);
       COMPARE_FLOAT("PRIMER_INTERNAL_SALT_MONOVALENT",
@@ -434,27 +552,30 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_INTERNAL_DNTP_CONC",
                     pa->o_args.dntp_conc);
       COMPARE_FLOAT("PRIMER_INTERNAL_DNA_CONC", pa->o_args.dna_conc);
+      COMPARE_FLOAT("PRIMER_INTERNAL_DMSO_CONC", pa->o_args.dmso_conc);
+      COMPARE_FLOAT("PRIMER_INTERNAL_DMSO_FACTOR", pa->o_args.dmso_fact);
+      COMPARE_FLOAT("PRIMER_INTERNAL_FORMAMIDE_CONC", pa->o_args.formamide_conc);
       COMPARE_INT("PRIMER_INTERNAL_MAX_NS_ACCEPTED", pa->o_args.num_ns_accepted);
       COMPARE_INT("PRIMER_INTERNAL_MIN_QUALITY", pa->o_args.min_quality);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_SELF_ANY",
-		    pa->o_args.max_self_any);
+                    pa->o_args.max_self_any);
 
       /* COMPARE_FLOAT("PRIMER_INTERNAL_MAX_SELF_END",
-	 pa->o_args.max_self_end); */
+         pa->o_args.max_self_end); */
       /* NEW  */ COMPARE_FLOAT_USE_FN("PRIMER_INTERNAL_MAX_SELF_END",
-				      p3_set_gs_primer_internal_oligo_self_end);
+                                      p3_set_gs_primer_internal_oligo_self_end);
       /* if (COMPARE("PRIMER_INTERNAL_MAX_SELF_END")) {
-	 parse_double("PRIMER_INTERNAL_MAX_SELF_END", datum, &tmp_double, parse_err);
-	 p3_set_gs_primer_internal_oligo_self_end(pa, tmp_double);
-	 continue;
-	 } */
+         parse_double("PRIMER_INTERNAL_MAX_SELF_END", datum, &tmp_double, parse_err);
+         p3_set_gs_primer_internal_oligo_self_end(pa, tmp_double);
+         continue;
+         } */
 
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_SELF_ANY_TH",
-			   pa->o_args.max_self_any_th);
+                           pa->o_args.max_self_any_th);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_SELF_END_TH",
-				 pa->o_args.max_self_end_th);
+                                 pa->o_args.max_self_end_th);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_HAIRPIN_TH",
-			       pa->o_args.max_hairpin_th);
+                               pa->o_args.max_hairpin_th);
       COMPARE_FLOAT("PRIMER_MAX_LIBRARY_MISPRIMING",
                     pa->p_args.max_repeat_compl);
       COMPARE_FLOAT("PRIMER_INTERNAL_MAX_LIBRARY_MISHYB",
@@ -465,11 +586,11 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_MAX_TEMPLATE_MISPRIMING",
                     pa->p_args.max_template_mispriming);
       COMPARE_FLOAT("PRIMER_MAX_TEMPLATE_MISPRIMING_TH",
-			  pa->p_args.max_template_mispriming_th);
+                          pa->p_args.max_template_mispriming_th);
       COMPARE_FLOAT("PRIMER_PAIR_MAX_TEMPLATE_MISPRIMING",
                     pa->pair_max_template_mispriming);
       COMPARE_FLOAT("PRIMER_PAIR_MAX_TEMPLATE_MISPRIMING_TH",
-		    pa->pair_max_template_mispriming_th);
+                    pa->pair_max_template_mispriming_th);
        /* Control interpretation of ambiguity codes in mispriming
           and mishyb libraries. */
       COMPARE_INT("PRIMER_LIB_AMBIGUITY_CODES_CONSENSUS",
@@ -500,30 +621,42 @@ read_boulder_record(FILE *file_input,
         }
         continue;
       }
-      if (COMPARE("P3_COMMENT")) continue;
+      if (COMPARE("P3_COMMENT")) {
+        continue;
+      }
       COMPARE_FLOAT("PRIMER_MAX_END_STABILITY", pa->max_end_stability);
+      COMPARE_INT("PRIMER_LOWERCASE_MASKING", pa->lowercase_masking);
 
-      COMPARE_INT("PRIMER_LOWERCASE_MASKING",
-                  pa->lowercase_masking);
       /* added by T. Koressaar */
       COMPARE_INT("PRIMER_THERMODYNAMIC_OLIGO_ALIGNMENT", pa->thermodynamic_oligo_alignment);
       COMPARE_INT("PRIMER_THERMODYNAMIC_TEMPLATE_ALIGNMENT", pa->thermodynamic_template_alignment);
       if (COMPARE("PRIMER_THERMODYNAMIC_PARAMETERS_PATH")) {
-        if (thermodynamic_params_path == NULL) {
-          thermodynamic_params_path = (char*) _rb_safe_malloc(datum_len + 1);
-          strcpy(thermodynamic_params_path, datum);
-          thermodynamic_path_changed = 1;
+        thermodynamic_params_path = (char*) _rb_safe_malloc(datum_len + 1);
+        strcpy(thermodynamic_params_path, datum);
+        if (thermodynamic_params_path[strlen(thermodynamic_params_path) - 1] == '\n') {
+          thermodynamic_params_path[strlen(thermodynamic_params_path) - 1] = '\0';
         }
-        /* check if path changes */
-	else if (strcmp(thermodynamic_params_path, datum)) {
-	  free(thermodynamic_params_path);
-	  thermodynamic_params_path = (char*) _rb_safe_malloc(datum_len + 1);
-	  strcpy(thermodynamic_params_path, datum);
-	  thermodynamic_path_changed = 1;
+
+        thal_results o;
+        if (thal_load_parameters(thermodynamic_params_path, &pa->thermodynamic_parameters, &o) == -1) {
+          pr_append_new_chunk(glob_err, o.msg);
+        } else {
+          if (get_thermodynamic_values(&pa->thermodynamic_parameters, &o)) {
+            pr_append_new_chunk(glob_err, o.msg);
+          }
+        }
+        free(thermodynamic_params_path);
+        continue;
+      }
+      if (COMPARE("PRIMER_MASK_KMERLIST_PATH")) {
+        if (kmer_lists_path == NULL) {
+          kmer_lists_path = (char*) _rb_safe_malloc(datum_len + 1);
+          strcpy(kmer_lists_path, datum);
         }
         continue;
       }
       /* added by A. Untergasser */
+      COMPARE_INT("PRIMER_SECONDARY_STRUCTURE_ALIGNMENT", pa->show_secondary_structure_alignment);
       OVERWRITE_COMPARE_AND_MALLOC("PRIMER_MUST_MATCH_FIVE_PRIME", pa->p_args.must_match_five_prime);
       OVERWRITE_COMPARE_AND_MALLOC("PRIMER_MUST_MATCH_THREE_PRIME", pa->p_args.must_match_three_prime);
       OVERWRITE_COMPARE_AND_MALLOC("PRIMER_INTERNAL_MUST_MATCH_FIVE_PRIME", pa->o_args.must_match_five_prime);
@@ -532,6 +665,8 @@ read_boulder_record(FILE *file_input,
       /* CHANGE TEMP/temp -> TM/tm */
       COMPARE_FLOAT("PRIMER_WT_TM_GT", pa->p_args.weights.temp_gt);
       COMPARE_FLOAT("PRIMER_WT_TM_LT", pa->p_args.weights.temp_lt);
+      COMPARE_FLOAT("PRIMER_WT_BOUND_GT", pa->p_args.weights.bound_gt);
+      COMPARE_FLOAT("PRIMER_WT_BOUND_LT", pa->p_args.weights.bound_lt);
       COMPARE_FLOAT("PRIMER_WT_GC_PERCENT_GT", pa->p_args.weights.gc_content_gt);
       COMPARE_FLOAT("PRIMER_WT_GC_PERCENT_LT", pa->p_args.weights.gc_content_lt);
       COMPARE_FLOAT("PRIMER_WT_SIZE_LT", pa->p_args.weights.length_lt);
@@ -551,9 +686,13 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_WT_TEMPLATE_MISPRIMING",
                     pa->p_args.weights.template_mispriming);
       COMPARE_FLOAT("PRIMER_WT_TEMPLATE_MISPRIMING_TH",
-		                        pa->p_args.weights.template_mispriming_th);
+                                        pa->p_args.weights.template_mispriming_th);
+      COMPARE_FLOAT("PRIMER_WT_MASK_FAILURE_RATE",
+                                              pa->p_args.weights.failure_rate);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_TM_GT", pa->o_args.weights.temp_gt);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_TM_LT", pa->o_args.weights.temp_lt);
+      COMPARE_FLOAT("PRIMER_INTERNAL_WT_BOUND_GT", pa->o_args.weights.bound_gt);
+      COMPARE_FLOAT("PRIMER_INTERNAL_WT_BOUND_LT", pa->o_args.weights.bound_lt);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_GC_PERCENT_GT", pa->o_args.weights.gc_content_gt);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_GC_PERCENT_LT", pa->o_args.weights.gc_content_lt);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_SIZE_LT", pa->o_args.weights.length_lt);
@@ -568,7 +707,7 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_SEQ_QUAL", pa->o_args.weights.seq_quality);
       COMPARE_FLOAT("PRIMER_INTERNAL_WT_END_QUAL", pa->o_args.weights.end_quality);
       COMPARE_FLOAT("PRIMER_WT_TEMPLATE_MISPRIMING_TH",
-		    pa->o_args.weights.template_mispriming_th);
+                    pa->o_args.weights.template_mispriming_th);
       COMPARE_FLOAT("PRIMER_PAIR_WT_PR_PENALTY",
                     pa->pr_pair_weights.primer_quality);
       COMPARE_FLOAT("PRIMER_PAIR_WT_IO_PENALTY",
@@ -580,9 +719,9 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_PAIR_WT_COMPL_END",
                     pa->pr_pair_weights.compl_end);
       COMPARE_FLOAT("PRIMER_PAIR_WT_COMPL_ANY_TH",
-		    pa->pr_pair_weights.compl_any_th);
+                    pa->pr_pair_weights.compl_any_th);
       COMPARE_FLOAT("PRIMER_PAIR_WT_COMPL_END_TH",
-		    pa->pr_pair_weights.compl_end_th);
+                    pa->pr_pair_weights.compl_end_th);
       COMPARE_FLOAT("PRIMER_PAIR_WT_PRODUCT_TM_LT",
                     pa->pr_pair_weights.product_tm_lt);
       COMPARE_FLOAT("PRIMER_PAIR_WT_PRODUCT_TM_GT",
@@ -596,19 +735,57 @@ read_boulder_record(FILE *file_input,
       COMPARE_FLOAT("PRIMER_PAIR_WT_TEMPLATE_MISPRIMING",
                     pa->pr_pair_weights.template_mispriming);
       COMPARE_FLOAT("PRIMER_PAIR_WT_TEMPLATE_MISPRIMING_TH",
-		    pa->pr_pair_weights.template_mispriming_th);
+                    pa->pr_pair_weights.template_mispriming_th);
+      if (COMPARE("PRIMER_MASK_TEMPLATE")) {
+                    parse_int("PRIMER_MASK_TEMPLATE", datum, &pa->mask_template, parse_err);
+                    /* Check in case: PRIMER_LOWERCASE_MASKING=1 and PRIMER_MASK_TEMPLATE=0 */
+#if !defined(OS_WIN)
+                    if (pa->mask_template) {
+                        pa->lowercase_masking = pa->mask_template;
+                    }
+                    pa->masking_parameters_changed = pa->mask_template;
+                    continue;
+#else
+                    if (pa->mask_template) {
+                        pr_append_new_chunk(glob_err, "PRIMER_MASK_TEMPLATE not supported on Windows");
+                    }
+                    continue;
+#endif
+      }
+      COMPARE_FLOAT("PRIMER_MASK_FAILURE_RATE", pa->mp.failure_rate);
+      COMPARE_INT("PRIMER_MASK_5P_DIRECTION", pa->mp.nucl_masked_in_5p_direction);
+      COMPARE_INT("PRIMER_MASK_3P_DIRECTION", pa->mp.nucl_masked_in_3p_direction);
+      if (COMPARE("PRIMER_MASK_KMERLIST_PREFIX")) {
+        if(pa->mp.list_prefix == NULL){
+            pa->mp.list_prefix = (char*) _rb_safe_malloc(datum_len + 1);
+            strcpy(pa->mp.list_prefix, datum);
+            pa->masking_parameters_changed = 1;
+        }  else if (strcmp(pa->mp.list_prefix, datum)){
+            free(pa->mp.list_prefix);
+            pa->mp.list_prefix = (char*) _rb_safe_malloc(datum_len + 1);
+            strcpy(pa->mp.list_prefix, datum);
+            pa->masking_parameters_changed = 1;
+        }
+        continue;
+      }
     }
     /* End of reading the tags in the right place */
 
     /*  Complain about unrecognized tags */
-     if (*strict_tags == 1) {
-	pr_append_new_chunk(glob_err, "Unrecognized tag: ");
-	pr_append(glob_err, s);
-	fprintf(stderr, "Unrecognized tag: %s\n", s);
-     }
-  }  /* while ((s = p3_read_line(stdin)) != NULL && strcmp(s,"=")) { */
+    if (*strict_tags == 1) {
+      pr_append_new_chunk(glob_err, "Unrecognized tag: ");
+      pr_append(glob_err, s);
+      fprintf(stderr, "Unrecognized tag: %s\n", s);
+    }
+
+  }  /* end while loop */
 
   /* Check if the record was terminated by "=" */
+  /* Added NC */
+  if (in_buffer != NULL) {
+    s = cur_line;
+  }
+
   if (NULL == s) { /* End of file. */
     if (data_found) {
        pr_append_new_chunk(glob_err,
@@ -648,7 +825,7 @@ read_boulder_record(FILE *file_input,
       pa->primer_task = generic;
     } else if (!strcmp_nocase(task_tmp, "pick_detection_primers")) {
       pa->primer_task = generic; /* Deliberate duplication for
-				    backward compatibility. */
+                                    backward compatibility. */
     } else if (!strcmp_nocase(task_tmp, "pick_cloning_primers")) {
       pa->primer_task = pick_cloning_primers;
     } else if (!strcmp_nocase(task_tmp, "pick_discriminative_primers")) {
@@ -735,9 +912,9 @@ read_boulder_record(FILE *file_input,
      if ((min_3_prime || min_5_prime) && (sa->primer_overlap_junctions_count == 0)) {
      pr_append_new_chunk(warnings,
                          "SEQUENCE_OVERLAP_JUNCTION_LIST not given, but "
-			 "PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION or "
-			 "PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION specified");
-			 } */
+                         "PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION or "
+                         "PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION specified");
+                         } */
 
   return 1;
 }
@@ -749,23 +926,23 @@ read_boulder_record(FILE *file_input,
 
 static void
 pr_append2(pr_append_str *err,
-	   const char* s1,
-	   const char* s2) {
+           const char* s1,
+           const char* s2) {
     pr_append_new_chunk(err, s1);
     pr_append(err, s2);
 }
 
 int
 read_p3_file(const char *file_name,
-	     const p3_file_type expected_file_type,
-	     int echo_output,
-	     int strict_tags,
-	     p3_global_settings *pa,
-	     seq_args *sa,
-	     pr_append_str *fatal_err,
-	     pr_append_str *nonfatal_err,
-	     pr_append_str *warnings,
-	     read_boulder_record_results *read_boulder_record_res)
+             const p3_file_type expected_file_type,
+             int echo_output,
+             int strict_tags,
+             p3_global_settings *pa,
+             seq_args *sa,
+             pr_append_str *fatal_err,
+             pr_append_str *nonfatal_err,
+             pr_append_str *warnings,
+             read_boulder_record_results *read_boulder_record_res)
 {
   FILE *file;
   int ret_par = 0;
@@ -790,15 +967,15 @@ read_p3_file(const char *file_name,
   line1 = p3_read_line(file);
   if (!line1) {
     pr_append2(fatal_err,
-	       "Settings file is empty: ",
-	       file_name);
+               "Settings file is empty: ",
+               file_name);
     return ret_par;
   }
-  if (strcmp(line1,
-	     "Primer3 File - http://primer3.sourceforge.net")) {
+  if ((strcmp(line1,"Primer3 File - http://primer3.org") != 0) &&
+      (strcmp(line1,"Primer3 File - http://primer3.sourceforge.net") != 0)) {
       pr_append2(fatal_err,
-		 "First line must be \"Primer3 File - http://primer3.sourceforge.net\" in ",
-		 file_name);
+                 "First line must be \"Primer3 File - http://primer3.org\" in ",
+                 file_name);
       return ret_par;
   }
 
@@ -806,8 +983,8 @@ read_p3_file(const char *file_name,
   line2 = p3_read_line(file);
   if (!line2) {
     pr_append2(fatal_err,
-	       "Incorrect file format (too few lines) in ",
-	       file_name);
+               "Incorrect file format (too few lines) in ",
+               file_name);
     return ret_par;
   }
   if (!strcmp(line2,"P3_FILE_TYPE=all_parameters")) {
@@ -818,7 +995,7 @@ read_p3_file(const char *file_name,
     file_type = settings;
   } else {
     pr_append2(fatal_err,
-	       "Unknown file type in at line 2 (line2='", line2);
+               "Unknown file type in at line 2 (line2='", line2);
     pr_append(fatal_err, "') in ");
     pr_append(fatal_err, file_name);
     return ret_par;
@@ -832,29 +1009,31 @@ read_p3_file(const char *file_name,
   line3 = p3_read_line(file);
   if (!line3) {
     pr_append2(fatal_err,
-	       "Incorrect file format (too few lines) in ",
-	       file_name);
+               "Incorrect file format (too few lines) in ",
+               file_name);
       return ret_par;
   }
   if (strcmp(line3, "")) {
     pr_append2(fatal_err, "Line 3 must be empty in ",
-	       file_name);
+               file_name);
     return ret_par;
   }
 
   /* Check if the file type matches the expected type */
   if (file_type != expected_file_type){
     pr_append_new_chunk(nonfatal_err,
-			"Unexpected P3 file type parsed");
+                        "Unexpected P3 file type parsed");
   }
 
   /* read the file */
   ret_par = read_boulder_record(file, &strict_tags, &io_version,
-				echo_output, expected_file_type,
-				pa, sa, fatal_err,
-				nonfatal_err, warnings,
-				read_boulder_record_res);
-
+                                echo_output, expected_file_type,
+                                pa, sa, fatal_err,
+                                nonfatal_err, warnings,
+                                read_boulder_record_res, NULL);
+  if(pa->mask_template){
+    pa->lowercase_masking=pa->mask_template;
+  }
   if (echo_output) printf("P3_SETTINGS_FILE_END=\n");
   if (file) fclose(file);
 
@@ -1007,11 +1186,11 @@ parse_interval_list(const char *tag_name,
  */
 static char *
 parse_2_int_pair(const char    *tag_name, char *datum,
-		 char          sep,              /* The separator between 2 numbers, e.g. ',' or '-'. */
-		 char          sep2,             /* Separator between 2 intervals */
-		 int           *out1, int *out2,
-		 int           *out3, int *out4, /* The 4 integers. */
-		 pr_append_str *err)             /* Error messages. */
+                 char          sep,              /* The separator between 2 numbers, e.g. ',' or '-'. */
+                 char          sep2,             /* Separator between 2 intervals */
+                 int           *out1, int *out2,
+                 int           *out3, int *out4, /* The 4 integers. */
+                 pr_append_str *err)             /* Error messages. */
 {
     char *nptr, *tmp;
     long tlong;
@@ -1052,7 +1231,7 @@ parse_2_int_pair(const char    *tag_name, char *datum,
       }
       *out2 = tlong;
       if (nptr == tmp) {
-	tag_syntax_error(tag_name, datum, err);
+        tag_syntax_error(tag_name, datum, err);
         return NULL;
       }
     }
@@ -1075,7 +1254,7 @@ parse_2_int_pair(const char    *tag_name, char *datum,
       }
       *out3 = tlong;
       if (nptr == tmp) {
-	tag_syntax_error(tag_name, datum, err);
+        tag_syntax_error(tag_name, datum, err);
         return NULL;
       }
     }
@@ -1098,7 +1277,7 @@ parse_2_int_pair(const char    *tag_name, char *datum,
       }
       *out4 = tlong;
       if (nptr == tmp) {
-	tag_syntax_error(tag_name, datum, err);
+        tag_syntax_error(tag_name, datum, err);
         return NULL;
       }
     }
@@ -1119,9 +1298,9 @@ parse_2_int_pair(const char    *tag_name, char *datum,
 
 static void
 parse_2_interval_list(const char *tag_name,
-		      char *datum,
-		      interval_array_t4 *interval_arr,
-		      pr_append_str *err)
+                      char *datum,
+                      interval_array_t4 *interval_arr,
+                      pr_append_str *err)
 {
   char *p = datum;
   int i1, i2, i3, i4;
@@ -1148,8 +1327,8 @@ parse_2_interval_list(const char *tag_name,
 
 static int
 parse_intron_list(char *s,
-		  int *list,
-		  int *count)
+                  int *list,
+                  int *count)
 {
   long t;
   char *p, *q;
@@ -1163,7 +1342,7 @@ parse_intron_list(char *s,
     if (q == p) {
       while (*q != '\0') {
         if (!isspace(*q)) {
-	  *count = 0;
+          *count = 0;
           return 0;
         }
         q++;

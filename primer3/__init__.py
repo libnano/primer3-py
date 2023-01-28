@@ -27,7 +27,7 @@ import os
 from typing import List
 
 from . import (  # type: ignore
-    bindings,
+    argdefaults,
     primerdesign,
     thermoanalysis,
     wrappers,
@@ -41,10 +41,10 @@ from .bindings import (
     calcHomodimerTm,
     calcTm,
     designPrimers,
-    runP3Design,
-    setP3Globals,
-    setP3SeqArgs,
 )
+
+# ~~~~~~~~~~~~~~~~ Load thermodynamic parameters into memory ~~~~~~~~~~~~~~~~ #
+
 
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -58,7 +58,7 @@ def includes() -> List[str]:
 
 
 __author__ = 'Ben Pruitt, Nick Conway'
-__copyright__ = 'Copyright 2014-2020, Ben Pruitt & Nick Conway; Wyss Institute'
+__copyright__ = 'Copyright 2014-2023, Ben Pruitt & Nick Conway; Wyss Institute'
 __license__ = 'GPLv2'
 __version__ = '1.0.0-alpha.3'
 
@@ -68,7 +68,7 @@ __all__ = [
     # Low-level bindings
     'calcHairpin', 'calcHomodimer', 'calcHeterodimer', 'calcTm',
     # Primer3 design bindings
-    'setP3Globals', 'setP3SeqArgs', 'runP3Design', 'designPrimers',
+    'designPrimers',
     # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
-    'bindings', 'wrappers', 'thermoanalysis', 'primerdesign',
+    'argdefaults', 'wrappers', 'thermoanalysis', 'primerdesign',
 ]

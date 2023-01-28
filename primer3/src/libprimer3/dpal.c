@@ -53,9 +53,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Print an alignment on stderr, given the 2 aligned sequences, the "trace"
  * matrix, and the coordinate of the end point of the alignment to print.
  */
-static void print_align(const unsigned char *, const unsigned char *,
-                        int[DPAL_MAX_ALIGN][DPAL_MAX_ALIGN][3], int, int,
-                        const dpal_args*);
+static char *print_align(const unsigned char *, const unsigned char *,
+                         int[DPAL_MAX_ALIGN][DPAL_MAX_ALIGN][3], int, int,
+                         const dpal_args*, const dpal_mode mode, dpal_results *);
 #endif
 
 /*
@@ -76,6 +76,7 @@ static void _dpal_generic(const unsigned char *,
                           const int,
                           const int,
                           const dpal_args *,
+                          const dpal_mode mode,
                           dpal_results *);
 
 static void _dpal_long_nopath_maxgap1_local_end(const unsigned char *,
@@ -114,24 +115,20 @@ void
 set_dpal_args(dpal_args *a) {
   unsigned int i, j;
 
-  memset(a, 0, sizeof(dpal_args));
-  for (i = 0; i <= UCHAR_MAX; i++) {
-    for (j = 0; j <= UCHAR_MAX; j++) {
+  memset(a, 0, sizeof(*a));
+  for (i = 0; i <= UCHAR_MAX; i++)
+    for (j = 0; j <= UCHAR_MAX; j++)
       if (('A' == i || 'C' == i || 'G' == i || 'T' == i || 'N' == i)
           && ('A' == j || 'C' == j || 'G' == j || 'T' == j
               || 'N' == j)) {
-        if (i == 'N' || j == 'N') {
+        if (i == 'N' || j == 'N')
           a->ssm[i][j] = -25;
-        } else if (i == j) {
+        else if (i == j)
           a->ssm[i][j] = 100;
-        } else {
+        else
           a->ssm[i][j] = -100;
-        }
-      } else {
+      } else
         a->ssm[i][j] = INT_MIN;
-      }
-    }
-  }
 
   a->gap                = -200;
   a->gapl               = -200;
@@ -139,8 +136,6 @@ set_dpal_args(dpal_args *a) {
   a->max_gap            = 1;
   a->fail_stop          = 1;
   a->check_chars        = 0;
-  a->debug              = 0;
-  a->score_only         = 1;
   a->force_generic      = 0;
   a->force_long_generic = 0;
   a->force_long_maxgap1 = 0;
@@ -150,12 +145,10 @@ void
 dpal_set_default_nt_args(dpal_args *a) {
   set_dpal_args(a);
   a->check_chars        = 1;
-  a->debug              = 0;
   a->fail_stop          = DPAL_EXIT_ON_ERROR;
   a->gap                = -100;
   a->gapl               = -100;
   a->max_gap            = 3;
-  a->score_only         = 0;
 }
 
 void
@@ -275,6 +268,7 @@ void
 dpal(const unsigned char *X,
      const unsigned char *Y,
      const dpal_args *in,
+     const dpal_mode mode,
      dpal_results *out)
 {
   int xlen, ylen;
@@ -283,6 +277,7 @@ dpal(const unsigned char *X,
   out->score = DPAL_ERROR_SCORE;
   out->path_length = 0;
   out->msg = NULL;
+  out->sec_struct = NULL;
 
   CHECK_ERROR(NULL == X,   "NULL first sequence");
   CHECK_ERROR(NULL == Y,   "NULL second sequence");
@@ -301,8 +296,8 @@ dpal(const unsigned char *X,
     CHECK_ERROR(illegal_char(Y, in->ssm, &msg[28]), msg);
   }
 
-  xlen = (int)strlen((char *) X);
-  ylen = (int)strlen((char *) Y);
+  xlen = strlen((char *) X);
+  ylen = strlen((char *) Y);
 
   out->align_end_1 = -1;
   out->align_end_2 = -1;
@@ -317,18 +312,16 @@ dpal(const unsigned char *X,
     out->score = 0;
     return;
   }
-  CHECK_ERROR(in->debug != 0 && in->score_only != 0,
-              "score_only must be 0 if debug is non-0");
-  if (1 == in->force_generic || in->debug == 1 || 0 == in->score_only) {
+  if (1 == in->force_generic || mode != 0 ) {
     /*
-     * A true value of in->debug really means "print alignment on stderr"
+     * A true value of in->mode really means "print alignment on stderr"
      * and implies 0 == a.score_only.
      */
     CHECK_ERROR(xlen > DPAL_MAX_ALIGN,
                 "Sequence 1 longer than DPAL_MAX_ALIGN and alignment is requested");
     CHECK_ERROR(ylen > DPAL_MAX_ALIGN,
                 "Sequence 2 longer than DPAL_MAX_ALIGN and alignment is requested");
-    _dpal_generic(X, Y, xlen, ylen, in, out);
+    _dpal_generic(X, Y, xlen, ylen, in, mode, out);
   } else if (1 == in->force_long_generic) {
     _dpal_long_nopath_generic(X, Y, xlen, ylen, in, out);
   } else if (1 == in->max_gap ) {
@@ -339,11 +332,11 @@ dpal(const unsigned char *X,
     else if (DPAL_LOCAL_END == in->flag)
       _dpal_long_nopath_maxgap1_local_end(X, Y, xlen, ylen, in, out);
     else if (xlen <= DPAL_MAX_ALIGN && ylen <= DPAL_MAX_ALIGN)
-      _dpal_generic(X, Y, xlen, ylen, in, out);
+      _dpal_generic(X, Y, xlen, ylen, in, mode, out);
     else _dpal_long_nopath_generic(X, Y, xlen, ylen, in, out);
   }
   else if (xlen < DPAL_MAX_ALIGN && ylen < DPAL_MAX_ALIGN)
-    _dpal_generic(X, Y, xlen, ylen, in, out);
+    _dpal_generic(X, Y, xlen, ylen, in, mode, out);
   else
     _dpal_long_nopath_generic(X, Y, xlen, ylen, in, out);
 
@@ -358,6 +351,7 @@ _dpal_generic(const unsigned char *X,
               const int xlen,
               const int ylen,
               const dpal_args *in,
+              const dpal_mode mode,
               dpal_results *out)
 {
 
@@ -576,7 +570,9 @@ _dpal_generic(const unsigned char *X,
 #endif
     }
 #ifndef DPAL_FORGET_PATH
-    if (in->debug) print_align(X,Y,P,I,J, in);
+    if (mode > 1) {
+      out->sec_struct = print_align(X,Y,P,I,J,in,mode,out);
+    }
 #endif
     return;
  FAIL:
@@ -611,12 +607,12 @@ _dpal_long_nopath_generic(const unsigned char *X,
     out->path_length = 0;
     out->msg = NULL;
 
-    P = (int **) malloc(sizeof(int*)*(max_gap+2));
+    P = (int **) malloc(sizeof(*S)*(max_gap+2));
     if (!P) { DPAL_OOM_ERROR; }
-    S = (int **) malloc(sizeof(int*)*(max_gap+2));
+    S = (int **) malloc(sizeof(*S)*(max_gap+2));
     if (!S) { DPAL_OOM_ERROR; }
     for(i=0; i<max_gap+2; i++){
-      P[i] = (int *) malloc(sizeof(int)*xlen);
+      P[i] = (int *) malloc(sizeof(SI)*xlen);
       if (!P[i]) { DPAL_OOM_ERROR; }
       S[i] = P[i];
     }
@@ -948,17 +944,21 @@ _dpal_long_nopath_maxgap1_global_end(const unsigned char *X,
 
 #ifndef DPAL_FORGET_PATH
 /* Reconstruct the best path and print the alignment. */
-void
+char *
 print_align(const unsigned char *X,
             const unsigned char *Y,
             int P[DPAL_MAX_ALIGN][DPAL_MAX_ALIGN][3],
             int I,
             int J,
-            const dpal_args *dargs)
+            const dpal_args *dargs,
+            const dpal_mode mode,
+            dpal_results *out)
 {
   int JX[DPAL_MAX_ALIGN],JY[DPAL_MAX_ALIGN];
-  int k,i,j,n,m;
+  int k,i,j,n,m,ret_nr,ret_pr_once;
   char sx[3*DPAL_MAX_ALIGN],sy[3*DPAL_MAX_ALIGN],sxy[3*DPAL_MAX_ALIGN];
+  char ret_str[9*(DPAL_MAX_ALIGN + 10)];
+  char *ret_ptr = NULL;
 
   for (i=0; i < 3*DPAL_MAX_ALIGN; i++) {
     sx[i] = ' '; sy[i] = ' '; sxy[i] = ' ';
@@ -1016,32 +1016,100 @@ print_align(const unsigned char *X,
   }
   sx[m] = X[I];
   sy[m] = Y[J];
-  for (i=m+1; i < (signed) (m + (int)strlen((char *) X) - I); i++)
+  for (i=m+1; i < (signed) (m + strlen((char *) X) - I); i++)
     sx[i]=X[i-m+I];
-  for (i=m+1; i < (signed) (m + (int)strlen((char *) Y) - J); i++)
+  for (i=m+1; i < (signed) (m + strlen((char *) Y) - J); i++)
     sy[i]=Y[i-m+J];
 
   if (dargs->ssm[(unsigned char)sx[m]][(unsigned char)sy[m]] > 0)
     sxy[m] = '|';
   else sxy[m]=' ';
   m++;
-  if ((int)strlen((char *) X) - I > (int)strlen((char *) Y)-J) {
-    k = m + (int)strlen((char *) X) - I;
+  if (strlen((char *) X) - I > strlen((char *) Y)-J) {
+    k = m + strlen((char *) X) - I;
   } else {
-    k = m + (int)strlen((char *) Y) - J;
+    k = m + strlen((char *) Y) - J;
   }
-
-  j=0;
-  while(j<k){
-    for(i=j;i<j+70;i++) fprintf(stderr, "%c",sx[i]);
-    fprintf(stderr, "\n");
-    for(i=j;i<j+70;i++) fprintf(stderr, "%c",sxy[i]);
-    fprintf(stderr, "\n");
-    for(i=j;i<j+70;i++) fprintf(stderr, "%c",sy[i]); fprintf(stderr,"\n");
-    for(i=0;i<70;i++)   fprintf(stderr, "_");
-    fprintf(stderr, "\n");
-    j +=70;
+  if (mode == DPM_DEBUG) {
+    j=0;
+    while(j<k){
+      for(i=j;i<j+70;i++) fprintf(stderr, "%c",sx[i]);
+      fprintf(stderr, "\n");
+      for(i=j;i<j+70;i++) fprintf(stderr, "%c",sxy[i]);
+      fprintf(stderr, "\n");
+      for(i=j;i<j+70;i++) fprintf(stderr, "%c",sy[i]);
+      fprintf(stderr,"\n");
+      for(i=0;i<70;i++)   fprintf(stderr, "_");
+      fprintf(stderr, "\n");
+      j +=70;
+    }
+    return NULL;
   }
+  if (mode == DPM_STRUCT) {
+    j=0;
+    ret_nr = 0;
+    while(j<k){
+      strcpy(ret_str + ret_nr, "   ");
+      ret_nr += 3;
+      ret_pr_once = -1;
+      for(i=j;i<j+70;i++) {
+        if (ret_pr_once < 0 && sx[i] != ' ') {
+          ret_str[ret_nr - 3] = '5';
+          ret_str[ret_nr - 2] = '\'';
+          ret_pr_once = 1;
+        }
+        ret_str[ret_nr++] = sx[i];
+      }
+      while (ret_nr > 0 && ret_str[ret_nr - 1] == ' ') {
+        ret_nr--;
+      }
+      strcpy(ret_str + ret_nr, " 3\'\\n   ");
+      ret_nr += 8;
+      for(i=j;i<j+70;i++) {
+        ret_str[ret_nr++] = sxy[i];
+      }
+      while (ret_nr > 0 && ret_str[ret_nr - 1] == ' ') {
+        ret_nr--;
+      }
+      strcpy(ret_str + ret_nr, "\\n   ");
+      ret_nr += 5;
+      ret_pr_once = -1;
+      for(i=j;i<j+70;i++) {
+        if (ret_pr_once < 0 && sy[i] != ' ') {
+          ret_str[ret_nr - 3] = '3';
+          ret_str[ret_nr - 2] = '\'';
+          ret_pr_once = 1;
+        }
+        if (sy[i] == 'A') {
+          ret_str[ret_nr++] = 'T';
+        } else if (sy[i] == 'T') {
+          ret_str[ret_nr++] = 'A';
+        } else if (sy[i] == 'C') {
+          ret_str[ret_nr++] = 'G';
+        } else if (sy[i] == 'G') {
+          ret_str[ret_nr++] = 'C';
+        } else {
+          ret_str[ret_nr++] = sy[i];
+        }
+      }
+      while (ret_nr > 0 && ret_str[ret_nr - 1] == ' ') {
+        ret_nr--;
+      }
+      strcpy(ret_str + ret_nr, " 5\'\\n");
+      ret_nr += 5;
+      j +=70;
+    }
+    ret_str[ret_nr++] = '\0';
+    ret_ptr = (char *) malloc(strlen(ret_str) + 1);
+    if (!ret_ptr) {
+      out->msg = "Out of memory";
+      errno=ENOMEM;
+      return NULL;
+    }
+    strcpy(ret_ptr, ret_str);
+    return ret_ptr;
+  }
+  return NULL;
 }  /* print_align(X,Y,P,I,J, dargs) */
 #endif
 

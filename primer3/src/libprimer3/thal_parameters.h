@@ -1,5 +1,5 @@
 /*
-Copyright (c) 1996,1997,1998,1999,2000,2001,2004,2006,2007,2008
+Copyright (c) 2018
 Whitehead Institute for Biomedical Research, Steve Rozen
 (http://purl.com/STEVEROZEN/), Andreas Untergasser and Helen Skaletsky.
 All rights reserved.
@@ -35,58 +35,22 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+
+#ifndef THERMODYNAMIC_PARAMETERS_H
+#define THERMODYNAMIC_PARAMETERS_H 1
+#include "thal.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
+ * Copy the default thermodynamic parameter strings to *a
+ */
+int set_default_thal_parameters(thal_parameters *a);
 
-Test main for function long_seq_tm() in oligotm.c
-
-Usage is e.g
-
-long_seq_tm_test AAAAGGGCCCCCCCCTTTTTTTTTTT 3 20
-
-In this example 3 is the 0-based start of the
-substring to use and 30 is the length of the
-substring to use, so Tm is calculated on
-GGGCCCCCCCCTTTTTTTTT (= 52.452902).
-
-For testing compare to independent implementation
-in ../test/long_seq_tm_test.pl.
-
-*/
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
-#include "oligotm.h"
-  /* double long_seq_tm(const char* s, int start, int len, double salt_conc, double divalent_conc, double dntp_conc); */
-
-int
-main(int argc, const char**argv)
-{
-  const char *s;
-  double salt_conc = 50;
-  double divalent_conc = 0;
-  double dntp_conc = 0;
-  double dmso_conc = 0.0;
-  double dmso_fact = 0.6;
-  double formamide_conc = 0.0;
-  tm_ret tm_calc;  /* structure with Tm and bound (primer fraction) */
-  int start, len;
-  char *endptr;
-
-  s = argv[1];
-  if (0 == s) {
-    fprintf(stderr, "\n%s: incorrect arguments.\n", argv[0]);
-    fprintf(stderr, "See file long_seq_tm_test_main.c for usage.\n\n");
-    exit(-1);
-  }
-  start = strtol(argv[2], &endptr, 10);
-  len = strtol(argv[3], &endptr, 10);
-  printf("s=%s, start=%d, length=%d\n", s, start, len);
-
-  tm_calc = long_seq_tm(s, start, len, salt_conc, divalent_conc, dntp_conc,
-                        dmso_conc, dmso_fact, formamide_conc);
-  printf("tm = %f\n", tm_calc.Tm);
-  return 0;
+#ifdef __cplusplus
 }
+#endif
+
+#endif

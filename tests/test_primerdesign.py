@@ -42,8 +42,8 @@ except (ImportError, ModuleNotFoundError):  # For Windows compatibility
     resource = None  # type: ignore
 
 from primer3 import (
+    argdefaults,
     bindings,
-    wrappers,
 )
 
 from . import _simulatedbindings as simulatedbindings
@@ -51,7 +51,7 @@ from . import _simulatedbindings as simulatedbindings
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def _getMemUsage():
+def _get_mem_usage():
     ''' Get current process memory usage in bytes '''
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
@@ -62,7 +62,7 @@ def _getMemUsage():
 )
 class TestDesignBindings(unittest.TestCase):
 
-    def _compareResults(
+    def _compare_results(
         self,
         binding_res: Dict[str, Any],
         simulated_binding_res: Dict[str, Any],
@@ -160,7 +160,7 @@ class TestDesignBindings(unittest.TestCase):
                 )
             return ''
 
-    def _convertBoulderInput(
+    def _convert_boulder_input(
             self,
             boulder_str: str,
     ) -> List[Tuple[Dict, Dict, Dict]]:
@@ -178,13 +178,10 @@ class TestDesignBindings(unittest.TestCase):
                 ...
             ]
         '''
-        boulder_dicts = wrappers.parseMultiRecordBoulderIO(boulder_str)
+        boulder_dicts = argdefaults.parse_multirecord_boulder_io(boulder_str)
         input_dicts_list = []
         for bd in boulder_dicts:
-            converted_input = [
-                simulatedbindings.unwrap(arg) for arg in
-                bd.items()
-            ]
+            converted_input = [(k, v) for k, v in bd.items()]
             global_args = dict(
                 filter(
                     lambda arg: 'PRIMER_' == arg[0][:7],
@@ -206,7 +203,7 @@ class TestDesignBindings(unittest.TestCase):
             input_dicts_list.append((global_args, seq_args, p3_args))
         return input_dicts_list
 
-    def test_compareSim(self):
+    def test_compare_sim(self):
         sequence_template = (
             'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCAT'
             'GCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGG'
@@ -223,7 +220,7 @@ class TestDesignBindings(unittest.TestCase):
             'SEQUENCE_ID': 'MH1000',
             'SEQUENCE_TEMPLATE': sequence_template,
             'SEQUENCE_QUALITY': quality_list,
-            'SEQUENCE_INCLUDED_REGION': [36, 342],
+            'SEQUENCE_INCLUDED_REGION': (36, 342),
         }
         global_args = {
             'PRIMER_OPT_SIZE': 20,
@@ -260,40 +257,40 @@ class TestDesignBindings(unittest.TestCase):
         )
         binding_res = bindings.designPrimers(
             seq_args,
-            global_args,
+            global_args=global_args,
         )
-        self._compareResults(
+        self._compare_results(
             binding_res,
             simulated_binding_res,
         )
 
     def test_fileBased(self):
         test_file_roots = [
-            'primer_must_use_th',
-            'primer_task_th',
-            'primer_thal_args',
-            'primer_thal_max_seq_error',
-            'primer_first_base_index',
-            'test_compl_error',
-            'test_left_to_right_of_right',
             'dv_conc_vs_dntp_conc',
-            'primer_internal',
-            'primer_tm_lc_masking',
-            'primer_ok_regions',
-            'primer_start_codon',
-            'primer_task',
-            'primer_renewed_tasks',
-            'primer_must_overlap_point',
-            'primer_overlap_junction',
-            'primer_all_settingsfiles',
-            'primer_high_tm_load_set',
-            'primer_high_gc_load_set',
-            'primer_gc_end',
-            'primer_num_best',
-            'primer_check',
-            'primer_end_pathology',
             'long_seq',
             'p3-tmpl-mispriming',
+            'primer_all_settingsfiles',
+            'primer_check',
+            'primer_end_pathology',
+            'primer_first_base_index',
+            'primer_gc_end',
+            'primer_high_gc_load_set',
+            'primer_high_tm_load_set',
+            'primer_internal',
+            'primer_must_overlap_point',
+            'primer_must_use_th',
+            'primer_num_best',
+            'primer_ok_regions',
+            'primer_overlap_junction',
+            'primer_renewed_tasks',
+            'primer_start_codon',
+            'primer_task_th',
+            'primer_task',
+            'primer_thal_args',
+            'primer_thal_max_seq_error',
+            'primer_tm_lc_masking',
+            'test_compl_error',
+            'test_left_to_right_of_right',
         ]
         print()
         failures = []
@@ -304,24 +301,50 @@ class TestDesignBindings(unittest.TestCase):
                 fn_root,
             )
             input_fp = f'{base_fp}_input'
+            log_path = os.path.join(
+                LOCAL_DIR,
+                'input_files_log',
+            )
+            os.makedirs(log_path, exist_ok=True)
 
             with open(input_fp) as input_fd:
                 input_raw = input_fd.read()
-            input_dicts = self._convertBoulderInput(input_raw)
+            input_dicts = self._convert_boulder_input(input_raw)
 
             sys.stdout.write(f'->Testing file {fn_root:<40}\r')
             sys.stdout.flush()
             current_global_args = {}
+
+            log_filepath_sim = os.path.join(log_path, f'{fn_root}_sim.log')
+            if os.path.exists(log_filepath_sim):
+                os.remove(log_filepath_sim)
+            log_filepath_bind = os.path.join(log_path, f'{fn_root}_bind.log')
+            if os.path.exists(log_filepath_bind):
+                os.remove(log_filepath_bind)
+
+            # NOTE: commented out for developement intentionally
+            # sim_std_out_fp = 'sim_stdout.txt'
+            # if os.path.exists(sim_std_out_fp):
+            #     os.remove(sim_std_out_fp)
+            # fd = open(sim_std_out_fp, 'wb')
             for global_args, seq_args, p3_args in input_dicts:
+                current_global_args.clear()
+                global_args['dump'] = 1
                 test_id = str(seq_args.get('SEQUENCE_ID', ''))
                 current_global_args.update(global_args)
+                current_global_args['DO_LOG_SETTINGS'] = 1
+                current_global_args['LOG_SETTINGS_PATH'] = log_filepath_sim
+
                 simulated_binding_res = simulatedbindings.designPrimers(
                     seq_args,
                     current_global_args,
+                    # output_log=fd
                 )
+                current_global_args['LOG_SETTINGS_PATH'] = log_filepath_bind
                 wrapper_error = simulated_binding_res.get('PRIMER_ERROR')
                 if wrapper_error is not None:
-                    with self.assertRaises(IOError):
+                    print(wrapper_error)
+                    with self.assertRaises((OSError, ValueError)):
                         binding_res = bindings.designPrimers(
                             seq_args,
                             current_global_args,
@@ -332,13 +355,14 @@ class TestDesignBindings(unittest.TestCase):
                             seq_args,
                             current_global_args,
                         )
-                    except IOError:
+                    except (OSError, TypeError, ValueError):
                         if max([
                             x in p3_args.get('P3_COMMENT', '')
                             for x in ('complain', 'fail')
                         ]):
                             pass
-                    disagreements_str = self._compareResults(
+                        raise
+                    disagreements_str = self._compare_results(
                         binding_res,
                         simulated_binding_res,
                     )
@@ -346,6 +370,7 @@ class TestDesignBindings(unittest.TestCase):
                         failures.append(
                             (fn_root, test_id, disagreements_str),
                         )
+            # fd.close()
         print(' ' * 60, end='\r')
         if len(failures):
             err_msg = (
@@ -357,8 +382,8 @@ class TestDesignBindings(unittest.TestCase):
             )
             raise RuntimeError(err_msg)
 
-    def test_memoryLeaks(self):
-        sm = _getMemUsage()
+    def test_memory_leaks(self):
+        sm = _get_mem_usage()
         run_count = 100
         for x in range(run_count):
             bindings.designPrimers(
@@ -407,7 +432,7 @@ class TestDesignBindings(unittest.TestCase):
                 },
             )
         sleep(0.1)  # Pause for any GC
-        em = _getMemUsage()
+        em = _get_mem_usage()
         print(
             f'\n\tMemory usage before {run_count} runs of designPrimers: {sm}',
         )

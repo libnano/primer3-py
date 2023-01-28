@@ -32,9 +32,6 @@ stringent performance requirments, you should consider using the C API
 and/or Cython modules directly. See the docs for more details.
 
 '''
-
-import os
-from os.path import join as pjoin
 from typing import (
     Any,
     Dict,
@@ -50,19 +47,6 @@ from .argdefaults import Primer3PyArguments
 
 DEFAULT_P3_ARGS = Primer3PyArguments()
 
-# ~~~~~~~~~~~~~~~~ Load thermodynamic parameters into memory ~~~~~~~~~~~~~~~~ #
-
-# TODO: remove after update to primer3 >= 2.5.0
-LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
-THERMO_PATH = pjoin(
-    LOCAL_DIR,
-    'src',
-    'libprimer3',
-    'primer3_config',
-    '',  # Add trailing slash (OS-ind) req'd by primer3 lib
-)
-primerdesign.loadThermoParams(THERMO_PATH)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Low level bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
@@ -76,20 +60,51 @@ def _setThermoArgs(
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
         dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
         dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        dmso_conc: float = DEFAULT_P3_ARGS.dmso_conc,
+        dmso_fact: float = DEFAULT_P3_ARGS.dmso_fact,
+        formamide_conc: float = DEFAULT_P3_ARGS.formamide_conc,
+        annealing_temp_c: float = DEFAULT_P3_ARGS.annealing_temp_c,
         temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         tm_method: str = DEFAULT_P3_ARGS.tm_method,
         salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
         **kwargs,
 ):
+    '''
+    Set parameters in global ``ThermoAnalysis`` instance
+    Args:
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        dmso_conc: Concentration of DMSO (%)
+        dmso_fact: DMSO correction factor, default 0.6
+        formamide_conc: Concentration of formamide (mol/l)
+        annealing_temp_c: Actual annealing temperature of the PCR reaction
+            in (C)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_nn_length: Maximum length for nearest-neighbor calcs
+        tm_method: Tm calculation method (breslauer or santalucia)
+        salt_corrections_method: Salt correction method (schildkraut, owczarzy,
+            santalucia)
+    '''
     _THERMO_ANALYSIS.mv_conc = float(mv_conc)
     _THERMO_ANALYSIS.dv_conc = float(dv_conc)
     _THERMO_ANALYSIS.dntp_conc = float(dntp_conc)
     _THERMO_ANALYSIS.dna_conc = float(dna_conc)
+
+    _THERMO_ANALYSIS.dmso_conc = float(dmso_conc)
+    _THERMO_ANALYSIS.dmso_fact = float(dmso_fact)
+    _THERMO_ANALYSIS.formamide_conc = float(formamide_conc)
+    _THERMO_ANALYSIS.annealing_temp_c = float(annealing_temp_c)
+
     _THERMO_ANALYSIS.temp = float(temp_c)
     _THERMO_ANALYSIS.max_loop = int(max_loop)
     _THERMO_ANALYSIS.tm_method = tm_method
     _THERMO_ANALYSIS.salt_correction_method = salt_corrections_method
+
+    _THERMO_ANALYSIS.max_nn_length = int(max_nn_length)
 
 
 def calcHairpin(
@@ -127,7 +142,7 @@ def calcHairpin(
         ``RuntimeError``
 
     '''
-    _setThermoArgs(**locals())
+    _THERMO_ANALYSIS.set_thermo_args(**locals())
     return _THERMO_ANALYSIS.calcHairpin(seq, output_structure).checkExc()
 
 
@@ -167,7 +182,7 @@ def calcHomodimer(
         ``RuntimeError``
 
     '''
-    _setThermoArgs(**locals())
+    _THERMO_ANALYSIS.set_thermo_args(**locals())
     return _THERMO_ANALYSIS.calcHomodimer(seq, output_structure).checkExc()
 
 
@@ -208,7 +223,7 @@ def calcHeterodimer(
         ``RuntimeError``
 
     '''
-    _setThermoArgs(**locals())
+    _THERMO_ANALYSIS.set_thermo_args(**locals())
     return _THERMO_ANALYSIS.calcHeterodimer(
         seq1,
         seq2,
@@ -253,7 +268,7 @@ def calcEndStability(
         ``RuntimeError``
 
     '''
-    _setThermoArgs(**locals())
+    _THERMO_ANALYSIS.set_thermo_args(**locals())
     return _THERMO_ANALYSIS.calcEndStability(seq1, seq2).checkExc()
 
 
@@ -263,6 +278,10 @@ def calcTm(
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
         dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
         dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        dmso_conc: float = DEFAULT_P3_ARGS.dmso_conc,
+        dmso_fact: float = DEFAULT_P3_ARGS.dmso_fact,
+        formamide_conc: float = DEFAULT_P3_ARGS.formamide_conc,
+        annealing_temp_c: float = DEFAULT_P3_ARGS.annealing_temp_c,
         max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
         tm_method: str = DEFAULT_P3_ARGS.tm_method,
         salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
@@ -281,6 +300,11 @@ def calcTm(
         dv_conc: Divalent cation conc. (mM)
         dntp_conc: dNTP conc. (mM)
         dna_conc: DNA conc. (nM)
+        dmso_conc: Concentration of DMSO (%)
+        dmso_fact: DMSO correction factor, default 0.6
+        formamide_conc: Concentration of formamide (mol/l)
+        annealing_temp_c: Actual annealing temperature of the PCR reaction
+            in (C)
         temp_c: Simulation temperature for dG (Celsius)
         max_nn_length: Maximum length for nearest-neighbor calcs
         tm_method: Tm calculation method (breslauer or santalucia)
@@ -290,7 +314,7 @@ def calcTm(
     Returns:
         The melting temperature in degrees Celsius (float).
     '''
-    _setThermoArgs(**locals())
+    _THERMO_ANALYSIS.set_thermo_args(**locals())
     return _THERMO_ANALYSIS.calcTm(seq)
 
 
@@ -308,12 +332,15 @@ def calcHeterodimerTm(*args, **kwargs) -> float:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
+def design_load_thermo_params():
+    primerdesign.load_thermo_params()
+
+
 def designPrimers(
         seq_args: Dict[str, Any],
-        global_args: Optional[Dict[str, Any]] = None,
+        global_args: Dict[str, Any],
         misprime_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
         mishyb_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
-        debug: bool = False,
 ) -> Dict[str, Any]:
     '''Run the Primer3 design process.
 
@@ -334,65 +361,10 @@ def designPrimers(
         BoulderIO output from primer3_main)
 
     '''
-    if global_args:
-        primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib)
-    primerdesign.setSeqArgs(seq_args)
-    return primerdesign.runDesign(debug)
-
-
-'''
-The following functions are the modular subunits of `designPrimers` and may
-be used in cases where performance or customiziation are of high priority.
-'''
-
-
-def setP3Globals(
-        global_args: Dict[str, Any],
-        misprime_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
-        mishyb_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
-) -> None:
-    ''' Set the Primer3 global args and misprime/mishyb libraries.
-
-    Args:
-        global_args: Primer3 global parameters as per Primer3 docs
-        misprime_lib: ``<Sequence name: sequence>`` dict for mispriming checks.
-        mishyb_lib: ``<Sequence name: sequence>`` dict for mishybridization
-            checks.
-
-    Returns:
-        ``None``
-    '''
-    primerdesign.setGlobals(global_args, misprime_lib, mishyb_lib)
-
-
-def setP3SeqArgs(
-        seq_args: Dict[str, Any],
-) -> None:
-    ''' Set the Primer3 sequence / design arguments.
-
-    Args:
-        seq_args: Primer3 seq/design args as per Primer3 docs
-
-    Returns:
-        ``None``
-
-    '''
-    primerdesign.setSeqArgs(seq_args)
-
-
-def runP3Design(debug: bool = False) -> None:
-    ''' Start the Primer3 design process, return a dict of the Primer3 output.
-
-    The global parameters and seq args must have been previously set prior to
-    this call (raises IOError).
-
-    Args:
-        debug: If ``True``, prints the received design params to stderr for
-            debugging purposes
-
-    Returns:
-        A dictionary of Primer3 results (should be identical to the expected
-        BoulderIO output from primer3_main)
-
-    '''
-    primerdesign.runDesign(debug)
+    primerdesign.set_globals_and_seq_args(
+        global_args=global_args,
+        seq_args=seq_args,
+        misprime_lib=misprime_lib,
+        mishyb_lib=mishyb_lib,
+    )
+    return primerdesign.run_design()

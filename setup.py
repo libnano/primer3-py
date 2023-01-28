@@ -76,12 +76,19 @@ THERMO_PARAMS_PATH = pjoin(LIBPRIMER3_PATH, 'primer3_config')
 KLIB_PATH = pjoin(LIBPRIMER3_PATH, 'klib')
 
 LIBPRIMER3_FPS = [
-    rpath(pjoin(LIBPRIMER3_PATH, 'thal.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'dpal.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'masker.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.c')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.c')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'dpal.c')),
-    rpath(pjoin(SRC_PATH, 'primerdesign_helpers.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'read_boulder.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thal.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thal_parameters.c')),
+]
+
+THERMOANALYSIS_FPS = [
+    rpath(pjoin(LIBPRIMER3_PATH, 'thal.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.c')),
 ]
 
 LIBPRIMER3_BINARIES = ['oligotm', 'ntthal', 'primer3_core']
@@ -221,20 +228,20 @@ else:
         '-Wno-unused-function',
     ]
 
-primerdesign_ext = Extension(
-    'primer3.primerdesign',
-    sources=[pjoin('primer3', 'src', 'primerdesign_py.c')] + LIBPRIMER3_FPS,
-    include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
-    extra_compile_args=EXTRA_COMPILE_ARGS,
-)
-
-
-thermoanalysis_ext = Extension(
-    'primer3.thermoanalysis',
-    sources=[pjoin('primer3', 'thermoanalysis.pyx')] + LIBPRIMER3_FPS,
-    include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
-    extra_compile_args=EXTRA_COMPILE_ARGS,
-)
+cython_extensions = [
+    Extension(
+        'primer3.primerdesign',
+        sources=[pjoin('primer3', 'primerdesign.pyx')] + LIBPRIMER3_FPS,
+        include_dirs=[SRC_PATH, LIBPRIMER3_PATH, KLIB_PATH],
+        extra_compile_args=EXTRA_COMPILE_ARGS,
+    ),
+    Extension(
+        'primer3.thermoanalysis',
+        sources=[pjoin('primer3', 'thermoanalysis.pyx')] + THERMOANALYSIS_FPS,
+        include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
+        extra_compile_args=EXTRA_COMPILE_ARGS,
+    ),
+]
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -295,7 +302,7 @@ setup(
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ],
     packages=['primer3'],
-    ext_modules=[primerdesign_ext] + try_cythonize([thermoanalysis_ext]),
+    ext_modules=try_cythonize(cython_extensions),
     package_data={'primer3': PACKAGE_FPS},
     cmdclass={
         'install_lib': CustomInstallLib,
