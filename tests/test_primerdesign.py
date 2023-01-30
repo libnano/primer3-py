@@ -69,7 +69,7 @@ class TestDesignBindings(unittest.TestCase):
         verbose: bool = False,
     ) -> str:
         '''Compare results between binding and simulated binding calls to
-        ``designPrimers``
+        ``design_primers``
 
         Args:
             binding_res: A dictionary of Primer3 results (should be identical
@@ -251,11 +251,11 @@ class TestDesignBindings(unittest.TestCase):
                 [200, 225],
             ],
         }
-        simulated_binding_res = simulatedbindings.designPrimers(
+        simulated_binding_res = simulatedbindings.design_primers(
             seq_args,
             global_args,
         )
-        binding_res = bindings.designPrimers(
+        binding_res = bindings.design_primers(
             seq_args,
             global_args=global_args,
         )
@@ -264,7 +264,7 @@ class TestDesignBindings(unittest.TestCase):
             simulated_binding_res,
         )
 
-    def test_fileBased(self):
+    def test_file_based(self):
         test_file_roots = [
             'dv_conc_vs_dntp_conc',
             'long_seq',
@@ -335,7 +335,7 @@ class TestDesignBindings(unittest.TestCase):
                 current_global_args['DO_LOG_SETTINGS'] = 1
                 current_global_args['LOG_SETTINGS_PATH'] = log_filepath_sim
 
-                simulated_binding_res = simulatedbindings.designPrimers(
+                simulated_binding_res = simulatedbindings.design_primers(
                     seq_args,
                     current_global_args,
                     # output_log=fd
@@ -345,13 +345,13 @@ class TestDesignBindings(unittest.TestCase):
                 if wrapper_error is not None:
                     print(wrapper_error)
                     with self.assertRaises((OSError, ValueError)):
-                        binding_res = bindings.designPrimers(
+                        binding_res = bindings.design_primers(
                             seq_args,
                             current_global_args,
                         )
                 else:
                     try:
-                        binding_res = bindings.designPrimers(
+                        binding_res = bindings.design_primers(
                             seq_args,
                             current_global_args,
                         )
@@ -386,7 +386,7 @@ class TestDesignBindings(unittest.TestCase):
         sm = _get_mem_usage()
         run_count = 100
         for x in range(run_count):
-            bindings.designPrimers(
+            bindings.design_primers(
                 {
                     'SEQUENCE_ID': 'MH1000',
                     'SEQUENCE_TEMPLATE': (
@@ -434,10 +434,10 @@ class TestDesignBindings(unittest.TestCase):
         sleep(0.1)  # Pause for any GC
         em = _get_mem_usage()
         print(
-            f'\n\tMemory usage before {run_count} runs of designPrimers: {sm}',
+            f'\n\tMemory usage before {run_count} runs of design_primers: {sm}',
         )
         print(
-            f'\tMemory usage after {run_count} runs of designPrimers: {em}',
+            f'\tMemory usage after {run_count} runs of design_primers: {em}',
         )
         print(f'\t\t\t\t\tDifference: \t {em - sm}')
 
@@ -448,7 +448,7 @@ class TestDesignBindings(unittest.TestCase):
         if em - sm > delta_bytes_limit:
             raise AssertionError(
                 f'Memory usage increase after {run_count} runs of \n\t'
-                f'designPrimers > {delta_bytes_limit} bytes -- potential \n\t'
+                f'design_primers > {delta_bytes_limit} bytes -- potential \n\t'
                 f'memory leak (mem increase: {em - sm})',
             )
 

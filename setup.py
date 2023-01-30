@@ -86,12 +86,14 @@ LIBPRIMER3_FPS = [
     rpath(pjoin(LIBPRIMER3_PATH, 'thal_parameters.c')),
 ]
 
-THERMOANALYSIS_FPS = [
-    rpath(pjoin(LIBPRIMER3_PATH, 'thal.c')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.c')),
+LIBPRIMER3_BINARIES = [
+    'amplicon3_core',
+    'oligotm',
+    'ntdpal',
+    'ntthal',
+    'primer3_core',
+    'primer3_masker',
 ]
-
-LIBPRIMER3_BINARIES = ['oligotm', 'ntthal', 'primer3_core']
 if sys.platform == 'win32':
     LIBPRIMER3_BINARIES = [bin_fn + '.exe' for bin_fn in LIBPRIMER3_BINARIES]
 
@@ -230,15 +232,9 @@ else:
 
 cython_extensions = [
     Extension(
-        'primer3.primerdesign',
-        sources=[pjoin('primer3', 'primerdesign.pyx')] + LIBPRIMER3_FPS,
-        include_dirs=[SRC_PATH, LIBPRIMER3_PATH, KLIB_PATH],
-        extra_compile_args=EXTRA_COMPILE_ARGS,
-    ),
-    Extension(
         'primer3.thermoanalysis',
-        sources=[pjoin('primer3', 'thermoanalysis.pyx')] + THERMOANALYSIS_FPS,
-        include_dirs=[LIBPRIMER3_PATH, KLIB_PATH],
+        sources=[pjoin('primer3', 'thermoanalysis.pyx')] + LIBPRIMER3_FPS,
+        include_dirs=[SRC_PATH, LIBPRIMER3_PATH, KLIB_PATH],
         extra_compile_args=EXTRA_COMPILE_ARGS,
     ),
 ]
@@ -281,7 +277,7 @@ def try_cythonize(extension_list, *args, **kwargs):
 
 setup(
     name='primer3-py',
-    version='1.0.0-alpha.3',
+    version='1.0.0-alpha.4',
     license='GPLv2',
     author='Ben Pruitt, Nick Conway',
     author_email='bpruittvt@gmail.com',

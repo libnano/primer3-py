@@ -94,7 +94,7 @@ typedef enum task {
   pick_left_only                 = 2,
   pick_right_only                = 3,
   pick_hyb_probe_only            = 4,
-  generic                        = 5,
+  generic_p3                     = 5,
   pick_cloning_primers           = 6,
   pick_discriminative_primers    = 7,
   pick_sequencing_primers        = 8,

@@ -46,7 +46,7 @@ def convert_result(result):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
-def designPrimers(
+def design_primers(
         seq_args: Dict[str, Any],
         global_args: Optional[Dict[str, Any]] = None,
         reset_args: bool = True,
@@ -60,7 +60,7 @@ def designPrimers(
     using the wrapped subprocess of primer3_core to do the work.
 
     If the global args have been previously set (either by a pervious
-    `designPrimers` call or by a `set_globals` call), `designPrimers` may be
+    `design_primers` call or by a `set_globals` call), `design_primers` may be
     called with seqArgs alone (as a means of optimization).
 
     Args:
@@ -87,7 +87,7 @@ def designPrimers(
         P3_ARGS.update(global_args)
     P3_ARGS.update(seq_args)
 
-    result = wrappers.designPrimers(
+    result = wrappers.design_primers(
         P3_ARGS,
         input_log=input_log,
         output_log=output_log,

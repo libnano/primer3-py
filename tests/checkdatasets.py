@@ -125,10 +125,10 @@ def create_data_set() -> Dict[str, Any]:
 
     ta = ThermoAnalysis()
     tests = [
-        ['calcHeterodimer', seq1, seq2],
-        ['calcHairpin', seq1],
-        ['calcHomodimer', seq1],
-        ['calcTm', seq1],
+        ['calc_heterodimer', seq1, seq2],
+        ['calc_hairpin', seq1],
+        ['calc_homodimer', seq1],
+        ['calc_tm', seq1],
     ]
     cases = []
     for test in tests:

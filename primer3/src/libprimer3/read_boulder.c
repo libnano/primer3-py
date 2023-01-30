@@ -797,34 +797,34 @@ read_boulder_record(FILE *file_input,
   /* Figure out the right settings for the tasks*/
   if (task_tmp != NULL) {
     if (!strcmp_nocase(task_tmp, "pick_pcr_primers")) {
-      pa->primer_task = generic;
+      pa->primer_task = generic_p3;
       pa->pick_left_primer = 1;
       pa->pick_right_primer = 1;
       pa->pick_internal_oligo = 0;
     } else if (!strcmp_nocase(task_tmp, "pick_pcr_primers_and_hyb_probe")) {
-      pa->primer_task = generic;
+      pa->primer_task = generic_p3;
       pa->pick_left_primer = 1;
       pa->pick_right_primer = 1;
       pa->pick_internal_oligo = 1;
     } else if (!strcmp_nocase(task_tmp, "pick_left_only")) {
-      pa->primer_task = generic;
+      pa->primer_task = generic_p3;
       pa->pick_left_primer = 1;
       pa->pick_right_primer = 0;
       pa->pick_internal_oligo = 0;
     } else if (!strcmp_nocase(task_tmp, "pick_right_only")) {
-      pa->primer_task = generic;
+      pa->primer_task = generic_p3;
       pa->pick_left_primer = 0;
       pa->pick_right_primer = 1;
       pa->pick_internal_oligo = 0;
     } else if (!strcmp_nocase(task_tmp, "pick_hyb_probe_only")) {
-      pa->primer_task = generic;
+      pa->primer_task = generic_p3;
       pa->pick_left_primer = 0;
       pa->pick_right_primer = 0;
       pa->pick_internal_oligo = 1;
     } else if (!strcmp_nocase(task_tmp, "generic")) {
-      pa->primer_task = generic;
+      pa->primer_task = generic_p3;
     } else if (!strcmp_nocase(task_tmp, "pick_detection_primers")) {
-      pa->primer_task = generic; /* Deliberate duplication for
+      pa->primer_task = generic_p3; /* Deliberate duplication for
                                     backward compatibility. */
     } else if (!strcmp_nocase(task_tmp, "pick_cloning_primers")) {
       pa->primer_task = pick_cloning_primers;

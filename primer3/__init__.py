@@ -26,13 +26,19 @@ oligonucleotide thermodynamics library.
 import os
 from typing import List
 
-from . import (  # type: ignore
+from . import (
     argdefaults,
-    primerdesign,
     thermoanalysis,
     wrappers,
 )
-from .bindings import (
+from .bindings import (  # Deprecated below
+    calc_hairpin,
+    calc_hairpin_tm,
+    calc_heterodimer,
+    calc_heterodimer_tm,
+    calc_homodimer,
+    calc_homodimer_tm,
+    calc_tm,
     calcHairpin,
     calcHairpinTm,
     calcHeterodimer,
@@ -40,6 +46,7 @@ from .bindings import (
     calcHomodimer,
     calcHomodimerTm,
     calcTm,
+    design_primers,
     designPrimers,
 )
 
@@ -64,11 +71,17 @@ __version__ = '1.0.0-alpha.3'
 
 __all__ = [
     # Low-level Tm-only bindings
-    'calcHairpinTm', 'calcHomodimerTm', 'calcHeterodimerTm',
+    'calc_hairpin_tm', 'calc_homodimer_tm', 'calc_heterodimer_tm',
     # Low-level bindings
-    'calcHairpin', 'calcHomodimer', 'calcHeterodimer', 'calcTm',
+    'calc_hairpin', 'calc_homodimer', 'calc_heterodimer', 'calc_tm',
     # Primer3 design bindings
-    'designPrimers',
+    'design_primers',
     # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
-    'argdefaults', 'wrappers', 'thermoanalysis', 'primerdesign',
+    'argdefaults', 'wrappers', 'thermoanalysis',
+    # Deprecated Low-level Tm-only bindings
+    'calcHairpinTm', 'calcHomodimerTm', 'calcHeterodimerTm',
+    # Deprecated Low-level bindings
+    'calcHairpin', 'calcHomodimer', 'calcHeterodimer', 'calcTm',
+    # Deprecated Primer3 design bindings
+    'designPrimers',
 ]

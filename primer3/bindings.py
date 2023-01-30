@@ -32,6 +32,7 @@ stringent performance requirments, you should consider using the C API
 and/or Cython modules directly. See the docs for more details.
 
 '''
+import warnings
 from typing import (
     Any,
     Dict,
@@ -39,76 +40,19 @@ from typing import (
     Union,
 )
 
-from . import (  # type: ignore
-    primerdesign,
-    thermoanalysis,
-)
-from .argdefaults import Primer3PyArguments
+from primer3 import thermoanalysis  # type: ignore
+from primer3 import argdefaults
 
-DEFAULT_P3_ARGS = Primer3PyArguments()
+DEFAULT_P3_ARGS = argdefaults.Primer3PyArguments()
+THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
+
+Str_Bytes_T = Union[str, bytes]
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Low level bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
-Str_Bytes_T = Union[str, bytes]
-
-_THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
-
-
-def _setThermoArgs(
-        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
-        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
-        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
-        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
-        dmso_conc: float = DEFAULT_P3_ARGS.dmso_conc,
-        dmso_fact: float = DEFAULT_P3_ARGS.dmso_fact,
-        formamide_conc: float = DEFAULT_P3_ARGS.formamide_conc,
-        annealing_temp_c: float = DEFAULT_P3_ARGS.annealing_temp_c,
-        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
-        max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
-        max_loop: int = DEFAULT_P3_ARGS.max_loop,
-        tm_method: str = DEFAULT_P3_ARGS.tm_method,
-        salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
-        **kwargs,
-):
-    '''
-    Set parameters in global ``ThermoAnalysis`` instance
-    Args:
-        mv_conc: Monovalent cation conc. (mM)
-        dv_conc: Divalent cation conc. (mM)
-        dntp_conc: dNTP conc. (mM)
-        dna_conc: DNA conc. (nM)
-        dmso_conc: Concentration of DMSO (%)
-        dmso_fact: DMSO correction factor, default 0.6
-        formamide_conc: Concentration of formamide (mol/l)
-        annealing_temp_c: Actual annealing temperature of the PCR reaction
-            in (C)
-        temp_c: Simulation temperature for dG (Celsius)
-        max_nn_length: Maximum length for nearest-neighbor calcs
-        tm_method: Tm calculation method (breslauer or santalucia)
-        salt_corrections_method: Salt correction method (schildkraut, owczarzy,
-            santalucia)
-    '''
-    _THERMO_ANALYSIS.mv_conc = float(mv_conc)
-    _THERMO_ANALYSIS.dv_conc = float(dv_conc)
-    _THERMO_ANALYSIS.dntp_conc = float(dntp_conc)
-    _THERMO_ANALYSIS.dna_conc = float(dna_conc)
-
-    _THERMO_ANALYSIS.dmso_conc = float(dmso_conc)
-    _THERMO_ANALYSIS.dmso_fact = float(dmso_fact)
-    _THERMO_ANALYSIS.formamide_conc = float(formamide_conc)
-    _THERMO_ANALYSIS.annealing_temp_c = float(annealing_temp_c)
-
-    _THERMO_ANALYSIS.temp = float(temp_c)
-    _THERMO_ANALYSIS.max_loop = int(max_loop)
-    _THERMO_ANALYSIS.tm_method = tm_method
-    _THERMO_ANALYSIS.salt_correction_method = salt_corrections_method
-
-    _THERMO_ANALYSIS.max_nn_length = int(max_nn_length)
-
-
-def calcHairpin(
-        seq: str,
+def calc_hairpin(
+        seq: Str_Bytes_T,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
         dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
@@ -142,12 +86,12 @@ def calcHairpin(
         ``RuntimeError``
 
     '''
-    _THERMO_ANALYSIS.set_thermo_args(**locals())
-    return _THERMO_ANALYSIS.calcHairpin(seq, output_structure).checkExc()
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calc_hairpin(seq, output_structure).check_exc()
 
 
-def calcHomodimer(
-        seq: str,
+def calcHairpin(
+        seq: Str_Bytes_T,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
         dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
@@ -156,7 +100,49 @@ def calcHomodimer(
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ):
-    ''' Calculate the homodimerization thermodynamics of a DNA sequence.
+    '''
+    Deprecated
+    Calculate the hairpin formation thermodynamics of a DNA sequence.
+
+    **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
+    by the Primer3 team as the longest reasonable sequence length for which
+    a two-state NN model produces reliable results
+    (see primer3/src/libnano/thal.h:50).
+
+    Args:
+        seq: DNA sequence to analyze for hairpin formation
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop(int, optional): Maximum size of loops in the structure
+        output_structure (bool) : If `True`, the ASCII dimer structure is saved
+
+    Returns:
+        A `ThermoResult` object with thermodynamic characteristics of the
+        hairpin formation.
+
+    Raises:
+        ``RuntimeError``
+
+    '''
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calcHairpin(seq, output_structure).check_exc()
+
+
+def calc_homodimer(
+        seq: Str_Bytes_T,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        output_structure: bool = False,
+):
+    '''
+    Calculate the homodimerization thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
     by Primer3 as the longest reasonable sequence length for which
@@ -182,13 +168,12 @@ def calcHomodimer(
         ``RuntimeError``
 
     '''
-    _THERMO_ANALYSIS.set_thermo_args(**locals())
-    return _THERMO_ANALYSIS.calcHomodimer(seq, output_structure).checkExc()
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calc_homodimer(seq, output_structure).check_exc()
 
 
-def calcHeterodimer(
-        seq1: str,
-        seq2: str,
+def calcHomodimer(
+        seq: Str_Bytes_T,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
         dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
@@ -197,6 +182,49 @@ def calcHeterodimer(
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ):
+    '''
+    Deprecated
+    Calculate the homodimerization thermodynamics of a DNA sequence.
+
+    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
+    by Primer3 as the longest reasonable sequence length for which
+    a two-state NN model produces reliable results (see
+    primer3/src/libnano/thal.h:50).
+
+    Args:
+        seq: DNA sequence to analyze for homodimer formation calculations
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop: Maximum size of loops in the structure
+        output_structure: If `True`, the ASCII dimer structure
+            is saved
+
+    Returns:
+        A `ThermoResult` object with thermodynamic characteristics of the
+        homodimer interaction.
+
+    Raises:
+        ``RuntimeError``
+
+    '''
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calcHomodimer(seq, output_structure).check_exc()
+
+
+def calc_heterodimer(
+        seq1: Str_Bytes_T,
+        seq2: Str_Bytes_T,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        output_structure: bool = False,
+) -> thermoanalysis.ThermoResult:
     ''' Calculate the heterodimerization thermodynamics of two DNA sequences.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
@@ -223,17 +251,65 @@ def calcHeterodimer(
         ``RuntimeError``
 
     '''
-    _THERMO_ANALYSIS.set_thermo_args(**locals())
-    return _THERMO_ANALYSIS.calcHeterodimer(
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calc_heterodimer(
         seq1,
         seq2,
         output_structure,
-    ).checkExc()
+    ).check_exc()
 
 
-def calcEndStability(
-        seq1: str,
-        seq2: str,
+def calcHeterodimer(
+        seq1: Str_Bytes_T,
+        seq2: Str_Bytes_T,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+        output_structure: bool = False,
+) -> thermoanalysis.ThermoResult:
+    '''
+    Deprecated
+
+    Calculate the heterodimerization thermodynamics of two DNA sequences.
+
+    **Note that at least one of the two sequences must by <60 bp in length.**
+    This is a cap imposed by Primer3 as the longest reasonable sequence length
+    for which a two-state NN model produces reliable results (see
+    primer3/src/libnano/thal.h:50).
+
+    Args:
+        seq1: First DNA sequence to analyze for heterodimer formation
+        seq2: Second DNA sequence to analyze for heterodimer formation
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop: Maximum size of loops in the structure
+        output_structure: If `True`, the ASCII dimer structure is saved
+
+    Returns:
+        A `ThermoResult` object with thermodynamic characteristics of the
+        heterodimer interaction.
+
+    Raises:
+        ``RuntimeError``
+
+    '''
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calcHeterodimer(
+        seq1,
+        seq2,
+        output_structure,
+    ).check_exc()
+
+
+def calc_end_stability(
+        seq1: Str_Bytes_T,
+        seq2: Str_Bytes_T,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
         dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
@@ -268,12 +344,55 @@ def calcEndStability(
         ``RuntimeError``
 
     '''
-    _THERMO_ANALYSIS.set_thermo_args(**locals())
-    return _THERMO_ANALYSIS.calcEndStability(seq1, seq2).checkExc()
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calc_end_stability(seq1, seq2).check_exc()
 
 
-def calcTm(
-        seq: str,
+def calcEndStability(
+        seq1: Str_Bytes_T,
+        seq2: Str_Bytes_T,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
+        max_loop: int = DEFAULT_P3_ARGS.max_loop,
+) -> thermoanalysis.ThermoResult:
+    '''
+    Deprecated
+    Calculate the 3' end stability of DNA sequence `seq1` against DNA
+    sequence `seq2`.
+
+    **Note that at least one of the two sequences must by <60 bp in length.**
+    This is a cap imposed by Primer3 as the longest reasonable sequence length
+    for which a two-state NN model produces reliable results (see
+    primer3/src/libnano/thal.h:50).
+
+    Args:
+        seq1: DNA sequence to analyze for 3' end  hybridization against the
+            target sequence
+        seq2: Target DNA sequence to analyze for seq1 3' end hybridization
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_loop: Maximum size of loops in the structure
+
+    Returns:
+        A `ThermoResult` object with thermodynamic characteristics of the
+        3' hybridization interaction.
+
+    Raises:
+        ``RuntimeError``
+
+    '''
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calcEndStability(seq1, seq2).check_exc()
+
+
+def calc_tm(
+        seq: Str_Bytes_T,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
         dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
@@ -314,33 +433,120 @@ def calcTm(
     Returns:
         The melting temperature in degrees Celsius (float).
     '''
-    _THERMO_ANALYSIS.set_thermo_args(**locals())
-    return _THERMO_ANALYSIS.calcTm(seq)
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calc_tm(seq)
+
+
+def calcTm(
+        seq: Str_Bytes_T,
+        mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
+        dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
+        dntp_conc: Union[float, int] = DEFAULT_P3_ARGS.dntp_conc,
+        dna_conc: Union[float, int] = DEFAULT_P3_ARGS.dna_conc,
+        dmso_conc: float = DEFAULT_P3_ARGS.dmso_conc,
+        dmso_fact: float = DEFAULT_P3_ARGS.dmso_fact,
+        formamide_conc: float = DEFAULT_P3_ARGS.formamide_conc,
+        annealing_temp_c: float = DEFAULT_P3_ARGS.annealing_temp_c,
+        max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
+        tm_method: str = DEFAULT_P3_ARGS.tm_method,
+        salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
+) -> float:
+    '''
+    Deprecated
+    Calculate the melting temperature (Tm) of a DNA sequence.
+
+    Note that NN thermodynamics will be used to calculate the Tm of sequences
+    up to 60 bp in length, after which point the following formula will be
+    used::
+
+        Tm = 81.5 + 16.6(log10([mv_conc])) + 0.41(%GC) - 600/length
+
+    Args:
+        seq: DNA sequence
+        mv_conc: Monovalent cation conc. (mM)
+        dv_conc: Divalent cation conc. (mM)
+        dntp_conc: dNTP conc. (mM)
+        dna_conc: DNA conc. (nM)
+        dmso_conc: Concentration of DMSO (%)
+        dmso_fact: DMSO correction factor, default 0.6
+        formamide_conc: Concentration of formamide (mol/l)
+        annealing_temp_c: Actual annealing temperature of the PCR reaction
+            in (C)
+        temp_c: Simulation temperature for dG (Celsius)
+        max_nn_length: Maximum length for nearest-neighbor calcs
+        tm_method: Tm calculation method (breslauer or santalucia)
+        salt_corrections_method: Salt correction method (schildkraut, owczarzy,
+            santalucia)
+
+    Returns:
+        The melting temperature in degrees Celsius (float).
+    '''
+    THERMO_ANALYSIS.set_thermo_args(**locals())
+    return THERMO_ANALYSIS.calcTm(seq)
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Tm-only aliases ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+def calc_hairpin_tm(*args, **kwargs) -> float:
+    return calc_hairpin(*args, **kwargs).tm
+
+
 def calcHairpinTm(*args, **kwargs) -> float:
+    '''Deprecated'''
     return calcHairpin(*args, **kwargs).tm
 
 
+def calc_homodimer_tm(*args, **kwargs) -> float:
+    return calc_homodimer(*args, **kwargs).tm
+
+
 def calcHomodimerTm(*args, **kwargs) -> float:
+    '''Deprecated'''
     return calcHomodimer(*args, **kwargs).tm
 
 
+def calc_heterodimer_tm(*args, **kwargs) -> float:
+    return calc_heterodimer(*args, **kwargs).tm
+
+
 def calcHeterodimerTm(*args, **kwargs) -> float:
+    '''Deprecated'''
     return calcHeterodimer(*args, **kwargs).tm
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 
-def design_load_thermo_params():
-    primerdesign.load_thermo_params()
+def design_primers(
+        seq_args: Dict[str, Any],
+        global_args: Dict[str, Any],
+        misprime_lib: Optional[Dict[str, Any]] = None,
+        mishyb_lib: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    '''Run the Primer3 design process.
+
+    Args:
+        seq_args: Primer3 sequence/design args as per Primer3 docs
+        global_args: Primer3 global args as per Primer3 docs
+        misprime_lib: `Sequence name: sequence` dictionary for mispriming
+            checks.
+        mishyb_lib: `Sequence name: sequence` dictionary for mishybridization
+            checks.
+
+    Returns:
+        A dictionary of Primer3 results (should be identical to the expected
+        BoulderIO output from primer3_main)
+    '''
+    return THERMO_ANALYSIS.run_design(
+        global_args=global_args,
+        seq_args=seq_args,
+        misprime_lib=misprime_lib,
+        mishyb_lib=mishyb_lib,
+    )
 
 
 def designPrimers(
         seq_args: Dict[str, Any],
         global_args: Dict[str, Any],
-        misprime_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
-        mishyb_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
+        misprime_lib: Optional[Dict[str, Any]] = None,
+        mishyb_lib: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     '''Run the Primer3 design process.
 
@@ -359,12 +565,11 @@ def designPrimers(
     Returns:
         A dictionary of Primer3 results (should be identical to the expected
         BoulderIO output from primer3_main)
-
     '''
-    primerdesign.set_globals_and_seq_args(
+    warnings.warn('Function deprecated please use "design_primers" instead')
+    return THERMO_ANALYSIS.run_design(
         global_args=global_args,
         seq_args=seq_args,
         misprime_lib=misprime_lib,
         mishyb_lib=mishyb_lib,
     )
-    return primerdesign.run_design()
