@@ -734,7 +734,7 @@ pr_set_default_global_args_1(p3_global_settings *a)
   set_default_thal_parameters(&a->thermodynamic_parameters);
   a->show_secondary_structure_alignment = 0;
   a->liberal_base        = 0;
-  a->primer_task         = generic;
+  a->primer_task         = generic_p3;
   a->pick_left_primer    = 1;
   a->pick_right_primer   = 1;
   a->pick_internal_oligo = 0;
@@ -7482,7 +7482,7 @@ _pr_data_control(const p3_global_settings *pa,
                           "SEQUENCE_INCLUDED_REGION length < min PRIMER_PRODUCT_SIZE_RANGE");
     }
 
-    if (pa->primer_task == generic) {
+    if (pa->primer_task == generic_p3) {
       return 1;
     }
   }
@@ -9069,34 +9069,34 @@ void
 p3_set_gs_primer_task(p3_global_settings * pa , char * task_tmp)
 {
   if (!strcmp_nocase(task_tmp, "pick_pcr_primers")) {
-    pa->primer_task = generic;
+    pa->primer_task = generic_p3;
     pa->pick_left_primer = 1;
     pa->pick_right_primer = 1;
     pa->pick_internal_oligo = 0;
   } else if (!strcmp_nocase(task_tmp, "pick_pcr_primers_and_hyb_probe")) {
-    pa->primer_task = generic;
+    pa->primer_task = generic_p3;
     pa->pick_left_primer = 1;
     pa->pick_right_primer = 1;
     pa->pick_internal_oligo = 1;
   } else if (!strcmp_nocase(task_tmp, "pick_left_only")) {
-    pa->primer_task = generic;
+    pa->primer_task = generic_p3;
     pa->pick_left_primer = 1;
     pa->pick_right_primer = 0;
     pa->pick_internal_oligo = 0;
   } else if (!strcmp_nocase(task_tmp, "pick_right_only")) {
-    pa->primer_task = generic;
+    pa->primer_task = generic_p3;
     pa->pick_left_primer = 0;
     pa->pick_right_primer = 1;
     pa->pick_internal_oligo = 0;
   } else if (!strcmp_nocase(task_tmp, "pick_hyb_probe_only")) {
-    pa->primer_task = generic;
+    pa->primer_task = generic_p3;
     pa->pick_left_primer = 0;
     pa->pick_right_primer = 0;
     pa->pick_internal_oligo = 1;
   } else if (!strcmp_nocase(task_tmp, "generic")) {
-    pa->primer_task = generic;
+    pa->primer_task = generic_p3;
   } else if (!strcmp_nocase(task_tmp, "pick_detection_primers")) {
-    pa->primer_task = generic; /* Deliberate duplication for
+    pa->primer_task = generic_p3; /* Deliberate duplication for
             backward compatibility. */
   } else if (!strcmp_nocase(task_tmp, "pick_cloning_primers")) {
     pa->primer_task = pick_cloning_primers;

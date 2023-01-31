@@ -73,7 +73,7 @@ _salt_corrections_methods = {
 }
 
 
-def calcTm(
+def calc_tm(
         seq: str,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
@@ -139,6 +139,9 @@ def calcTm(
     return float(tm)
 
 
+calcTm = calc_tm
+
+
 _NTTHAL_RE = re.compile(
     r'dS\s+=\s+(\S+)\s+'
     r'dH\s+=\s+(\S+)\s+'
@@ -180,7 +183,7 @@ def _parse_ntthal(ntthal_output: bytes) -> THERMORESULT:
     return res
 
 
-def calcThermo(
+def calc_thermo(
         seq1: str,
         seq2: str,
         calc_type: str = DEFAULT_P3_ARGS.calc_type_wrapper,
@@ -235,7 +238,7 @@ def calcThermo(
     return _parse_ntthal(out)
 
 
-def calcHairpin(
+def calc_hairpin(
         seq: str,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
@@ -261,7 +264,7 @@ def calcHairpin(
     Returns:
        ``THERMORESULT`` tuple
     '''
-    return calcThermo(
+    return calc_thermo(
         seq,
         seq,
         'HAIRPIN',
@@ -275,7 +278,10 @@ def calcHairpin(
     )
 
 
-def calcHeterodimer(
+calcHairpin = calc_hairpin
+
+
+def calc_heterodimer(
         seq1: str,
         seq2: str,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
@@ -303,7 +309,7 @@ def calcHeterodimer(
     Returns:
        ``THERMORESULT`` tuple
     '''
-    return calcThermo(
+    return calc_thermo(
         seq1,
         seq2,
         'ANY',
@@ -317,7 +323,10 @@ def calcHeterodimer(
     )
 
 
-def calcHomodimer(
+calcHeterodimer = calc_heterodimer
+
+
+def calc_homodimer(
         seq: str,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
         dv_conc: Union[float, int] = DEFAULT_P3_ARGS.dv_conc,
@@ -343,7 +352,7 @@ def calcHomodimer(
     Returns:
        ``THERMORESULT`` tuple
     '''
-    return calcThermo(
+    return calc_thermo(
         seq,
         seq,
         'ANY',
@@ -357,7 +366,10 @@ def calcHomodimer(
     )
 
 
-def calcEndStability(
+calcHomodimer = calc_homodimer
+
+
+def calc_end_stability(
         seq1: str,
         seq2: str,
         mv_conc: Union[float, int] = DEFAULT_P3_ARGS.mv_conc,
@@ -386,7 +398,7 @@ def calcEndStability(
     Returns:
        ``THERMORESULT`` tuple
     '''
-    return calcThermo(
+    return calc_thermo(
         seq1,
         seq2,
         'END1',
@@ -400,7 +412,10 @@ def calcEndStability(
     )
 
 
-def assessOligo(seq: str) -> Tuple[THERMORESULT, THERMORESULT]:
+calcEndStability = calc_end_stability
+
+
+def assess_oligo(seq: str) -> Tuple[THERMORESULT, THERMORESULT]:
     '''
     Return the thermodynamic characteristics of hairpin/homodimer structures.
 
@@ -412,12 +427,12 @@ def assessOligo(seq: str) -> Tuple[THERMORESULT, THERMORESULT]:
         individual tuple is structured (dS, dH, dG, Tm).
 
     '''
-    hairpin_out = calcHairpin(seq)
-    homodimer_out = calcHomodimer(seq)
+    hairpin_out = calc_hairpin(seq)
+    homodimer_out = calc_homodimer(seq)
     return (hairpin_out, homodimer_out)
 
 
-def designPrimers(
+def design_primers(
         p3_args: Dict[str, Any],
         input_log: Optional[io.BufferedWriter] = None,
         output_log: Optional[io.BufferedWriter] = None,
@@ -453,3 +468,6 @@ def designPrimers(
         err_log.write(err_str)
         err_log.flush()
     return parse_boulder_io(out_str)
+
+
+designPrimers = design_primers

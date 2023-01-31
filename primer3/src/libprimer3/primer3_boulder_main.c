@@ -368,7 +368,7 @@ main(int argc, char *argv[])
     }
 #endif
     input_found = 1;
-    if ((global_pa->primer_task == generic)
+    if ((global_pa->primer_task == generic_p3)
         && (global_pa->pick_internal_oligo == 1)){
       PR_ASSERT(global_pa->pick_internal_oligo);
     }

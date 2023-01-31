@@ -40,7 +40,7 @@ from primer3 import (
 )
 
 
-def _getMemUsage():
+def _get_mem_usage():
     ''' Get current process memory usage in bytes '''
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
@@ -89,10 +89,10 @@ class TestLowLevelBindings(unittest.TestCase):
         # self.annealing_temp_c = -10.0  # see oligotm_main.c
         # self.max_nn_length = 60
 
-    def test_calcTm(self):
+    def test_calc_tm(self):
         for _ in range(100):
             self.randArgs()
-            binding_tm = bindings.calcTm(
+            binding_tm = bindings.calc_tm(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
@@ -103,7 +103,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 formamide_conc=self.formamide_conc,
                 annealing_temp_c=self.annealing_temp_c,
             )
-            wrapper_tm = wrappers.calcTm(
+            wrapper_tm = wrappers.calc_tm(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
@@ -116,10 +116,10 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             self.assertTrue(abs(binding_tm - wrapper_tm) < 0.5)
 
-    def test_calcHairpin(self):
+    def test_calc_hairpin(self):
         for _ in range(1):
             self.randArgs()
-            binding_res = bindings.calcHairpin(
+            binding_res = bindings.calc_hairpin(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
@@ -129,7 +129,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 max_loop=self.max_loop,
                 output_structure=True,
             )
-            wrapper_res = wrappers.calcHairpin(
+            wrapper_res = wrappers.calc_hairpin(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
@@ -147,10 +147,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 wrapper_res.ascii_structure,
             )
 
-    def test_calcHomodimer(self):
+    def test_calc_homodimer(self):
         for _ in range(100):
             self.randArgs()
-            binding_res = bindings.calcHomodimer(
+            binding_res = bindings.calc_homodimer(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
@@ -160,7 +160,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 max_loop=self.max_loop,
                 output_structure=True,
             )
-            wrapper_res = wrappers.calcHomodimer(
+            wrapper_res = wrappers.calc_homodimer(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
@@ -180,10 +180,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 wrapper_res.ascii_structure,
             )
 
-    def test_calcHeterodimer(self):
+    def test_calc_heterodimer(self):
         for _ in range(100):
             self.randArgs()
-            binding_res = bindings.calcHeterodimer(
+            binding_res = bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
                 mv_conc=self.mv_conc,
@@ -194,7 +194,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 max_loop=self.max_loop,
                 output_structure=True,
             )
-            wrapper_res = wrappers.calcHeterodimer(
+            wrapper_res = wrappers.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
                 mv_conc=self.mv_conc,
@@ -216,7 +216,7 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             # Ensure that order of sequences does not matter
             # Should be fixed as of Primer3 2.3.7 update
-            binding_12_res = bindings.calcHeterodimer(
+            binding_12_res = bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
                 mv_conc=self.mv_conc,
@@ -227,7 +227,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 max_loop=self.max_loop,
                 output_structure=True,
             )
-            binding_21_res = bindings.calcHeterodimer(
+            binding_21_res = bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
                 mv_conc=self.mv_conc,
@@ -239,10 +239,10 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             self.assertEqual(int(binding_12_res.tm), int(binding_21_res.tm))
 
-    def test_calcEndStability(self):
+    def test_calc_end_stability(self):
         for _ in range(100):
             self.randArgs()
-            binding_res = bindings.calcEndStability(
+            binding_res = bindings.calc_end_stability(
                 seq1=self.seq1,
                 seq2=self.seq2,
                 mv_conc=self.mv_conc,
@@ -252,7 +252,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
             )
-            wrapper_res = wrappers.calcEndStability(
+            wrapper_res = wrappers.calc_end_stability(
                 seq1=self.seq1,
                 seq2=self.seq2,
                 mv_conc=self.mv_conc,
@@ -264,11 +264,11 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
-    def test_correctionMethods(self):
+    def test_correction_methods(self):
         self.randArgs()
         for sc_method in ['schildkraut', 'santalucia', 'owczarzy']:
             for tm_method in ['breslauer', 'santalucia']:
-                binding_tm = bindings.calcTm(
+                binding_tm = bindings.calc_tm(
                     seq=self.seq1,
                     mv_conc=self.mv_conc,
                     dv_conc=self.dv_conc,
@@ -277,7 +277,7 @@ class TestLowLevelBindings(unittest.TestCase):
                     tm_method=tm_method,
                     salt_corrections_method=sc_method,
                 )
-                wrapper_tm = wrappers.calcTm(
+                wrapper_tm = wrappers.calc_tm(
                     seq=self.seq1,
                     mv_conc=self.mv_conc,
                     dv_conc=self.dv_conc,
@@ -290,7 +290,7 @@ class TestLowLevelBindings(unittest.TestCase):
 
         self.assertRaises(
             ValueError,
-            bindings.calcTm,
+            bindings.calc_tm,
             seq=self.seq1,
             mv_conc=self.mv_conc,
             dv_conc=self.dv_conc,
@@ -299,12 +299,12 @@ class TestLowLevelBindings(unittest.TestCase):
             tm_method='not_a_tm_method',
         )
 
-    def test_memoryLeaks(self):
-        sm = _getMemUsage()
+    def test_memory_leaks(self):
+        sm = _get_mem_usage()
         run_count = 100
         for x in range(run_count):
             self.randArgs()
-            bindings.calcHeterodimer(
+            bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
                 mv_conc=self.mv_conc,
@@ -316,21 +316,21 @@ class TestLowLevelBindings(unittest.TestCase):
                 output_structure=True,
             )
         sleep(0.1)  # Pause for any GC
-        em = _getMemUsage()
+        em = _get_mem_usage()
         print(
             f'\n\tMemory usage before {run_count} runs of '
-            f'calcHeterodimer: {sm}',
+            f'calc_heterodimer: {sm}',
         )
         print(
-            f'\tMemory usage after {run_count} runs of calcHeterodimer: {em}',
+            f'\tMemory usage after {run_count} runs of calc_heterodimer: {em}',
         )
         print(f'\t\t\t\t\tDifference: {em - sm}\t')
         delta_bytes_limit = 500
         if em - sm > delta_bytes_limit:
             raise AssertionError(
                 f'Memory usage increase after {run_count} runs of \n\t'
-                f'calcHeterodimer > {delta_bytes_limit} bytes -- potential \n\t'
-                f'memory leak (mem increase: {em - sm})',
+                f'calc_heterodimer > {delta_bytes_limit} bytes -- potential '
+                f'\n\t memory leak (mem increase: {em - sm})',
             )
 
 
