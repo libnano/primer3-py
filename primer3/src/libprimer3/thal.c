@@ -260,6 +260,8 @@ static void drawDimer(int* ps1, int* ps2, double temp, double H, double S, int t
 /* prints ascii output of hairpin structure */
 static void drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o);
 
+int trim_trailing_whitespace(char *msg, size_t msg_len);
+
 /* NOTE: Commented out because primer3-py does not use the drawDimer and drawHairpin
  * code of upstream primer3 2.6.1 due to the fact it produces different strings
  * under different conditions.  TODO: refactor upstream drawDimer and drawHairpin
@@ -269,8 +271,6 @@ static void drawHairpin(int* bp, double mh, double ms, int temponly, double temp
 // static void save_append_char(char** ret, int *space, thal_results *o, const char str);
 
 static int equal(double a, double b);
-
-static void strcatc(char*, char);
 
 static void push(struct tracer**, int, int, int, thal_results*); /* to add elements to struct */
 
@@ -3115,7 +3115,6 @@ static void
 drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, double t37, thal_results *o)
 {
   int i, j, k, numSS1, numSS2, N;
-  char* duplex[4];
   double G = 0;
   double t = 0;
   char *output_buf = o->sec_struct;
@@ -3156,38 +3155,43 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
     }
   }
 
-  duplex[0] = (char*) safe_malloc(len1 + len2 + 1, o);
-  duplex[1] = (char*) safe_malloc(len1 + len2 + 1, o);
-  duplex[2] = (char*) safe_malloc(len1 + len2 + 1, o);
-  duplex[3] = (char*) safe_malloc(len1 + len2 + 1, o);
-  duplex[0][0] = duplex[1][0] = duplex[2][0] = duplex[3][0] = 0;
+  size_t str_block = (len1 + len2 + 1);
+  char duplex_buffer[str_block * 4];
+  char* duplex_0 = duplex_buffer;
+  char* duplex_1 = duplex_0 + str_block;
+  char* duplex_2 = duplex_1 + str_block;
+  char* duplex_3 = duplex_2 + str_block;
+  size_t dlen_0 = 0;
+  size_t dlen_1 = 0;
+  size_t dlen_2 = 0;
+  size_t dlen_3 = 0;
 
   i = 0;
   numSS1 = 0;
-  while (ps1[i++] == 0) ++numSS1;
+  while (ps1[i++] == 0) { ++numSS1; }
   j = 0;
   numSS2 = 0;
-  while (ps2[j++] == 0) ++numSS2;
+  while (ps2[j++] == 0) { ++numSS2; }
 
   if (numSS1 >= numSS2) {
     for (i = 0; i < numSS1; ++i) {
-      strcatc(duplex[0], oligo1[i]);
-      strcatc(duplex[1], ' ');
-      strcatc(duplex[2], ' ');
+      duplex_0[dlen_0++] = oligo1[i];
+      duplex_1[dlen_1++] = ' ';
+      duplex_2[dlen_2++] = ' ';
     }
-    for (j = 0; j < numSS1 - numSS2; ++j) strcatc(duplex[3], ' ');
-    for (j = 0; j < numSS2; ++j) strcatc(duplex[3], oligo2[j]);
+    for (j = 0; j < numSS1 - numSS2; ++j) { duplex_3[dlen_3++] = ' '; }
+    for (j = 0; j < numSS2; ++j) { duplex_3[dlen_3++] = oligo2[j]; }
   } else {
     for (j = 0; j < numSS2; ++j) {
-      strcatc(duplex[3], oligo2[j]);
-      strcatc(duplex[1], ' ');
-      strcatc(duplex[2], ' ');
+      duplex_3[dlen_3++] = oligo2[j];
+      duplex_1[dlen_1++] = ' ';
+      duplex_2[dlen_2++] = ' ';
     }
     for (i = 0; i < numSS2 - numSS1; ++i) {
-      strcatc(duplex[0], ' ');
+      duplex_0[dlen_0++] = ' ';
     }
     for (i = 0; i < numSS1; ++i) {
-      strcatc(duplex[0], oligo1[i]);
+      duplex_0[dlen_0++] = oligo1[i];
     }
   }
   i = numSS1 + 1;
@@ -3195,65 +3199,85 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
 
   while (i <= len1) {
     while (i <= len1 && ps1[i - 1] != 0 && j <= len2 && ps2[j - 1] != 0) {
-      strcatc(duplex[0], ' ');
-      strcatc(duplex[1], oligo1[i - 1]);
-      strcatc(duplex[2], oligo2[j - 1]);
-      strcatc(duplex[3], ' ');
+      duplex_0[dlen_0++] = ' ';
+      duplex_1[dlen_1++] = oligo1[i - 1];
+      duplex_2[dlen_2++] = oligo2[j - 1];
+      duplex_3[dlen_3++] = ' ';
       ++i;
       ++j;
     }
     numSS1 = 0;
     while (i <= len1 && ps1[i - 1] == 0) {
-      strcatc(duplex[0], oligo1[i - 1]);
-      strcatc(duplex[1], ' ');
+      duplex_0[dlen_0++] = oligo1[i - 1];
+      duplex_1[dlen_1++] = ' ';
       ++numSS1;
       ++i;
     }
     numSS2 = 0;
     while (j <= len2 && ps2[j - 1] == 0) {
-      strcatc(duplex[2], ' ');
-      strcatc(duplex[3], oligo2[j - 1]);
+      duplex_2[dlen_2++] = ' ';
+      duplex_3[dlen_3++] = oligo2[j - 1];
       ++numSS2;
       ++j;
     }
     if (numSS1 < numSS2) {
       for (k = 0; k < numSS2 - numSS1; ++k) {
-         strcatc(duplex[0], '-');
-         strcatc(duplex[1], ' ');
+        duplex_0[dlen_0++] = '-';
+        duplex_1[dlen_1++] = ' ';
       }
     } else if (numSS1 > numSS2) {
       for (k = 0; k < numSS1 - numSS2; ++k) {
-        strcatc(duplex[2], ' ');
-        strcatc(duplex[3], '-');
+        duplex_2[dlen_2++] = ' ';
+        duplex_3[dlen_3++] = '-';
       }
     }
   }
+
+  /* Trim trailing whitespace to ensure test output matches up */
+  duplex_0[dlen_0+1] = 0;
+  duplex_1[dlen_1+1] = 0;
+  duplex_2[dlen_2+1] = 0;
+  duplex_3[dlen_3+1] = 0;
+  trim_trailing_whitespace(duplex_0, dlen_0);
+  trim_trailing_whitespace(duplex_1, dlen_1);
+  trim_trailing_whitespace(duplex_2, dlen_2);
+  trim_trailing_whitespace(duplex_3, dlen_3);
+
   if (output_buf == NULL) {
-    printf("SEQ\t");
-    printf("%s\n", duplex[0]);
-    printf("SEQ\t");
-    printf("%s\n", duplex[1]);
-    printf("STR\t");
-    printf("%s\n", duplex[2]);
-    printf("STR\t");
-    printf("%s\n", duplex[3]);
+    if (duplex_0[0] != 0) {
+      printf("SEQ\t%s\n", duplex_0);
+    } else {
+      printf("SEQ\n");
+    }
+
+    if (duplex_1[0] != 0) {
+      printf("SEQ\t%s\n", duplex_1);
+    } else {
+      printf("SEQ\n");
+    }
+
+    if (duplex_2[0] != 0) {
+      printf("STR\t%s\n", duplex_2);
+    } else {
+      printf("STR\n");
+    }
+
+    if (duplex_3[0] != 0) {
+      printf("STR\t%s\n", duplex_3);
+    } else {
+      printf("STR\n");
+    }
   } else {
     snprintf(
       output_buf,
-      (len1 + len2 + 1) * 4 + 32, /* NOTE: NC Probably should update this */
+      str_block * 4 + 32,
       "SEQ\t%s\nSEQ\t%s\nSTR\t%s\nSTR\t%s\n",
-      duplex[0],
-      duplex[1],
-      duplex[2],
-      duplex[3]
+      duplex_0,
+      duplex_1,
+      duplex_2,
+      duplex_3
     );
   }
-
-  free(duplex[0]);
-  free(duplex[1]);
-  free(duplex[2]);
-  free(duplex[3]);
-
   return;
 }
 
@@ -3263,7 +3287,6 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
   /* Plain text */
   int i, N = 0;
   double mg, t;
-  char* asciiRow;
   char *output_buf = o->sec_struct;
   if (!isFinite(ms) || !isFinite(mh)) {
     if (temponly == 0 && output_buf == NULL) {
@@ -3303,8 +3326,7 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
     }
   }
   /* plain-text output */
-  asciiRow = (char*) safe_malloc(len1, o);
-  for(i = 0; i < len1; ++i) asciiRow[i] = '0';
+  char asciiRow[len1];
   for(i = 1; i < len1+1; ++i) {
     if(bp[i-1] == 0) {
       asciiRow[(i-1)] = '-';
@@ -3335,7 +3357,6 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
   } else {
     printf("\nSTR\t%s\n", oligo1);
   }
-  free(asciiRow);
   return;
 }
 
@@ -3390,9 +3411,19 @@ equal(double a, double b)
   //   return 1;
 }
 
-static void
-strcatc(char* str, char c)
+
+int
+trim_trailing_whitespace(char *msg, size_t msg_len)
 {
-  str[strlen(str) + 1] = 0;
-  str[strlen(str)] = c;
+  char *end_ptr;
+  if(*msg == 0) {
+    return 0;
+  }
+
+  /* Work back from the end of the string to find last non-whitespace char */
+  end_ptr = msg + msg_len - 1;
+  while(end_ptr >= msg && isspace((unsigned char) *end_ptr)) { end_ptr--; }
+  /* Write new termination */
+  end_ptr[1] = '\0';
+  return 0;
 }

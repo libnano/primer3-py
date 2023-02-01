@@ -22,6 +22,7 @@ Test to confirm primer3-py updates to the thal.c library result in the same
 output given the input, `thal_input` and expected output, `thal_output` file
 provided by the primer3 source library
 '''
+import io
 import os
 import os.path as op
 import subprocess
@@ -51,16 +52,17 @@ def split_args_line_to_list(line: str) -> List[str]:
     return [x for x in args_line_list if x != '']
 
 
-def run_ntthal(line: str, stderr_fd) -> List[str]:
+def run_ntthal(line: str, stderr_fd: io.BufferedWriter) -> str:
     '''
     Run ntthal given the argument line
 
     Args:
         line: A line of arguments for the ntthal command
+        stderr_fd: Writter to send stderr to such that it does not go to stdout
 
     Returns:
-        On success, the list of line of the process stdout printing.
-        On failure an empty list
+        On success, the string of lines of the process stdout printing.
+        On failure an empty string
     '''
     args_line_list = split_args_line_to_list(line)
     args = [NTTHAL_PATH] + args_line_list
@@ -72,12 +74,12 @@ def run_ntthal(line: str, stderr_fd) -> List[str]:
         )
         # Need to trim trailing white space as thal_output is trimmed by
         # pre-commit
-        return [line.strip() for line in out_b.decode('utf8').splitlines()]
+        return out_b.decode('utf8')
 
     except subprocess.CalledProcessError:
         # NOTE: Intentionally commented out for debugging purposes
         # print(line)
-        return []
+        return ''
 
 
 @unittest.skipIf(
@@ -99,9 +101,8 @@ class TestLowLevelBindings(unittest.TestCase):
             output_str = fd.read()
         with open(os.devnull, 'wb') as dev_null:
             for line in input_str.split('\n'):
-                compute_str_list.extend(run_ntthal(line, dev_null))
-        compute_str = '\n'.join(compute_str_list)
-        compute_str = f'{compute_str}\n'
+                compute_str_list.append(run_ntthal(line, dev_null))
+        compute_str = ''.join(compute_str_list)
         self.assertTrue(compute_str == output_str)
         # NOTE: Intentionally commented out for debugging purposes
         # if compute_str != output_str:
