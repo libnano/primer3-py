@@ -121,8 +121,8 @@ main(int argc, char **argv)
     double dmso = 0.0, dmso_fact = 0.6, formamide = 0.0;
     int tm_santalucia=1, salt_corrections=1;
     int i, j, len;
-    // if (argc < 2 || argc > 14) {
-    // update NC argc limit needs to be update to 20 due to 3 new arguments
+    /* primer3-py bug-fix block */
+    /* update argc limit needs to be update to 20 due to 3 new arguments */
     if (argc < 2 || argc > 20) {
       fprintf(stderr, msg, argv[0]);
       fprintf(stderr, "%s", copyright);
@@ -166,7 +166,7 @@ main(int argc, char **argv)
           exit(-1);
         }
         i++;
-      } else if (!strncmp("-d", argv[i], 3)) {
+      } else if (!strncmp("-d", argv[i], 3)) { /* primer3-py bug-fix block need to parse 3 characters instead of 2. conflicts with dm and df params */
         if (i+1 >= argc) {
           /* Missing value */
           fprintf(stderr, msg, argv[0]);
@@ -178,7 +178,7 @@ main(int argc, char **argv)
           exit(-1);
         }
         i++;
-      } else if (!strncmp("-dm", argv[i], 2)) {
+      } else if (!strncmp("-dm", argv[i], 3)) { /* primer3-py bug-fix block need to parse 3 characters instead of 2 */
         if (i+1 >= argc) {
           /* Missing value */
           fprintf(stderr, msg, argv[0]);
@@ -190,7 +190,7 @@ main(int argc, char **argv)
           exit(-1);
         }
         i++;
-      } else if (!strncmp("-df", argv[i], 2)) {
+      } else if (!strncmp("-df", argv[i], 3)) { /* primer3-py bug-fix block need to parse 3 characters instead of 2 */
         if (i+1 >= argc) {
           /* Missing value */
           fprintf(stderr, msg, argv[0]);
@@ -202,7 +202,7 @@ main(int argc, char **argv)
           exit(-1);
         }
         i++;
-      } else if (!strncmp("-fo", argv[i], 2)) {
+      } else if (!strncmp("-fo", argv[i], 3)) { /* primer3-py bug-fix block need to parse 3 characters instead of 2 */
         if (i+1 >= argc) {
           /* Missing value */
           fprintf(stderr, msg, argv[0]);
@@ -253,10 +253,16 @@ main(int argc, char **argv)
   /* input sequence to uppercase */
   seq = argv[i];
   len=strlen(seq);
-  for(j=0;j<len;j++) seq[j]=toupper(seq[j]);
+  for(j=0;j<len;j++) { seq[j]=toupper(seq[j]); }
 
-  tm_calc = oligotm(seq, d, mv, dv, n, dmso, dmso_fact, formamide,
-                    (tm_method_type) tm_santalucia, (salt_correction_type) salt_corrections, -10.0);
+  /* primer3-py note `annealing_temp` argument hard coded to -10.0 by primer3
+  * maintainers */
+  tm_calc = oligotm(
+    seq, d, mv, dv, n, dmso, dmso_fact, formamide,
+    (tm_method_type) tm_santalucia,
+    (salt_correction_type) salt_corrections,
+    -10.0
+  );
   tm = tm_calc.Tm;
 
   if (OLIGOTM_ERROR == tm) {

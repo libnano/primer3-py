@@ -90,6 +90,7 @@ class TestLowLevelBindings(unittest.TestCase):
         # self.max_nn_length = 60
 
     def test_calc_tm(self):
+        '''Test basic calc_tm input'''
         for _ in range(100):
             self.randArgs()
             binding_tm = bindings.calc_tm(
@@ -117,6 +118,7 @@ class TestLowLevelBindings(unittest.TestCase):
             self.assertTrue(abs(binding_tm - wrapper_tm) < 0.5)
 
     def test_calc_hairpin(self):
+        '''Test basic hairpin input'''
         for _ in range(1):
             self.randArgs()
             binding_res = bindings.calc_hairpin(
@@ -148,6 +150,7 @@ class TestLowLevelBindings(unittest.TestCase):
             )
 
     def test_calc_homodimer(self):
+        '''Test basic homodimer input'''
         for _ in range(100):
             self.randArgs()
             binding_res = bindings.calc_homodimer(
@@ -181,6 +184,7 @@ class TestLowLevelBindings(unittest.TestCase):
             )
 
     def test_calc_heterodimer(self):
+        '''Test basic heterodimer input'''
         for _ in range(100):
             self.randArgs()
             binding_res = bindings.calc_heterodimer(
@@ -215,7 +219,6 @@ class TestLowLevelBindings(unittest.TestCase):
                 wrapper_res.ascii_structure,
             )
             # Ensure that order of sequences does not matter
-            # Should be fixed as of Primer3 2.3.7 update
             binding_12_res = bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
@@ -228,8 +231,8 @@ class TestLowLevelBindings(unittest.TestCase):
                 output_structure=True,
             )
             binding_21_res = bindings.calc_heterodimer(
-                seq1=self.seq1,
-                seq2=self.seq2,
+                seq1=self.seq2,
+                seq2=self.seq1,
                 mv_conc=self.mv_conc,
                 dv_conc=self.dv_conc,
                 dntp_conc=self.dntp_conc,
@@ -239,7 +242,75 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             self.assertEqual(int(binding_12_res.tm), int(binding_21_res.tm))
 
+    def test_max_length_heterodimer(self):
+        '''Test longest heterodimer input of 10000 mer per `THAL_MAX_SEQ` '''
+        self.randArgs()
+
+        seq_small = ''.join([
+            random.choice('ATGC') for _ in
+            range(59)  # max size for sequence
+        ])
+        seq_big = ''.join([
+            random.choice('ATGC') for _ in
+            range(10000)  # max size for sequence 2
+        ])
+        binding_res = bindings.calc_heterodimer(
+            seq1=seq_small,
+            seq2=seq_big,
+            mv_conc=self.mv_conc,
+            dv_conc=self.dv_conc,
+            dntp_conc=self.dntp_conc,
+            dna_conc=self.dna_conc,
+            temp_c=self.temp_c,
+            max_loop=self.max_loop,
+            output_structure=True,
+        )
+        wrapper_res = wrappers.calc_heterodimer(
+            seq1=seq_small,
+            seq2=seq_big,
+            mv_conc=self.mv_conc,
+            dv_conc=self.dv_conc,
+            dntp_conc=self.dntp_conc,
+            dna_conc=self.dna_conc,
+            temp_c=self.temp_c,
+            max_loop=self.max_loop,
+        )
+        self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+
+        print(binding_res.ascii_structure)
+        print()
+        print(wrapper_res.ascii_structure)
+
+        self.assertEqual(
+            binding_res.ascii_structure,
+            wrapper_res.ascii_structure,
+        )
+        # Ensure that order of sequences does not matter
+        binding_12_res = bindings.calc_heterodimer(
+            seq1=seq_small,
+            seq2=seq_big,
+            mv_conc=self.mv_conc,
+            dv_conc=self.dv_conc,
+            dntp_conc=self.dntp_conc,
+            dna_conc=self.dna_conc,
+            temp_c=self.temp_c,
+            max_loop=self.max_loop,
+            output_structure=True,
+        )
+        binding_21_res = bindings.calc_heterodimer(
+            seq1=seq_big,
+            seq2=seq_small,
+            mv_conc=self.mv_conc,
+            dv_conc=self.dv_conc,
+            dntp_conc=self.dntp_conc,
+            dna_conc=self.dna_conc,
+            temp_c=self.temp_c,
+            max_loop=self.max_loop,
+        )
+        self.assertEqual(int(binding_12_res.tm), int(binding_21_res.tm))
+
     def test_calc_end_stability(self):
+        '''Test calc_end_stability'''
         for _ in range(100):
             self.randArgs()
             binding_res = bindings.calc_end_stability(
@@ -265,6 +336,7 @@ class TestLowLevelBindings(unittest.TestCase):
             self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
 
     def test_correction_methods(self):
+        '''Test different correction_methods'''
         self.randArgs()
         for sc_method in ['schildkraut', 'santalucia', 'owczarzy']:
             for tm_method in ['breslauer', 'santalucia']:
@@ -300,6 +372,7 @@ class TestLowLevelBindings(unittest.TestCase):
         )
 
     def test_memory_leaks(self):
+        '''Test for memory leaks'''
         sm = _get_mem_usage()
         run_count = 100
         for x in range(run_count):
@@ -335,6 +408,7 @@ class TestLowLevelBindings(unittest.TestCase):
 
 
 def suite():
+    '''Define the test suite'''
     suite = unittest.TestSuite()
     suite.addTest(TestLowLevelBindings())
     return suite

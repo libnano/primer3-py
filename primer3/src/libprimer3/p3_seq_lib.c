@@ -320,7 +320,7 @@ destroy_seq_lib(seq_lib *p)
     }
     free(p->names);
   }
-  // added NC
+  /* primer3-py additional block */
   if (p->rev_compl_seqs != NULL) {
     // Already freed above (the rev_compl_seqs array contains pointers
     // that just point to the seqs array)

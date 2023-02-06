@@ -161,7 +161,7 @@ main(int argc, char **argv)
          exit(-1);
        }
        i++;
-     } else if (!strncmp("-dmso", argv[i], 3)) { /* concentration of DMSO */
+     } else if (!strncmp("-dmso", argv[i], 5)) { /* primer3-py bug-fix block need to parse 5 characters instead of 3 concentration of DMSO */
        if (i+1 >= argc) {
          /* Missing value */
          fprintf(stderr, msg, argv[0]);
@@ -173,7 +173,7 @@ main(int argc, char **argv)
          exit(-1);
        }
        i++;
-     } else if (!strncmp("-dmso_fact", argv[i], 3)) { /* DMSO correction factor */
+     } else if (!strncmp("-dmso_fact", argv[i], 10)) { /* primer3-py bug-fix block need to parse 10 characters instead of 3 DMSO correction factor */
        if (i+1 >= argc) {
          /* Missing value */
          fprintf(stderr, msg, argv[0]);
@@ -185,7 +185,7 @@ main(int argc, char **argv)
          exit(-1);
        }
        i++;
-     } else if (!strncmp("-formamid", argv[i], 3)) { /* concentration of formamid */
+     } else if (!strncmp("-formamid", argv[i], 9)) { /* primer3-py bug-fix block need to parse 9 characters instead of 3 concentration of formamid */
        if (i+1 >= argc) {
          /* Missing value */
          fprintf(stderr, msg, argv[0]);

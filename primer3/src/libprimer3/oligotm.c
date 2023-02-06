@@ -324,8 +324,9 @@ oligotm(const  char *s,
   int GC_count = 0;
   const char* d = s;
 
-  /* NOTE: update NC for debugging oligotm_main as the upstream argument parser
-  * has issues/bugs with argument name collisions
+  /* NOTE: primer3-py block for intentionally commented out for debugging
+  * `oligotm_main` as the upstream argument parser has issues/bugs with argument
+  * name collisions
   */
   // printf(
   //   "%f, %f, %f, %f, %f, %f, %f, %f\n",

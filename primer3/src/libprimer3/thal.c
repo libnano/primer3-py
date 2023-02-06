@@ -44,7 +44,7 @@
 #include <setjmp.h>
 #include <ctype.h>
 #include <math.h>
-// #include <unistd.h> COMMENTED OUT BY NC unused and breaks Windows build
+/* #include <unistd.h> primer3-py COMMENTED OUT as is unused and breaks Windows build */
 
 #if defined(__sun)
 #include <ieeefp.h>
@@ -249,20 +249,24 @@ static void traceback(int i, int j, double RT, int* ps1, int* ps2, int maxLoop, 
 static void tracebacku(int*, int, thal_results*);
 
 /* calculates but does not print dimer structure */
+/* primer3-py special function */
 static void calcDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, double t37, thal_results *o);
 
-/* calculates but does not print hairpin structure */
-static void calcHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o);
-
 /* prints ascii output of dimer structure */
+/* primer3-py special function */
 static void drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, double t37, thal_results *o);
 
+/* calculates but does not print hairpin structure */
+/* primer3-py special function */
+static void calcHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o);
+
 /* prints ascii output of hairpin structure */
+/* primer3-py special function */
 static void drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o);
 
 int trim_trailing_whitespace(char *msg, size_t msg_len);
 
-/* NOTE: Commented out because primer3-py does not use the drawDimer and drawHairpin
+/* NOTE: primer3-py Commented out because does not use the drawDimer and drawHairpin
  * code of upstream primer3 2.6.1 due to the fact it produces different strings
  * under different conditions.  TODO: refactor upstream drawDimer and drawHairpin
  * code to unify the output
@@ -487,12 +491,12 @@ thal(const unsigned char *oligo_f,
      const thal_args *a,
      const thal_mode mode,
      thal_results *o,
-     const int print_output)  /* New arg NC*/
+     const int print_output)  /* primer3-py modification argumen */
 {
   double* SH;
   int i, j;
   int len_f, len_r;
-  // double T1; NC DEL
+  // double T1; primer3-py commented out variable
   int k;
   int *bp;
   unsigned char *oligo2_rev = NULL;
@@ -538,12 +542,12 @@ thal(const unsigned char *oligo_f,
               "Illegal type");
   o->align_end_1 = -1;
   o->align_end_2 = -1;
-  if (oligo_f != NULL && '\0' == *oligo_f) { /* Updated NC 2023.01.09 for type fix */
+  if (oligo_f != NULL && '\0' == *oligo_f) { /* primer3-py bug fix for type */
     strcpy(o->msg, "Empty first sequence");
     o->temp = 0.0;
     return;
   }
-  if (oligo_r != NULL && '\0' == *oligo_r) { /* Updated NC 2023.01.09 for type fix */
+  if (oligo_r != NULL && '\0' == *oligo_r) { /* primer3-py bug fix for type */
     strcpy(o->msg, "Empty second sequence");
     o->temp = 0.0;
     return;
@@ -640,7 +644,6 @@ thal(const unsigned char *oligo_f,
       tracebacku(bp, a->maxLoop, o);
       /* traceback for unimolecular structure */
 
-      /* Commented code is old primer3-py code NC */
       int do_temponly = 0;
       if (mode == THL_FAST) {
         do_temponly = 1;
@@ -648,10 +651,10 @@ thal(const unsigned char *oligo_f,
       if (print_output == 0) {
         calcHairpin(bp, mh, ms, do_temponly, a->temp, o);
       } else {
-        /* NOTE: NC This block is enable code running in
-         * libprimer3.choose_primers to allocate memory for running.  It
+        /* NOTE: primer3-py This block is enable code running in
+         * `libprimer3.choose_primers` to allocate memory for running.  It
          * is that codes resposibility to free the this memory
-         * Thermoanalysis manages its own allocations
+         * `ThermoAnalysis` manages its own allocations
          */
         if ((o->sec_struct == NULL) && (mode == THL_STRUCT))  {
           int seq_struct_str_len = (len1 + len1 + 1) * 4 + 64;
@@ -669,9 +672,6 @@ thal(const unsigned char *oligo_f,
       }
 
     } else if((mode != THL_FAST) && (mode != THL_DEBUG_F) && (mode != THL_STRUCT)) {
-    /* if temponly=1 then return after printing basic therm data */ // updated commented out NC
-    // } else if (a->temponly == 0) { // updated commented out NC
-    // o->no_structure = 1; // updated commented out NC
         fputs("No secondary structure could be calculated\n",stderr);
     }
 
@@ -694,7 +694,7 @@ thal(const unsigned char *oligo_f,
     entropyDPT = safe_recalloc(entropyDPT, len1, len2, o); /* enthalpyDPT is 3D array represented as 1D array */
     initMatrix();
     fillMatrix(a->maxLoop, o);
-    // SHleft = -_INFINITY; NC DEL
+    /* SHleft = -_INFINITY; primer3-py commented out due to unused */
     SH = (double*) safe_malloc(2 * sizeof(double), o);
     /* calculate terminal basepairs */
     bestI = bestJ = 0;
@@ -727,7 +727,7 @@ thal(const unsigned char *oligo_f,
       bestI = bestJ = 0;
       bestI = len1;
       i = len1;
-      // SHleft = -_INFINITY; NC DEL
+      /* SHleft = -_INFINITY; primer3-py commented out due to unused */
       G1 = bestG = _INFINITY;
       for (j = 1; j <= len2; ++j) {
         RSH(i, j, SH);
@@ -741,7 +741,7 @@ thal(const unsigned char *oligo_f,
         }
       }
     }
-    // if (!isFinite(SHleft)) { bestI = bestJ = 1; } NC DEL
+    /* if (!isFinite(SHleft)) { bestI = bestJ = 1; } primer3-py commented out due to unused DEL */
     if (!isFinite(bestG)) { bestI = bestJ = 1; } // LN 594
     RSH(bestI, bestJ, SH);
     dH = EnthalpyDPT(bestI, bestJ)+ SH[1] + dplx_init_H;
@@ -764,8 +764,8 @@ thal(const unsigned char *oligo_f,
       if (print_output == 0) {
         calcDimer(ps1, ps2, SHleft, dH, dS, do_temponly, a->temp, o);
       } else {
-        /* NOTE: NC This block is enable code running in
-         * libprimer3.choose_primers to allocate memory for running.  It
+        /* NOTE: primer3-py This block is enable code running in
+         * `libprimer3.choose_primers` to allocate memory for running.  It
          * is that codes resposibility to free the this memory
          * Thermoanalysis manages its own allocations
          */
@@ -813,16 +813,13 @@ void
 set_thal_default_args(thal_args *a)
 {
   memset(a, 0, sizeof(thal_args));
-  // a->debug = 0; update commented out NC
   a->type = thal_any; /* thal_alignment_type THAL_ANY */
   a->maxLoop = MAX_LOOP;
   a->mv = 50; /* mM */
   a->dv = 0.0; /* mM */
   a->dntp = 0.8; /* mM */
   a->dna_conc = 50; /* nM */
-  // a->temp = 310.15; /* Kelvin */ NC DEL
   a->temp = TEMP_KELVIN; /* Kelvin */
-  // a->temponly = 1; /* return only melting temperature of predicted structure */ update commented out NC
   a->dimer = 1; /* by default dimer structure is calculated */
 }
 
@@ -831,16 +828,13 @@ void
 set_thal_oligo_default_args(thal_args *a)
 {
   memset(a, 0, sizeof(thal_args));
-  // a->debug = 0; update commented out NC
   a->type = thal_any; /* thal_alignment_type THAL_ANY */
   a->maxLoop = MAX_LOOP;
   a->mv = 50; /* mM */
   a->dv = 0.0; /* mM */
   a->dntp = 0.0; /* mM */
   a->dna_conc = 50; /* nM */
-  // a->temp = 310.15; /* Kelvin */ NC DEL
   a->temp = TEMP_KELVIN; /* Kelvin */
-  // a->temponly = 1; /* return only melting temperature of predicted structure */ update commented out NC
   a->dimer = 1; /* by default dimer structure is calculated */
 }
 
@@ -1668,7 +1662,6 @@ maxTM(int i, int j)
   T0 = T1 = -_INFINITY;
   S0 = EntropyDPT(i, j);
   H0 = EnthalpyDPT(i, j);
-  // T0 = (H0 + dplx_init_H) /(S0 + dplx_init_S + RC); /* at current position */ NC DEL
   RSH(i,j,SH);
   T0 = (H0 + dplx_init_H + SH[1]) /(S0 + dplx_init_S + SH[0] + RC); /* at current position */
   if (isFinite(EnthalpyDPT(i - 1, j - 1)) && isFinite(Hs(i - 1, j - 1, 1))) {
@@ -1680,7 +1673,6 @@ maxTM(int i, int j)
     H1 = _INFINITY;
     T1 = (H1 + dplx_init_H) /(S1 + dplx_init_S + RC);
   }
-  // T1 = (H1 + dplx_init_H) /(S1 + dplx_init_S + RC); NC DEL
   if (S1 < MinEntropyCutoff) {
     /* to not give dH any value if dS is unreasonable */
     S1 = MinEntropy;
@@ -1691,7 +1683,6 @@ maxTM(int i, int j)
     S0 = MinEntropy;
     H0 = 0.0;
   }
-  // if ((T1 > T0) || ((S0 > 0) && (H0 > 0))) { /* T1 on suurem */ NC DEL
   if(T1 > T0) {
     EntropyDPT(i, j) = S1;
     EnthalpyDPT(i, j) = H1;
@@ -1742,8 +1733,6 @@ maxTM2(int i, int j)
 static void
 LSH(int i, int j, double* EntropyEnthalpy)
 {
-  // double S1, H1, T1; NC DEL
-  // double S2, H2, T2; NC DEL
   double S1, H1, T1, G1;
   double S2, H2, T2, G2;
   S1 = S2 = -1.0;
@@ -1756,15 +1745,13 @@ LSH(int i, int j, double* EntropyEnthalpy)
   }
   S1 = atPenaltyS(numSeq1[i], numSeq2[j]) + tstack2Entropies[numSeq2[j]][numSeq2[j-1]][numSeq1[i]][numSeq1[i-1]];
   H1 = atPenaltyH(numSeq1[i], numSeq2[j]) + tstack2Enthalpies[numSeq2[j]][numSeq2[j-1]][numSeq1[i]][numSeq1[i-1]];
-  // if(!isFinite(H1)) { NC DEL
-  G1 = H1 - TEMP_KELVIN*S1;
+  G1 = H1 - (TEMP_KELVIN * S1);
   if(!isFinite(H1) || (G1 > 0)) {
     H1 = _INFINITY;
     S1 = -1.0;
     G1 = 1.0;
   }
   /** If there is two dangling ends at the same end of duplex **/
-  // if(isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]]) && isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]])) { NC DEL
   if ( (bpIndx(numSeq1[i-1], numSeq2[j-1]) != 1 ) &&
       isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]]) &&
       isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]]) ) {
@@ -1772,7 +1759,6 @@ LSH(int i, int j, double* EntropyEnthalpy)
         dangleEntropies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]] +
         dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]];
-    // if(!isFinite(H2)) { NC DEL
     G2 = H2 - TEMP_KELVIN*S2;
     if(!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
@@ -1780,26 +1766,21 @@ LSH(int i, int j, double* EntropyEnthalpy)
       G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    // if(isFinite(H1)) { NC DEL
     if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      // if(T1<T2) { NE DEL
       if( (T1 < T2) && (G2 < 0) ) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    // } else { NC DEL
     } else if(G2 < 0) {
       S1 = S2;
       H1 = H2;
       T1 = T2;
     }
-  // } else if (isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]])) { NC DEL
   } else if ((bpIndx(numSeq1[i-1], numSeq2[j-1]) != 1) && isFinite(dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies3[numSeq2[j]][numSeq2[j - 1]][numSeq1[i]];
-    // if(!isFinite(H2)) { NC DEL
     G2 = H2 - TEMP_KELVIN*S2;
     if(!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
@@ -1807,26 +1788,21 @@ LSH(int i, int j, double* EntropyEnthalpy)
       G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    // if(isFinite(H1)) { NC DEL
     if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      // if (T1 < T2) { NC DEL
       if((T1 < T2) && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    // } else { NC DEL
     } else if (G2 < 0){
       S1 = S2;
       H1 = H2;
       T1 = T2;
     }
-  // } else if (isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]])) { NC DEL
   } else if ((bpIndx(numSeq1[i-1], numSeq2[j-1]) != 1) && isFinite(dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies5[numSeq2[j]][numSeq1[i]][numSeq1[i - 1]];
-    // if(!isFinite(H2)) { NC DEL
     G2 = H2 - TEMP_KELVIN*S2;
     if(!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
@@ -1834,16 +1810,16 @@ LSH(int i, int j, double* EntropyEnthalpy)
       G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    // if(isFinite(H1)) { NC DEL
+
     if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      // if(T1 < T2) { NC DEL
+
       if(T1 < T2  && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    // } else { NC DEL
+
     } else if(G2 < 0) {
       S1 = S2;
       H1 = H2;
@@ -1887,22 +1863,20 @@ RSH(int i, int j, double* EntropyEnthalpy) // Ln 1558
   }
   S1 = atPenaltyS(numSeq1[i], numSeq2[j]) + tstack2Entropies[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]][numSeq2[j + 1]];
   H1 = atPenaltyH(numSeq1[i], numSeq2[j]) + tstack2Enthalpies[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]][numSeq2[j + 1]];
-  // if(!isFinite(H1)) { NC DEL
-  G1 = H1 - TEMP_KELVIN*S1;
+  G1 = H1 - (TEMP_KELVIN * S1);
   if(!isFinite(H1) || (G1 > 0)) {
     H1 = _INFINITY;
     S1 = -1.0;
     G1 = 1.0;
   }
 
-  // if(isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]]) && isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) { NC DEL
   if(bpIndx(numSeq1[i+1], numSeq2[j+1]) == 0 && isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]]) && isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]] +
         dangleEntropies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]] +
         dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]];
-    // if(!isFinite(H2)) { NC DEL
-    G2 = H2 - TEMP_KELVIN*S2;
+
+    G2 = H2 - (TEMP_KELVIN * S2);
     if(!isFinite(H2) || G2>0) {
       H2 = _INFINITY;
       S2 = -1.0;
@@ -1910,16 +1884,16 @@ RSH(int i, int j, double* EntropyEnthalpy) // Ln 1558
     }
 
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    // if(isFinite(H1)) { NC DEL
+
     if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      // if(T1 < T2) { NC DEL
+
       if((T1 < T2) && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    // } else {
+
     } else if(G2 < 0){
       S1 = S2;
       H1 = H2;
@@ -1927,11 +1901,9 @@ RSH(int i, int j, double* EntropyEnthalpy) // Ln 1558
     }
   }
 
-  // if(isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]])) { NC DEL
   else if(bpIndx(numSeq1[i+1], numSeq2[j+1]) == 0 && isFinite(dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies3[numSeq1[i]][numSeq1[i + 1]][numSeq2[j]];
-    // if(!isFinite(H2)) { NC DEL
     G2 = H2 - TEMP_KELVIN*S2;
     if(!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
@@ -1939,16 +1911,13 @@ RSH(int i, int j, double* EntropyEnthalpy) // Ln 1558
       G2 = 1.0;
     }
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    // if(isFinite(H1)) { NC DEL
     if(isFinite(H1) && (G1 < 0)) {
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      // if(T1 < T2) { NC DEL
       if(T1 < T2 && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    // } else { NC DEL
     } else if (G2 < 0){
       S1 = S2;
       H1 = H2;
@@ -1956,28 +1925,29 @@ RSH(int i, int j, double* EntropyEnthalpy) // Ln 1558
     }
   }
 
-  // if(isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) { NC DEL
   else if (bpIndx(numSeq1[i+1], numSeq2[j+1]) == 0 && isFinite(dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]])) {
     S2 = atPenaltyS(numSeq1[i], numSeq2[j]) + dangleEntropies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]];
     H2 = atPenaltyH(numSeq1[i], numSeq2[j]) + dangleEnthalpies5[numSeq1[i]][numSeq2[j]][numSeq2[j + 1]];
-    // if(!isFinite(H2)) { NC DEL
     G2 = H2 - TEMP_KELVIN*S2;
+
     if (!isFinite(H2) || (G2 > 0)) {
       H2 = _INFINITY;
       S2 = -1.0;
       G2 = 1.0;
     }
+
     T2 = (H2 + dplx_init_H) / (S2 + dplx_init_S + RC);
-    // if(isFinite(H1)) { NC DEL
+
     if (isFinite(H1) && (G1 < 0)) {
+
       T1 = (H1 + dplx_init_H) / (S1 + dplx_init_S + RC);
-      // if(T1 < T2) { NC DEL
+
       if ((T1 < T2) && (G2 < 0)) {
         S1 = S2;
         H1 = H2;
         T1 = T2;
       }
-    // } else { NC DEL
+
     } else if (G2 < 0) {
       S1 = S2;
       H1 = H2;
@@ -2066,7 +2036,7 @@ CBI(int i, int j, double* EntropyEnthalpy, int traceback, int maxLoop)
         EntropyEnthalpy[0] = -1.0;
         EntropyEnthalpy[1] = _INFINITY;
       }
-      // if (isFinite(EnthalpyDPT(ii, jj))) { NC DEL
+
       if (isFinite(EnthalpyDPT(ii, jj)) && isFinite(EnthalpyDPT(i, j))) {
         calc_bulge_internal2(i, j, ii, jj, EntropyEnthalpy, traceback,maxLoop);
         if(isFinite(EntropyEnthalpy[1])) {
@@ -2089,14 +2059,13 @@ static void
 calc_hairpin(int i, int j, double* EntropyEnthalpy, int traceback)
 {
   int loopSize = j - i - 1;
-  // double T1, T2; NC DEL
-  // T1 = T2 = -_INFINITY; NC DEL
   double G1, G2;
   G1 = G2 = -_INFINITY;
   double* SH;
   SH = (double*) safe_malloc(2 * sizeof(double), 0);
   SH[0] = -1.0;
   SH[1] = _INFINITY;
+
   if(loopSize < MIN_HRPN_LOOP) {
     EntropyEnthalpy[0] = -1.0;
     EntropyEnthalpy[1] = _INFINITY;
@@ -2256,7 +2225,6 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
         H = _INFINITY;
         S = -1.0;
       }
-      // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(i, j)) || !isPositive(EntropyDPT(i, j)))){ /* if both, S and H are positive */ NC DEL
       if(isPositive(H) && isPositive(S)) {
         H = _INFINITY;
         S = -1.0;
@@ -2281,23 +2249,17 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
       H = _INFINITY;
       S = -1.0;
     }
-    // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(ii, jj)) || !isPositive(EntropyDPT(ii, jj)))) { /* if both, S and H are positive */ NC DEL
     if( isPositive(H) && isPositive(S) ) {
       H = _INFINITY;
       S = -1.0;
     }
-    // T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
-    // T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / (EntropyDPT(ii, jj) + dplx_init_S + RC);
 
-    // if((DBL_EQ(T1,T2) == 2) || traceback==1) {
-    //   if((T1 > T2) || (traceback && T1 >= T2)) {
     RSH(ii,jj,SH);
     G1 = H+SH[1] -TEMP_KELVIN*(S+SH[0]);
     G2 = EnthalpyDPT(ii, jj) + SH[1] - TEMP_KELVIN*(EntropyDPT(ii, jj) + SH[0]);
     if( (G1< G2) || (traceback == 1)) {
         EntropyEnthalpy[0] = S;
         EntropyEnthalpy[1] = H;
-      // } NC DEL
     }
     free(SH);
     return;
@@ -2310,23 +2272,20 @@ calc_bulge_internal(int i, int j, int ii, int jj, double* EntropyEnthalpy, int t
     S = interiorLoopEntropies[loopSize] + tstackEntropies[numSeq1[i]][numSeq1[i+1]][numSeq2[j]][numSeq2[j+1]] +
           tstackEntropies[numSeq2[jj]][numSeq2[jj-1]][numSeq1[ii]][numSeq1[ii-1]] + (ILAS * abs(loopSize1 - loopSize2));
           S += EntropyDPT(i, j);
+
     if(!isFinite(H)) {
       H = _INFINITY;
       S = -1.0;
     }
-    // if(isPositive(H) && isPositive(S) && (!isPositive(EnthalpyDPT(ii, jj)) || !isPositive(EntropyDPT(ii, jj)))) { /* if both, S and H are positive */ NC DEL
     if(isPositive(H) && isPositive(S)) {
       H = _INFINITY;
       S = -1.0;
     }
-    // T1 = (H + dplx_init_H) / ((S + dplx_init_S) + RC);
-    // T2 = (EnthalpyDPT(ii, jj) + dplx_init_H) / ((EntropyDPT(ii, jj)) + dplx_init_S + RC);
-    // if((T1 > T2) || ((traceback && T1 >= T2) || (traceback==1))) {
-    //   EntropyEnthalpy[0] = S;
-    //   EntropyEnthalpy[1] = H;
+
     RSH(ii,jj,SH);
     G1 = H + SH[1] - TEMP_KELVIN*(S + SH[0]);
     G2 = EnthalpyDPT(ii, jj) + SH[1] - TEMP_KELVIN*(EntropyDPT(ii, jj) + SH[0]);
+
     if( (G1 < G2) || (traceback == 1) ) {
       EntropyEnthalpy[0] = S;
       EntropyEnthalpy[1] = H;
@@ -3035,46 +2994,8 @@ traceback(int i, int j, double RT, int* ps1, int* ps2, int maxLoop, thal_results
   free(SH);
 }
 
-static void
-calcHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o)
-{
-    int i, N = 0;
-    double mg, t;
-    if (!isFinite(ms) || !isFinite(mh)) {
-        if(temponly == 0) {
-            #ifdef DEBUG
-                fputs("No temperature could be calculated\\n",stderr);
-            #endif
-        } else {
-            o->temp = 0.0;
-            o->no_structure = 1;
-        }
-    } else {
-        if(temponly == 0) {
-            for (i = 1; i < len1; ++i) {
-                if(bp[i-1] > 0) N++;
-            }
-        } else {
-            for (i = 1; i < len1; ++i) {
-                if(bp[i-1] > 0) N++;
-            }
-        }
-        t = (mh / (ms + (((N/2)-1) * saltCorrection))) - ABSOLUTE_ZERO;
 
-        if(temponly == 0) {
-            mg = mh - (temp * (ms + (((N/2)-1) * saltCorrection)));
-            ms = ms + (((N/2)-1) * saltCorrection);
-            o->temp = (double) t;
-            o->ds = (double) ms;
-            o->dh = (double) mh;
-            o->dg = (double) mg;
-        } else {
-            o->temp = (double) t;
-        }
-    }
-    return;
-}
-
+/* primer3-py special function */
 static void
 calcDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, double t37, thal_results *o)
 {
@@ -3111,6 +3032,8 @@ calcDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
     return;
 }
 
+
+/* primer3-py special function */
 static void
 drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, double t37, thal_results *o)
 {
@@ -3281,6 +3204,50 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
   return;
 }
 
+
+/* primer3-py special function */
+static void
+calcHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o)
+{
+    int i, N = 0;
+    double mg, t;
+    if (!isFinite(ms) || !isFinite(mh)) {
+        if(temponly == 0) {
+            #ifdef DEBUG
+                fputs("No temperature could be calculated\\n",stderr);
+            #endif
+        } else {
+            o->temp = 0.0;
+            o->no_structure = 1;
+        }
+    } else {
+        if(temponly == 0) {
+            for (i = 1; i < len1; ++i) {
+                if(bp[i-1] > 0) N++;
+            }
+        } else {
+            for (i = 1; i < len1; ++i) {
+                if(bp[i-1] > 0) N++;
+            }
+        }
+        t = (mh / (ms + (((N/2)-1) * saltCorrection))) - ABSOLUTE_ZERO;
+
+        if(temponly == 0) {
+            mg = mh - (temp * (ms + (((N/2)-1) * saltCorrection)));
+            ms = ms + (((N/2)-1) * saltCorrection);
+            o->temp = (double) t;
+            o->ds = (double) ms;
+            o->dh = (double) mh;
+            o->dg = (double) mg;
+        } else {
+            o->temp = (double) t;
+        }
+    }
+    return;
+}
+
+
+/* primer3-py special function */
 static void
 drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_results *o)
 {
