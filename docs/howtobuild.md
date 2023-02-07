@@ -1,19 +1,26 @@
-# Building for upload to PyPi
-# Deps: setuptools, twine, wheel
+### Building for upload to PyPi
+#### Dependencies:
+1. setuptools
+2. twine
+3. wheel
 
-# .pypirc file in ~ like:
+#### edit the `~/.pypirc` file:
 
+```ini
     [distutils]
     index-servers = pypi
 
     [pypi]
     repository = https://pypi.python.org/pypi
     username = <username>
+```
+Then execute:
 
+```bash
+$ python setup.py sdist
+$ python setup.py bdist
+$ python setup.py bdist_wheel
+$ twine upload dist/*
+```
 
-1. python setup.py sdist
-2. python setup.py bdist
-3. python setup.py bdist_wheel
-4. twine upload dist/*
-
-# repeat for other versions w/ bdist and `twine upload dist/<fn of wheel>
+Repeat for other versions w/ `bdist` and `twine upload dist/<fn of wheel>`
