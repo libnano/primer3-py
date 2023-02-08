@@ -19,10 +19,12 @@ Routine oligo analysis is extremely simple::
 
     In [1]: import primer3
 
-    In [2]: %timeit primer3.calcTm('GTAAAACGACGGCCAGT')
-    100000 loops, best of 3: 4.74 µs per loop
+    In [2]: import tests.wrappers
 
-    In [3]: %timeit primer3.wrappers.calcTm('GTAAAACGACGGCCAGT')
+    In [3]: %timeit primer3.calcTm('GTAAAACGACGGCCAGT')
+    100000 loops, best of 3: 4.74 us per loop
+
+    In [4]: %timeit tests.wrappers.calcTm('GTAAAACGACGGCCAGT')
     100000 loops, best of 3: 5.78 ms per loop
 
 **Primer3-py** also includes bindings for the Primer3 `primer design engine`

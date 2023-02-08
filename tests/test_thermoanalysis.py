@@ -34,10 +34,9 @@ try:
 except (ImportError, ModuleNotFoundError):  # For Windows compatibility
     resource = None  # type: ignore
 
-from primer3 import (
-    bindings,
-    wrappers,
-)
+from primer3 import bindings
+
+from . import wrappers
 
 
 def _get_mem_usage():
