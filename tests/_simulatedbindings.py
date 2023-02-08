@@ -28,10 +28,9 @@ from typing import (
     Union,
 )
 
-from primer3 import (
-    argdefaults,
-    wrappers,
-)
+from primer3 import argdefaults
+
+from . import wrappers
 
 P3_ARGS: Dict[str, Any] = {}
 

@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
-primer3.wrappers
+tests.wrappers
 ~~~~~~~~~~~~~~~~
 
 Simple subprocess wrappers for Primer3 executables. These functions closely
@@ -40,7 +40,7 @@ from typing import (
     Union,
 )
 
-from .argdefaults import (
+from primer3.argdefaults import (
     Primer3PyArguments,
     format_boulder_io,
     parse_boulder_io,
@@ -52,7 +52,8 @@ DEFAULT_P3_ARGS = Primer3PyArguments()
 
 # TODO: remove after update to primer3 >= 2.5.0
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
-LIBPRIMER3_PATH = pjoin(LOCAL_DIR, 'src', 'libprimer3')
+PACKAGE_DIR = os.path.dirname(LOCAL_DIR)
+LIBPRIMER3_PATH = pjoin(PACKAGE_DIR, 'primer3', 'src', 'libprimer3')
 THERMO_PATH = pjoin(
     LIBPRIMER3_PATH,
     'primer3_config',

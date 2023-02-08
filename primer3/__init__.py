@@ -26,11 +26,8 @@ oligonucleotide thermodynamics library.
 import os
 from typing import List
 
-from . import (
-    argdefaults,
-    thermoanalysis,
-    wrappers,
-)
+from . import thermoanalysis  # type: ignore
+from . import argdefaults
 from .bindings import (  # Deprecated below
     calc_hairpin,
     calc_hairpin_tm,
@@ -76,8 +73,8 @@ __all__ = [
     'calc_hairpin', 'calc_homodimer', 'calc_heterodimer', 'calc_tm',
     # Primer3 design bindings
     'design_primers',
-    # Modules (bindings = C API bindings, wrappers = subprocess wrappers)
-    'argdefaults', 'wrappers', 'thermoanalysis',
+    # Modules
+    'argdefaults', 'thermoanalysis',
     # Deprecated Low-level Tm-only bindings
     'calcHairpinTm', 'calcHomodimerTm', 'calcHeterodimerTm',
     # Deprecated Low-level bindings
