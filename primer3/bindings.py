@@ -63,10 +63,10 @@ def calc_hairpin(
 ):
     ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
 
-    **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
-    by the Primer3 team as the longest reasonable sequence length for which
-    a two-state NN model produces reliable results
-    (see primer3/src/libnano/thal.h:50).
+    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap
+    suggested by the Primer3 team as the longest reasonable sequence length for
+    which a two-state NN model produces reliable results
+    (see ``primer3/src/libnano/thal.h:59``).
 
     Args:
         seq: DNA sequence to analyze for hairpin formation
@@ -76,14 +76,15 @@ def calc_hairpin(
         dna_conc: DNA conc. (nM)
         temp_c: Simulation temperature for dG (Celsius)
         max_loop(int, optional): Maximum size of loops in the structure
-        output_structure (bool) : If `True`, the ASCII dimer structure is saved
+        output_structure (bool) : If :const:`True`, the ASCII dimer structure is
+            saved
 
     Returns:
-        A `ThermoResult` object with thermodynamic characteristics of the
+        A :class:`ThermoResult` object with thermodynamic characteristics of the
         hairpin formation.
 
     Raises:
-        ``RuntimeError``
+        :class:`RuntimeError`
 
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
@@ -100,14 +101,14 @@ def calcHairpin(
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ):
-    '''
-    Deprecated
+    '''.. deprecated:: 1.0.0. Choose :func:`calc_hairpin` function instead
+
     Calculate the hairpin formation thermodynamics of a DNA sequence.
 
     **Note that the maximum length of `seq` is 60 bp.** This is a cap suggested
     by the Primer3 team as the longest reasonable sequence length for which
     a two-state NN model produces reliable results
-    (see primer3/src/libnano/thal.h:50).
+    (see ``primer3/src/libnano/thal.h:59``).
 
     Args:
         seq: DNA sequence to analyze for hairpin formation
@@ -117,14 +118,15 @@ def calcHairpin(
         dna_conc: DNA conc. (nM)
         temp_c: Simulation temperature for dG (Celsius)
         max_loop(int, optional): Maximum size of loops in the structure
-        output_structure (bool) : If `True`, the ASCII dimer structure is saved
+        output_structure (bool) : If :const:`True`, the ASCII dimer structure
+            is saved
 
     Returns:
-        A `ThermoResult` object with thermodynamic characteristics of the
+        A :class:`ThermoResult` object with thermodynamic characteristics of the
         hairpin formation.
 
     Raises:
-        ``RuntimeError``
+        :class:`RuntimeError`
 
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
@@ -141,13 +143,12 @@ def calc_homodimer(
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ):
-    '''
-    Calculate the homodimerization thermodynamics of a DNA sequence.
+    ''' Calculate the homodimerization thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
     by Primer3 as the longest reasonable sequence length for which
     a two-state NN model produces reliable results (see
-    primer3/src/libnano/thal.h:50).
+    ``primer3/src/libnano/thal.h:59``).
 
     Args:
         seq: DNA sequence to analyze for homodimer formation calculations
@@ -157,15 +158,15 @@ def calc_homodimer(
         dna_conc: DNA conc. (nM)
         temp_c: Simulation temperature for dG (Celsius)
         max_loop: Maximum size of loops in the structure
-        output_structure: If `True`, the ASCII dimer structure
+        output_structure: If :const:`True`, the ASCII dimer structure
             is saved
 
     Returns:
-        A `ThermoResult` object with thermodynamic characteristics of the
+        A :class:`ThermoResult` object with thermodynamic characteristics of the
         homodimer interaction.
 
     Raises:
-        ``RuntimeError``
+        :class:`RuntimeError`
 
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
@@ -182,14 +183,14 @@ def calcHomodimer(
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ):
-    '''
-    Deprecated
+    '''.. deprecated:: 1.0.0. Choose :func:`calc_homodimer` function instead
+
     Calculate the homodimerization thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
     by Primer3 as the longest reasonable sequence length for which
     a two-state NN model produces reliable results (see
-    primer3/src/libnano/thal.h:50).
+    ``primer3/src/libnano/thal.h:59``).
 
     Args:
         seq: DNA sequence to analyze for homodimer formation calculations
@@ -199,15 +200,15 @@ def calcHomodimer(
         dna_conc: DNA conc. (nM)
         temp_c: Simulation temperature for dG (Celsius)
         max_loop: Maximum size of loops in the structure
-        output_structure: If `True`, the ASCII dimer structure
+        output_structure: If :const:`True`, the ASCII dimer structure
             is saved
 
     Returns:
-        A `ThermoResult` object with thermodynamic characteristics of the
+        A :class:`ThermoResult` object with thermodynamic characteristics of the
         homodimer interaction.
 
     Raises:
-        ``RuntimeError``
+        :class:`RuntimeError`
 
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
@@ -230,7 +231,7 @@ def calc_heterodimer(
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length
     for which a two-state NN model produces reliable results (see
-    primer3/src/libnano/thal.h:50).
+    ``primer3/src/libnano/thal.h:59``).
 
     Args:
         seq1: First DNA sequence to analyze for heterodimer formation
@@ -244,11 +245,11 @@ def calc_heterodimer(
         output_structure: If `True`, the ASCII dimer structure is saved
 
     Returns:
-        A `ThermoResult` object with thermodynamic characteristics of the
+        A :class:`ThermoResult` object with thermodynamic characteristics of the
         heterodimer interaction.
 
     Raises:
-        ``RuntimeError``
+        :class:`RuntimeError`
 
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
@@ -270,15 +271,14 @@ def calcHeterodimer(
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ) -> thermoanalysis.ThermoResult:
-    '''
-    Deprecated
+    '''.. deprecated:: 1.0.0. Choose :func:`calc_heterodimer` function instead
 
     Calculate the heterodimerization thermodynamics of two DNA sequences.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length
     for which a two-state NN model produces reliable results (see
-    primer3/src/libnano/thal.h:50).
+    ``primer3/src/libnano/thal.h:59``).
 
     Args:
         seq1: First DNA sequence to analyze for heterodimer formation
@@ -292,11 +292,11 @@ def calcHeterodimer(
         output_structure: If `True`, the ASCII dimer structure is saved
 
     Returns:
-        A `ThermoResult` object with thermodynamic characteristics of the
+        A :class:`ThermoResult` object with thermodynamic characteristics of the
         heterodimer interaction.
 
     Raises:
-        ``RuntimeError``
+        :class:`RuntimeError`
 
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
@@ -323,7 +323,7 @@ def calc_end_stability(
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length
     for which a two-state NN model produces reliable results (see
-    primer3/src/libnano/thal.h:50).
+   ``primer3/src/libnano/thal.h:59``).
 
     Args:
         seq1: DNA sequence to analyze for 3' end  hybridization against the
@@ -337,11 +337,11 @@ def calc_end_stability(
         max_loop: Maximum size of loops in the structure
 
     Returns:
-        A `ThermoResult` object with thermodynamic characteristics of the
+        A :class:`ThermoResult` object with thermodynamic characteristics of the
         3' hybridization interaction.
 
     Raises:
-        ``RuntimeError``
+        :class:`RuntimeError`
 
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
@@ -358,15 +358,15 @@ def calcEndStability(
         temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
 ) -> thermoanalysis.ThermoResult:
-    '''
-    Deprecated
+    '''**Deprecated**. Choose :func:`calc_end_stability` function instead
+
     Calculate the 3' end stability of DNA sequence `seq1` against DNA
     sequence `seq2`.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
     This is a cap imposed by Primer3 as the longest reasonable sequence length
     for which a two-state NN model produces reliable results (see
-    primer3/src/libnano/thal.h:50).
+    ``primer3/src/libnano/thal.h:59``).
 
     Args:
         seq1: DNA sequence to analyze for 3' end  hybridization against the
@@ -380,11 +380,11 @@ def calcEndStability(
         max_loop: Maximum size of loops in the structure
 
     Returns:
-        A `ThermoResult` object with thermodynamic characteristics of the
+        A :class:`ThermoResult` object with thermodynamic characteristics of the
         3' hybridization interaction.
 
     Raises:
-        ``RuntimeError``
+        :class:`RuntimeError`
 
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
@@ -405,7 +405,7 @@ def calc_tm(
         tm_method: str = DEFAULT_P3_ARGS.tm_method,
         salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
 ) -> float:
-    ''' Calculate the melting temperature (Tm) of a DNA sequence.
+    '''Calculate the melting temperature (Tm) of a DNA sequence.
 
     Note that NN thermodynamics will be used to calculate the Tm of sequences
     up to 60 bp in length, after which point the following formula will be
@@ -432,6 +432,7 @@ def calc_tm(
 
     Returns:
         The melting temperature in degrees Celsius (float).
+
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
     return THERMO_ANALYSIS.calc_tm(seq)
@@ -451,8 +452,8 @@ def calcTm(
         tm_method: str = DEFAULT_P3_ARGS.tm_method,
         salt_corrections_method: str = DEFAULT_P3_ARGS.salt_corrections_method,
 ) -> float:
-    '''
-    Deprecated
+    '''.. deprecated:: 1.0.0. Choose :func:`calc_tm` function instead
+
     Calculate the melting temperature (Tm) of a DNA sequence.
 
     Note that NN thermodynamics will be used to calculate the Tm of sequences
@@ -480,6 +481,7 @@ def calcTm(
 
     Returns:
         The melting temperature in degrees Celsius (float).
+
     '''
     THERMO_ANALYSIS.set_thermo_args(**locals())
     return THERMO_ANALYSIS.calcTm(seq)
@@ -491,7 +493,9 @@ def calc_hairpin_tm(*args, **kwargs) -> float:
 
 
 def calcHairpinTm(*args, **kwargs) -> float:
-    '''Deprecated'''
+    '''.. deprecated:: 1.0.0. Choose :func:`calc_hairpin_tm` function instead
+
+    '''
     return calcHairpin(*args, **kwargs).tm
 
 
@@ -500,7 +504,9 @@ def calc_homodimer_tm(*args, **kwargs) -> float:
 
 
 def calcHomodimerTm(*args, **kwargs) -> float:
-    '''Deprecated'''
+    '''.. deprecated:: 1.0.0. Choose :func:`calc_homodimer_tm`  function instead
+
+    '''
     return calcHomodimer(*args, **kwargs).tm
 
 
@@ -509,7 +515,10 @@ def calc_heterodimer_tm(*args, **kwargs) -> float:
 
 
 def calcHeterodimerTm(*args, **kwargs) -> float:
-    '''Deprecated'''
+    '''.. deprecated:: 1.0.0. Choose :func:`calc_heterodimer_tm` function
+    instead
+
+    '''
     return calcHeterodimer(*args, **kwargs).tm
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -532,7 +541,7 @@ def design_primers(
 
     Returns:
         A dictionary of Primer3 results (should be identical to the expected
-        BoulderIO output from primer3_main)
+        BoulderIO output from ``primer3_main``)
     '''
     return THERMO_ANALYSIS.run_design(
         global_args=global_args,
@@ -548,11 +557,9 @@ def designPrimers(
         misprime_lib: Optional[Dict[str, Any]] = None,
         mishyb_lib: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    '''Run the Primer3 design process.
+    '''.. deprecated:: 1.0.0 Choose :func:`design_primers` function instead
 
-    If the global args have been previously set (either by a pervious
-    `designPrimers` call or by a `setGlobals` call), `designPrimers` may be
-    called with seqArgs alone (as a means of optimization).
+    Run the Primer3 design process.
 
     Args:
         seq_args: Primer3 sequence/design args as per Primer3 docs
@@ -564,7 +571,8 @@ def designPrimers(
 
     Returns:
         A dictionary of Primer3 results (should be identical to the expected
-        BoulderIO output from primer3_main)
+        BoulderIO output from ``primer3_main``)
+
     '''
     warnings.warn('Function deprecated please use "design_primers" instead')
     return THERMO_ANALYSIS.run_design(

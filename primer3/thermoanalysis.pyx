@@ -25,19 +25,25 @@ calculations using common calculation parameters.
 
 Calculations are performed under the following paradigm:
 
-1) Instantiate ThermoAnalysis object with appropriate parameters
+1) Instantiate :class:`ThermoAnalysis` object with appropriate parameters
+
+.. code-block:: python
 
     oligo_calc = ThermoAnalysis(mv_conc=50, dv_conc=0.2)
 
 2) Use the object instance for subsequent calculations
 
+.. code-block:: python
+
     for primer in primer_list:
         print(oligo_calc.calc_tm(primer))  # Print the melting temp
 
+
 3) (optional) You can update an individual parameter at any time
 
-    oligo_calc.mv_conc = 80  # Increaase the monovalent ion conc to 80 mM
+.. code-block:: python
 
+    oligo_calc.mv_conc = 80  # Increase the monovalent ion conc to 80 mM
 
 '''
 from libc.stdlib cimport (
@@ -158,9 +164,9 @@ def precision(x, pts=None):
 
 cdef class ThermoResult:
     ''' Class that wraps the ``thal_results`` struct from libprimer3
-    to expose tm, dg, dh, and ds values that result from a ``calc_hairpin``,
-    ``calc_homodimer``, ``calc_heterodimer``, or ``calc_end_stability``
-    calculation.
+    to expose tm, dg, dh, and ds values that result from a :meth:`calc_hairpin`,
+    :meth:`calc_homodimer`, :meth:`calc_heterodimer`, or
+    :meth:`calc_end_stability` calculation.
     '''
 
     def __cinit__(self):
@@ -183,28 +189,31 @@ cdef class ThermoResult:
 
     @property
     def ds(self) -> float:
-        ''' deltaS (enthalpy) of the structure (cal/K*mol) '''
+        ''' delta S (enthalpy) of the structure (cal/K*mol) '''
         return self.thalres.ds
 
     @property
     def dh(self) -> float:
-        ''' deltaH (entropy) of the structure (cal/mol) '''
+        ''' delta H (entropy) of the structure (cal/mol) '''
         return self.thalres.dh
 
     @property
     def dg(self) -> float:
-        ''' deltaG (Gibbs free energy) of the structure (cal/mol) '''
+        ''' delta G (Gibbs free energy) of the structure (cal/mol) '''
         return self.thalres.dg
 
     @property
     def ascii_structure_lines(self):
-        ''' ASCII structure representation split into indivudial lines
+        ''' ASCII structure representation split into individual lines
 
-        e.g.,
-            [u'SEQ\t         -    T CCT-   A   TTGCTTTGAAACAATTCACCATGCAGA',
-             u'SEQ\t      TGC GATG G    GCT TGC                           ',
-             u'STR\t      ACG CTAC C    CGA ACG                           ',
-             u'STR\tAACCTT   T    T TTAT   G   TAGGCGAGCCACCAGCGGCATAGTAA-']
+        e.g.::
+
+            [
+                'SEQ\t         -    T CCT-   A   TTGCTTTGAAACAATTCACCATGCAGA',
+                'SEQ\t      TGC GATG G    GCT TGC                           ',
+                'STR\t      ACG CTAC C    CGA ACG                           ',
+                'STR\tAACCTT   T    T TTAT   G   TAGGCGAGCCACCAGCGGCATAGTAA-',
+            ]
         '''
         if self.ascii_structure:
             return self.ascii_structure.strip('\n').split('\n')
@@ -213,11 +222,11 @@ cdef class ThermoResult:
 
     def check_exc(self) -> ThermoResult:
         ''' Check the ``.msg`` attribute of the internal thalres struct and
-        raise a ``RuntimeError`` exception if it is not an empty string.
+        raise a :class:`RuntimeError` exception if it is not an empty string.
         Otherwise, return a reference to the current object.
 
         Raises:
-            RuntimeError: Message of internal C error
+            :class:`RuntimeError`: Message of internal C error
         '''
         if len(self.thalres.msg):
             raise RuntimeError(self.thalres.msg)
@@ -242,7 +251,7 @@ cdef class ThermoResult:
             pts: precision to round floats to
 
         Returns:
-            dictionary form of the ``ThermoResult``
+            dictionary form of the :class:`ThermoResult`
         '''
         return {
             'structure_found': self.structure_found,
@@ -271,8 +280,8 @@ def _conditional_get_enum_int(
         integer value for the key in the map
 
     Raises:
-        ValueError: arg_value missing in the map ``dict_obj``
-        TypeError: invalid type for the key
+        :class:`ValueError`: arg_value missing in the map ``dict_obj``
+        :class:`TypeError`: invalid type for the key
     '''
     if isinstance(arg_value, (int, long)):
         return arg_value
@@ -362,16 +371,16 @@ cdef class _ThermoAnalysis:
                 neighbor model (as implemented in oligotm.  For
                 sequences longer than this, `seqtm` uses the "GC%" formula
                 implemented in long_seq_tm.  Use only when calling the
-                ``_ThermoAnalysis.calc_tm`` method
+                :meth:`_ThermoAnalysis.calc_tm` method
             tm_method: Type of temperature method, a string name key or integer
-                value member of the tm_methods_dict dict::
+                value member of the ``tm_methods_dict dict``::
                 {
                     'breslauer': 0,
                     'santalucia': 1
                 }
             salt_correction_method: Type of salt correction method, a string
                 name key or integer value member of the
-                salt_correction_methods_dict::
+                ``salt_correction_methods_dict``::
                 {
                     'schildkraut': 0,
                     'santalucia': 1,
@@ -481,7 +490,8 @@ cdef class _ThermoAnalysis:
     @property
     def tm_method(self) -> str:
         '''Method used to calculate melting temperatures. May be provided as
-        a string (see tm_methods_dict) or the respective integer representation.
+        a string (see :attr:`tm_methods_dict`) or the respective integer
+        representation.
         '''
         return self._tm_methods_int_dict[self._tm_method]
 
@@ -497,7 +507,8 @@ cdef class _ThermoAnalysis:
     def salt_correction_method(self) -> str:
         ''' Method used for salt corrections applied to melting temperature
         calculations. May be provided as a string (see
-        salt_correction_methods_dict) or the respective integer representation.
+        :attr:`salt_correction_methods_dict`) or the respective integer
+        representation.
         '''
         return self._salt_correction_method
 
@@ -527,7 +538,7 @@ cdef class _ThermoAnalysis:
             **kwargs,
     ):
         '''
-        Set parameters in global ``_ThermoAnalysis`` instance
+        Set parameters in global :class:`_ThermoAnalysis` instance
 
         Args:
             mv_conc: Monovalent cation conc. (mM)
@@ -619,8 +630,8 @@ cdef class _ThermoAnalysis:
         sequences, ``seq1`` and ``seq2``
 
         Args:
-            s1: (str | bytes) sequence string 1
-            s2: (str | bytes) sequence string 2
+            seq1: (str | bytes) sequence string 1
+            seq2: (str | bytes) sequence string 2
             output_structure: If True, build output structure.
 
         Returns:
@@ -946,7 +957,7 @@ cdef class _ThermoAnalysis:
     def todict(self) -> Dict[str, Any]:
         '''
         Returns:
-            dictionary form of the ``_ThermoAnalysis`` instance
+            dictionary form of the :class:`_ThermoAnalysis` instance
         '''
         return {
             'mv_conc':      self.mv_conc,
@@ -974,15 +985,15 @@ cdef class _ThermoAnalysis:
         dictionaries containing `key: value` pairs that correspond to the
         documented Primer3 global and sequence argument parameters.
         Also accepts a mispriming or mishybridization library organized as
-        `seq_name`:`seq_value` key:value pairs.
+        ``seq_name``:``seq_value`` key:value pairs.
 
         Args:
             seq_args: Primer3 sequence/design args as per Primer3 docs
             global_args: Primer3 global args as per Primer3 docs
             misprime_lib: `Sequence name: sequence` dictionary for mispriming
                 checks.
-            mishyb_lib: `Sequence name: sequence` dictionary for mishybridization
-                checks.
+            mishyb_lib: `Sequence name: sequence` dictionary for
+                mishybridization checks.
 
         Raises:
             OSError: Could not allocate memory
@@ -1043,7 +1054,8 @@ cdef class _ThermoAnalysis:
                     )
             if not op.isdir(kmer_lists_path):
                 raise ValueError(
-                    f'PRIMER_MASK_KMERLIST_PATH: path {kmer_lists_path} not found'
+                    f'PRIMER_MASK_KMERLIST_PATH: path {kmer_lists_path} '
+                    'not found'
                 )
 
         try:
@@ -1054,7 +1066,9 @@ cdef class _ThermoAnalysis:
                 arg_input_buffer,
             )
         except BaseException:
-            print(f'Issue setting globals. bytes provided: \n\t{global_arg_bytes}')
+            print(
+                f'Issue setting globals. bytes provided: \n\t{global_arg_bytes}'
+            )
             p3_destroy_global_settings(global_settings_data)
             global_settings_data = NULL
             if seq_args:
@@ -1076,7 +1090,9 @@ cdef class _ThermoAnalysis:
                 mp_lib = pdh_create_seq_lib(misprime_lib)
                 if mp_lib == NULL:
                     err_msg = f'Issue creating misprime_lib {misprime_lib}'
-                    raise ValueError(f'Issue creating misprime_lib {misprime_lib}')
+                    raise ValueError(
+                        f'Issue creating misprime_lib {misprime_lib}'
+                    )
                 global_settings_data[0].p_args.repeat_lib = mp_lib
 
             if mishyb_lib != None:
@@ -1109,8 +1125,8 @@ cdef class _ThermoAnalysis:
             global_args: Primer3 global args as per Primer3 docs
             misprime_lib: `Sequence name: sequence` dictionary for mispriming
                 checks.
-            mishyb_lib: `Sequence name: sequence` dictionary for mishybridization
-                checks.
+            mishyb_lib: `Sequence name: sequence` dictionary for
+                mishybridization checks.
 
         Returns:
             primer3 key value results dictionary
@@ -1231,7 +1247,8 @@ cdef int pdh_wrap_set_seq_args_globals(
     # here and in argdefaults.py
     if sys.platform != 'windows':
         if global_settings_data[0].mask_template:
-            global_settings_data[0].lowercase_masking = global_settings_data[0].mask_template
+            global_settings_data[0].lowercase_masking = \
+                global_settings_data[0].mask_template
 
         # Check that we found the kmer lists in case masking flag was set to 1.
         if (
@@ -1262,11 +1279,12 @@ cdef int pdh_wrap_set_seq_args_globals(
                 else:
                     kmer_lists_path_b = kmer_lists_path
                 kmer_lists_path_c = kmer_lists_path_b
-                global_settings_data[0].mp.fp = create_default_formula_parameters(
-                    global_settings_data[0].mp.list_prefix,
-                    kmer_lists_path_c,
-                    &fatal_parse_err,
-                )
+                global_settings_data[0].mp.fp = \
+                    create_default_formula_parameters(
+                        global_settings_data[0].mp.list_prefix,
+                        kmer_lists_path_c,
+                        &fatal_parse_err,
+                    )
                 global_settings_data[0].masking_parameters_changed = 0
 
     if (
@@ -1417,11 +1435,17 @@ cdef object pdh_design_output_to_dict(
         raise OSError("Primer3 ran out of memory.")
 
     try:
-        if pr_append_new_chunk_external(combined_retval_err, retval[0].glob_err.data):
+        if pr_append_new_chunk_external(
+            combined_retval_err,
+            retval[0].glob_err.data,
+        ):
             raise OSError("Primer3 ran out of memory.")
 
         # NOTE: These are non fatal errors
-        if pr_append_new_chunk_external(combined_retval_err, retval[0].per_sequence_err.data):
+        if pr_append_new_chunk_external(
+            combined_retval_err,
+            retval[0].per_sequence_err.data,
+        ):
             raise OSError("Primer3 ran out of memory.")
 
         # Check if there are errors, print and return
@@ -1442,7 +1466,10 @@ cdef object pdh_design_output_to_dict(
     # Prints out selection statistics about the primers
     if (
         (global_settings_data[0].pick_left_primer == 1) and
-        not (global_settings_data[0].pick_anyway and sequence_args_data[0].left_input)
+        not (
+            global_settings_data[0].pick_anyway and
+            sequence_args_data[0].left_input
+        )
     ):
         explain_str_b = <bytes> p3_get_oligo_array_explain_string(
             p3_get_rv_fwd(retval),
@@ -1451,7 +1478,10 @@ cdef object pdh_design_output_to_dict(
 
     if (
         (global_settings_data[0].pick_right_primer == 1) and
-        not (global_settings_data[0].pick_anyway and sequence_args_data[0].right_input)
+        not (
+            global_settings_data[0].pick_anyway and
+            sequence_args_data[0].right_input
+        )
     ):
         explain_str_b = <bytes> p3_get_oligo_array_explain_string(
             p3_get_rv_rev(retval),
@@ -1460,7 +1490,10 @@ cdef object pdh_design_output_to_dict(
 
     if (
         (global_settings_data[0].pick_internal_oligo == 1) and
-        not (global_settings_data[0].pick_anyway and sequence_args_data[0].internal_input)
+        not (
+            global_settings_data[0].pick_anyway and
+            sequence_args_data[0].internal_input
+        )
     ):
         explain_str_b = <bytes> p3_get_oligo_array_explain_string(
             p3_get_rv_intl(retval),
@@ -1628,7 +1661,11 @@ cdef object pdh_design_output_to_dict(
             ]
         if go_int == 1:
             output_dict[f'PRIMER_{int_oligo}_{i}'] = [
-                intl[0].start + incl_s + global_settings_data[0].first_base_index,
+                (
+                    intl[0].start +
+                    incl_s +
+                    global_settings_data[0].first_base_index
+                ),
                 intl[0].length,
             ]
 
@@ -1662,19 +1699,37 @@ cdef object pdh_design_output_to_dict(
             output_dict[f'PRIMER_{int_oligo}_{i}_GC_PERCENT'] = intl[0].gc_content
 
         # Print primer self_any
-        if (go_fwd == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 0):
+        if (
+            (go_fwd == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 0)
+        ):
             output_dict[f'PRIMER_LEFT_{i}_SELF_ANY'] = fwd[0].self_any
-        if (go_rev == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 0):
+        if (
+            (go_rev == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 0)
+        ):
             output_dict[f'PRIMER_RIGHT_{i}_SELF_ANY'] = rev[0].self_any
-        if (go_int == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 0):
+        if (
+            (go_int == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 0)
+        ):
             output_dict[f'PRIMER_{int_oligo}_{i}_SELF_ANY'] = intl[0].self_any
 
         # Print primer self_any thermodynamical approach
-        if (go_fwd == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 1):
+        if (
+            (go_fwd == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 1)
+        ):
             output_dict[f'PRIMER_LEFT_{i}_SELF_ANY_TH'] = fwd[0].self_any
-        if (go_rev == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 1):
+        if (
+            (go_rev == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 1)
+        ):
             output_dict[f'PRIMER_RIGHT_{i}_SELF_ANY_TH'] = rev[0].self_any
-        if (go_int == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 1):
+        if (
+            (go_int == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 1)
+        ):
             output_dict[f'PRIMER_{int_oligo}_{i}_SELF_ANY_TH'] = intl[0].self_any
 
         # Print primer secondary structures*/
@@ -1743,11 +1798,20 @@ cdef object pdh_design_output_to_dict(
             output_dict[f'PRIMER_{int_oligo}_{i}_SELF_END_STUCT'] = sqtemp_b.decode('utf8')
 
         # Print primer hairpin
-        if (go_fwd == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 1):
+        if (
+            (go_fwd == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 1)
+        ):
             output_dict[f'PRIMER_LEFT_{i}_HAIRPIN_TH'] = fwd[0].hairpin_th
-        if (go_rev == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 1):
+        if (
+            (go_rev == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 1)
+        ):
             output_dict[f'PRIMER_RIGHT_{i}_HAIRPIN_TH'] = rev[0].hairpin_th
-        if (go_int == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 1):
+        if (
+            (go_int == 1) and
+            (global_settings_data[0].thermodynamic_oligo_alignment == 1)
+        ):
             output_dict[f'PRIMER_{int_oligo}_{i}_HAIRPIN_TH'] = intl[0].hairpin_th
 
         # Print primer secondary structures*/
@@ -2019,12 +2083,12 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
         sequences, ``seq1`` and ``seq2``
 
         Args:
-            s1: (str | bytes) sequence string 1
-            s2: (str | bytes) sequence string 2
-            output_structure: If True, build output structure.
+            seq1: (str | bytes) sequence string 1
+            seq2: (str | bytes) sequence string 2
+            output_structure: If :const:`True`, build output structure.
 
         Returns:
-            Computed heterodimer ``ThermoResult``
+            Computed heterodimer :class`ThermoResult`
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_heterodimer')
         return self.calc_heterodimer(seq1, seq2, output_structure)
@@ -2041,10 +2105,10 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
 
         Args:
             seq1: (str | bytes) sequence string 1
-            output_structure: If True, build output structure.
+            output_structure: If :const:`True`, build output structure.
 
         Returns:
-            Computed homodimer ``ThermoResult``
+            Computed homodimer :class:`ThermoResult`
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_homodimer')
         return self.calc_homodimer(seq1, output_structure)
@@ -2061,10 +2125,10 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
 
         Args:
             seq1: (str | bytes) sequence string 1
-            output_structure: If True, build output structure.
+            output_structure: If :const:`True`, build output structure.
 
         Returns:
-            Computed hairpin ``ThermoResult``
+            Computed hairpin :class:`ThermoResult`
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_hairpin')
         return self.calc_hairpin(seq1, output_structure)
@@ -2076,15 +2140,15 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
     ) -> ThermoResult:
         '''
         Deprecated
-        Calculate the 3' end stability of DNA sequence `seq1` against DNA
-        sequence `seq2`
+        Calculate the 3' end stability of DNA sequence ``seq1`` against DNA
+        sequence ``seq2``
 
         Args:
             seq1: sequence string 1
             seq2: sequence string 2
 
         Returns:
-            Computed end stability ``ThermoResult``
+            Computed end stability :class`ThermoResult`
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_end_stability')
         return self.calc_end_stability(seq1, seq2)

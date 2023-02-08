@@ -6,16 +6,16 @@ Primer3-py: simple oligo analysis and primer design
 =========================================================
 
 **Primer3-py** is a collection of Python bindings for a derivative of the
-popular Primer3 C library (version 2.3.7).
+popular Primer3 C library (version 2.6.1).
 
-See README.rst and http://libnano.github.io/primer3-py for more information
+See README.md and http://libnano.github.io/primer3-py for more information
 and primer3_test.py for usage examples.
 
 Installation
 ------------
 
-**Primer3-py** has no external library dependencies and should compile on
-most linux and OS X systems that are running Python 2.7, 3.3, 3.4, or 3.5.
+**Primer3-py** has no external runtime library dependencies and should compile
+on most Linux and OS X systems that are running Python 3.8 - 3.11.
 
 To build **Primer3-py** within the package directory run::
 
@@ -57,7 +57,7 @@ from distutils import log as setup_log
 from os.path import join as pjoin
 from os.path import relpath as rpath
 
-with open('README.rst') as fd:
+with open('README.md') as fd:
     LONG_DESCRIPTION = fd.read()
 
 # Platform-dependent binary for `make` commands
@@ -275,15 +275,18 @@ def try_cythonize(extension_list, *args, **kwargs):
     )
 
 
+import primer3
+
 setup(
     name='primer3-py',
-    version='1.0.0-alpha.4',
-    license='GPLv2',
-    author='Ben Pruitt, Nick Conway',
+    version=primer3.__version__,
+    license=primer3.__license__,
+    authors=primer3.__authors__,
     author_email='bpruittvt@gmail.com',
     url='https://github.com/libnano/primer3-py',
-    description='Python bindings for Primer3',
+    description=primer3.DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
     classifiers=[
         'Programming Language :: C',
         'Programming Language :: Cython',

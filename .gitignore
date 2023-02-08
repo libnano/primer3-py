@@ -57,3 +57,7 @@ pip-log.txt
 .DS_Store
 
 .vscode/
+
+# Docs artifacts
+_build/
+docs/_build/

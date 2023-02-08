@@ -1,0 +1,44 @@
+# NOTE: repo needs a secrets PRIMER3_TOKEN that is a
+# GitHub Personal Access Token (Fine Grained) with "Contents" Read Write
+# permission
+name: "Push New Tagged Version Docs Build" # Build on a new version tag
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3.3.0
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4.4.0
+      with:
+        python-version: '3.10'
+    - name: Install and run sphinx to build the docs
+      run: |
+        python -m pip install --upgrade pip
+        pip install cython myst-parser sphinx sphinx_rtd_theme sphinx-autodoc-typehints
+        python setup.py build_ext --inplace
+        cd docs/
+        make html
+        cd ..
+    - name: Commit documentation changes to the gh-pages branch
+      run: |
+        git clone https://github.com/libnano/primer3-py.git --branch gh-pages --single-branch gh-pages
+        cp -r docs/_build/html/* gh-pages/
+        cd gh-pages
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Update documentation" -a || true
+        # The above command will fail if no changes were present, so we ignore
+        # the return code.
+    - name: Push changes to the gh-pages branch
+      uses: ad-m/github-push-action@master
+      with:
+        branch: gh-pages
+        directory: gh-pages
+        github_token: ${{ secrets.PRIMER3_TOKEN }}
+        force: true
