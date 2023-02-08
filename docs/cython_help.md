@@ -1,7 +1,10 @@
-### Building against `cython` `pxd` headers for `primer3-py` installed in your environment
+# Building new Cython modules against `thermoanalysis.pxd`
+
+It is of great use to build modules that depend on `primer3-py`.
+
+To do so, first, make sure  `primer3-py` installed in your environment.
 
 Write your code like this below:
-
 
 ```python
 # this works with a file named thermoanalysis.pxd in the primer3 repo

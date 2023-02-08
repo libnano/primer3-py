@@ -1,6 +1,4 @@
-=====================================================
- primer3-py: simple oligo analysis and primer design
-=====================================================
+## primer3-py: simple oligo analysis and primer design
 
 .. image:: https://github.com/libnano/primer3-py/actions/workflows/primer3-py-ci-github-action.yml/badge.svg
   :target: https://github.com/libnano/primer3-py/actions
