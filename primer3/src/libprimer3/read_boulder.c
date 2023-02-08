@@ -175,7 +175,8 @@ extern double strtod();
    }
 
 
-/* NOTE: NC for fast new-line parsing a character string
+/* NOTE: primer3-py for `in_buffer` parsing for fast new-line parsing a
+* character string
 * Adapted from https://stackoverflow.com/a/17983619 answer by
 * Jeremy Friesner edited 12/4/2015 CC BY-SA license
 */
@@ -206,13 +207,14 @@ read_boulder_record(FILE *file_input,
                     pr_append_str *nonfatal_parse_err,
                     pr_append_str *warnings,
                     read_boulder_record_results *res,
-                    char* in_buffer
+                    char* in_buffer /* primer3-py new argument */
 ) {
   int line_len;
   int tag_len, datum_len;
   int data_found = 0;
   int read_start_codon = 0;
-  char *s, *n, *datum, *task_tmp = NULL;
+  char *n, *datum, *task_tmp = NULL;
+  char *s = NULL;  /* primer3-py update to initialize away compiler warning */
   const char *p;
   pr_append_str *parse_err;
   pr_append_str *non_fatal_err;
@@ -226,6 +228,11 @@ read_boulder_record(FILE *file_input,
 
   non_fatal_err = nonfatal_parse_err;
 
+  /* primer3-py additional block
+  # new logic to enable reading input from the string in
+  * `in_buffer` instead of from the file `file_input` to unify parsing of
+  * input fields to a single block on C code in this function
+  */
   char* cur_line = NULL;
   char* next_line = NULL;
   int did_start_in_buffer_read = 0;
@@ -234,6 +241,7 @@ read_boulder_record(FILE *file_input,
       cur_line = in_buffer;
   }
 
+  /* Conditionally read from `file_input` OR `in_buffer` new lines splits */
   while (
       (
           (file_input != NULL) &&
@@ -243,9 +251,9 @@ read_boulder_record(FILE *file_input,
           ((next_line = strchr(cur_line, '\n')) != NULL) && (strcmp(cur_line, "="))
       )
   ) {
-    /* Added NC */
+    /* primer3-py specific code for reading from `in_buffer` */
     if (next_line) {
-      *next_line = '\0';  // temporarily terminate the current line
+      *next_line = '\0';  /* temporarily terminate the current line */
       s = cur_line;
     }
     /* If we are reading from a settings file, then skip every
@@ -379,7 +387,7 @@ read_boulder_record(FILE *file_input,
         continue;
       }
 
-      /* NOTE: NC Added parsing for LOGGING Input*/
+      /* NOTE: primer3-py Added parsing for LOGGING Input*/
       if (strncmp(s, "DO_LOG_SETTINGS=1", 17) == 0) {
         pa->do_log_settings = 1;
       }
@@ -780,8 +788,9 @@ read_boulder_record(FILE *file_input,
 
   }  /* end while loop */
 
-  /* Check if the record was terminated by "=" */
-  /* Added NC */
+  /* primer3-py additional block
+  * Check if the record was terminated by "="
+  */
   if (in_buffer != NULL) {
     s = cur_line;
   }

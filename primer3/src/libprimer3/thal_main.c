@@ -198,7 +198,7 @@ int main(int argc, char** argv)
             exit(-1);
          }
          i++;
-      } else if (!strncmp("-d", argv[i], 2)) { /* dna conc */
+      } else if (!strncmp("-d", argv[i], 3)) { /* primer3-py bug-fix block need to parse 3 characters instead of 2 due to -dv dna conc */
          if(argv[i+1]==NULL) {
 #ifdef DEBUG
             fprintf(stderr, usage, argv[0]);

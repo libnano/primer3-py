@@ -250,7 +250,7 @@ main(int argc, char *argv[])
   }
   global_pa->dump = dump_args ;
 
-  /* Added NC */
+  /* primer3-py additional block for debugging pa and sa variables */
   global_pa->do_log_settings = 0;
   global_pa->log_settings_path = NULL;
 

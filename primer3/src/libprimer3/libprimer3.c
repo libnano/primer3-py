@@ -43,6 +43,16 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/* NOTE: primer3-py.  This library is C only and does not use C++ as the
+* upstream libprimer3.cc does. It uses the `klib/khash.h` library to do this
+* avoiding C++ complexity and keeping the build for the Cython code simple.
+* this only affects lines that use hash maps such as the **pairs global variable
+* C++ code replaced is intentionally commented out as a reference for future
+* code comparisons. in older code this replaced `std::hash_map` from
+* and `#include <ext/hash_map>` as of primer3 2.6.1 now replaces
+* `std::unordered_map` from `#include <unordered_map>`
+*/
+
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -53,6 +63,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <ctype.h> /* toupper */
 
+/* NOTE: primer3-py specific include to enable C only code for hash maps */
 #include "khash.h"
 
 #include "dpal.h"
@@ -62,7 +73,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 KHASH_MAP_INIT_INT(primer_pair_map, primer_pair *)
 
 /* #define's */
-
 
 /*
  * OPTIMIZE_OK_REGIONS 1 allows _optimize_ok_regions_list() to use the
@@ -111,6 +121,9 @@ KHASH_MAP_INIT_INT(primer_pair_map, primer_pair *)
 #define PR_UNDEFINED_ALIGN_OPT        -100.0
 
 #define TRIMMED_SEQ_LEN(X) ((X)->incl_l)
+
+/* primer3-py additional variable for code clarity */
+#define DO_PRINTOUT 1
 
 typedef struct dpal_arg_holder {
   dpal_args *local;
@@ -1314,7 +1327,7 @@ choose_primers(const p3_global_settings *pa,
   PR_ASSERT(NULL != pa);
   PR_ASSERT(NULL != sa);
 
-  /* NOTE: NC for debugging*/
+  /* NOTE: primer3-py added to debugging arguments `pa` and `sa` */
   if (pa->do_log_settings) {
     FILE* logf_ptr = fopen(pa->log_settings_path, "ab");
     if (logf_ptr == NULL) {
@@ -5064,14 +5077,13 @@ align_thermod(const char *s1,
 {
   int thal_trace=0;
   thal_results r;
-  // thal((const unsigned char *) s1, (const unsigned char *) s2, a, &r, 1, NULL);
   thal(
     (const unsigned char *) s1,
     (const unsigned char *) s2,
     a,
     THL_FAST,
     &r,
-    1
+    DO_PRINTOUT
   );
   if (thal_trace) {
      fprintf(
@@ -5387,7 +5399,7 @@ recalc_primer_sec_struct(
         thal_arg_to_use->any,
         THL_STRUCT,
         &any,
-        1
+        DO_PRINTOUT
       );
       p_rec->self_any = any.temp;
       save_overwrite_sec_struct(&p_rec->self_any_struct, any.sec_struct);
@@ -5399,7 +5411,7 @@ recalc_primer_sec_struct(
         thal_arg_to_use->end1,
         THL_STRUCT,
         &end,
-        1
+        DO_PRINTOUT
       );
       p_rec->self_end = end.temp;
       save_overwrite_sec_struct(&p_rec->self_end_struct, end.sec_struct);
@@ -5411,7 +5423,7 @@ recalc_primer_sec_struct(
         thal_arg_to_use->hairpin_th,
         THL_STRUCT,
         &hair,
-        1
+        DO_PRINTOUT
       );
       p_rec->hairpin_th = hair.temp;
       save_overwrite_sec_struct(&p_rec->hairpin_struct, hair.sec_struct);
@@ -5523,7 +5535,7 @@ recalc_pair_sec_struct(
         thal_arg_to_use->any,
         THL_STRUCT,
         &any,
-        1
+        DO_PRINTOUT
       );
       ppair->compl_any = any.temp;
       save_overwrite_sec_struct(&ppair->compl_any_struct, any.sec_struct);
@@ -5535,7 +5547,7 @@ recalc_pair_sec_struct(
         thal_arg_to_use->end1,
         THL_STRUCT,
         &end1,
-        1
+        DO_PRINTOUT
       );
       ppair->compl_end = end1.temp;
       save_overwrite_sec_struct(&ppair->compl_end_struct, end1.sec_struct);
@@ -5545,7 +5557,7 @@ recalc_pair_sec_struct(
         thal_arg_to_use->end2,
         THL_STRUCT,
         &end2,
-        1
+        DO_PRINTOUT
       ); /* Triinu Please check */
       if (ppair->compl_end < end2.temp) {
         ppair->compl_end = end2.temp;
@@ -5562,7 +5574,7 @@ recalc_pair_sec_struct(
         thal_arg_to_use->end1,
         THL_STRUCT,
         &end3,
-        1
+        DO_PRINTOUT
       );
       if (ppair->compl_end < end3.temp) {
         ppair->compl_end = end3.temp;
@@ -5579,7 +5591,7 @@ recalc_pair_sec_struct(
         thal_arg_to_use->end2,
         THL_STRUCT,
         &end4,
-        1
+        DO_PRINTOUT
       ); /* Triinu Please check */
       if (ppair->compl_end < end4.temp) {
         ppair->compl_end = end4.temp;

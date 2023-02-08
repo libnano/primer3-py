@@ -191,13 +191,20 @@ void destroy_thal_structures(void);
    to check errno.
 */
 
+/* `print_output` is primer3-py modification argument to simplify conditionally
+* computing structure in calls to `thal` and directing output to `stdout` or to
+* the buffer in the `thal_results` `o->sec_struct` field if it is pre-allocated
+* to not be `NULL`. modified versions of `drawDimer` `drawHairpin` exist to do
+* this work if `print_output == 1` otherwise if `print_output == 0` new
+* functions `calcDimer` and `calcHairpin` are called to compute the `o->temp`
+* `o->ds`, `o->dh`, and `o->dg` fields.  Calls to `thal()` in `libprimer3.c`
+* always use `print_output == 1` for the design path
+*/
 void thal(
       const unsigned char *oligo1,
 	   const unsigned char *oligo2,
 	   const thal_args* a,
       const thal_mode mode,
 	   thal_results* o,
-      const int print_output); /* New arg NC*/
-      // char *ascii_structure); /* New arg NC*/
-
-#endif
+      const int print_output); /* primer3-py modification argument NC */
+#endif /* _THAL_H */
