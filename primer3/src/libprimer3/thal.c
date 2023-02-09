@@ -677,7 +677,9 @@ thal(const unsigned char *oligo_f,
       }
 
     } else if((mode != THL_FAST) && (mode != THL_DEBUG_F) && (mode != THL_STRUCT)) {
-        fputs("No secondary structure could be calculated\n",stderr);
+        if (print_output == 1) { /* primer3-py update to supress undesired printing */
+          fputs("No secondary structure could be calculated\n", stderr);
+        }
     }
 
     if(o->temp == -_INFINITY && (!strcmp(o->msg, ""))) { o->temp=0.0; }
