@@ -26,7 +26,6 @@ import io
 import os
 import os.path as op
 import subprocess
-import sys
 import unittest
 from typing import List
 
@@ -82,10 +81,6 @@ def run_ntthal(line: str, stderr_fd: io.BufferedWriter) -> str:
         return ''
 
 
-@unittest.skipIf(
-    sys.platform == 'win32',
-    'Windows does not support resource module and wrappers',
-)
 class TestLowLevelBindings(unittest.TestCase):
     def test_confirm_ntthal_binary(self):
         '''Confirm updates to thal.c do not change expected output
@@ -102,8 +97,9 @@ class TestLowLevelBindings(unittest.TestCase):
         with open(os.devnull, 'wb') as dev_null:
             for line in input_str.split('\n'):
                 compute_str_list.append(run_ntthal(line, dev_null))
-        compute_str = ''.join(compute_str_list)
-        self.assertTrue(compute_str == output_str)
+        # Replace line endings for windows compat
+        compute_str = ''.join(compute_str_list).replace('\r\n', '\n')
+        self.assertEqual(compute_str, output_str)
         # NOTE: Intentionally commented out for debugging purposes
         # if compute_str != output_str:
         #     # print(compute_str)

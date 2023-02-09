@@ -30,6 +30,7 @@ import io
 import os
 import re
 import subprocess
+import sys
 from collections import namedtuple
 from os.path import join as pjoin
 from typing import (
@@ -59,6 +60,8 @@ THERMO_PATH = pjoin(
     'primer3_config',
     '',  # Add trailing slash (OS-ind) req'd by primer3 lib
 )
+
+BINARY_EXT = '.exe' if sys.platform == 'win32' else ''
 
 DEV_NULL = open(os.devnull, 'wb')
 
@@ -121,7 +124,7 @@ def calc_tm(
         )
     # For whatever reason mv_conc and dna_conc have to be ints
     args = [
-        pjoin(LIBPRIMER3_PATH, 'oligotm'),
+        pjoin(LIBPRIMER3_PATH, f'oligotm{BINARY_EXT}'),
         '-mv', str(mv_conc),
         '-dv', str(dv_conc),
         '-n', str(dntp_conc),
@@ -218,7 +221,7 @@ def calc_thermo(
         structure / complex could be computed.
     '''
     args = [
-        pjoin(LIBPRIMER3_PATH, 'ntthal'),
+        pjoin(LIBPRIMER3_PATH, f'ntthal{BINARY_EXT}'),
         '-a', str(calc_type),
         '-mv', str(mv_conc),
         '-dv', str(dv_conc),
@@ -451,7 +454,7 @@ def design_primers(
         an ordered dict of the boulderIO-format primer3 output file
     '''
     sp = subprocess.Popen(
-        [pjoin(LIBPRIMER3_PATH, 'primer3_core')],
+        [pjoin(LIBPRIMER3_PATH, f'primer3_core{BINARY_EXT}')],
         stdout=subprocess.PIPE,
         stdin=subprocess.PIPE,
         stderr=subprocess.STDOUT,
