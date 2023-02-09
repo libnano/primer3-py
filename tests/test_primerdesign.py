@@ -56,10 +56,6 @@ def _get_mem_usage():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
-@unittest.skipIf(
-    sys.platform == 'win32',
-    'Windows does not support resource module and wrappers',
-)
 class TestDesignBindings(unittest.TestCase):
 
     def _compare_results(
@@ -382,6 +378,10 @@ class TestDesignBindings(unittest.TestCase):
             )
             raise RuntimeError(err_msg)
 
+    @unittest.skipIf(
+        sys.platform == 'win32',
+        'Windows does not support resource module',
+    )
     def test_memory_leaks(self):
         sm = _get_mem_usage()
         run_count = 100

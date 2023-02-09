@@ -44,10 +44,6 @@ def _get_mem_usage():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
-@unittest.skipIf(
-    sys.platform == 'win32',
-    'Windows does not support resource module and wrappers',
-)
 class TestLowLevelBindings(unittest.TestCase):
 
     def randArgs(self):
@@ -114,7 +110,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 formamide_conc=self.formamide_conc,
                 annealing_temp_c=self.annealing_temp_c,
             )
-            self.assertTrue(abs(binding_tm - wrapper_tm) < 0.5)
+            self.assertAlmostEqual(binding_tm, wrapper_tm, delta=0.5)
 
     def test_calc_hairpin(self):
         '''Test basic hairpin input'''
@@ -139,13 +135,14 @@ class TestLowLevelBindings(unittest.TestCase):
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
             )
-            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertAlmostEqual(binding_res.tm, wrapper_res.tm, 2)
             print(binding_res.ascii_structure)
             print()
             print(wrapper_res.ascii_structure)
             self.assertEqual(
                 binding_res.ascii_structure,
-                wrapper_res.ascii_structure,
+                # Replace line endings for windows compat
+                wrapper_res.ascii_structure.replace('\r\n', '\n'),
             )
 
     def test_calc_homodimer(self):
@@ -171,7 +168,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
             )
-            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertAlmostEqual(binding_res.tm, wrapper_res.tm, 2)
 
             print(binding_res.ascii_structure)
             print()
@@ -179,7 +176,8 @@ class TestLowLevelBindings(unittest.TestCase):
 
             self.assertEqual(
                 binding_res.ascii_structure,
-                wrapper_res.ascii_structure,
+                # Replace line endings for windows compat
+                wrapper_res.ascii_structure.replace('\r\n', '\n'),
             )
 
     def test_calc_heterodimer(self):
@@ -207,7 +205,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
             )
-            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertAlmostEqual(binding_res.tm, wrapper_res.tm, 2)
 
             print(binding_res.ascii_structure)
             print()
@@ -215,7 +213,8 @@ class TestLowLevelBindings(unittest.TestCase):
 
             self.assertEqual(
                 binding_res.ascii_structure,
-                wrapper_res.ascii_structure,
+                # Replace line endings for windows compat
+                wrapper_res.ascii_structure.replace('\r\n', '\n'),
             )
             # Ensure that order of sequences does not matter
             binding_12_res = bindings.calc_heterodimer(
@@ -239,7 +238,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
             )
-            self.assertEqual(int(binding_12_res.tm), int(binding_21_res.tm))
+            self.assertAlmostEqual(binding_12_res.tm, binding_21_res.tm, 2)
 
     def test_max_length_heterodimer(self):
         '''Test longest heterodimer input of 10000 mer per `THAL_MAX_SEQ` '''
@@ -274,7 +273,7 @@ class TestLowLevelBindings(unittest.TestCase):
             temp_c=self.temp_c,
             max_loop=self.max_loop,
         )
-        self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+        self.assertAlmostEqual(binding_res.tm, wrapper_res.tm, 2)
 
         print(binding_res.ascii_structure)
         print()
@@ -282,7 +281,8 @@ class TestLowLevelBindings(unittest.TestCase):
 
         self.assertEqual(
             binding_res.ascii_structure,
-            wrapper_res.ascii_structure,
+            # Replace line endings for windows compat
+            wrapper_res.ascii_structure.replace('\r\n', '\n'),
         )
         # Ensure that order of sequences does not matter
         binding_12_res = bindings.calc_heterodimer(
@@ -306,7 +306,7 @@ class TestLowLevelBindings(unittest.TestCase):
             temp_c=self.temp_c,
             max_loop=self.max_loop,
         )
-        self.assertEqual(int(binding_12_res.tm), int(binding_21_res.tm))
+        self.assertAlmostEqual(binding_12_res.tm, binding_21_res.tm, 2)
 
     def test_calc_end_stability(self):
         '''Test calc_end_stability'''
@@ -332,7 +332,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 temp_c=self.temp_c,
                 max_loop=self.max_loop,
             )
-            self.assertEqual(int(binding_res.tm), int(wrapper_res.tm))
+            self.assertAlmostEqual(binding_res.tm, wrapper_res.tm, 2)
 
     def test_correction_methods(self):
         '''Test different correction_methods'''
@@ -357,7 +357,7 @@ class TestLowLevelBindings(unittest.TestCase):
                     tm_method=tm_method,
                     salt_corrections_method=sc_method,
                 )
-                self.assertTrue(abs(binding_tm - wrapper_tm) < 0.5)
+                self.assertAlmostEqual(binding_tm, wrapper_tm, delta=0.5)
 
         self.assertRaises(
             ValueError,
@@ -370,6 +370,10 @@ class TestLowLevelBindings(unittest.TestCase):
             tm_method='not_a_tm_method',
         )
 
+    @unittest.skipIf(
+        sys.platform == 'win32',
+        'Windows does not support resource module',
+    )
     def test_memory_leaks(self):
         '''Test for memory leaks'''
         sm = _get_mem_usage()
