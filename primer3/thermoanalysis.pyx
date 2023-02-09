@@ -555,6 +555,7 @@ cdef class _ThermoAnalysis:
             tm_method: Tm calculation method (breslauer or santalucia)
             salt_corrections_method: Salt correction method (schildkraut, owczarzy,
                 santalucia)
+
         '''
         self.mv_conc = float(mv_conc)
         self.dv_conc = float(dv_conc)
@@ -591,6 +592,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             Computed heterodimer result
+
         '''
         cdef:
             ThermoResult tr_obj = ThermoResult()
@@ -636,6 +638,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             Computed heterodimer ``ThermoResult``
+
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char * see:
@@ -675,6 +678,7 @@ cdef class _ThermoAnalysis:
                 is_offtarget (bool),
                 max_offtarget_seq_idx (int),
                 max_offtarget_tm (double)
+
         '''
         cdef:
             bint is_offtarget = False
@@ -720,6 +724,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             Computed homodimer ``ThermoResult``
+
         '''
         cdef:
             ThermoResult tr_obj = ThermoResult()
@@ -763,6 +768,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             Computed homodimer ``ThermoResult``
+
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *
@@ -789,6 +795,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             Computed hairpin ``ThermoResult``
+
         '''
         cdef:
             ThermoResult tr_obj = ThermoResult()
@@ -833,6 +840,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             Computed hairpin ``ThermoResult``
+
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *
@@ -861,6 +869,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             Computed end stability ``ThermoResult``
+
         '''
         cdef ThermoResult tr_obj = ThermoResult()
 
@@ -890,6 +899,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             Computed end stability ``ThermoResult``
+
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char * see:
@@ -945,6 +955,7 @@ cdef class _ThermoAnalysis:
 
         Returns:
             floating point Tm result
+
         '''
         # first convert any unicode to a byte string and then
         # cooerce to a unsigned char *
@@ -958,6 +969,7 @@ cdef class _ThermoAnalysis:
         '''
         Returns:
             dictionary form of the :class:`_ThermoAnalysis` instance
+
         '''
         return {
             'mv_conc':      self.mv_conc,
@@ -996,7 +1008,8 @@ cdef class _ThermoAnalysis:
                 mishybridization checks.
 
         Raises:
-            OSError: Could not allocate memory
+            :class:`OSError`: Could not allocate memory
+
         '''
         global global_settings_data
         global sequence_args_data
@@ -2070,6 +2083,10 @@ class Singleton(type):
 
 
 class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
+    '''
+    Subclass of :class:`_ThermoAnalysis` to enable singleton behavior
+
+    '''
 
     def calcHeterodimer(
         self,
@@ -2078,7 +2095,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
         output_structure: bool = False,
     ) -> ThermoResult:
         '''
-        Deprecated
+        .. deprecated:: 1.0.0. Choose :meth:`calc_heterodimer` instead
         Calculate the heterodimer formation thermodynamics of two DNA
         sequences, ``seq1`` and ``seq2``
 
@@ -2098,8 +2115,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
         seq1: Str_Bytes_T,
         output_structure: bool = False,
     ) -> ThermoResult:
-        '''
-        Deprecated
+        '''.. deprecated:: 1.0.0. Choose :meth:`calc_homodimer` instead
         Calculate the homodimer formation thermodynamics of a DNA
         sequence, ``seq1``
 
@@ -2118,8 +2134,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
         seq1: Str_Bytes_T,
         output_structure: bool = False,
     ) -> ThermoResult:
-        '''
-        Deprecated
+        '''.. deprecated:: 1.0.0. Choose :meth:`calc_hairpin` instead
         Calculate the hairpin formation thermodynamics of a DNA
         sequence, ``seq1``
 
@@ -2139,7 +2154,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
         seq2: Str_Bytes_T,
     ) -> ThermoResult:
         '''
-        Deprecated
+        .. deprecated:: 1.0.0. Choose :meth:`calc_end_stability` instead
         Calculate the 3' end stability of DNA sequence ``seq1`` against DNA
         sequence ``seq2``
 
@@ -2158,7 +2173,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
         seq1: Str_Bytes_T,
     ) -> float:
         '''
-        Deprecated
+        .. deprecated:: 1.0.0. Choose :meth:`calc_tm` instead
         Calculate the melting temperature (Tm) of a DNA sequence (deg. C).
 
         Args:

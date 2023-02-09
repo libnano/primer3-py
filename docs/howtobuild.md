@@ -1,10 +1,10 @@
-### Building for upload to PyPi
-#### Dependencies:
+# Building for upload to PyPi
+## Dependencies:
 1. setuptools
 2. twine
 3. wheel
 
-#### edit the `~/.pypirc` file:
+## Edit the `~/.pypirc` file:
 
 ```ini
     [distutils]

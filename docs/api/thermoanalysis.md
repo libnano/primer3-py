@@ -3,4 +3,5 @@
 ```{eval-rst}
 .. automodule:: primer3.thermoanalysis
    :members:
+   :inherited-members:
 ```
