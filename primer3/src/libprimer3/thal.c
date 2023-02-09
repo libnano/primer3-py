@@ -50,6 +50,11 @@
 #include <ieeefp.h>
 #endif
 
+/* Check on which OS we compile */
+#if defined(_WIN32) || defined(WIN32) || defined (__WIN32__) || defined(__CYGWIN__) || defined(__MINGW32__)
+#define OS_WIN
+#endif
+
 #include "thal.h"
 
 /*#define DEBUG*/
@@ -3079,7 +3084,14 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
   }
 
   size_t str_block = (len1 + len2 + 1);
+
+  /* primer3-py | MSVC C99 compiler does not support variable length arrays */
+  #ifdef OS_WIN
+  char* duplex_buffer = (char*)malloc(str_block * 4);
+  #else
   char duplex_buffer[str_block * 4];
+  #endif
+
   char* duplex_0 = duplex_buffer;
   char* duplex_1 = duplex_0 + str_block;
   char* duplex_2 = duplex_1 + str_block;
@@ -3201,6 +3213,10 @@ drawDimer(int* ps1, int* ps2, double temp, double H, double S, int temponly, dou
       duplex_3
     );
   }
+  /* primer3-py | MSVC C99 compiler does not support variable length arrays */
+  #ifdef OS_WIN
+  free(duplex_buffer);
+  #endif
   return;
 }
 
@@ -3292,8 +3308,15 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
       return;
     }
   }
+  /* primer3-py | MSVC C99 compiler does not support variable length arrays */
+  #ifdef OS_WIN
+  /* plain-text output */
+  char* asciiRow = (char*)malloc(len1);
+  #else
   /* plain-text output */
   char asciiRow[len1];
+  #endif
+
   for(i = 1; i < len1+1; ++i) {
     if(bp[i-1] == 0) {
       asciiRow[(i-1)] = '-';
@@ -3324,6 +3347,12 @@ drawHairpin(int* bp, double mh, double ms, int temponly, double temp, thal_resul
   } else {
     printf("\nSTR\t%s\n", oligo1);
   }
+
+  /* primer3-py | MSVC C99 compiler does not support variable length arrays */
+  #ifdef OS_WIN
+  free(asciiRow);
+  #endif
+
   return;
 }
 

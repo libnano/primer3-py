@@ -1258,7 +1258,7 @@ cdef int pdh_wrap_set_seq_args_globals(
     # NOTE: Masking with PRIMER_MASK_KMERLIST_PATH is parsed in a non standard
     # way in primer3_boulder_main.c therefore we need to do validation twice
     # here and in argdefaults.py
-    if sys.platform != 'windows':
+    IF UNAME_SYSNAME != 'Windows':
         if global_settings_data[0].mask_template:
             global_settings_data[0].lowercase_masking = \
                 global_settings_data[0].mask_template
