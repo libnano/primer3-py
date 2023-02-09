@@ -22,6 +22,10 @@ primer3.thermoanalysis
 Contains Cython functions and classes that enable repeated thermodynamic
 calculations using common calculation parameters.
 
+The parameters included in this module map to the `ntthal` binary
+(`thal.c/h` source) in the `primer3` library and ARE NOT covered in the
+primer design documentation provided with `primer3`. Please see class and
+method docstrings in `primer3-py` for parameter explanations.
 
 Calculations are performed under the following paradigm:
 
@@ -347,12 +351,18 @@ cdef class _ThermoAnalysis:
         Args:
             thal_type: type of thermodynamic alignment, a string name key or
                 integer value member of the thal_alignment_types_dict dict::
-                {
-                    'thal_alignment_any': 1,
-                    'thal_alignment_end1': 2,
-                    'thal_alignment_end2': 3,
-                    'thal_alignment_hairpin': 4,
-                }
+                    {
+                        'thal_alignment_any': 1,
+                        'thal_alignment_end1': 2,
+                        'thal_alignment_end2': 3,
+                        'thal_alignment_hairpin': 4,
+                    }
+                these values are typically set internal to specific calculation
+                methods in `primer3-py`::
+                    thal_alignment_any -> calc_heterodimer, calc_homodimer
+                    thal_alignment_end1 -> calc_end_stability (3')
+                    thal_alignment_end2 -> [unused] (5')
+                    thal_alignment_hairpin -> calc_hairpin
             mv_conc: concentration of monovalent cations (mM)
             dv_conc: concentration of divalent cations (mM)
             dntp_conc: concentration of dNTP-s (mM)

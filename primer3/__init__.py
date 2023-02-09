@@ -52,6 +52,7 @@ try:
         thermoanalysis,
     )
     from .bindings import (  # Deprecated below
+        calc_end_stability,
         calc_hairpin,
         calc_hairpin_tm,
         calc_heterodimer,
@@ -59,6 +60,7 @@ try:
         calc_homodimer,
         calc_homodimer_tm,
         calc_tm,
+        calcEndStability,
         calcHairpin,
         calcHairpinTm,
         calcHeterodimer,
@@ -76,7 +78,8 @@ try:
         # Low-level Tm-only bindings
         'calc_hairpin_tm', 'calc_homodimer_tm', 'calc_heterodimer_tm',
         # Low-level bindings
-        'calc_hairpin', 'calc_homodimer', 'calc_heterodimer', 'calc_tm',
+        'calc_end_stability', 'calc_hairpin', 'calc_homodimer',
+        'calc_heterodimer', 'calc_tm',
         # Primer3 design bindings
         'design_primers',
         # Modules
@@ -84,7 +87,8 @@ try:
         # Deprecated Low-level Tm-only bindings
         'calcHairpinTm', 'calcHomodimerTm', 'calcHeterodimerTm',
         # Deprecated Low-level bindings
-        'calcHairpin', 'calcHomodimer', 'calcHeterodimer', 'calcTm',
+        'calcEndStability', 'calcHairpin', 'calcHomodimer',
+        'calcHeterodimer', 'calcTm',
         # Deprecated Primer3 design bindings
         'designPrimers',
     ]
