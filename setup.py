@@ -61,7 +61,8 @@ with open('README.md') as fd:
     LONG_DESCRIPTION = fd.read()
 
 # Platform-dependent binary for `make` commands
-MAKE_BIN = 'mingw32-make' if sys.platform == 'win32' else 'make'
+WINDOWS_OS = sys.platform == 'win32'
+MAKE_BIN = 'mingw32-make' if WINDOWS_OS else 'make'
 # Indicates whether the Primer3 library has been built during install
 P3_BUILT = False
 
@@ -78,7 +79,6 @@ KLIB_PATH = pjoin(LIBPRIMER3_PATH, 'klib')
 LIBPRIMER3_FPS = [
     rpath(pjoin(LIBPRIMER3_PATH, 'dpal.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.c')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'masker.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'read_boulder.c')),
@@ -92,10 +92,13 @@ LIBPRIMER3_BINARIES = [
     'ntdpal',
     'ntthal',
     'primer3_core',
-    'primer3_masker',
 ]
-if sys.platform == 'win32':
+
+if WINDOWS_OS:
     LIBPRIMER3_BINARIES = [bin_fn + '.exe' for bin_fn in LIBPRIMER3_BINARIES]
+else:
+    LIBPRIMER3_FPS.append(rpath(pjoin(LIBPRIMER3_PATH, 'masker.c')))
+    LIBPRIMER3_BINARIES.append('primer3_masker')
 
 LIBPRIMER3_BINARY_FPS = [
     pjoin(LIBPRIMER3_PATH, fn) for fn in LIBPRIMER3_BINARIES
@@ -125,7 +128,7 @@ def p3Clean():
     Run `make clean` for libprimer3 in a platform-dependent manner
     '''
     proc = subprocess.Popen(
-        '{} clean'.format(MAKE_BIN),
+        f'{MAKE_BIN} clean',
         shell=True,
         cwd=LIBPRIMER3_PATH,
     )
@@ -137,7 +140,7 @@ def p3Build():
     Run `make clean && make` for libprimer3 in a platform-dependent manner
     '''
     proc = subprocess.Popen(
-        '{} clean; {}'.format(MAKE_BIN, MAKE_BIN),
+        f'{MAKE_BIN} all TESTOPTS=--windows' if WINDOWS_OS else f'{MAKE_BIN}',
         shell=True,
         cwd=LIBPRIMER3_PATH,
     )
@@ -222,7 +225,7 @@ class CustomBuildClib(build_clib.build_clib):
 
 # ~~~~~~~~~~~~~~~~~~~~~~ Cython / C API extension setup ~~~~~~~~~~~~~~~~~~~~~ #
 
-if sys.platform == 'win32':
+if WINDOWS_OS:
     EXTRA_COMPILE_ARGS = ['']
 else:
     EXTRA_COMPILE_ARGS = [
