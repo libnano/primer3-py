@@ -104,7 +104,7 @@ LIBPRIMER3_BINARY_FPS = [
     pjoin(LIBPRIMER3_PATH, fn) for fn in LIBPRIMER3_BINARIES
 ]
 
-LIBPRIMER3_THERMO_FPS = [
+LIBPRIMER3_THERMO_PARAMS_FPS = [
     rpath(pjoin(root, fp), MODULE_PATH) for root, _, fps in
     os.walk(THERMO_PARAMS_PATH) for fp in fps
 ]
@@ -115,7 +115,7 @@ LIBPRIMER3_TEST_FPS = [
 ]
 
 PACKAGE_FPS = (
-    LIBPRIMER3_THERMO_FPS +
+    LIBPRIMER3_THERMO_PARAMS_FPS +
     LIBPRIMER3_TEST_FPS +
     ['thermoanalysis.pxd', 'thermoanalysis.pyx']
 )
