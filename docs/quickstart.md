@@ -7,8 +7,7 @@
 
 ## Requirements
 
-**Primer3-py** is built and tested on Mac OS X and Linux systems; we do not
-provide official Windows support. Python versions 3.8 - 3.11 are supported.
+**Primer3-py** is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.11 builds are supported.
 
 ## Installation
 
@@ -24,6 +23,10 @@ Or via `conda`:
 ```bash
 $ conda install primer3-py
 ```
+
+**NOTE**: We support wheel builds for PyPi for the 3 most recent CPython versions. Target platforms for wheels are MacOS `x86-64` `arm64`, Linux `x86-64`, and Windows `x86-64`.
+
+If your Python version and platform fall outside this such as Linux `aarch64` it is confirmed `primer3-py` builds on this platform but it is not supported as our build GitHub actions runners do not run these builds expediently.
 
 ## Thermodynamic analysis
 
