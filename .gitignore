@@ -53,7 +53,7 @@ pip-log.txt
 .project
 .pydevproject
 
-# OS X
+# MacOS
 .DS_Store
 
 .vscode/

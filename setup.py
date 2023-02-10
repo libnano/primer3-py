@@ -15,7 +15,8 @@ Installation
 ------------
 
 **Primer3-py** has no external runtime library dependencies and should compile
-on most Linux and OS X systems that are running Python 3.8 - 3.11.
+on easily most Linux and MacOS systems that are running Python 3.8 - 3.11.
+Windows compilation is also generally easy.
 
 To build **Primer3-py** within the package directory run::
 
@@ -200,8 +201,13 @@ class CustomSdist(sdist.sdist):
         # binaries and object/library files
         p3Clean()
         P3_BUILT = False
-        # Remove the build Cython
-        os.remove(os.path.join(MODULE_PATH, 'thermoanalysis.c'))
+
+        # Remove the build Cython artifact
+        try:
+            os.remove(os.path.join(MODULE_PATH, 'thermoanalysis.c'))
+        except FileNotFoundError:
+            # support possibly not existing in CI
+            pass
         super().run()
 
 
@@ -284,7 +290,7 @@ setup(
     name='primer3-py',
     version=primer3.__version__,
     license=primer3.__license__,
-    authors=primer3.__authors__,
+    author=primer3.__author__,
     author_email='bpruittvt@gmail.com',
     url='https://github.com/libnano/primer3-py',
     description=primer3.DESCRIPTION,
