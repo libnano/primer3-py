@@ -1,18 +1,24 @@
 # Changelog
 
-## Version 1.0.0 (February 10, 2023)
+## Version 1.0.0 (February 11, 2023)
 
-- Migrated primer3 source to 2.6.1 version
-- Intergrated all Python C-API related code into thermoanalysis.pyx/pxd
-- Deprecated camelCase related functions and added snake_case functions / methods in `bindings.py` and `thermoanalysis.pyx`
-- migrated `primer3/wrappers.py` to `tests/wrappers.py` to indicate it should not be used.
+- Migrated `primer3` source to 2.6.1 version, which adds new arguments for melting temperature code
+- Intergrated all Python C-API related code into `thermoanalysis.pyx`/`pxd`
+- Deprecated `camelCase` related functions and added `snake_case` functions / methods in `bindings.py` and `thermoanalysis.pyx`
+- Migrated `primer3/wrappers.py` to `tests/wrappers.py` to indicate it should not be used.
 - Expanded test coverage and now using pytest for testing
-- Added pre-commit hooks
-- Using primer3 `read_boulder_record` to setup primer3 data structures instead of reproducing code in primer3-py C or Cython
-- Intergrated GitHub Actions for CI
-- Updated documentation
+- Added `pre-commit` hooks
+- Call signature update and pattern update: `designPrimers` now `design_primers` integrates setting of sequence arguments and global arguments as they are coupled in `primer3_boulder_main.c`
+- `primer3` C code bug fixes to improve compiler warnings
+- Using `primer3` `read_boulder_record` to setup primer3 data structures instead of reproducing code in `primer3-py` C or Cython via a code signature update
+- `drawDimer` and `drawHairpin` updates to unify sequence structure output for testing
+- Integrated GitHub Actions for CI testing
+- Updated `sphinx` documentation
 - Begin process of making `primer3-py` code thread-safe
-- Documentation migrated to MyST Markdown
+- Documentation migrated to `MyST` Markdown
+- Autobuild GitHub action for `PyPI` wheels and dist `tar.gz` on version tag
+- Autobuild GitHub action `sphinx` documentation updates on version tag
+
 
 ## Version 0.6.1 (May 9, 2020)
 
