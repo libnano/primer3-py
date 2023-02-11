@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog &mdash; Primer3-py 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Miscellany" href="miscellany.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Primer3-py
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howtobuild.html">Building for upload to PyPi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-0-0-february-11-2023">Version 1.0.0 (February 11, 2023)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-6-1-may-9-2020">Version 0.6.1 (May 9, 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-6-0-may-10-2019">Version 0.6.0 (May 10, 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-5-7-august-10-2018">Version 0.5.7 (August 10, 2018)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-5-6-july-12-2018">Version 0.5.6 (July 12, 2018)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-5-5-october-30-2017">Version 0.5.5 (October 30, 2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-5-4-june-20-2017">Version 0.5.4 (June 20, 2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-5-3-may-6-2017">Version 0.5.3 (May 6, 2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-5-2-may-1-2017">Version 0.5.2 (May 1, 2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-5-1-may-25-2016">Version 0.5.1 (May 25, 2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-5-0-february-25-2016">Version 0.5.0 (February 25, 2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-4-3-december-1-2015">Version 0.4.3 (December 1, 2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-4-2-september-18-2015">Version 0.4.2 (September 18, 2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-4-1-november-28-2014">Version 0.4.1 (November 28, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-4-0-november-25-2014">Version 0.4.0 (November 25, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-3-1-august-13-2014">Version 0.3.1 (August 13, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-3-0-august-12-2014">Version 0.3.0 (August 12, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-5-august-7-2014">Version 0.2.5 (August 7, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-4-june-17-2014">Version 0.2.4 (June 17, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-3-june-5-2014">Version 0.2.3 (June 5, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-2-june-3-2014">Version 0.2.2 (June 3, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-1-april-24-2014">Version 0.2.1 (April 24, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-april-23-2014">Version 0.2 (April 23, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1-march-3-2014">Version 0.1 (March 3, 2014)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Primer3-py</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Changelog</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/changes_link.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h1>
+<section id="version-1-0-0-february-11-2023">
+<h2>Version 1.0.0 (February 11, 2023)<a class="headerlink" href="#version-1-0-0-february-11-2023" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Migrated <code class="docutils literal notranslate"><span class="pre">primer3</span></code> source to 2.6.1 version, which adds new arguments for melting temperature code</p></li>
+<li><p>Intergrated all Python C-API related code into <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pyx</span></code>/<code class="docutils literal notranslate"><span class="pre">pxd</span></code></p></li>
+<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">camelCase</span></code> related functions and added <code class="docutils literal notranslate"><span class="pre">snake_case</span></code> functions / methods in <code class="docutils literal notranslate"><span class="pre">bindings.py</span></code> and <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pyx</span></code></p></li>
+<li><p>Migrated <code class="docutils literal notranslate"><span class="pre">primer3/wrappers.py</span></code> to <code class="docutils literal notranslate"><span class="pre">tests/wrappers.py</span></code> to indicate it should not be used.</p></li>
+<li><p>Expanded test coverage and now using pytest for testing</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> hooks</p></li>
+<li><p>Call signature update and pattern update: <code class="docutils literal notranslate"><span class="pre">designPrimers</span></code> now <code class="docutils literal notranslate"><span class="pre">design_primers</span></code> integrates setting of sequence arguments and global arguments as they are coupled in <code class="docutils literal notranslate"><span class="pre">primer3_boulder_main.c</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">primer3</span></code> C code bug fixes to improve compiler warnings</p></li>
+<li><p>Using <code class="docutils literal notranslate"><span class="pre">primer3</span></code> <code class="docutils literal notranslate"><span class="pre">read_boulder_record</span></code> to setup primer3 data structures instead of reproducing code in <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> C or Cython via a code signature update</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">drawDimer</span></code> and <code class="docutils literal notranslate"><span class="pre">drawHairpin</span></code> updates to unify sequence structure output for testing</p></li>
+<li><p>Integrated GitHub Actions for CI testing</p></li>
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> documentation</p></li>
+<li><p>Begin process of making <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> code thread-safe</p></li>
+<li><p>Documentation migrated to <code class="docutils literal notranslate"><span class="pre">MyST</span></code> Markdown</p></li>
+<li><p>Autobuild GitHub action for <code class="docutils literal notranslate"><span class="pre">PyPI</span></code> wheels and dist <code class="docutils literal notranslate"><span class="pre">tar.gz</span></code> on version tag</p></li>
+<li><p>Autobuild GitHub action <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> documentation updates on version tag</p></li>
+</ul>
+</section>
+<section id="version-0-6-1-may-9-2020">
+<h2>Version 0.6.1 (May 9, 2020)<a class="headerlink" href="#version-0-6-1-may-9-2020" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed issue related to absolute paths populated in <code class="docutils literal notranslate"><span class="pre">SOURCES.txt</span></code> of sdist</p></li>
+<li><p>Clean up in <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> and better Windows build support</p></li>
+</ul>
+</section>
+<section id="version-0-6-0-may-10-2019">
+<h2>Version 0.6.0 (May 10, 2019)<a class="headerlink" href="#version-0-6-0-may-10-2019" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Added functionality for bindings to expose the ASCII representation of
+computed dimer and hairpin structures</p></li>
+</ul>
+</section>
+<section id="version-0-5-7-august-10-2018">
+<h2>Version 0.5.7 (August 10, 2018)<a class="headerlink" href="#version-0-5-7-august-10-2018" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Changes to upper case sequences in seqtm() in oligotm.c because calls to <code class="docutils literal notranslate"><span class="pre">ThermoAnalysis.calcTm</span></code> returned 0.0 for strings with lower case letters</p></li>
+<li><p>disabled existing tests on Windows due to incompatibility with process and
+memory calls.  TODO: create more tests for <code class="docutils literal notranslate"><span class="pre">ThermoAnalysis</span></code></p></li>
+</ul>
+</section>
+<section id="version-0-5-6-july-12-2018">
+<h2>Version 0.5.6 (July 12, 2018)<a class="headerlink" href="#version-0-5-6-july-12-2018" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixes to <code class="docutils literal notranslate"><span class="pre">primerdesign_helpers.c</span></code> C macro errors.</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">todict(</span></code>)<code class="docutils literal notranslate"><span class="pre">methods</span> <span class="pre">in</span></code>t<code class="docutils literal notranslate"><span class="pre">hermoanalysis.pyx</span></code> for serialization help for
+tests there</p></li>
+</ul>
+</section>
+<section id="version-0-5-5-october-30-2017">
+<h2>Version 0.5.5 (October 30, 2017)<a class="headerlink" href="#version-0-5-5-october-30-2017" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Remove unicode character from <code class="docutils literal notranslate"><span class="pre">README.rst</span></code></p></li>
+</ul>
+</section>
+<section id="version-0-5-4-june-20-2017">
+<h2>Version 0.5.4 (June 20, 2017)<a class="headerlink" href="#version-0-5-4-june-20-2017" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Migration of Cython extension build process to <code class="docutils literal notranslate"><span class="pre">build_clib</span></code> to remove Cython
+as a runtime requirement for <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> (thanks to &#64;tdsmith)</p></li>
+</ul>
+</section>
+<section id="version-0-5-3-may-6-2017">
+<h2>Version 0.5.3 (May 6, 2017)<a class="headerlink" href="#version-0-5-3-may-6-2017" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed improper assignment of <code class="docutils literal notranslate"><span class="pre">&quot;PRIMER_PAIR_MAX_COMPL_END_TH&quot;</span></code> during design
+arg parsing</p></li>
+</ul>
+</section>
+<section id="version-0-5-2-may-1-2017">
+<h2>Version 0.5.2 (May 1, 2017)<a class="headerlink" href="#version-0-5-2-may-1-2017" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed issue where <code class="docutils literal notranslate"><span class="pre">pa-&gt;num_intervals</span></code> was not properly set via the bindings</p></li>
+<li><p>Fixed typo that caused incorrect output for <code class="docutils literal notranslate"><span class="pre">PRIMER_PAIR_EXPLAIN</span></code></p></li>
+</ul>
+</section>
+<section id="version-0-5-1-may-25-2016">
+<h2>Version 0.5.1 (May 25, 2016)<a class="headerlink" href="#version-0-5-1-may-25-2016" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">thal.c</span></code> to incorporate traceback fix from Primer3 dev team
+(thanks Triinu)</p></li>
+</ul>
+</section>
+<section id="version-0-5-0-february-25-2016">
+<h2>Version 0.5.0 (February 25, 2016)<a class="headerlink" href="#version-0-5-0-february-25-2016" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">libprimer3</span></code> to version 2.3.7</p></li>
+<li><p>Better test coverage for low level bindings</p></li>
+</ul>
+</section>
+<section id="version-0-4-3-december-1-2015">
+<h2>Version 0.4.3 (December 1, 2015)<a class="headerlink" href="#version-0-4-3-december-1-2015" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed compilation errors, unicode-related build problems</p></li>
+<li><p>Fixed memory allocation / deallocation issues with mispriming libraries</p></li>
+</ul>
+</section>
+<section id="version-0-4-2-september-18-2015">
+<h2>Version 0.4.2 (September 18, 2015)<a class="headerlink" href="#version-0-4-2-september-18-2015" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">misprimingCheck</span></code> function to <code class="docutils literal notranslate"><span class="pre">primer3/thermoanalysis.pyx</span></code></p></li>
+<li><p>Corrected unclear syntax in C API code</p></li>
+</ul>
+</section>
+<section id="version-0-4-1-november-28-2014">
+<h2>Version 0.4.1 (November 28, 2014)<a class="headerlink" href="#version-0-4-1-november-28-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Better documentation regarding max. seq. lengths for thermo. calcs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calcHairpin</span></code>, <code class="docutils literal notranslate"><span class="pre">calcHomodimer</span></code>, <code class="docutils literal notranslate"><span class="pre">calcHeterodimer</span></code>, and <code class="docutils literal notranslate"><span class="pre">calcEndStability</span></code> now raise
+<code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>s as appropriate</p></li>
+</ul>
+</section>
+<section id="version-0-4-0-november-25-2014">
+<h2>Version 0.4.0 (November 25, 2014)<a class="headerlink" href="#version-0-4-0-november-25-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Several major bug fixes in the design bindings pipeline</p></li>
+<li><p>Better testing framework for the design bindings</p></li>
+<li><p>New documentation system</p></li>
+<li><p>Better under-the-hood thermodynamic analysis abstraction</p></li>
+</ul>
+</section>
+<section id="version-0-3-1-august-13-2014">
+<h2>Version 0.3.1 (August 13, 2014)<a class="headerlink" href="#version-0-3-1-august-13-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Improved support for sequences stored in Bytes objects</p></li>
+<li><p>Renamed getThermoParams to loadThermoParams for clarity</p></li>
+</ul>
+</section>
+<section id="version-0-3-0-august-12-2014">
+<h2>Version 0.3.0 (August 12, 2014)<a class="headerlink" href="#version-0-3-0-august-12-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed memory leak in global param struct allocation for design bindings</p></li>
+<li><p>Integrated C API patch code into <code class="docutils literal notranslate"><span class="pre">libprimer3</span></code></p></li>
+<li><p>Refactored <code class="docutils literal notranslate"><span class="pre">libprimer3</span></code> to pure C (<code class="docutils literal notranslate"><span class="pre">khash</span></code> lib is now used in lieu of hashmap)</p></li>
+<li><p>Corrected many minor compiler warnings in <code class="docutils literal notranslate"><span class="pre">libprimer3</span></code></p></li>
+<li><p>(POTENTIAL BREAKING CHANGE) Refactored thermodynamic alignment bindings to
+always return a thermoresult namedtuple (in the previous embodiment, if no
+structure was found, the return value was <code class="docutils literal notranslate"><span class="pre">None</span></code>)</p></li>
+</ul>
+</section>
+<section id="version-0-2-5-august-7-2014">
+<h2>Version 0.2.5 (August 7, 2014)<a class="headerlink" href="#version-0-2-5-august-7-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed incorrect tm/salt correction method lookups in <code class="docutils literal notranslate"><span class="pre">calcTm</span></code> function in
+both bindings and wrappers</p></li>
+</ul>
+</section>
+<section id="version-0-2-4-june-17-2014">
+<h2>Version 0.2.4 (June 17, 2014)<a class="headerlink" href="#version-0-2-4-june-17-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Addressed bug in mispriming/mishybridization library parsing in which
+memory for the global parameters struct was not being properly allocated</p></li>
+</ul>
+</section>
+<section id="version-0-2-3-june-5-2014">
+<h2>Version 0.2.3 (June 5, 2014)<a class="headerlink" href="#version-0-2-3-june-5-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Corrected several potential sources of memory leaks in the C API design
+bindings.</p></li>
+</ul>
+</section>
+<section id="version-0-2-2-june-3-2014">
+<h2>Version 0.2.2 (June 3, 2014)<a class="headerlink" href="#version-0-2-2-june-3-2014" title="Permalink to this heading"></a></h2>
+<ul>
+<li><p>Corrected issue with parsing <code class="docutils literal notranslate"><span class="pre">&quot;SEQUENCE_PRIMER_PAIR_OK_REGION_LIST&quot;</span></code> as a
+python sequence object. <code class="docutils literal notranslate"><span class="pre">&quot;SEQUENCE_PRIMER_PAIR_OK_REGION_LIST&quot;</span></code> should now
+be provided as a list of lists or tuple of tuples (or a combination of the
+two). -1 should be used in the case where an index is ommitted. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Primer3</span> <span class="n">boulder</span> <span class="n">IO</span> <span class="nb">input</span><span class="p">:</span>   <span class="mi">100</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">50</span> <span class="p">;</span> <span class="mi">900</span><span class="p">,</span><span class="mi">60</span><span class="p">,,</span>
+<span class="n">Primer3</span> <span class="n">python</span> <span class="nb">input</span><span class="p">:</span>       <span class="p">[[</span><span class="mi">100</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">900</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="version-0-2-1-april-24-2014">
+<h2>Version 0.2.1 (April 24, 2014)<a class="headerlink" href="#version-0-2-1-april-24-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>C API path fix</p></li>
+</ul>
+</section>
+<section id="version-0-2-april-23-2014">
+<h2>Version 0.2 (April 23, 2014)<a class="headerlink" href="#version-0-2-april-23-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Corrected installation issue (replace inplace with <code class="docutils literal notranslate"><span class="pre">build_lib</span></code> in <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code>)</p></li>
+<li><p>Documentation updates</p></li>
+<li></li>
+</ul>
+</section>
+<section id="version-0-1-march-3-2014">
+<h2>Version 0.1 (March 3, 2014)<a class="headerlink" href="#version-0-1-march-3-2014" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Initial release</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="miscellany.html" class="btn btn-neutral float-left" title="Miscellany" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright 2014-2023, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

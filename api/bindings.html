@@ -1,171 +1,111 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Primary analysis and design API &mdash; Primer3-py 0.6.1 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primary analysis and design API &mdash; Primer3-py 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Low-level thermodynamic analysis" href="thermoanalysis.html" />
     <link rel="prev" title="API Documentation" href="index.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> Primer3-py
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            Primer3-py
           </a>
-
-          
-            
-            
               <div class="version">
-                0.6.1
+                1.0.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Primary analysis and design API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#primer3-bindings">primer3.bindings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calcEndStability"><code class="docutils literal notranslate"><span class="pre">calcEndStability()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calcHairpin"><code class="docutils literal notranslate"><span class="pre">calcHairpin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calcHairpinTm"><code class="docutils literal notranslate"><span class="pre">calcHairpinTm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calcHeterodimer"><code class="docutils literal notranslate"><span class="pre">calcHeterodimer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calcHeterodimerTm"><code class="docutils literal notranslate"><span class="pre">calcHeterodimerTm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calcHomodimer"><code class="docutils literal notranslate"><span class="pre">calcHomodimer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calcHomodimerTm"><code class="docutils literal notranslate"><span class="pre">calcHomodimerTm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calcTm"><code class="docutils literal notranslate"><span class="pre">calcTm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calc_end_stability"><code class="docutils literal notranslate"><span class="pre">calc_end_stability()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calc_hairpin"><code class="docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calc_heterodimer"><code class="docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calc_homodimer"><code class="docutils literal notranslate"><span class="pre">calc_homodimer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.calc_tm"><code class="docutils literal notranslate"><span class="pre">calc_tm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.designPrimers"><code class="docutils literal notranslate"><span class="pre">designPrimers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.bindings.design_primers"><code class="docutils literal notranslate"><span class="pre">design_primers()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="thermoanalysis.html">Low-level thermodynamic analysis</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../howtobuild.html">Building for upload to PyPi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../miscellany.html">Miscellany</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes_link.html">Changelog</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Primer3-py</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="index.html">API Documentation</a> &raquo;</li>
-        
-      <li>Primary analysis and design API</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Documentation</a></li>
+      <li class="breadcrumb-item active">Primary analysis and design API</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="../_sources/api/bindings.rst.txt" rel="nofollow"> View page source</a>
-          
-        
+            <a href="../_sources/api/bindings.md.txt" rel="nofollow"> View page source</a>
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-primer3.bindings">
-<span id="primary-analysis-and-design-api"></span><h1>Primary analysis and design API<a class="headerlink" href="#module-primer3.bindings" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="primer3-bindings">
-<h2>primer3.bindings<a class="headerlink" href="#primer3-bindings" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="module-primer3.bindings">
+<span id="primary-analysis-and-design-api"></span><h1>Primary analysis and design API<a class="headerlink" href="#module-primer3.bindings" title="Permalink to this heading"></a></h1>
+<section id="primer3-bindings">
+<h2>primer3.bindings<a class="headerlink" href="#primer3-bindings" title="Permalink to this heading"></a></h2>
 <p>This module provides a simple API for the Primer3 primer design / thermodynamic
 calculations library.</p>
 <p>These are direct bindings to an optimized version of the Primer3 C library,
@@ -176,142 +116,375 @@ the primer design and thermodynamic analysis functionality of Primer3. This is
 done primarly to provide a clean, consistent interface. For applications with
 stringent performance requirments, you should consider using the C API
 and/or Cython modules directly. See the docs for more details.</p>
+</section>
 <dl class="py function">
-<dt id="primer3.bindings.calcEndStability">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcEndStability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq1</span></em>, <em class="sig-param"><span class="n">seq2</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">temp_c</span><span class="o">=</span><span class="default_value">37</span></em>, <em class="sig-param"><span class="n">max_loop</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcEndStability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcEndStability" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the 3’ end stability of DNA sequence <cite>seq1</cite> against DNA
+<dt class="sig sig-object py" id="primer3.bindings.calcEndStability">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calcEndStability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcEndStability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calcEndStability" title="Permalink to this definition"></a></dt>
+<dd><p><strong>Deprecated</strong>. Choose <a class="reference internal" href="../quickstart.html#calc_end_stability" title="calc_end_stability"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_end_stability()</span></code></a> function instead</p>
+<p>Calculate the 3’ end stability of DNA sequence <cite>seq1</cite> against DNA
 sequence <cite>seq2</cite>.</p>
 <p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
 This is a cap imposed by Primer3 as the longest reasonable sequence length
 for which a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq1</strong> (<em>str</em>) – DNA sequence to analyze for 3’ end
-hybridization against the target
-sequence</p></li>
-<li><p><strong>seq2</strong> (<em>str</em>) – Target DNA sequence to analyze for
-seq1 3’ end hybridization</p></li>
-<li><p><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Monovalent cation conc. (mM)</p></li>
-<li><p><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Divalent cation conc. (mM)</p></li>
-<li><p><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – dNTP conc. (mM)</p></li>
-<li><p><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – DNA conc. (nM)</p></li>
-<li><p><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) – Simulation temperature for dG (C)</p></li>
-<li><p><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum size of loops in the
-structure</p></li>
+<li><p><strong>seq1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – DNA sequence to analyze for 3’ end  hybridization against the
+target sequence</p></li>
+<li><p><strong>seq2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – Target DNA sequence to analyze for seq1 3’ end hybridization</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_loop</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum size of loops in the structure</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="thermoanalysis.html#primer3.thermoanalysis.ThermoResult" title="primer3.thermoanalysis.ThermoResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object with thermodynamic characteristics of the
 3’ hybridization interaction.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="primer3.bindings.calcHairpin">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcHairpin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50.0</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50.0</span></em>, <em class="sig-param"><span class="n">temp_c</span><span class="o">=</span><span class="default_value">37</span></em>, <em class="sig-param"><span class="n">max_loop</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">output_structure</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHairpin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHairpin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the hairpin formation thermodynamics of a DNA sequence.</p>
+<dt class="sig sig-object py" id="primer3.bindings.calcHairpin">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calcHairpin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHairpin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calcHairpin" title="Permalink to this definition"></a></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_hairpin" title="calc_hairpin"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a> function instead</p>
+</div>
+<p>Calculate the hairpin formation thermodynamics of a DNA sequence.</p>
 <p><strong>Note that the maximum length of `seq` is 60 bp.</strong> This is a cap suggested
 by the Primer3 team as the longest reasonable sequence length for which
-a two-state NN model produces reliable results (see primer3/src/libnano/thal.h:50).</p>
+a two-state NN model produces reliable results
+(see <code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<em>str</em>) – DNA sequence to analyze for hairpin formation</p></li>
-<li><p><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Monovalent cation conc. (mM)</p></li>
-<li><p><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Divalent cation conc. (mM)</p></li>
-<li><p><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – dNTP conc. (mM)</p></li>
-<li><p><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – DNA conc. (nM)</p></li>
-<li><p><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>seq</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – DNA sequence to analyze for hairpin formation</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Simulation temperature for dG (Celsius)</p></li>
 <li><p><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum size of loops in the structure</p></li>
-<li><p><strong>output_structure</strong> (<em>bool</em>) – If <cite>True</cite>, the ASCII dimer structure is saved</p></li>
+<li><p><strong>output_structure</strong> (<em>bool</em>) – If <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, the ASCII dimer structure
+is saved</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object with thermodynamic characteristics of the
 hairpin formation.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="primer3.bindings.calcHeterodimer">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcHeterodimer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq1</span></em>, <em class="sig-param"><span class="n">seq2</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">temp_c</span><span class="o">=</span><span class="default_value">37</span></em>, <em class="sig-param"><span class="n">max_loop</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">output_structure</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHeterodimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHeterodimer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="primer3.bindings.calcHairpinTm">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calcHairpinTm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHairpinTm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calcHairpinTm" title="Permalink to this definition"></a></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <code class="xref py py-func docutils literal notranslate"><span class="pre">calc_hairpin_tm()</span></code> function instead</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.calcHeterodimer">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calcHeterodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHeterodimer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calcHeterodimer" title="Permalink to this definition"></a></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_heterodimer" title="calc_heterodimer"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code></a> function instead</p>
+</div>
+<p>Calculate the heterodimerization thermodynamics of two DNA sequences.</p>
+<p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
+This is a cap imposed by Primer3 as the longest reasonable sequence length
+for which a two-state NN model produces reliable results (see
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – First DNA sequence to analyze for heterodimer formation</p></li>
+<li><p><strong>seq2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – Second DNA sequence to analyze for heterodimer formation</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_loop</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum size of loops in the structure</p></li>
+<li><p><strong>output_structure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If <cite>True</cite>, the ASCII dimer structure is saved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="thermoanalysis.html#primer3.thermoanalysis.ThermoResult" title="primer3.thermoanalysis.ThermoResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object with thermodynamic characteristics of the
+heterodimer interaction.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.calcHeterodimerTm">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calcHeterodimerTm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHeterodimerTm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calcHeterodimerTm" title="Permalink to this definition"></a></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <code class="xref py py-func docutils literal notranslate"><span class="pre">calc_heterodimer_tm()</span></code> function</p>
+</div>
+<p>instead</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.calcHomodimer">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calcHomodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHomodimer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calcHomodimer" title="Permalink to this definition"></a></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_homodimer" title="calc_homodimer"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_homodimer()</span></code></a> function instead</p>
+</div>
+<p>Calculate the homodimerization thermodynamics of a DNA sequence.</p>
+<p><strong>Note that the maximum length of ``seq`` is 60 bp.</strong> This is a cap imposed
+by Primer3 as the longest reasonable sequence length for which
+a two-state NN model produces reliable results (see
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – DNA sequence to analyze for homodimer formation calculations</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_loop</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum size of loops in the structure</p></li>
+<li><p><strong>output_structure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, the ASCII dimer structure
+is saved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object with thermodynamic characteristics of the
+homodimer interaction.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.calcHomodimerTm">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calcHomodimerTm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHomodimerTm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calcHomodimerTm" title="Permalink to this definition"></a></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <code class="xref py py-func docutils literal notranslate"><span class="pre">calc_homodimer_tm()</span></code>  function instead</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.calcTm">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calcTm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmso_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmso_fact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formamide_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annealing_temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nn_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tm_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'santalucia'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">salt_corrections_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'santalucia'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcTm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calcTm" title="Permalink to this definition"></a></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_tm" title="calc_tm"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_tm()</span></code></a> function instead</p>
+</div>
+<p>Calculate the melting temperature (Tm) of a DNA sequence.</p>
+<p>Note that NN thermodynamics will be used to calculate the Tm of sequences
+up to 60 bp in length, after which point the following formula will be
+used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tm</span> <span class="o">=</span> <span class="mf">81.5</span> <span class="o">+</span> <span class="mf">16.6</span><span class="p">(</span><span class="n">log10</span><span class="p">([</span><span class="n">mv_conc</span><span class="p">]))</span> <span class="o">+</span> <span class="mf">0.41</span><span class="p">(</span><span class="o">%</span><span class="n">GC</span><span class="p">)</span> <span class="o">-</span> <span class="mi">600</span><span class="o">/</span><span class="n">length</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – DNA sequence</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>dmso_conc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Concentration of DMSO (%)</p></li>
+<li><p><strong>dmso_fact</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – DMSO correction factor, default 0.6</p></li>
+<li><p><strong>formamide_conc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Concentration of formamide (mol/l)</p></li>
+<li><p><strong>annealing_temp_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Actual annealing temperature of the PCR reaction
+in (C)</p></li>
+<li><p><strong>temp_c</strong> – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_nn_length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum length for nearest-neighbor calcs</p></li>
+<li><p><strong>tm_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Tm calculation method (breslauer or santalucia)</p></li>
+<li><p><strong>salt_corrections_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Salt correction method (schildkraut, owczarzy,
+santalucia)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The melting temperature in degrees Celsius (float).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.calc_end_stability">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calc_end_stability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calc_end_stability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calc_end_stability" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="thermoanalysis.html#primer3.thermoanalysis.ThermoResult" title="primer3.thermoanalysis.ThermoResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code></a></p>
+</dd>
+</dl>
+<dl>
+<dt>Calculate the 3’ end stability of DNA sequence <cite>seq1</cite> against DNA</dt><dd><p>sequence <cite>seq2</cite>.</p>
+<p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
+This is a cap imposed by Primer3 as the longest reasonable sequence length
+for which a two-state NN model produces reliable results (see</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
+<blockquote>
+<div><dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>seq1: DNA sequence to analyze for 3’ end  hybridization against the</dt><dd><p>target sequence</p>
+</dd>
+</dl>
+<p>seq2: Target DNA sequence to analyze for seq1 3’ end hybridization
+mv_conc: Monovalent cation conc. (mM)
+dv_conc: Divalent cation conc. (mM)
+dntp_conc: dNTP conc. (mM)
+dna_conc: DNA conc. (nM)
+temp_c: Simulation temperature for dG (Celsius)
+max_loop: Maximum size of loops in the structure</p>
+</dd>
+<dt>Returns:</dt><dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object with thermodynamic characteristics of the
+3’ hybridization interaction.</p>
+</dd>
+<dt>Raises:</dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.calc_hairpin">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calc_hairpin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calc_hairpin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calc_hairpin" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the hairpin formation thermodynamics of a DNA sequence.</p>
+<p><strong>Note that the maximum length of ``seq`` is 60 bp.</strong> This is a cap
+suggested by the Primer3 team as the longest reasonable sequence length for
+which a two-state NN model produces reliable results
+(see <code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – DNA sequence to analyze for hairpin formation</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum size of loops in the structure</p></li>
+<li><p><strong>output_structure</strong> (<em>bool</em>) – If <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, the ASCII dimer structure is
+saved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object with thermodynamic characteristics of the
+hairpin formation.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.calc_heterodimer">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calc_heterodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calc_heterodimer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calc_heterodimer" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the heterodimerization thermodynamics of two DNA sequences.</p>
 <p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
 This is a cap imposed by Primer3 as the longest reasonable sequence length
 for which a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq1</strong> (<em>str</em>) – First DNA sequence to analyze for heterodimer
-formation</p></li>
-<li><p><strong>seq2</strong> (<em>str</em>) – Second DNA sequence to analyze for
-heterodimer formation</p></li>
-<li><p><strong>mv_conc</strong> (<em>float/int</em>) – Monovalent cation conc. (mM)</p></li>
-<li><p><strong>dv_conc</strong> (<em>float/int</em>) – Divalent cation conc. (mM)</p></li>
-<li><p><strong>dntp_conc</strong> (<em>float/int</em>) – dNTP conc. (mM)</p></li>
-<li><p><strong>dna_conc</strong> (<em>float/int</em>) – DNA conc. (nM)</p></li>
-<li><p><strong>temp_c</strong> (<em>int</em>) – Simulation temperature for dG (Celsius)</p></li>
-<li><p><strong>max_loop</strong> (<em>int</em>) – Maximum size of loops in the structure</p></li>
-<li><p><strong>output_structure</strong> (<em>bool</em>) – If <cite>True</cite>, the ASCII dimer structure is saved</p></li>
+<li><p><strong>seq1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – First DNA sequence to analyze for heterodimer formation</p></li>
+<li><p><strong>seq2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – Second DNA sequence to analyze for heterodimer formation</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_loop</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum size of loops in the structure</p></li>
+<li><p><strong>output_structure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If <cite>True</cite>, the ASCII dimer structure is saved</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="thermoanalysis.html#primer3.thermoanalysis.ThermoResult" title="primer3.thermoanalysis.ThermoResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object with thermodynamic characteristics of the
 heterodimer interaction.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="primer3.bindings.calcHomodimer">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcHomodimer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">temp_c</span><span class="o">=</span><span class="default_value">37</span></em>, <em class="sig-param"><span class="n">max_loop</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">output_structure</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcHomodimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcHomodimer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="primer3.bindings.calc_homodimer">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calc_homodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calc_homodimer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calc_homodimer" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the homodimerization thermodynamics of a DNA sequence.</p>
 <p><strong>Note that the maximum length of ``seq`` is 60 bp.</strong> This is a cap imposed
 by Primer3 as the longest reasonable sequence length for which
 a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<em>str</em>) – DNA sequence to analyze for homodimer
-formation calculations</p></li>
-<li><p><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Monovalent cation conc. (mM)</p></li>
-<li><p><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Divalent cation conc. (mM)</p></li>
-<li><p><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – dNTP conc. (mM)</p></li>
-<li><p><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – DNA conc. (nM)</p></li>
-<li><p><strong>temp_c</strong> (<em>int</em><em>, </em><em>optional</em>) – Simulation temperature for dG (C)</p></li>
-<li><p><strong>max_loop</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum size of loops in the
-structure</p></li>
-<li><p><strong>output_structure</strong> (<em>bool</em>) – If <cite>True</cite>, the ASCII dimer structure is saved</p></li>
+<li><p><strong>seq</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – DNA sequence to analyze for homodimer formation calculations</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>temp_c</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_loop</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum size of loops in the structure</p></li>
+<li><p><strong>output_structure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If <code class="xref py py-const docutils literal notranslate"><span class="pre">True</span></code>, the ASCII dimer structure
+is saved</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <cite>ThermoResult</cite> object with thermodynamic characteristics of the
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object with thermodynamic characteristics of the
 homodimer interaction.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="primer3.bindings.calcTm">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">calcTm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">max_nn_length</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">tm_method</span><span class="o">=</span><span class="default_value">'santalucia'</span></em>, <em class="sig-param"><span class="n">salt_corrections_method</span><span class="o">=</span><span class="default_value">'santalucia'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calcTm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.calcTm" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="primer3.bindings.calc_tm">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">calc_tm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmso_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmso_fact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formamide_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annealing_temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nn_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tm_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'santalucia'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">salt_corrections_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'santalucia'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#calc_tm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.calc_tm" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the melting temperature (Tm) of a DNA sequence.</p>
 <p>Note that NN thermodynamics will be used to calculate the Tm of sequences
 up to 60 bp in length, after which point the following formula will be
@@ -320,157 +493,118 @@ used:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<em>str</em>) – DNA sequence</p></li>
-<li><p><strong>mv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Monovalent cation conc. (mM)</p></li>
-<li><p><strong>dv_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – Divalent cation conc. (mM)</p></li>
-<li><p><strong>dntp_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – dNTP conc. (mM)</p></li>
-<li><p><strong>dna_conc</strong> (<em>float/int</em><em>, </em><em>optional</em>) – DNA conc. (nM)</p></li>
-<li><p><strong>max_nn_length</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum length for
-nearest-neighbor calcs</p></li>
-<li><p><strong>tm_method</strong> (<em>str</em><em>, </em><em>optional</em>) – Tm calculation method
-(breslauer or santalucia)</p></li>
-<li><p><strong>salt_corrections_method</strong> (<em>str</em><em>, </em><em>optional</em>) – Salt correction method
-(schildkraut, owczarzy,
+<li><p><strong>seq</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – DNA sequence</p></li>
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>dmso_conc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Concentration of DMSO (%)</p></li>
+<li><p><strong>dmso_fact</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – DMSO correction factor, default 0.6</p></li>
+<li><p><strong>formamide_conc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Concentration of formamide (mol/l)</p></li>
+<li><p><strong>annealing_temp_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Actual annealing temperature of the PCR reaction
+in (C)</p></li>
+<li><p><strong>temp_c</strong> – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_nn_length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum length for nearest-neighbor calcs</p></li>
+<li><p><strong>tm_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Tm calculation method (breslauer or santalucia)</p></li>
+<li><p><strong>salt_corrections_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Salt correction method (schildkraut, owczarzy,
 santalucia)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The melting temperature in degrees Celsius (float).</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The melting temperature in degrees Celsius (float).</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="primer3.bindings.designPrimers">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">designPrimers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq_args</span></em>, <em class="sig-param"><span class="n">global_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">misprime_lib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mishyb_lib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#designPrimers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.designPrimers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="primer3.bindings.designPrimers">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">designPrimers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">misprime_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mishyb_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#designPrimers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.designPrimers" title="Permalink to this definition"></a></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0: </span>Choose <a class="reference internal" href="../quickstart.html#primer3.bindings.design_primers" title="primer3.bindings.design_primers"><code class="xref py py-func docutils literal notranslate"><span class="pre">design_primers()</span></code></a> function instead</p>
+</div>
+<p>Run the Primer3 design process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq_args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Primer3 sequence/design args as per Primer3 docs</p></li>
+<li><p><strong>global_args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Primer3 global args as per Primer3 docs</p></li>
+<li><p><strong>misprime_lib</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <cite>Sequence name: sequence</cite> dictionary for mispriming
+checks.</p></li>
+<li><p><strong>mishyb_lib</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <cite>Sequence name: sequence</cite> dictionary for mishybridization
+checks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary of Primer3 results (should be identical to the expected
+BoulderIO output from <code class="docutils literal notranslate"><span class="pre">primer3_main</span></code>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.bindings.design_primers">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">design_primers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">misprime_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mishyb_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#design_primers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.design_primers" title="Permalink to this definition"></a></dt>
 <dd><p>Run the Primer3 design process.</p>
-<p>If the global args have been previously set (either by a pervious
-<cite>designPrimers</cite> call or by a <cite>setGlobals</cite> call), <cite>designPrimers</cite> may be
-called with seqArgs alone (as a means of optimization).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq_args</strong> (<em>dict</em>) – Primer3 sequence/design args as per
-Primer3 docs</p></li>
-<li><p><strong>global_args</strong> (<em>dict</em><em>, </em><em>optional</em>) – Primer3 global args as per Primer3 docs</p></li>
-<li><p><strong>misprime_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <cite>Sequence name: sequence</cite> dictionary
-for mispriming checks.</p></li>
-<li><p><strong>mishyb_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <cite>Sequence name: sequence</cite> dictionary
-for mishybridization checks.</p></li>
+<li><p><strong>seq_args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Primer3 sequence/design args as per Primer3 docs</p></li>
+<li><p><strong>global_args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Primer3 global args as per Primer3 docs</p></li>
+<li><p><strong>misprime_lib</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <cite>Sequence name: sequence</cite> dictionary for mispriming
+checks.</p></li>
+<li><p><strong>mishyb_lib</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <cite>Sequence name: sequence</cite> dictionary for mishybridization
+checks.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dictionary of Primer3 results (should be identical to the expected
-BoulderIO output from primer3_main)</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary of Primer3 results (should be identical to the expected
+BoulderIO output from <code class="docutils literal notranslate"><span class="pre">primer3_main</span></code>)</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt id="primer3.bindings.runP3Design">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">runP3Design</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#runP3Design"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.runP3Design" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start the Primer3 design process, return a dict of the Primer3 output.</p>
-<p>The global parameters and seq args must have been previously set prior to
-this call (raises IOError).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, prints the received design
-params to stderr for debugging purposes</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dictionary of Primer3 results (should be identical to the expected
-BoulderIO output from primer3_main)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="primer3.bindings.setP3Globals">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">setP3Globals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_args</span></em>, <em class="sig-param"><span class="n">misprime_lib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mishyb_lib</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#setP3Globals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.setP3Globals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the Primer3 global args and misprime/mishyb libraries.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>global_args</strong> (<em>dict</em>) – Primer3 global parameters as per
-Primer3 docs</p></li>
-<li><p><strong>misprime_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">&lt;Sequence</span> <span class="pre">name:</span> <span class="pre">sequence&gt;</span></code> dict
-for mispriming checks.</p></li>
-<li><p><strong>mishyb_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">&lt;Sequence</span> <span class="pre">name:</span> <span class="pre">sequence&gt;</span></code> dict
-for mishybridization checks.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="primer3.bindings.setP3SeqArgs">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">setP3SeqArgs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq_args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/primer3/bindings.html#setP3SeqArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.setP3SeqArgs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the Primer3 sequence / design arguments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>seq_args</strong> (<em>dict</em>) – Primer3 seq/design args as per Primer3 docs</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-</div>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="thermoanalysis.html" class="btn btn-neutral float-right" title="Low-level thermodynamic analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="thermoanalysis.html" class="btn btn-neutral float-right" title="Low-level thermodynamic analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014-2020, Ben Pruitt, Nick Conway; Wyss Institute
-
-    </p>
+    <p>&#169; Copyright Copyright 2014-2023, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

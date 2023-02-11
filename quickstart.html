@@ -1,224 +1,166 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Getting Started &mdash; Primer3-py 0.6.1 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; Primer3-py 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Documentation" href="api/index.html" />
     <link rel="prev" title="Primer3-py documentation" href="index.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home"> Primer3-py
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            Primer3-py
           </a>
-
-          
-            
-            
               <div class="version">
-                0.6.1
+                1.0.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#thermodynamic-analysis">Thermodynamic analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#thermodynamic-analysis">Thermodynamic analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#calc_tm"><code class="docutils literal notranslate"><span class="pre">calc_tm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calc_hairpin"><code class="docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calc_homodimer"><code class="docutils literal notranslate"><span class="pre">calc_homodimer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calc_heterodimer"><code class="docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calc_end_stability"><code class="docutils literal notranslate"><span class="pre">calc_end_stability()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#primer-design">Primer design</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#primer3.bindings.design_primers"><code class="docutils literal notranslate"><span class="pre">design_primers()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced-installation">Advanced Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#forking">Forking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#branch-naming">Branch naming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#development">Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pull-requests">Pull Requests</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howtobuild.html">Building for upload to PyPi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Primer3-py</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>Getting Started</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
-          
-        
+            <a href="_sources/quickstart.md.txt" rel="nofollow"> View page source</a>
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="getting-started">
-<h1><a class="toc-backref" href="#id2">Getting Started</a><a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="getting-started">
+<h1><a class="toc-backref" href="#id1" role="doc-backlink">Getting Started</a><a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
 <p><strong>Primer3-py</strong> is designed to be simple to install and use.</p>
-<div class="contents topic" id="contents">
+<nav class="contents" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#getting-started" id="id2">Getting Started</a></p>
+<li><p><a class="reference internal" href="#getting-started" id="id1">Getting Started</a></p>
 <ul>
-<li><p><a class="reference internal" href="#requirements" id="id3">Requirements</a></p></li>
-<li><p><a class="reference internal" href="#installation" id="id4">Installation</a></p></li>
-<li><p><a class="reference internal" href="#thermodynamic-analysis" id="id5">Thermodynamic analysis</a></p></li>
-<li><p><a class="reference internal" href="#primer-design" id="id6">Primer design</a></p>
+<li><p><a class="reference internal" href="#requirements" id="id2">Requirements</a></p></li>
+<li><p><a class="reference internal" href="#installation" id="id3">Installation</a></p></li>
+<li><p><a class="reference internal" href="#thermodynamic-analysis" id="id4">Thermodynamic analysis</a></p></li>
+<li><p><a class="reference internal" href="#primer-design" id="id5">Primer design</a></p>
 <ul>
-<li><p><a class="reference internal" href="#workflow" id="id7">Workflow</a></p></li>
+<li><p><a class="reference internal" href="#workflow" id="id6">Workflow</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#advanced-installation" id="id8">Advanced Installation</a></p></li>
-<li><p><a class="reference internal" href="#testing" id="id9">Testing</a></p></li>
+<li><p><a class="reference internal" href="#advanced-installation" id="id7">Advanced Installation</a></p></li>
+<li><p><a class="reference internal" href="#testing" id="id8">Testing</a></p></li>
+<li><p><a class="reference internal" href="#contributing" id="id9">Contributing</a></p>
+<ul>
+<li><p><a class="reference internal" href="#forking" id="id10">Forking</a></p></li>
+<li><p><a class="reference internal" href="#branch-naming" id="id11">Branch naming</a></p></li>
+<li><p><a class="reference internal" href="#development" id="id12">Development</a></p></li>
+<li><p><a class="reference internal" href="#pull-requests" id="id13">Pull Requests</a></p></li>
 </ul>
 </li>
 </ul>
-</div>
-<div class="section" id="requirements">
-<h2><a class="toc-backref" href="#id3">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p><strong>Primer3-py</strong> is built and tested on Mac OS X and Linux systems; we do not
-provide official Windows support. Python versions 2.7, 3.5-3.8 are supported.</p>
-<p>If you don’t install the latest build via pip, you might have to install
-<code class="docutils literal notranslate"><span class="pre">Cython</span></code>, prior to running the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install Cython
-</pre></div>
-</div>
-<p>If you’re attempting to build on Windows, please review the <code class="docutils literal notranslate"><span class="pre">primer3</span></code>
-documentation regarding environment requirements. You’ll need to install
-the latest version of the TDM-GCC MinGW Compiler if building in a
-<code class="docutils literal notranslate"><span class="pre">MinGW</span> <span class="pre">/</span> <span class="pre">Mingw-w64</span></code> environment:</p>
-<p><a class="reference external" href="https://jmeubank.github.io/tdm-gcc/">https://jmeubank.github.io/tdm-gcc/</a></p>
-</div>
-<div class="section" id="installation">
-<h2><a class="toc-backref" href="#id4">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+</li>
+</ul>
+</nav>
+<section id="requirements">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
+<p><strong>Primer3-py</strong> is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.11 builds are supported.</p>
+</section>
+<section id="installation">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Installation</a><a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
 <p>If you want to install the latest stable build of <strong>Primer3-py</strong>, you can
 install it using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install primer3-py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>primer3-py
 </pre></div>
 </div>
-</div>
-<div class="section" id="thermodynamic-analysis">
-<h2><a class="toc-backref" href="#id5">Thermodynamic analysis</a><a class="headerlink" href="#thermodynamic-analysis" title="Permalink to this headline">¶</a></h2>
-<p>The thermodynamic bindings include support for <strong>Tm, homodimer, heterodimer,
+<p><strong>NOTE</strong>: We support wheel builds for PyPi for the 3 most recent CPython versions. Target platforms for wheels are MacOS <code class="docutils literal notranslate"><span class="pre">x86-64</span></code> <code class="docutils literal notranslate"><span class="pre">arm64</span></code>, Linux <code class="docutils literal notranslate"><span class="pre">x86-64</span></code>, and Windows <code class="docutils literal notranslate"><span class="pre">x86-64</span></code>.</p>
+<p>If your Python version and platform fall outside this such as Linux <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> it is confirmed <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> builds on this platform but it is not supported as our build GitHub actions runners do not run these builds expediently.</p>
+</section>
+<section id="thermodynamic-analysis">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Thermodynamic analysis</a><a class="headerlink" href="#thermodynamic-analysis" title="Permalink to this heading"></a></h2>
+<p>The thermodynamic <code class="xref py py-mod docutils literal notranslate"><span class="pre">bindings</span></code> include support for <strong>Tm, homodimer, heterodimer,
 hairpin,</strong> and <strong>3’ end stability calculations</strong>:</p>
 <dl class="py function">
-<dt id="calcTm">
-<code class="sig-name descname">calcTm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span></em>, <em class="sig-param"><span class="n">mv_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">dv_conc</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dntp_conc</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">dna_conc</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">max_nn_length</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">tm_method</span><span class="o">=</span><span class="default_value">'santalucia'</span></em>, <em class="sig-param"><span class="n">salt_corrections_method</span><span class="o">=</span><span class="default_value">'santalucia'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#calcTm" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="calc_tm">
+<span class="sig-name descname"><span class="pre">calc_tm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmso_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmso_fact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formamide_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annealing_temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nn_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tm_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'santalucia'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">salt_corrections_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'santalucia'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#calc_tm" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the melting temperature of a DNA sequence, <code class="docutils literal notranslate"><span class="pre">seq</span></code>. Returns the
 melting temperature (C) as a float:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">primer3</span><span class="o">.</span><span class="n">calcTm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">primer3</span><span class="o">.</span><span class="n">calc_tm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
 <span class="go">49.16808228911765</span>
 </pre></div>
 </div>
@@ -231,12 +173,12 @@ used:</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="calcHairpin">
-<code class="sig-name descname">calcHairpin</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="optional">[</span>, <em class="sig-param">mv_conc=50.0</em>, <em class="sig-param">dv_conc=0.0</em>, <em class="sig-param">dntp_conc=0.8</em>, <em class="sig-param">dna_conc=50.0</em>, <em class="sig-param">temp_c=37</em>, <em class="sig-param">max_loop=30</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#calcHairpin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="calc_hairpin">
+<span class="sig-name descname"><span class="pre">calc_hairpin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#calc_hairpin" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the hairpin formation thermodynamics of a DNA sequence, <code class="docutils literal notranslate"><span class="pre">seq</span></code>.
-Returns a <code class="docutils literal notranslate"><span class="pre">ThermoResult</span></code> object that provides access to the thermodynamic
-characteristics of the result:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">primer3</span><span class="o">.</span><span class="n">calcHairpin</span><span class="p">(</span><span class="s1">&#39;CCCCCATCCGATCAGGGGG&#39;</span><span class="p">)</span>
+Returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object that provides access to the
+thermodynamic characteristics of the result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">primer3</span><span class="o">.</span><span class="n">calc_hairpin</span><span class="p">(</span><span class="s1">&#39;CCCCCATCCGATCAGGGGG&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 <span class="go">ThermoResult(structure_found=True, tm=34.15, dg=337.09, dh=-36300.00,</span>
 <span class="go">             ds=-118.13, msg=)</span>
@@ -249,52 +191,52 @@ characteristics of the result:</p>
 <p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
 This is a cap imposed by Primer3 as the longest reasonable sequence length
 for which a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libnano/thal.h:59</span></code>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="calcHomodimer">
-<code class="sig-name descname">calcHomodimer</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="optional">[</span>, <em class="sig-param">mv_conc=50.0</em>, <em class="sig-param">dv_conc=0.0</em>, <em class="sig-param">dntp_conc=0.8</em>, <em class="sig-param">dna_conc=50.0</em>, <em class="sig-param">temp_c=37</em>, <em class="sig-param">max_loop=30</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#calcHomodimer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="calc_homodimer">
+<span class="sig-name descname"><span class="pre">calc_homodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#calc_homodimer" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the homodimer formation thermodynamics of a DNA sequence,
-<code class="docutils literal notranslate"><span class="pre">seq</span></code>. Returns a <code class="docutils literal notranslate"><span class="pre">ThermoResult</span></code> object that provides access to the
-thermodynamic characteristics of the result (see <a class="reference internal" href="#calcHairpin" title="calcHairpin"><code class="xref py py-func docutils literal notranslate"><span class="pre">calcHairpin()</span></code></a>
+<code class="docutils literal notranslate"><span class="pre">seq</span></code>. Returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object that provides access to the
+thermodynamic characteristics of the result (see <a class="reference internal" href="#calc_hairpin" title="calc_hairpin"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a>
 doc for more information).</p>
 <p><strong>Note that the maximum length of ``seq`` is 60 bp.</strong> This is a cap imposed
 by Primer3 as the longest reasonable sequence length for which
 a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libprimer3/thal.h:59</span></code>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="calcHeterodimer">
-<code class="sig-name descname">calcHeterodimer</code><span class="sig-paren">(</span><em class="sig-param">seq1</em>, <em class="sig-param">seq2</em><span class="optional">[</span>, <em class="sig-param">mv_conc=50.0</em>, <em class="sig-param">dv_conc=0.0</em>, <em class="sig-param">dntp_conc=0.8</em>, <em class="sig-param">dna_conc=50.0</em>, <em class="sig-param">temp_c=37</em>, <em class="sig-param">max_loop=30</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#calcHeterodimer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="calc_heterodimer">
+<span class="sig-name descname"><span class="pre">calc_heterodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#calc_heterodimer" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the heterodimerization thermodynamics of two DNA sequences,
-<code class="docutils literal notranslate"><span class="pre">seq1</span></code> and <code class="docutils literal notranslate"><span class="pre">seq2</span></code>. Returns a <code class="docutils literal notranslate"><span class="pre">ThermoResult</span></code> object that provides
+<code class="docutils literal notranslate"><span class="pre">seq1</span></code> and <code class="docutils literal notranslate"><span class="pre">seq2</span></code>. Returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object that provides
 access to the thermodynamic characteristics of the result
-(see <a class="reference internal" href="#calcHairpin" title="calcHairpin"><code class="xref py py-func docutils literal notranslate"><span class="pre">calcHairpin()</span></code></a> doc for more information).</p>
+(see <a class="reference internal" href="#calc_hairpin" title="calc_hairpin"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a> doc for more information).</p>
 <p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
 This is a cap imposed by Primer3 as the longest reasonable sequence length
 for which a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libprimer3/thal.h:59</span></code>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="calcEndStability">
-<code class="sig-name descname">calcEndStability</code><span class="sig-paren">(</span><em class="sig-param">seq1</em>, <em class="sig-param">seq2</em><span class="optional">[</span>, <em class="sig-param">mv_conc=50.0</em>, <em class="sig-param">dv_conc=0.0</em>, <em class="sig-param">dntp_conc=0.8</em>, <em class="sig-param">dna_conc=50.0</em>, <em class="sig-param">temp_c=37</em>, <em class="sig-param">max_loop=30</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#calcEndStability" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the 3’ end stability of DNA sequence <cite>seq1</cite> against DNA
-sequence <cite>seq2</cite>. Returns a <code class="docutils literal notranslate"><span class="pre">ThermoResult</span></code> object that provides
+<dt class="sig sig-object py" id="calc_end_stability">
+<span class="sig-name descname"><span class="pre">calc_end_stability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#calc_end_stability" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the 3’ end stability of DNA sequence <code class="docutils literal notranslate"><span class="pre">seq1</span></code> against DNA
+sequence <code class="docutils literal notranslate"><span class="pre">seq2</span></code>. Returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code> object that provides
 access to the thermodynamic characteristics of the result
-(see <a class="reference internal" href="#calcHairpin" title="calcHairpin"><code class="xref py py-func docutils literal notranslate"><span class="pre">calcHairpin()</span></code></a> doc for more information).</p>
+(see <a class="reference internal" href="#calc_hairpin" title="calc_hairpin"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a> doc for more information).</p>
 <p><strong>Note that at least one of the two sequences must by &lt;60 bp in length.</strong>
 This is a cap imposed by Primer3 as the longest reasonable sequence length
 for which a two-state NN model produces reliable results (see
-primer3/src/libnano/thal.h:50).</p>
+<code class="docutils literal notranslate"><span class="pre">primer3/src/libprimer3/thal.h:59</span></code>).</p>
 </dd></dl>
 
 <p>All of these low-level thermodynamic functions share a set of keyword arguments
 used to define the parameters of the respective calculation:</p>
 <blockquote>
-<div><dl class="simple">
+<div><dl>
 <dt><cite>For all low-level calculations</cite>:</dt><dd><dl class="simple">
 <dt><strong>mv_conc</strong> (float/int)</dt><dd><p>Monovalent cation concentration (mM)</p>
 </dd>
@@ -313,7 +255,19 @@ used to define the parameters of the respective calculation:</p>
 </dd>
 </dl>
 </dd>
-<dt><cite>For Tm calculations</cite>:</dt><dd><dl class="simple">
+<dt><cite>For Tm calculations</cite>:</dt><dd><dl>
+<dt><strong>dmso_conc</strong> (float)</dt><dd><p>Concentration of DMSO (%)</p>
+</dd>
+<dt><strong>dmso_fact</strong> (float)</dt><dd><blockquote>
+<div><p>DMSO correction factor</p>
+</div></blockquote>
+<dl class="simple">
+<dt><strong>formamide_conc</strong> (float)</dt><dd><p>Concentration of formamide (mol/l)</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>annealing_temp_c</strong> (float)</dt><dd><p>Actual annealing temperature of the PCR reaction</p>
+</dd>
 <dt><strong>max_nn_length</strong> (int)</dt><dd><p>Maximum length for nearest-neighbor calcs</p>
 </dd>
 <dt><strong>tm_method</strong> (str)</dt><dd><p>Tm calculation method (breslauer or santalucia)</p>
@@ -324,17 +278,16 @@ used to define the parameters of the respective calculation:</p>
 </dd>
 </dl>
 </div></blockquote>
-</div>
-<div class="section" id="primer-design">
-<h2><a class="toc-backref" href="#id6">Primer design</a><a class="headerlink" href="#primer-design" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="primer-design">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Primer design</a><a class="headerlink" href="#primer-design" title="Permalink to this heading"></a></h2>
 <p><strong>Primer3-py</strong> includes bindings for the Primer3 primer design pipeline. The
 parameters for the design process are provided as Python dictionaries that
 mirror the BoulderIO input files required by the Primer3 binaries. There
 are numerous examples of how to use the pipeline in the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory.</p>
 <p>For documentation regarding the input and output parameters of the pipeline,
-please see the Primer3 2.3.7 documentation (the underlying library for
-this package is a derivative of v2.3.7):</p>
-<p><a class="reference external" href="http://primer3.sourceforge.net/primer3_manual.htm">http://primer3.sourceforge.net/primer3_manual.htm</a></p>
+please see the <a class="reference external" href="https://htmlpreview.github.io/?https://github.com/primer3-org/primer3/blob/v2.6.1/src/primer3_manual.htm">Primer3 2.6.1 documentation</a> (the underlying library for
+this package is a derivative of v2.6.1).</p>
 <p>It is worth noting that some of the inputs deviate from the string format
 described in the Primer3 documentation, with notable exceptions being related
 to index lists and ranges (i.e., ranges are typically provided as lists/tuples,
@@ -350,55 +303,54 @@ input and the Python binding input:</p>
 <span class="n">Primer3</span><span class="o">-</span><span class="n">py</span> <span class="n">Python</span> <span class="nb">input</span><span class="p">:</span>      <span class="p">[[</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="p">],[</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">],[</span><span class="mi">125</span><span class="p">,</span><span class="mi">150</span><span class="p">]]</span>
 </pre></div>
 </div>
-<div class="section" id="workflow">
-<h3><a class="toc-backref" href="#id7">Workflow</a><a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h3>
+<section id="workflow">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Workflow</a><a class="headerlink" href="#workflow" title="Permalink to this heading"></a></h3>
 <p>The easiest way to run the primer design pipeline is with
-<code class="xref py py-func docutils literal notranslate"><span class="pre">designPrimers()</span></code>. Notice that Primer3 parameters prefixed with
+<code class="xref py py-func docutils literal notranslate"><span class="pre">design_primers()</span></code>. Notice that Primer3 parameters prefixed with
 “SEQUENCE_” are provided in a separate dictionary from those prefixed with
 “PRIMER_”. For more advanced / modular approaches, see the <a class="reference internal" href="api/bindings.html"><span class="doc">Primary analysis and design API</span></a>
 documentation.</p>
 <dl class="py function">
-<dt id="primer3.bindings.designPrimers">
-<code class="sig-prename descclassname">primer3.bindings.</code><code class="sig-name descname">designPrimers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq_args</span></em>, <em class="sig-param"><span class="n">global_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">misprime_lib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mishyb_lib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/primer3/bindings.html#designPrimers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#primer3.bindings.designPrimers" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="primer3.bindings.design_primers">
+<span class="sig-prename descclassname"><span class="pre">primer3.bindings.</span></span><span class="sig-name descname"><span class="pre">design_primers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">misprime_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mishyb_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/primer3/bindings.html#design_primers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#primer3.bindings.design_primers" title="Permalink to this definition"></a></dt>
 <dd><p>Run the Primer3 design process.</p>
-<p>If the global args have been previously set (either by a pervious
-<cite>designPrimers</cite> call or by a <cite>setGlobals</cite> call), <cite>designPrimers</cite> may be
-called with seqArgs alone (as a means of optimization).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq_args</strong> (<em>dict</em>) – Primer3 sequence/design args as per
-Primer3 docs</p></li>
-<li><p><strong>global_args</strong> (<em>dict</em><em>, </em><em>optional</em>) – Primer3 global args as per Primer3 docs</p></li>
-<li><p><strong>misprime_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <cite>Sequence name: sequence</cite> dictionary
-for mispriming checks.</p></li>
-<li><p><strong>mishyb_lib</strong> (<em>dict</em><em>, </em><em>optional</em>) – <cite>Sequence name: sequence</cite> dictionary
-for mishybridization checks.</p></li>
+<li><p><strong>seq_args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Primer3 sequence/design args as per Primer3 docs</p></li>
+<li><p><strong>global_args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Primer3 global args as per Primer3 docs</p></li>
+<li><p><strong>misprime_lib</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <cite>Sequence name: sequence</cite> dictionary for mispriming
+checks.</p></li>
+<li><p><strong>mishyb_lib</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <cite>Sequence name: sequence</cite> dictionary for mishybridization
+checks.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dictionary of Primer3 results (should be identical to the expected
-BoulderIO output from primer3_main)</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary of Primer3 results (should be identical to the expected
+BoulderIO output from <code class="docutils literal notranslate"><span class="pre">primer3_main</span></code>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <p>Example usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bindings</span><span class="o">.</span><span class="n">designPrimers</span><span class="p">(</span>
-    <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bindings</span><span class="o">.</span><span class="n">design_primers</span><span class="p">(</span>
+    <span class="n">seq_args</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">&#39;SEQUENCE_ID&#39;</span><span class="p">:</span> <span class="s1">&#39;MH1000&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;SEQUENCE_TEMPLATE&#39;</span><span class="p">:</span> <span class="s1">&#39;GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT</span>
-                              <span class="n">AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA</span>
-                              <span class="n">ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG</span>
-                              <span class="n">CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG</span>
-                              <span class="n">TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA</span>
-                              <span class="n">TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA</span>
-                              <span class="n">ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA</span>
-                              <span class="n">TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA</span>
-                              <span class="n">GATGTTTCCCTCTAGTAG</span><span class="s1">&#39;,</span>
+        <span class="s1">&#39;SEQUENCE_TEMPLATE&#39;</span><span class="p">:</span> <span class="s1">&#39;GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT&#39;</span>
+                             <span class="s1">&#39;AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA&#39;</span>
+                             <span class="s1">&#39;ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG&#39;</span>
+                             <span class="s1">&#39;CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG&#39;</span>
+                             <span class="s1">&#39;TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA&#39;</span>
+                             <span class="s1">&#39;TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA&#39;</span>
+                             <span class="s1">&#39;ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA&#39;</span>
+                             <span class="s1">&#39;TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA&#39;</span>
+                             <span class="s1">&#39;GATGTTTCCCTCTAGTAG&#39;</span><span class="p">,</span>
         <span class="s1">&#39;SEQUENCE_INCLUDED_REGION&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">36</span><span class="p">,</span><span class="mi">342</span><span class="p">]</span>
     <span class="p">},</span>
-    <span class="p">{</span>
+    <span class="n">global_args</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">&#39;PRIMER_OPT_SIZE&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
         <span class="s1">&#39;PRIMER_PICK_INTERNAL_OLIGO&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="s1">&#39;PRIMER_INTERNAL_MAX_SELF_END&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
@@ -418,20 +370,36 @@ BoulderIO output from primer3_main)</p>
         <span class="s1">&#39;PRIMER_MAX_SELF_END&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
         <span class="s1">&#39;PRIMER_PAIR_MAX_COMPL_ANY&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
         <span class="s1">&#39;PRIMER_PAIR_MAX_COMPL_END&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_PRODUCT_SIZE_RANGE&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="p">],[</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">],[</span><span class="mi">125</span><span class="p">,</span><span class="mi">150</span><span class="p">],</span>
-                                      <span class="p">[</span><span class="mi">150</span><span class="p">,</span><span class="mi">175</span><span class="p">],[</span><span class="mi">175</span><span class="p">,</span><span class="mi">200</span><span class="p">],[</span><span class="mi">200</span><span class="p">,</span><span class="mi">225</span><span class="p">]],</span>
+        <span class="s1">&#39;PRIMER_PRODUCT_SIZE_RANGE&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">[</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="p">],[</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">],[</span><span class="mi">125</span><span class="p">,</span><span class="mi">150</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">150</span><span class="p">,</span><span class="mi">175</span><span class="p">],[</span><span class="mi">175</span><span class="p">,</span><span class="mi">200</span><span class="p">],[</span><span class="mi">200</span><span class="p">,</span><span class="mi">225</span><span class="p">]</span>
+        <span class="p">],</span>
     <span class="p">})</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="advanced-installation">
-<h2><a class="toc-backref" href="#id8">Advanced Installation</a><a class="headerlink" href="#advanced-installation" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="advanced-installation">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Advanced Installation</a><a class="headerlink" href="#advanced-installation" title="Permalink to this heading"></a></h2>
 <p>Users interested in contributing to development may want to work with the
 latest development build. To get the latest and greatest code, head over
 <a class="reference external" href="https://github.com/libnano/primer3-py">our Github repo</a> and clone the
-repo or download a tarball. Building from source is easy:</p>
+repo or download a tarball. Building from source is easy.</p>
+<p>If you don’t install the latest build via pip or conda, you might have to install
+<code class="docutils literal notranslate"><span class="pre">Cython</span></code>, prior to running the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install Cython
+</pre></div>
+</div>
+<p>Or via <code class="docutils literal notranslate"><span class="pre">conda</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install Cython
+</pre></div>
+</div>
+<p>Then run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py install
+</pre></div>
+</div>
+<p>or if you are developing <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> enhancements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build_ext --inplace
 </pre></div>
 </div>
 <p>We recommend running <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> with either <code class="docutils literal notranslate"><span class="pre">build_ext</span> <span class="pre">--inplace</span></code> or
@@ -441,70 +409,121 @@ package directory without copying any files to your local environment
 site-packages directory (so you can import and run tests from within the
 package) and <code class="docutils literal notranslate"><span class="pre">develop</span></code> will build in place and then put symlinks in your
 site packages directory (this will allow Primer3-py)</p>
-</div>
-<div class="section" id="testing">
-<h2><a class="toc-backref" href="#id9">Testing</a><a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>NOTE: If you’re attempting to build on Windows, please review the <code class="docutils literal notranslate"><span class="pre">primer3</span></code>
+documentation regarding environment requirements. You’ll need to install
+the latest version of the TDM-GCC MinGW Compiler if building in a
+<code class="docutils literal notranslate"><span class="pre">MinGW</span> <span class="pre">/</span> <span class="pre">Mingw-w64</span></code> environment: <a class="reference external" href="https://jmeubank.github.io/tdm-gcc/">TDM-GCC MinGW Compiler</a></p>
+</section>
+<section id="testing">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Testing</a><a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
 <p>Every commit pushed to
-<a class="reference external" href="https://github.com/libnano/primer3-py">our Github repo</a> is tested to
-insure it builds properly and passes our unit testing framework on
-<a class="reference external" href="https://travis-ci.org/libnano/primer3-py">Travis CI</a>.</p>
+<a class="reference external" href="https://github.com/libnano/primer3-py">the primer3-py GitHub repo</a> is tested to
+ensure it builds properly and passes our unit testing framework as a GitHub action</p>
 <p>If you’d like to run the tests yourself, we suggest the following workflow:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/libnano/primer3-py
 $ cd primer3-py
 $ python setup.py build_ext --inplace
-$ nosetests
+$ pytest
 </pre></div>
 </div>
+<p>NOTE: <code class="docutils literal notranslate"><span class="pre">pip</span></code> / <code class="docutils literal notranslate"><span class="pre">conda</span></code> install <code class="docutils literal notranslate"><span class="pre">pytest</span></code> if not in your environment</p>
+</section>
+<section id="contributing">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Contributing</a><a class="headerlink" href="#contributing" title="Permalink to this heading"></a></h2>
+<p>Contributions are welcomed via pull requests.</p>
+<p>Contact the <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> maintainers prior to beginning your work to make sure
+it makes sense for the project.</p>
+<p>By contributing, you also agree to release your code under the GPLv2</p>
+<p>After a successful PR will be listed under the <a class="reference external" href="https://github.com/libnano/primer3-py/graphs/contributors">contributors</a>.</p>
+<section id="forking">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Forking</a><a class="headerlink" href="#forking" title="Permalink to this heading"></a></h3>
+<p>A forking workflow is preferred for all pull requests.</p>
+</section>
+<section id="branch-naming">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Branch naming</a><a class="headerlink" href="#branch-naming" title="Permalink to this heading"></a></h3>
+<p>Branch naming is preferred to use the format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">GitHub</span> <span class="n">user</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;-&lt;</span><span class="n">short</span> <span class="n">keyword</span> <span class="n">description</span> <span class="n">of</span> <span class="n">change</span><span class="o">&gt;</span>
+</pre></div>
 </div>
+<p>Keep branch names not too long.  A good example would be for the user <code class="docutils literal notranslate"><span class="pre">grinner</span></code>
+for a documentation update for the 1.0.0 staging branch:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>grinner-docs-update-1.0.0-pass-01
+</pre></div>
 </div>
+<p>With the trailing 01 indicative of it being part of several potential</p>
+<p>Another example pass that focuses on code clarity comments would be:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>grinner-code-clarity-and-comments
+</pre></div>
+</div>
+</section>
+<section id="development">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Development</a><a class="headerlink" href="#development" title="Permalink to this heading"></a></h3>
+<p>Development requires the use of C Python 3.8+, <a class="reference external" href="https://docs.pytest.org">pytest</a> and
+<a class="reference external" href="https://pre-commit.com">pre-commit</a> as they are used to build and run primer3-py
+code CI in the GitHub Action.</p>
+<p>Install these dependencies in your python development environment
+(<code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>, <code class="docutils literal notranslate"><span class="pre">conda</span></code>, etc):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>cython<span class="w"> </span>pre-commit<span class="w"> </span>pytest
+<span class="c1"># or</span>
+$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>cython<span class="w"> </span>pre-commit<span class="w"> </span>pytest
+</pre></div>
+</div>
+<p>Install <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> in repo the with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+<p>To ensure the git hook is excecuted on every commit.</p>
+</section>
+<section id="pull-requests">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Pull Requests</a><a class="headerlink" href="#pull-requests" title="Permalink to this heading"></a></h3>
+<p>Pull Requests should meet the following requirements:</p>
+<ol class="arabic simple">
+<li><p>Excellent PR description describing all changes made. Please use markdown syntax highlighting to help readability.</p></li>
+<li><p>If change is code related, have test coverage for the changes implemented.</p></li>
+<li><p>Attempt to make the PR 1 commit only. Multiple are OK if it helps illustrate the change better.</p></li>
+<li><p>Commit messages should describe the changes.</p></li>
+<li><p>Provided you contact the maintainers in advance, theu will code review your PR, provide feedback and squash merge your code on approval.</p></li>
+</ol>
+<p><strong>TIP</strong>: Interactive <code class="docutils literal notranslate"><span class="pre">rebase</span></code> is helpful to fix old commit messages.
+For example, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>HEAD~2
+</pre></div>
+</div>
+<p>To rebase the last 2 commits. Use <code class="docutils literal notranslate"><span class="pre">s</span></code> to mark the most recent commit(s), save, then
+modify the collective commit messages to update poor commit messages.</p>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="api/index.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="Primer3-py documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Primer3-py documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api/index.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014-2020, Ben Pruitt, Nick Conway; Wyss Institute
-
-    </p>
+    <p>&#169; Copyright Copyright 2014-2023, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

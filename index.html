@@ -1,192 +1,120 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Primer3-py documentation &mdash; Primer3-py 0.6.1 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primer3-py documentation &mdash; Primer3-py 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Getting Started" href="quickstart.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="#" class="icon icon-home"> Primer3-py
           
-
-          
+          <a href="#" class="icon icon-home">
+            Primer3-py
           </a>
-
-          
-            
-            
               <div class="version">
-                0.6.1
+                1.0.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howtobuild.html">Building for upload to PyPi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="#">Primer3-py</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="#">Docs</a> &raquo;</li>
-        
-      <li><strong>Primer3-py</strong> documentation</li>
-    
-    
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><strong>Primer3-py</strong> documentation</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
-          
-        
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="primer3-py-documentation">
-<h1><strong>Primer3-py</strong> documentation<a class="headerlink" href="#primer3-py-documentation" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="primer3-py-documentation">
+<h1><strong>Primer3-py</strong> documentation<a class="headerlink" href="#primer3-py-documentation" title="Permalink to this heading"></a></h1>
 <p><strong>Primer3-py</strong> is a Python-abstracted API for the popular Primer3 library. The
 intention is to provide a simple and reliable interface for automated oligo
 analysis and design.</p>
 <p>Routine oligo analysis is extremely simple:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">primer3</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">primer3</span><span class="o">.</span><span class="n">calcTm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">primer3</span><span class="o">.</span><span class="n">calc_tm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
 <span class="go">49.16808228911765</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">primer3</span><span class="o">.</span><span class="n">calcHairpin</span><span class="p">(</span><span class="s1">&#39;CCCCCATCCGATCAGGGGG&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">primer3</span><span class="o">.</span><span class="n">calc_hairpin</span><span class="p">(</span><span class="s1">&#39;CCCCCATCCGATCAGGGGG&#39;</span><span class="p">)</span>
 <span class="go">ThermoResult(structure_found=True, tm=34.15, dg=337.09, dh=-36300.00,</span>
 <span class="go">             ds=-118.13, msg=)</span>
 </pre></div>
 </div>
-<p>… and <cite>fast</cite> (<strong>1000X</strong> faster than traditional subprocess wrappers):</p>
+<p>… and <code class="docutils literal notranslate"><span class="pre">fast</span></code> (<strong>1000X</strong> faster than traditional subprocess wrappers):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">primer3</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="o">%</span><span class="n">timeit</span> <span class="n">primer3</span><span class="o">.</span><span class="n">calcTm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">tests.wrapper</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="o">%</span><span class="n">timeit</span> <span class="n">primer3</span><span class="o">.</span><span class="n">calc_tm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
 <span class="mi">100000</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">4.74</span> <span class="n">µs</span> <span class="n">per</span> <span class="n">loop</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="o">%</span><span class="n">timeit</span> <span class="n">primer3</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">calcTm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="o">%</span><span class="n">timeit</span> <span class="n">tests</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">calc_tm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
 <span class="mi">100000</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">5.78</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
 </pre></div>
 </div>
-<p><strong>Primer3-py</strong> also includes bindings for the Primer3 <cite>primer design engine</cite>
+<p><strong>Primer3-py</strong> also includes bindings for the Primer3 <code class="docutils literal notranslate"><span class="pre">primer</span> <span class="pre">design</span> <span class="pre">engine</span></code>
 if you’d prefer to use an established pipeline. The IO parameters mirror those
 of the original Primer3, but you don’t have to deal with messy and slow file
 IO for your automated workflows.</p>
-<p><strong>Please note that while we provide bindings, we do not provide support for
+<p>**Please note that while we provide bindings, we do not provide support for
 the Primer3 design engine. Please contact the Primer3 dev team with your
-questions: http://primer3.sourceforge.net/.</strong></p>
-<p>A copy of the Primer3 2.3.7 design parameters manual can be found at:
-<a class="reference external" href="http://git.io/vnqBx">http://git.io/vnqBx</a></p>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+questions: https://github.com/primer3-org/primer3 **</p>
+<p>A copy of the Primer3 2.6.1 design parameters manual can be found at:
+<a class="reference external" href="https://htmlpreview.github.io/?https://github.com/primer3-org/primer3/blob/v2.6.1/src/primer3_manual.htm">primer3 v2.6.1 manual</a></p>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a><ul>
@@ -196,6 +124,7 @@ questions: http://primer3.sourceforge.net/.</strong></p>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#primer-design">Primer design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#advanced-installation">Advanced Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#contributing">Contributing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a><ul>
@@ -203,6 +132,12 @@ questions: http://primer3.sourceforge.net/.</strong></p>
 <li class="toctree-l2"><a class="reference internal" href="api/thermoanalysis.html">Low-level thermodynamic analysis</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="howtobuild.html">Building for upload to PyPi</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="howtobuild.html#dependencies">Dependencies:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtobuild.html#edit-the-pypirc-file">Edit the <code class="docutils literal notranslate"><span class="pre">~/.pypirc</span></code> file:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="miscellany.html#motivation">Motivation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="miscellany.html#derivative-work">Derivative work</a></li>
@@ -211,90 +146,74 @@ questions: http://primer3.sourceforge.net/.</strong></p>
 <li class="toctree-l2"><a class="reference internal" href="miscellany.html#licensing">Licensing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-1-march-3-2014">Version 0.1:                                                      March 3, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-2-april-23-2014">Version 0.2:                                                     April 23, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-2-1-april-24-2014">Version 0.2.1                                                    April 24, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-2-2-june-3-2014">Version 0.2.2:                                                     June 3, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-2-3-june-5-2014">Version 0.2.3:                                                     June 5, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-2-4-june-17-2014">Version 0.2.4:                                                    June 17, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-2-5-august-7-2014">Version 0.2.5:                                                   August 7, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-3-0-august-12-2014">Version 0.3.0:                                                  August 12, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-3-1-august-13-2014">Version 0.3.1:                                                  August 13, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-4-0-november-25-2014">Version 0.4.0:                                                November 25, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-4-1-november-28-2014">Version 0.4.1:                                                November 28, 2014</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-4-2-september-18-2015">Version 0.4.2:                                               September 18, 2015</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-4-3-december-1-2015">Version 0.4.3                                                  December 1, 2015</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-5-0-february-25-2016">Version 0.5.0                                                 February 25, 2016</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-5-1-may-25-2016">Version 0.5.1                                                      May 25, 2016</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-5-2-may-1-2017">Version 0.5.2                                                       May 1, 2017</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-5-3-may-6-2017">Version 0.5.3                                                       May 6, 2017</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-5-4-june-20-2017">Version 0.5.4                                                     June 20, 2017</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-5-5-october-30-2017">Version 0.5.5                                                  October 30, 2017</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-5-6-july-12-2018">Version 0.5.6                                                     July 12, 2018</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-5-7-august-10-2018">Version 0.5.7                                                   August 10, 2018</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-6-0-may-10-2019">Version 0.6.0                                                      May 10, 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changes.html#version-0-6-1-may-9-2020">Version 0.6.1                                                       May 9, 2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-1-0-0-february-11-2023">Version 1.0.0 (February 11, 2023)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-6-1-may-9-2020">Version 0.6.1 (May 9, 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-6-0-may-10-2019">Version 0.6.0 (May 10, 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-5-7-august-10-2018">Version 0.5.7 (August 10, 2018)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-5-6-july-12-2018">Version 0.5.6 (July 12, 2018)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-5-5-october-30-2017">Version 0.5.5 (October 30, 2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-5-4-june-20-2017">Version 0.5.4 (June 20, 2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-5-3-may-6-2017">Version 0.5.3 (May 6, 2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-5-2-may-1-2017">Version 0.5.2 (May 1, 2017)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-5-1-may-25-2016">Version 0.5.1 (May 25, 2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-5-0-february-25-2016">Version 0.5.0 (February 25, 2016)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-4-3-december-1-2015">Version 0.4.3 (December 1, 2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-4-2-september-18-2015">Version 0.4.2 (September 18, 2015)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-4-1-november-28-2014">Version 0.4.1 (November 28, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-4-0-november-25-2014">Version 0.4.0 (November 25, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-3-1-august-13-2014">Version 0.3.1 (August 13, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-3-0-august-12-2014">Version 0.3.0 (August 12, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-2-5-august-7-2014">Version 0.2.5 (August 7, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-2-4-june-17-2014">Version 0.2.4 (June 17, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-2-3-june-5-2014">Version 0.2.3 (June 5, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-2-2-june-3-2014">Version 0.2.2 (June 3, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-2-1-april-24-2014">Version 0.2.1 (April 24, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-2-april-23-2014">Version 0.2 (April 23, 2014)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-1-march-3-2014">Version 0.1 (March 3, 2014)</a></li>
 </ul>
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="quickstart.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014-2020, Ben Pruitt, Nick Conway; Wyss Institute
-
-    </p>
+    <p>&#169; Copyright Copyright 2014-2023, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
