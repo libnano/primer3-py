@@ -20,10 +20,12 @@ ThermoResult(structure_found=True, tm=34.15, dg=337.09, dh=-36300.00,
 ```
 In [1]: import primer3
 
-In [2]: %timeit primer3.calc_tm('GTAAAACGACGGCCAGT')
+In [2]: import tests.wrapper
+
+In [3]: %timeit primer3.calc_tm('GTAAAACGACGGCCAGT')
 100000 loops, best of 3: 4.74 µs per loop
 
-In [3]: %timeit tests.wrappers.calc_tm('GTAAAACGACGGCCAGT')
+In [4]: %timeit tests.wrappers.calc_tm('GTAAAACGACGGCCAGT')
 100000 loops, best of 3: 5.78 ms per loop
 ```
 

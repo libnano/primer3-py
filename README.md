@@ -26,10 +26,12 @@ Routine oligo analysis is simple::
 ```bash
 In [1]: import primer3
 
-In [2]: %timeit primer3.calc_tm('GTAAAACGACGGCCAGT')
+In [2]: import tests.wrapper
+
+In [3]: %timeit primer3.calc_tm('GTAAAACGACGGCCAGT')
 100000 loops, best of 3: 4.74 us per loop
 
-In [3]: %timeit test.wrappers.calc_tm('GTAAAACGACGGCCAGT')
+In [4]: %timeit test.wrappers.calc_tm('GTAAAACGACGGCCAGT')
 100000 loops, best of 3: 5.78 ms per loop
 ```
 
