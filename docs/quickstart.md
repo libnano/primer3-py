@@ -18,12 +18,6 @@ install it using `pip`:
 $ pip install primer3-py
 ```
 
-Or via `conda`:
-
-```bash
-$ conda install primer3-py
-```
-
 **NOTE**: We support wheel builds for PyPi for the 3 most recent CPython versions. Target platforms for wheels are MacOS `x86-64` `arm64`, Linux `x86-64`, and Windows `x86-64`.
 
 If your Python version and platform fall outside this such as Linux `aarch64` it is confirmed `primer3-py` builds on this platform but it is not supported as our build GitHub actions runners do not run these builds expediently.
