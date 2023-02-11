@@ -1,7 +1,10 @@
-# Buiding against cython pxd headers for primer3-py installed in your environment 
+# Building new Cython modules against `thermoanalysis.pxd`
+
+It is of great use to build modules that depend on `primer3-py`.
+
+To do so, first, make sure  `primer3-py` installed in your environment.
 
 Write your code like this below:
-
 
 ```python
 # this works with a file named thermoanalysis.pxd in the primer3 repo
@@ -10,7 +13,7 @@ cimport primer3.thermoanalysis as thermoanalysis
 """
 # but below does not
 from primer3 cimport thermoanalysis
-as You MUST use absolute package paths in cimports i.e. 
+as You MUST use absolute package paths in cimports i.e.
 cimport A.B and not from A cimport B
 """
 
@@ -19,14 +22,15 @@ from primer3 import thermoanalysis
 cdef thermoanalysis.ThermoAnalysis a = thermoanalysis.ThermoAnalysis()
 print("MAX NN LENGTH", a.max_nn_length)
 
-cdef char * foo = "ACGTACGT"
+cdef char* foo = "ACGTACGT"
 
-print("TM:", a.meltingTemp_c(foo))
+print("TM:", a.calc_tm_c(foo))
 ```
 
 
 and to build/install using a standard `setup.py` add the lines (fill in the ...s)
 
+```python
     import primer3
 
     ...
@@ -34,6 +38,6 @@ and to build/install using a standard `setup.py` add the lines (fill in the ...s
         ...
         include_dirs=primer3.includes()
         ...)
+```
 
- 
- and it should work
+and it should work

@@ -74,7 +74,7 @@ add_seq_to_seq_lib(seq_lib *sl,
     sl->names = (char**) p3sl_safe_realloc(sl->names, ss*sizeof(char*));
     sl->seqs  = (char**) p3sl_safe_realloc(sl->seqs , ss*sizeof(char*));
     // was commented out
-    sl->rev_compl_seqs  = p3sl_safe_realloc(sl->rev_compl_seqs , ss*sizeof(char*));
+    sl->rev_compl_seqs  = (char**) p3sl_safe_realloc(sl->rev_compl_seqs , ss*sizeof(char*));
     sl->weight= (double*) p3sl_safe_realloc(sl->weight, ss*sizeof(double));
   }
   sl->seq_num = i + 1;
@@ -320,7 +320,7 @@ destroy_seq_lib(seq_lib *p)
     }
     free(p->names);
   }
-  // added NC
+  /* primer3-py additional block */
   if (p->rev_compl_seqs != NULL) {
     // Already freed above (the rev_compl_seqs array contains pointers
     // that just point to the seqs array)

@@ -45,6 +45,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define OLIGOTM_ERROR -999999.9999
 
+typedef struct tm_ret {
+  double Tm;
+  double bound;
+} tm_ret;
+
 /* Return the delta G of the last len bases of oligo if oligo is at least len
    bases long; otherwise return the delta G of oligo. */
 double end_oligodg(const char *oligo, int len, int tm_method);
@@ -55,9 +60,16 @@ double end_oligodg(const char *oligo, int len, int tm_method);
    Press).
 
    Tm = 81.5 + 16.6(log10([Na+])) + .41*(%GC) - 600/length
+             - [DMSO] * dmso_fact
+             + (0.453 * (GC_fract - 2.88) * [formamide]
 
    Where [Na+] is the molar sodium concentration, (%GC) is the percent of Gs
    and Cs in the sequence, and length is the length of the sequence.
+
+   [DMSO] is the percent concentration of DMSO and dmso_fact the correction
+   factor, by default 0.6. GC_fract is the fraction of C and G in the *oligo
+   and [formamide] the concentration of formamide in mol/l. See
+   primer3_manual.htm for details and citations.
 
    A similar formula is used by the prime primer selection program in GCG
    (http://www.gcg.com), which instead uses 675.0 / length in the last term
@@ -72,14 +84,17 @@ double end_oligodg(const char *oligo, int len, int tm_method);
    since mM is the usual units in PCR applications.
 
  */
-double long_seq_tm(const char *seq, 
-                   int start, 
-                   int length, 
-                   double salt_conc, 
-                   double divalent_conc, 
-                   double dntp_conc);
+tm_ret long_seq_tm(const char *seq,
+                   int start,
+                   int length,
+                   double salt_conc,
+                   double divalent_conc,
+                   double dntp_conc,
+                   double dmso_conc,
+                   double dmso_fact,
+                   double formamide_conc);
 
-/* 
+/*
    For olgigotm() and seqtm()
 
    Both functions return the melting temperature of the given oligo
@@ -104,7 +119,7 @@ typedef enum salt_correction_type {
         owczarzy       = 2,
 } salt_correction_type;
 
-/* 
+/*
    If tm_method==santalucia_auto, then the table of
    nearest-neighbor thermodynamic parameters and method for Tm
    calculation in the paper [SantaLucia JR (1998) "A unified view of
@@ -112,19 +127,19 @@ typedef enum salt_correction_type {
    thermodynamics", Proc Natl Acad Sci 95:1460-65
    http://dx.doi.org/10.1073/pnas.95.4.1460] is used.
    *THIS IS THE RECOMMENDED VALUE*.
-  
+
    If tm_method==breslauer_auto, then method for Tm
    calculations in the paper [Rychlik W, Spencer WJ and Rhoads RE
    (1990) "Optimization of the annealing temperature for DNA
    amplification in vitro", Nucleic Acids Res 18:6409-12
    http://www.pubmedcentral.nih.gov/articlerender.fcgi?tool=pubmed&pubmedid=2243783].
    and the thermodynamic parameters in the paper [Breslauer KJ, Frank
-   R, Blöcker H and Marky LA (1986) "Predicting DNA duplex stability
+   R, Blï¿½cker H and Marky LA (1986) "Predicting DNA duplex stability
    from the base sequence" Proc Natl Acad Sci 83:4746-50
    http://dx.doi.org/10.1073/pnas.83.11.3746], are is used.  This is
    the method and the table that primer3 used up to and including
    version 1.0.1
- 
+
    If salt_corrections==schildkraut, then formula for
    salt correction in the paper [Schildkraut, C, and Lifson, S (1965)
    "Dependence of the melting temperature of DNA on salt
@@ -138,33 +153,40 @@ typedef enum salt_correction_type {
    nearest-neighbor thermodynamics", Proc Natl Acad Sci 95:1460-65
    http://dx.doi.org/10.1073/pnas.95.4.1460] is used.
 
-   *THIS IS THE RECOMMENDED VALUE*. 
-  
+   *THIS IS THE RECOMMENDED VALUE*.
+
    If salt_corrections==owczarzy, then formula for
-   salt correction in the paper [Owczarzy, R., Moreira, B.G., You, Y., 
-   Behlke, M.A., and Walder, J.A. (2008) "Predicting stability of DNA 
-   duplexes in solutions containing magnesium and monovalent cations", 
+   salt correction in the paper [Owczarzy, R., Moreira, B.G., You, Y.,
+   Behlke, M.A., and Walder, J.A. (2008) "Predicting stability of DNA
+   duplexes in solutions containing magnesium and monovalent cations",
    Biochemistry 47:5336-53 http://dx.doi.org/10.1021/bi702363u] is used.
- 
+
  */
 
-double oligotm(const  char *seq,     /* The sequence. */
+tm_ret oligotm(const  char *seq,     /* The sequence. */
                double dna_conc,      /* DNA concentration (nanomolar). */
                double salt_conc,     /* Salt concentration (millimolar). */
                double divalent_conc, /* Concentration of divalent cations (millimolar) */
                double dntp_conc,     /* Concentration of dNTPs (millimolar) */
+               double dmso_conc,     /* Concentration of DMSO (%) */
+               double dmso_fact,     /* DMSO correction factor, default 0.6 */
+               double formamide_conc, /* Concentration of formamide (mol/l) */
                tm_method_type tm_method,    /* See description above. */
-               salt_correction_type salt_corrections  /* See description above. */
+               salt_correction_type salt_corrections, /* See description above. */
+               double annealing_temp /* Actual annealing temperature of the PCR reaction */
                );
 
 /* Return the melting temperature of a given sequence, 'seq', of any
    length.
 */
-double seqtm(const  char *seq,  /* The sequence. */
+tm_ret seqtm(const  char *seq,  /* The sequence. */
              double dna_conc,   /* DNA concentration (nanomolar). */
-             double salt_conc,  /* Concentration of monovalent cations (millimolar). */
+             double salt_conc,  /* Concentration of divalent cations (millimolar). */
              double divalent_conc, /* Concentration of divalent cations (millimolar) */
              double dntp_conc,     /* Concentration of dNTPs (millimolar) */
+             double dmso_conc,     /* Concentration of DMSO (%) */
+             double dmso_fact,     /* DMSO correction factor, default 0.6 */
+             double formamide_conc, /* Concentration of formamide (mol/l) */
              int    nn_max_len,  /* The maximum sequence length for
                                     using the nearest neighbor model
                                     (as implemented in oligotm.  For
@@ -174,16 +196,17 @@ double seqtm(const  char *seq,  /* The sequence. */
                                  */
 
              tm_method_type  tm_method,       /* See description above. */
-             salt_correction_type salt_corrections /* See description above. */
+             salt_correction_type salt_corrections, /* See description above. */
+             double annealing_temp /* Actual annealing temperature of the PCR reaction */
              );
 
-     
+
 /* Return the delta G of disruption of oligo using the nearest neighbor model.
-   The length of seq should be relatively short, 
+   The length of seq should be relatively short,
    given the characteristics of the nearest
    neighbor model.
 */
-double oligodg(const char *seq, 
+double oligodg(const char *seq,
                int tm_method /* See description above. */
                );
 

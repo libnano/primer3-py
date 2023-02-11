@@ -1,5 +1,4 @@
-Authors
-=======
+## Authors
 
 The original Primer3 source was developed at Whitehead Institute and Howard
 Hughes Medical Institute by Steve Rozen, Andreas Untergasser, Maido Remm,
@@ -13,9 +12,10 @@ Nucleic Acids Research 40(15):e115
 Koressaar T, Remm M. 2007. Enhancements and modifications of primer
 design program Primer3. Bioinformatics 23(10):1289-91
 
-See http://primer3.sourceforge.net/history.php for more information.
+See https://github.com/primer3-org/primer3 for more information.
 
--------------------------------------------------------------------------------
+
+### Modifications
 
 The included Primer3 source incorporates modifications and optimizations
 intended to streamline performance and facilitate Python integration.
@@ -23,13 +23,11 @@ The following individuals are responsible for the implementation and
 development of the Python bindings and derivative source code:
 
 
-Maintainers
--------------------------------------------------------------------------------
+### Maintainers
 - Ben Pruitt (https://github.com/benpruitt)
 - Nick Conway (https://github.com/grinner)
 
 
-Contributors
--------------------------------------------------------------------------------
-- pramasoul (https://github.com/pramasoul)
-- Tim D. Smith (https://github.com/tdsmith)
+### Contributors
+The list of [contributors](https://github.com/libnano/primer3-py/graphs/contributors)
+whose help has made this project a success.

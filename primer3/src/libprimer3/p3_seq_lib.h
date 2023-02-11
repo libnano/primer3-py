@@ -39,6 +39,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define P3_SEQ_LIB_H
 
 /* WARNING -- #include libprimer3.h, not this file */
+/* NOTE: NC Moved from ibprimer3.h to avoid circular import */
+typedef struct pr_append_str {
+  int storage_size;
+  char *data;
+} pr_append_str;
 
 /* The seq_lib struct represents a library of sequences. */
 /* Clients do not need to know the details of this structure. */
@@ -100,5 +105,3 @@ reverse_complement_seq_lib(seq_lib  *lib);
 seq_lib *create_empty_seq_lib(void);
 
 #endif
-
-
