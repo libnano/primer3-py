@@ -1,11 +1,8 @@
 ## primer3-py: simple oligo analysis and primer design
 
-.. image:: https://github.com/libnano/primer3-py/actions/workflows/primer3-py-ci-github-action.yml/badge.svg
-  :target: https://github.com/libnano/primer3-py/actions
-.. image:: https://img.shields.io/pypi/l/primer3-py.png
-  :target: http://www.gnu.org/licenses/gpl-2.0.html
-.. image:: https://img.shields.io/pypi/v/primer3-py.png
-  :target: https://pypi.python.org/pypi/primer3-py
+<a href="https://github.com/libnano/primer3-py/actions/" rel="actions">![Actions](https://github.com/libnano/primer3-py/actions/workflows/primer3-py-ci-github-action.yml/badge.svg)</a>
+<a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">![License](https://img.shields.io/pypi/l/primer3-py.png)</a>
+<a href="https://pypi.python.org/pypi/primer3-py" rel="pypi">![PyPi](https://img.shields.io/pypi/v/primer3-py.png)</a>
 
 
 **Primer3-py** is a Python-abstracted API for the popular Primer3 library. The
