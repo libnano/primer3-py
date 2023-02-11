@@ -91,7 +91,7 @@ jobs:
           path: dist/*.tar.gz
 
   upload_pypi:
-    name: Upload to wheels and sdist tar.gz to PyPI
+    name: Upload wheels and sdist tar.gz to PyPI
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
 
