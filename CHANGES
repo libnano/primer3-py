@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.1.0 (March 1, 2023)
+ - Added specificity to error non-N IUPAC error for issue #59
+ - Wheel build support for python 3.8 to move towards following the CPython EOL model for issue #88. See https://devguide.python.org/versions/
+
+
 ## Version 1.0.0 (February 11, 2023)
 
 - Migrated `primer3` source to 2.6.1 version, which adds new arguments for melting temperature code
