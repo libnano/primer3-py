@@ -7579,12 +7579,17 @@ _pr_data_control(const p3_global_settings *pa,
   }
 
   if ((offending_char = dna_to_upper(sa->trimmed_seq, 0))) {
+    char err_msg[64];
+    snprintf(
+      err_msg,
+      64,
+      "Rejecting invalid sequence character (only ACGTN allowed): %c",
+      offending_char
+    );
     if (pa->liberal_base) {
-      pr_append_new_chunk(warning,
-                          "Unrecognized base in input sequence");
+      pr_append_new_chunk(warning, err_msg);
     } else {
-      pr_append_new_chunk(nonfatal_err,
-                          "Unrecognized base in input sequence");
+      pr_append_new_chunk(nonfatal_err, err_msg);
       return 1;
     }
   }
