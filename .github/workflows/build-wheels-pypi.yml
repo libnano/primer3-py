@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-2022]
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - name: checkout
@@ -45,7 +45,7 @@ jobs:
           CIBW_SKIP: "{*-musllinux_*,pp*}"
 
           # Build only on 64-bit architectures.
-          CIBW_ARCHS_MACOS: "x86_64 arm64"
+          CIBW_ARCHS_MACOS: "${{ matrix.python-version > 3.8  && 'x86_64 arm64' || 'x86_64' }}"
 
           # NOTE: Commented out to be used with QEMU block above
           # CIBW_ARCHS_LINUX: "x86_64 aarch64"

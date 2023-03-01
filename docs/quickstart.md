@@ -9,6 +9,9 @@
 
 **Primer3-py** is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.11 builds are supported.
 
+Wheels are released for CPython versions following the [EOL model](https://devguide.python.org/versions/).
+
+
 ## Installation
 
 If you want to install the latest stable build of **Primer3-py**, you can
