@@ -1,5 +1,6 @@
 # cython: language_level=3
 # Copyright (C) 2014-2020. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2023 Ben Pruitt & Nick Conway;
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -104,6 +105,7 @@ cdef unsigned char[:] _chars(s):
         return o
     return memoryview(s)
 
+
 cdef inline bytes _bytes(s):
     # Note that this check gets optimized out by the C compiler and is
     # recommended over the IF/ELSE Cython compile-time directives
@@ -113,6 +115,7 @@ cdef inline bytes _bytes(s):
         return (<str>s).encode('utf8')
     else:
         return s
+
 
 # ~~~~~~~~~ Load base thermodynamic parameters into memory from file ~~~~~~~~ #
 def load_thermo_params():
@@ -171,6 +174,7 @@ cdef class ThermoResult:
     to expose tm, dg, dh, and ds values that result from a :meth:`calc_hairpin`,
     :meth:`calc_homodimer`, :meth:`calc_heterodimer`, or
     :meth:`calc_end_stability` calculation.
+
     '''
 
     def __cinit__(self):
@@ -218,6 +222,7 @@ cdef class ThermoResult:
                 'STR\t      ACG CTAC C    CGA ACG                           ',
                 'STR\tAACCTT   T    T TTAT   G   TAGGCGAGCCACCAGCGGCATAGTAA-',
             ]
+
         '''
         if self.ascii_structure:
             return self.ascii_structure.strip('\n').split('\n')
@@ -231,6 +236,7 @@ cdef class ThermoResult:
 
         Raises:
             :class:`RuntimeError`: Message of internal C error
+
         '''
         if len(self.thalres.msg):
             raise RuntimeError(self.thalres.msg)
@@ -256,6 +262,7 @@ cdef class ThermoResult:
 
         Returns:
             dictionary form of the :class:`ThermoResult`
+
         '''
         return {
             'structure_found': self.structure_found,
@@ -286,6 +293,7 @@ def _conditional_get_enum_int(
     Raises:
         :class:`ValueError`: arg_value missing in the map ``dict_obj``
         :class:`TypeError`: invalid type for the key
+
     '''
     if isinstance(arg_value, (int, long)):
         return arg_value
@@ -396,6 +404,7 @@ cdef class _ThermoAnalysis:
                     'santalucia': 1,
                     'owczarzy': 2
                 }
+
             '''
         self.thalargs.mv = mv_conc
         self.thalargs.dv = dv_conc
@@ -502,6 +511,7 @@ cdef class _ThermoAnalysis:
         '''Method used to calculate melting temperatures. May be provided as
         a string (see :attr:`tm_methods_dict`) or the respective integer
         representation.
+
         '''
         return self._tm_methods_int_dict[self._tm_method]
 
@@ -519,6 +529,7 @@ cdef class _ThermoAnalysis:
         calculations. May be provided as a string (see
         :attr:`salt_correction_methods_dict`) or the respective integer
         representation.
+
         '''
         return self._salt_correction_method
 
@@ -1224,6 +1235,7 @@ cdef int pdh_wrap_set_seq_args_globals(
 
     Raises:
         ValueError: Error parsing the data
+
     '''
     cdef:
         # Setup the input data structures handlers
@@ -1344,6 +1356,7 @@ cdef seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
         OSError: Could not allocate memory for seq_lib
         TypeError: Cannot add seq name with non-Unicode/Bytes type to seq_lib
         OSError: primer3 internal error
+
     '''
 
     cdef:
@@ -1403,6 +1416,7 @@ cdef object pdh_design_output_to_dict(
 
     Raises:
         OSError: memory issue
+
     '''
     cdef:
         # The pointers to warning tag

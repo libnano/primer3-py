@@ -8,4 +8,5 @@ and classes contained within **primer3-py**.
 
 bindings
 thermoanalysis
+p3helpers
 ```
