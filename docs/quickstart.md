@@ -152,7 +152,7 @@ used to define the parameters of the respective calculation:
             Concentration of DMSO (%)
         **dmso_fact** (float)
             DMSO correction factor
-         **formamide_conc** (float)
+        **formamide_conc** (float)
             Concentration of formamide (mol/l)
         **annealing_temp_c** (float)
             Actual annealing temperature of the PCR reaction

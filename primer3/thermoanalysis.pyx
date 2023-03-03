@@ -2116,6 +2116,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
 
         Returns:
             Computed heterodimer :class`ThermoResult`
+
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_heterodimer')
         return self.calc_heterodimer(seq1, seq2, output_structure)
@@ -2135,6 +2136,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
 
         Returns:
             Computed homodimer :class:`ThermoResult`
+
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_homodimer')
         return self.calc_homodimer(seq1, output_structure)
@@ -2154,6 +2156,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
 
         Returns:
             Computed hairpin :class:`ThermoResult`
+
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_hairpin')
         return self.calc_hairpin(seq1, output_structure)
@@ -2174,6 +2177,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
 
         Returns:
             Computed end stability :class`ThermoResult`
+
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_end_stability')
         return self.calc_end_stability(seq1, seq2)
@@ -2191,6 +2195,7 @@ class ThermoAnalysis(_ThermoAnalysis, metaclass=Singleton):
 
         Returns:
             floating point Tm result
+
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_tm')
         return self.calc_tm(seq1)

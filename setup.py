@@ -77,7 +77,7 @@ LIBPRIMER3_PATH = pjoin(SRC_PATH, 'libprimer3')
 THERMO_PARAMS_PATH = pjoin(LIBPRIMER3_PATH, 'primer3_config')
 KLIB_PATH = pjoin(LIBPRIMER3_PATH, 'klib')
 
-LIBPRIMER3_FPS = [
+LIBPRIMER3_C_FPS = [
     rpath(pjoin(LIBPRIMER3_PATH, 'dpal.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.c')),
@@ -85,6 +85,40 @@ LIBPRIMER3_FPS = [
     rpath(pjoin(LIBPRIMER3_PATH, 'read_boulder.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'thal.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'thal_parameters.c')),
+]
+
+LIBPRIMER3_H_FPS = [
+    rpath(pjoin(LIBPRIMER3_PATH, 'amplicontm.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'dpal.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'format_output.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'masker.h')),  # masker.h is always required
+    rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'print_boulder.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'read_boulder.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thal.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thal_parameters.h')),
+]
+
+LIBPRIMER3_C_EXTRA_FPS = [
+    rpath(pjoin(LIBPRIMER3_PATH, 'amplicontm.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'format_output.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'print_boulder.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thal_parameters.c')),
+
+    rpath(pjoin(LIBPRIMER3_PATH, 'amplicontm_main.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'masker_main.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'long_seq_tm_test_main.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'oligotm_main.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'primer3_boulder_main.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thal_main.c')),
+
+    rpath(pjoin(LIBPRIMER3_PATH, 'MAKEFILE')),
+]
+
+KLIB_H_FPS = [
+    rpath(pjoin(KLIB_PATH, 'khash.h')),
 ]
 
 LIBPRIMER3_BINARIES = [
@@ -98,7 +132,7 @@ LIBPRIMER3_BINARIES = [
 if WINDOWS_OS:
     LIBPRIMER3_BINARIES = [bin_fn + '.exe' for bin_fn in LIBPRIMER3_BINARIES]
 else:
-    LIBPRIMER3_FPS.append(rpath(pjoin(LIBPRIMER3_PATH, 'masker.c')))
+    LIBPRIMER3_C_FPS.append(rpath(pjoin(LIBPRIMER3_PATH, 'masker.c')))
     LIBPRIMER3_BINARIES.append('primer3_masker')
 
 LIBPRIMER3_BINARY_FPS = [
@@ -118,6 +152,10 @@ LIBPRIMER3_TEST_FPS = [
 PACKAGE_FPS = (
     LIBPRIMER3_THERMO_PARAMS_FPS +
     LIBPRIMER3_TEST_FPS +
+    LIBPRIMER3_C_FPS +
+    LIBPRIMER3_C_EXTRA_FPS +
+    LIBPRIMER3_H_FPS +
+    KLIB_H_FPS +
     ['thermoanalysis.pxd', 'thermoanalysis.pyx']
 )
 
@@ -242,7 +280,7 @@ else:
 cython_extensions = [
     Extension(
         'primer3.thermoanalysis',
-        sources=[pjoin('primer3', 'thermoanalysis.pyx')] + LIBPRIMER3_FPS,
+        sources=[pjoin('primer3', 'thermoanalysis.pyx')] + LIBPRIMER3_C_FPS,
         include_dirs=[SRC_PATH, LIBPRIMER3_PATH, KLIB_PATH],
         extra_compile_args=EXTRA_COMPILE_ARGS,
     ),

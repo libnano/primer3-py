@@ -1,0 +1,24 @@
+include README.md LICENSE CHANGES AUTHORS setup.py
+include .pre-commit-config.yaml dev-requirements.txt setup.cfg
+include primer3/*.pxd primer3/*.pyx
+include primer3/src/libprimer3/*.h primer3/src/libprimer3/*.c
+include primer3/src/libprimer3/klib/khash.h
+include primer3/src/libprimer3/klib/README.md
+include primer3/src/libprimer3/gpl-2.0.txt
+include primer3/src/libprimer3/ABOUT.txt
+include primer3/src/libprimer3/primer3_config/*.ds
+include primer3/src/libprimer3/primer3_config/*.dh
+include primer3/src/libprimer3/primer3_config/interpretations/*.ds
+include primer3/src/libprimer3/primer3_config/interpretations/*.dh
+include primer3/src/libprimer3/LICENSE.txt
+include primer3/src/libprimer3/Makefile
+include docs/*.bat
+include docs/*.md
+include docs/api/*.md
+include docs/docs-requirements.txt
+include docs/Makefile docs/conf.py
+include examples/*.py
+recursive-include tests *.py
+include tests/input_files/*_input
+include tests/input_files/thal_output
+prune primer3/thermoanalysis.c
