@@ -542,6 +542,7 @@ def design_primers(
     Returns:
         A dictionary of Primer3 results (should be identical to the expected
         BoulderIO output from ``primer3_main``)
+
     '''
     return THERMO_ANALYSIS.run_design(
         global_args=global_args,

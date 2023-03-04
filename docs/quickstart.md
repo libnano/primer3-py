@@ -27,105 +27,8 @@ If your Python version and platform fall outside this such as Linux `aarch64` it
 
 ## Thermodynamic analysis
 
-The thermodynamic {py:mod}`bindings` include support for **Tm, homodimer, heterodimer,
+The thermodynamic {py:mod}`primer3.bindings` include support for **Tm, homodimer, heterodimer,
 hairpin,** and **3' end stability calculations**:
-
-```{eval-rst}
-.. py:function:: calc_tm(seq, mv_conc=50, dv_conc=0, dntp_conc=0.8, \
-                        dna_conc=50, dmso_conc=0.0, dmso_fact=0.6, \
-                        formamide_conc=0.8, annealing_temp_c=-10.0, \
-                        max_nn_length=60, tm_method='santalucia', \
-                        salt_corrections_method='santalucia')
-
-    Calculates the melting temperature of a DNA sequence, ``seq``. Returns the
-    melting temperature (C) as a float::
-
-        >>> primer3.calc_tm('GTAAAACGACGGCCAGT')
-        49.16808228911765
-
-    Note that NN thermodynamics will be used to calculate the Tm of sequences
-    up to 60 bp in length, after which point the following formula will be
-    used::
-
-        Tm = 81.5 + 16.6(log10([mv_conc])) + 0.41(%GC) - 600/length
-
-```
-
-```{eval-rst}
-.. py:function:: calc_hairpin(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, \
-                             dna_conc=50.0, temp_c=37, max_loop=30, \
-                             output_structure=False)
-
-    Calculates the hairpin formation thermodynamics of a DNA sequence, ``seq``.
-    Returns a :class:`ThermoResult` object that provides access to the
-    thermodynamic characteristics of the result::
-
-        >>> res = primer3.calc_hairpin('CCCCCATCCGATCAGGGGG')
-        >>> print(res)
-        ThermoResult(structure_found=True, tm=34.15, dg=337.09, dh=-36300.00,
-                     ds=-118.13, msg=)
-        >>> print(res.tm)
-        34.14640571476207
-        >>> print('%f, %f, %f' % (res.dg, res.dh, res.ds))
-        337.086509, -36300.000000, -118.126992
-
-    **Note that at least one of the two sequences must by <60 bp in length.**
-    This is a cap imposed by Primer3 as the longest reasonable sequence length
-    for which a two-state NN model produces reliable results (see
-    ``primer3/src/libnano/thal.h:59``).
-
-```
-
-```{eval-rst}
-.. py:function:: calc_homodimer(seq, mv_conc=50.0, dv_conc=0.0, dntp_conc=0.8, \
-                               dna_conc=50.0, temp_c=37, max_loop=30, \
-                               output_structure=False)
-
-    Calculates the homodimer formation thermodynamics of a DNA sequence,
-    ``seq``. Returns a :class:`ThermoResult` object that provides access to the
-    thermodynamic characteristics of the result (see :py:func:`calc_hairpin`
-    doc for more information).
-
-    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
-    by Primer3 as the longest reasonable sequence length for which
-    a two-state NN model produces reliable results (see
-    ``primer3/src/libprimer3/thal.h:59``).
-
-```
-
-```{eval-rst}
-.. py:function:: calc_heterodimer(seq1, seq2, mv_conc=50.0, dv_conc=0.0, \
-                                 dntp_conc=0.8, dna_conc=50.0, temp_c=37, \
-                                 max_loop=30, output_structure=False)
-
-    Calculates the heterodimerization thermodynamics of two DNA sequences,
-    ``seq1`` and ``seq2``. Returns a :class:`ThermoResult` object that provides
-    access to the thermodynamic characteristics of the result
-    (see :py:func:`calc_hairpin` doc for more information).
-
-    **Note that at least one of the two sequences must by <60 bp in length.**
-    This is a cap imposed by Primer3 as the longest reasonable sequence length
-    for which a two-state NN model produces reliable results (see
-    ``primer3/src/libprimer3/thal.h:59``).
-
-```
-
-```{eval-rst}
-.. py:function:: calc_end_stability(seq1, seq2, mv_conc=50.0, dv_conc=0.0, \
-                                  dntp_conc=0.8, dna_conc=50.0, temp_c=37, \
-                                  max_loop=30)
-
-    Calculates the 3' end stability of DNA sequence ``seq1`` against DNA
-    sequence ``seq2``. Returns a :class:`ThermoResult` object that provides
-    access to the thermodynamic characteristics of the result
-    (see :py:func:`calc_hairpin` doc for more information).
-
-    **Note that at least one of the two sequences must by <60 bp in length.**
-    This is a cap imposed by Primer3 as the longest reasonable sequence length
-    for which a two-state NN model produces reliable results (see
-    ``primer3/src/libprimer3/thal.h:59``).
-
-```
 
 All of these low-level thermodynamic functions share a set of keyword arguments
 used to define the parameters of the respective calculation:
@@ -165,6 +68,10 @@ used to define the parameters of the respective calculation:
 
 ```
 
+For finer grain control of analysis, use {py:mod}`primer3.thermoanalysis`.
+NOTE. camelCase methods are deprecated.  Please write all new code with
+{py:class}`primer3.thermoanalysis.ThermoAnalysis` snake case methods
+
 ## Primer design
 
 **Primer3-py** includes bindings for the Primer3 primer design pipeline. The
@@ -198,14 +105,10 @@ Primer3-py Python input:      [[75,100],[100,125],[125,150]]
 ### Workflow
 
 The easiest way to run the primer design pipeline is with
-{py:func}`design_primers`. Notice that Primer3 parameters prefixed with
+{py:func}`primer3.bindings.design_primers`. Notice that Primer3 parameters prefixed with
 "SEQUENCE\_" are provided in a separate dictionary from those prefixed with
 "PRIMER\_". For more advanced / modular approaches, see the {doc}`api/bindings`
 documentation.
-
-```{eval-rst}
-.. autofunction:: primer3.bindings.design_primers
-```
 
 Example usage:
 

@@ -156,6 +156,7 @@ PACKAGE_FPS = (
     LIBPRIMER3_C_EXTRA_FPS +
     LIBPRIMER3_H_FPS +
     KLIB_H_FPS +
+    ['p3helpers.pyx', 'p3helpers.h'] +
     ['thermoanalysis.pxd', 'thermoanalysis.pyx']
 )
 
@@ -278,6 +279,12 @@ else:
     ]
 
 cython_extensions = [
+    Extension(
+        'primer3.p3helpers',
+        sources=[pjoin('primer3', 'p3helpers.pyx')],
+        include_dirs=[MODULE_PATH],
+        extra_compile_args=EXTRA_COMPILE_ARGS,
+    ),
     Extension(
         'primer3.thermoanalysis',
         sources=[pjoin('primer3', 'thermoanalysis.pyx')] + LIBPRIMER3_C_FPS,
