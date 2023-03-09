@@ -175,13 +175,13 @@ void set_thal_oligo_default_args(thal_args *a);
     exit(-1);
   }
 #endif
-int  thal_set_null_parameters(thal_parameters *a);
+int thal_set_null_parameters(thal_parameters *a);
 
-int  thal_load_parameters(const char *path, thal_parameters *a, thal_results* o);
+int thal_load_parameters(const char *path, thal_parameters *a, thal_results* o);
 
-int  thal_free_parameters(thal_parameters *a);
+int thal_free_parameters(thal_parameters *a);
 
-int  get_thermodynamic_values(const thal_parameters *tp, thal_results *o);
+int get_thermodynamic_values(const thal_parameters *tp, thal_results *o);
 
 void destroy_thal_structures(void);
 
