@@ -84,10 +84,10 @@ cdef extern from "thal.h":
         char* tstack2_dh
         char* tstack2_ds
 
-    int  thal_set_null_parameters(thal_parameters *a)
-    int  thal_load_parameters(const char *path, thal_parameters *a, thal_results* o)
-    int  thal_free_parameters(thal_parameters *a)
-    int  get_thermodynamic_values(const thal_parameters *tp, thal_results *o)
+    int thal_set_null_parameters(thal_parameters *a)
+    int thal_load_parameters(const char *path, thal_parameters *a, thal_results* o)
+    int thal_free_parameters(thal_parameters *a)
+    int get_thermodynamic_values(const thal_parameters *tp, thal_results *o)
     void destroy_thal_structures()
 
     void thal(
@@ -98,7 +98,7 @@ cdef extern from "thal.h":
         thal_results*,
         const int,
         # char*,
-    )
+    ) nogil
 
 
 cdef extern from "oligotm.h":
@@ -128,7 +128,7 @@ cdef extern from "oligotm.h":
             tm_method_type  tm_method,              # See description above.
             salt_correction_type salt_corrections,  # See description above.
             double annealing_temp  # Actual annealing temperature of the PCR reaction
-    )
+    ) nogil
 
     int set_default_thal_parameters(thal_parameters *a)
 

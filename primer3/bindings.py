@@ -40,8 +40,10 @@ from typing import (
     Union,
 )
 
-from primer3 import thermoanalysis  # type: ignore
-from primer3 import argdefaults
+from primer3 import (  # type: ignore
+    argdefaults,
+    thermoanalysis,
+)
 
 DEFAULT_P3_ARGS = argdefaults.Primer3PyArguments()
 THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
