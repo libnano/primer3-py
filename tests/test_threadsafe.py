@@ -74,8 +74,9 @@ def make_rand_seq_pair() -> Dict[str, str]:
 
 class TestThermoAnalysisInThread(unittest.TestCase):
 
-    def test_calc_heterodimer_in_thread(self):
-        '''Test basic heterodimer input in a thread
+    def test_calc_heterodimer_thread_safety(self):
+        '''Test `calc_heterodimer` (and by extension all thal-dependents) for
+        thread safety
 
         '''
         def het_thread(
@@ -126,6 +127,10 @@ class TestThermoAnalysisInThread(unittest.TestCase):
             self.assertEqual(new_res.dh, res.dh)
         print(f'total: {(time.time()-t0):0.2}')
 
+    def test_primer_design_thread_safety(self):
+        '''Test primer design (`run_design`) for thread safety
+
+        '''
         def tdesign_run(_global_args, _results_list, i):
             sequence_template = (
                 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACA'
@@ -216,4 +221,3 @@ class TestThermoAnalysisInThread(unittest.TestCase):
             )
             self.assertEqual(new_res, res)
         print(f'total: {(time.time()-t0):0.2}')
-        # raise ValueError('')

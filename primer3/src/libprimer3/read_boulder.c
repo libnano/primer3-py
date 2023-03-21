@@ -94,7 +94,7 @@ static void   pr_append(pr_append_str *, const char *);
 static void   pr_append_new_chunk(pr_append_str *x, const char *s);
 
 static void   tag_syntax_error(const char *, const char *,  pr_append_str *);
-static int    parse_seq_quality(char *, seq_args *);
+static int    parse_seq_quality(char *, seq_args_t*);
 
 static const char *pr_program_name = "TMP";
 
@@ -201,8 +201,8 @@ read_boulder_record(FILE *file_input,
                     const int *io_version,
                     int   echo_output, /* should be echo_input */
                     const p3_file_type file_type,
-                    p3_global_settings *pa,
-                    seq_args *sa,
+                    p3_global_settings* pa,
+                    seq_args_t* sa,
                     pr_append_str *glob_err,  /* Really should be called fatal_parse_err */
                     pr_append_str *nonfatal_parse_err,
                     pr_append_str *warnings,
@@ -947,7 +947,7 @@ read_p3_file(const char *file_name,
              int echo_output,
              int strict_tags,
              p3_global_settings *pa,
-             seq_args *sa,
+             seq_args_t*sa,
              pr_append_str *fatal_err,
              pr_append_str *nonfatal_err,
              pr_append_str *warnings,
@@ -1418,9 +1418,10 @@ parse_product_size(const char *tag_name, char *in,
    sargs->quality,  sargs->n_quality,
    and sargs->quality_storage_size */
 static int
-parse_seq_quality(char *s,
-                  seq_args *sargs)
-{
+parse_seq_quality(
+  char *s,
+  seq_args_t* sargs
+) {
   long t;
   char *p, *q;
 
