@@ -14,6 +14,7 @@ primer3_masker
 
 # cython artifacts
 primer3/thermoanalysis.c
+primer3/p3helpers.c
 
 # test artifacts
 primer3/src/libprimer3/long_seq_tm_test.dSYM/

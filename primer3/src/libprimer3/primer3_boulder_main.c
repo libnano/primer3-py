@@ -77,7 +77,7 @@ main(int argc, char *argv[])
   int dump_args = 0;
 
   p3_global_settings *global_pa;
-  seq_args *sarg;
+  seq_args_t* sarg;
   read_boulder_record_results read_boulder_record_res = {0,0};
 
   pr_append_str p3_settings_path;
@@ -309,7 +309,7 @@ main(int argc, char *argv[])
   /* Read the data from input stream record by record and process it if
    * there are no errors. This is where the work is done. */
   while (1) {
-    /* Create and initialize a seq_args data structure. sa (seq_args *) is
+    /* Create and initialize a seq_args_t data structure. sa (seq_args_t*) is
      * initialized here because Values are _not_ retained across different
      * input records. */
     if (!(sarg = create_seq_arg())) {

@@ -84,10 +84,10 @@ cdef extern from "thal.h":
         char* tstack2_dh
         char* tstack2_ds
 
-    int  thal_set_null_parameters(thal_parameters *a)
-    int  thal_load_parameters(const char *path, thal_parameters *a, thal_results* o)
-    int  thal_free_parameters(thal_parameters *a)
-    int  get_thermodynamic_values(const thal_parameters *tp, thal_results *o)
+    int thal_set_null_parameters(thal_parameters *a)
+    int thal_load_parameters(const char *path, thal_parameters *a, thal_results* o)
+    int thal_free_parameters(thal_parameters *a)
+    int get_thermodynamic_values(const thal_parameters *tp, thal_results *o)
     void destroy_thal_structures()
 
     void thal(
@@ -98,7 +98,7 @@ cdef extern from "thal.h":
         thal_results*,
         const int,
         # char*,
-    )
+    ) nogil
 
 
 cdef extern from "oligotm.h":
@@ -128,7 +128,7 @@ cdef extern from "oligotm.h":
             tm_method_type  tm_method,              # See description above.
             salt_correction_type salt_corrections,  # See description above.
             double annealing_temp  # Actual annealing temperature of the PCR reaction
-    )
+    ) nogil
 
     int set_default_thal_parameters(thal_parameters *a)
 
@@ -278,7 +278,7 @@ cdef extern from "libprimer3.h":
     ctypedef struct interval_array_t4:
         pass
 
-    ctypedef struct seq_args:
+    ctypedef struct seq_args_t:
         interval_array_t2 tar2  # The targets.  tar2->pairs[i][0] is the start
                                 #  of the ith target, tar2->pairs[i][1] its length.
 
@@ -517,12 +517,11 @@ cdef extern from "libprimer3.h":
     const char *p3_get_pair_array_explain_string(const pair_array_t*)
     const char *p3_get_oligo_array_explain_string(const oligo_array*)
 
-    int PR_START_CODON_POS_IS_NULL(seq_args* sa)
+    int PR_START_CODON_POS_IS_NULL(seq_args_t* sa)
 
     void p3_destroy_global_settings(p3_global_settings*)
     p3_global_settings* p3_create_global_settings()
-    void p3_print_args(const p3_global_settings *, seq_args *)
-    p3retval* choose_primers(const p3_global_settings *, seq_args *)
+    void p3_print_args(const p3_global_settings*, seq_args_t*)
 
     void destroy_secundary_structures(const p3_global_settings *pa, p3retval *retval)
     void destroy_p3retval(p3retval *)
@@ -537,21 +536,26 @@ cdef extern from "libprimer3.h":
     void destroy_pr_append_str(pr_append_str *)
     void destroy_pr_append_str_data(pr_append_str *str)
 
-    seq_args* create_seq_arg()
-    void destroy_seq_args(seq_args*)
+    seq_args_t* create_seq_arg()
+    void destroy_seq_args(seq_args_t*)
 
     int p3_ol_has_any_problem(const primer_rec *oligo)
     const char* p3_get_ol_problem_string(const primer_rec *oligo)
 
-    char  *pr_oligo_sequence(const seq_args*, const primer_rec*)
-    char  *pr_oligo_overhang_sequence(const seq_args*, const primer_rec*)
+    char  *pr_oligo_sequence(const seq_args_t*, const primer_rec*)
+    char  *pr_oligo_overhang_sequence(const seq_args_t*, const primer_rec*)
 
-    char  *pr_oligo_rev_c_sequence(const seq_args*, const primer_rec*)
-    char  *pr_oligo_rev_c_overhang_sequence(const seq_args*, const primer_rec*)
+    char  *pr_oligo_rev_c_sequence(const seq_args_t*, const primer_rec*)
+    char  *pr_oligo_rev_c_overhang_sequence(const seq_args_t*, const primer_rec*)
 
     double oligo_max_template_mispriming(const primer_rec*)
     double oligo_max_template_mispriming_thermod(const primer_rec*)
     char* oligo_max_template_mispriming_struct(const primer_rec* h)
+
+    p3retval* choose_primers(
+        const p3_global_settings*,
+        seq_args_t*
+    )
 
 cdef:
     double ALIGN_SCORE_UNDEF = -DBL_MAX
@@ -578,7 +582,7 @@ cdef extern from "read_boulder.h":
         int echo_output,
         const p3_file_type read_file_type,
         p3_global_settings *pa,
-        seq_args *sarg,
+        seq_args_t*sarg,
         pr_append_str *fatal_err,
         pr_append_str *nonfatal_err,
         pr_append_str *warnings,
@@ -608,6 +612,8 @@ cdef class _ThermoAnalysis:
         public float formamide_conc
         public float annealing_temp_c
 
+        p3_global_settings* global_settings_data
+        seq_args_t* sequence_args_data
 
     cdef inline ThermoResult calc_heterodimer_c(
             _ThermoAnalysis self,
@@ -665,7 +671,7 @@ cdef class _ThermoAnalysis:
 cdef:
     int pdh_wrap_set_seq_args_globals(
         p3_global_settings* global_settings_data,
-        seq_args* sequence_args_data,
+        seq_args_t* sequence_args_data,
         object kmer_lists_path,
         char* in_buffer,
     ) except -1
@@ -674,6 +680,6 @@ cdef:
 
     object pdh_design_output_to_dict(
         const p3_global_settings* global_settings_data,
-        const seq_args* sequence_args_data,
+        const seq_args_t* sequence_args_data,
         const p3retval *retval,
     )
