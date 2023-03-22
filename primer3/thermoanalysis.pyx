@@ -2129,7 +2129,7 @@ class ThermoAnalysis(_ThermoAnalysis):
     '''
     Subclass of :class:`_ThermoAnalysis` to enable singleton behavior
 
-    As of v1.2.0 no longer a Singleton
+    As of v1.2.0 no longer a :class:`Singleton` as thread-safety exists
     '''
 
     def calcHeterodimer(

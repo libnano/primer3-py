@@ -1,12 +1,14 @@
 # Changelog
 
-## Version 1.2.0 ()
+## Version 1.2.0 (March 22, 2023)
 
 - Threadsafe changes made to `thal.c` resulting in new  `thalflex.c` and `thalflex.h` and `thalflexsignatures.h`.
+- Threadsafe changes made to `libprimer3.c` resulting in new  `libprimer3flex.c` and `ibprimer3flex.c.h`.
+- `libprimer3.seq_args` datatype is now renamed to `libprimer3.seq_args_t`
 - `test_threadsafe.py` add and `nogil` instituted for calls to `thal()` and `seqtm()` added `run_design` and `calc_heterodimer` threadsafe tests
 - `ThermoAnalysis` class no longer needs to be a `Singleton` so this was removed as a parent class
 - `p3helpers.pyx` houses new sequence and design helper functions
-- `setup.py` `package_data` and `MANIFEST.in` to assist with future builds from tar.gz (`conda`)
+- `setup.py` `package_data` and `MANIFEST.in` to assist with future builds from `tar.gz` (`conda`)
 
 ## Version 1.1.0 (March 1, 2023)
  - Added specificity to error non-N IUPAC error for issue #59
