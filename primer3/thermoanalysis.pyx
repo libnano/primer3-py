@@ -82,16 +82,12 @@ SNAKE_CASE_DEPRECATED_MSG = 'Function deprecated please use "%s" instead'
 Str_Bytes_T = Union[str, bytes]
 
 
-
 def get_dunder_file() -> str:
     return __file__
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ External C declarations ~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
-cdef:
-    p3_global_settings* global_settings_data = NULL
-    seq_args* sequence_args_data = NULL
 
 # ~~~~~~~~~~~~~~~ Utility functions to enforce utf8 encoding ~~~~~~~~~~~~~~~ #
 
@@ -443,6 +439,24 @@ cdef class _ThermoAnalysis:
         self.formamide_conc = formamide_conc
         self.annealing_temp_c = annealing_temp_c
         load_thermo_params()
+
+        self.global_settings_data = NULL
+        self.sequence_args_data = NULL
+
+    def __dealloc__(self):
+        '''Cleanup memory for design data structures
+
+        '''
+        if self.global_settings_data != NULL:
+            # Free memory for previous global settings
+            p3_destroy_global_settings(self.global_settings_data)
+            self.global_settings_data = NULL
+
+        if self.sequence_args_data != NULL:
+            # Free memory for previous seq args
+            destroy_seq_args(self.sequence_args_data)
+            self.sequence_args_data = NULL
+
 
     # ~~~~~~~~~~~~~~~~~~~~~~ Property getters / setters ~~~~~~~~~~~~~~~~~~~~~ #
     @property
@@ -1063,9 +1077,6 @@ cdef class _ThermoAnalysis:
             :class:`OSError`: Could not allocate memory
 
         '''
-        global global_settings_data
-        global sequence_args_data
-
         cdef:
             seq_lib* mp_lib = NULL
             seq_lib* mh_lib = NULL
@@ -1074,15 +1085,15 @@ cdef class _ThermoAnalysis:
 
         err_msg = ''
 
-        if sequence_args_data != NULL:
+        if self.sequence_args_data != NULL:
             # Free memory for previous seq args
-            destroy_seq_args(sequence_args_data)
-            sequence_args_data = NULL
+            destroy_seq_args(self.sequence_args_data)
+            self.sequence_args_data = NULL
 
         if seq_args:
-            sequence_args_data = create_seq_arg()
+            self.sequence_args_data = create_seq_arg()
 
-            if sequence_args_data == NULL:
+            if self.sequence_args_data == NULL:
                 raise OSError('Could not allocate memory for seq_arg')
 
             global_args.update(seq_args)
@@ -1092,14 +1103,14 @@ cdef class _ThermoAnalysis:
         if arg_input_buffer == NULL:
             raise ValueError(global_arg_bytes)
 
-        if global_settings_data != NULL:
+        if self.global_settings_data != NULL:
             # Free memory for previous global settings
-            p3_destroy_global_settings(global_settings_data)
-            global_settings_data = NULL
+            p3_destroy_global_settings(self.global_settings_data)
+            self.global_settings_data = NULL
 
         # Allocate memory for global settings
-        global_settings_data = p3_create_global_settings()
-        if global_settings_data == NULL:
+        self.global_settings_data = p3_create_global_settings()
+        if self.global_settings_data == NULL:
             raise OSError('Could not allocate memory for p3 globals')
 
         kmer_lists_path = global_args.get('PRIMER_MASK_KMERLIST_PATH', '')
@@ -1125,8 +1136,8 @@ cdef class _ThermoAnalysis:
 
         try:
             pdh_wrap_set_seq_args_globals(
-                global_settings_data,
-                sequence_args_data,
+                self.global_settings_data,
+                self.sequence_args_data,
                 kmer_lists_path,
                 arg_input_buffer,
             )
@@ -1134,15 +1145,15 @@ cdef class _ThermoAnalysis:
             print(
                 f'Issue setting globals. bytes provided: \n\t{global_arg_bytes}'
             )
-            p3_destroy_global_settings(global_settings_data)
-            global_settings_data = NULL
+            p3_destroy_global_settings(self.global_settings_data)
+            self.global_settings_data = NULL
             if seq_args:
-                destroy_seq_args(sequence_args_data)
-                sequence_args_data = NULL
+                destroy_seq_args(self.sequence_args_data)
+                self.sequence_args_data = NULL
             raise
 
         # NOTE: This check is super important to prevent errors in edge cases
-        if global_settings_data == NULL or sequence_args_data == NULL:
+        if self.global_settings_data == NULL or self.sequence_args_data == NULL:
             raise ValueError(
                 'Error setting Primer3 global args and sequence args\n'
                 'seq_args {seq_args}\n\n'
@@ -1158,19 +1169,19 @@ cdef class _ThermoAnalysis:
                     raise ValueError(
                         f'Issue creating misprime_lib {misprime_lib}'
                     )
-                global_settings_data[0].p_args.repeat_lib = mp_lib
+                self.global_settings_data[0].p_args.repeat_lib = mp_lib
 
             if mishyb_lib != None:
                 mh_lib = pdh_create_seq_lib(mishyb_lib)
                 if mh_lib == NULL:
                     err_msg = f'Issue creating mishyb_lib: {mishyb_lib}'
                     raise ValueError(err_msg)
-                global_settings_data[0].o_args.repeat_lib = mh_lib
+                self.global_settings_data[0].o_args.repeat_lib = mh_lib
         except (OSError, TypeError) as exc:
-            p3_destroy_global_settings(global_settings_data)
-            global_settings_data = NULL
-            destroy_seq_args(sequence_args_data)
-            sequence_args_data = NULL
+            p3_destroy_global_settings(self.global_settings_data)
+            self.global_settings_data = NULL
+            destroy_seq_args(self.sequence_args_data)
+            self.sequence_args_data = NULL
             raise OSError(err_msg) from exc
 
     def run_design(
@@ -1196,9 +1207,6 @@ cdef class _ThermoAnalysis:
         Returns:
             primer3 key value results dictionary
         '''
-        global global_settings_data
-        global sequence_args_data
-
         cdef:
             p3retval* retval = NULL
 
@@ -1212,20 +1220,20 @@ cdef class _ThermoAnalysis:
         )
 
         retval = choose_primers(
-            global_settings_data,
-            sequence_args_data,
+            self.global_settings_data,
+            self.sequence_args_data,
         )
         if retval == NULL:
             raise ValueError('Issue choosing primers')
         try:
             results_dict = pdh_design_output_to_dict(
-                global_settings_data,
-                sequence_args_data,
+                self.global_settings_data,
+                self.sequence_args_data,
                 retval,
             )
         finally:
             destroy_secundary_structures(
-                global_settings_data,
+                self.global_settings_data,
                 retval,
             )
             destroy_p3retval(retval)
@@ -1245,7 +1253,7 @@ cdef int pr_default_position_penalties(const p3_global_settings* pa):
 
 cdef int pdh_wrap_set_seq_args_globals(
         p3_global_settings* global_settings_data,
-        seq_args* sequence_args_data,
+        seq_args_t* sequence_args_data,
         object kmer_lists_path,
         char* in_buffer,
 ) except -1:
@@ -1432,13 +1440,13 @@ cdef seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
 
 cdef object pdh_design_output_to_dict(
         const p3_global_settings* global_settings_data,
-        const seq_args* sequence_args_data,
+        const seq_args_t* sequence_args_data,
         const p3retval *retval,
 ):
     '''
     Args:
         global_settings_data: primer3 p3_global_settings data pointer
-        sequence_args_data: primer3 design seq_args data pointer
+        sequence_args_data: primer3 design seq_args_t data pointer
         retval: primer3 design return value pointer
 
     Returns:
@@ -2104,26 +2112,6 @@ cdef object pdh_design_output_to_dict(
         # End of print parameters of primer pairs
     # End of the for big loop printing all data
     return output_dict
-
-
-def _p3_global_design_cleanup():
-    # Free any remaining global Primer3 objects
-    global global_settings_data
-    global sequence_args_data
-
-    destroy_thal_structures()
-    if global_settings_data != NULL:
-        # Free memory for previous global settings
-        p3_destroy_global_settings(global_settings_data)
-        global_settings_data = NULL
-
-    if sequence_args_data != NULL:
-        # Free memory for previous seq args
-        destroy_seq_args(sequence_args_data)
-        sequence_args_data = NULL
-
-atexit.register(_p3_global_design_cleanup)
-
 
 class Singleton(type):
     _instances = {}  # type: ignore

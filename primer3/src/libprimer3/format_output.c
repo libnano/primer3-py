@@ -47,7 +47,7 @@ static const char *pr_program_name = "Program name is probably primer3_core";
 
 static void format_pairs(FILE *f,
                          const p3_global_settings *pa,
-                         const seq_args *sa,
+                         const seq_args_t* sa,
                          const p3retval *retval,
                          const pair_array_t *best_pairs,
                          const char *pr_release,
@@ -56,44 +56,44 @@ static void format_pairs(FILE *f,
 
 static void format_oligos(FILE *,
                           const p3_global_settings *,
-                          const seq_args *,
+                          const seq_args_t* ,
                           const p3retval *retval,
                           const char*,
                           const pr_append_str *combined_retval_err,
                           int explain_flag);
 
 static int lib_sim_specified(const p3_global_settings *);
-static void print_explain(FILE *, const p3_global_settings *, const seq_args *,
+static void print_explain(FILE *, const p3_global_settings *, const seq_args_t* ,
                           const p3retval *retval, int, const char *);
 static void print_pair_info(FILE *, const primer_pair *,
                             const p3_global_settings *);
-static void print_oligo(FILE *, const char *, const seq_args *,
+static void print_oligo(FILE *, const char *, const seq_args_t* ,
                         const primer_rec *, int, const p3_global_settings *,
                         const seq_lib*, int);
 static void print_oligo_header(FILE *, const char *, const int, const int);
 static void print_pair_array(FILE *, const char*, int,
                              const interval_array_t,
-                             const p3_global_settings*, const seq_args*);
+                             const p3_global_settings*, const seq_args_t*);
 static void print_2_pair_array(FILE *, const char*, int,
 			       const interval_array_t,
 			       const interval_array_t,
-			       const p3_global_settings*, const seq_args*);
+			       const p3_global_settings*, const seq_args_t*);
 static void print_rest(FILE *, const p3_global_settings *,
-                       const seq_args *,  const pair_array_t *);
-static int  print_seq(FILE *, const p3_global_settings *, const seq_args *,
+                       const seq_args_t* ,  const pair_array_t *);
+static int  print_seq(FILE *, const p3_global_settings *, const seq_args_t* ,
                       const p3retval *retval, primer_rec *h,
                       const pair_array_t *, int);
 static void print_seq_lines(FILE *, const char *s, const char *n, int, int,
                             int, const p3_global_settings *);
 static void print_stat_line(FILE *, const char *, oligo_stats s, int, int, int);
 static void print_summary(FILE *, const p3_global_settings *,
-                          const seq_args *, const pair_array_t *, int);
+                          const seq_args_t* , const pair_array_t *, int);
 
 void
 print_format_output(FILE *f,
                     const int *io_version,
                     const p3_global_settings *pa,
-                    const seq_args *sa,
+                    const seq_args_t* sa,
                     const p3retval *retval,
                     const char *pr_release,
                     int   explain_flag)
@@ -130,7 +130,7 @@ print_format_output(FILE *f,
 static void
 format_pairs(FILE *f,
              const p3_global_settings *pa,
-             const seq_args *sa,
+             const seq_args_t* sa,
              const p3retval *retval,
              const pair_array_t *best_pairs,
              const char *pr_release,
@@ -212,7 +212,7 @@ format_pairs(FILE *f,
 /* Prints out the results of a primer pair */
 static void
 print_summary(FILE *f, const p3_global_settings *pa,
-              const seq_args *sa, const pair_array_t *best_pairs,
+              const seq_args_t* sa, const pair_array_t *best_pairs,
               int num)
 {
     int seq_len = strlen(sa->sequence);
@@ -267,7 +267,7 @@ print_oligo_header(FILE *f, const char *s, const int print_lib_sim,
 static void
 print_oligo(FILE *f,
             const char *title,
-            const seq_args *sa,
+            const seq_args_t* sa,
             const primer_rec *o,
             int dir,
             const p3_global_settings *pa,
@@ -308,7 +308,7 @@ static void
 print_pair_array(FILE *f, const char* title, int num,
                  const interval_array_t array,
                  const p3_global_settings *pa,
-                 const seq_args *sa)
+                 const seq_args_t* sa)
 {
     int j;
     if (num > 0) {
@@ -326,7 +326,7 @@ print_2_pair_array(FILE *f, const char* title, int num,
 		   const interval_array_t left_array,
 		   const interval_array_t right_array,
 		   const p3_global_settings *pa,
-		   const seq_args *sa)
+		   const seq_args_t* sa)
 {
     int j;
     if (num > 0) {
@@ -360,7 +360,7 @@ print_2_pair_array(FILE *f, const char* title, int num,
 static int
 print_seq(FILE *f,
     const p3_global_settings *pa,
-    const seq_args *sa,
+    const seq_args_t* sa,
     const p3retval *retval,
     primer_rec *h,
     const pair_array_t *best_pairs,
@@ -580,7 +580,7 @@ print_pair_info(FILE *f, const primer_pair *p, const p3_global_settings *pa)
 
 static void
 print_rest(FILE *f, const p3_global_settings *pa,
-           const seq_args *sa,
+           const seq_args_t* sa,
            const pair_array_t *best_pairs)
 {
     int i;
@@ -612,7 +612,7 @@ print_rest(FILE *f, const p3_global_settings *pa,
 static void
 print_explain(FILE *f,
 	      const p3_global_settings *pa,
-	      const seq_args *sa,
+	      const seq_args_t* sa,
 	      const p3retval *retval,
 	      int print_lib_sim,
 	      const char *pr_release)
@@ -773,7 +773,7 @@ format_warning(FILE *f, const char* seq_name, const char *err)
 static void
 format_oligos(FILE *f,
               const p3_global_settings *pa,
-              const seq_args    *sa,
+              const seq_args_t* sa,
               const p3retval *retval,
               const char* pr_release,
               const pr_append_str *combined_retval_err,

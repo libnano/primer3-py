@@ -89,11 +89,12 @@ LIBPRIMER3_C_FPS = [
 
 LIBPRIMER3_C_FPS_FLEX = [
     rpath(pjoin(LIBPRIMER3_PATH, 'dpal.c')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.c')),
+    # rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3flex.c')),  # primer3-py new
     rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.c')),
     rpath(pjoin(LIBPRIMER3_PATH, 'read_boulder.c')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'thalflex.c')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thalflex.c')),        # primer3-py new
     rpath(pjoin(LIBPRIMER3_PATH, 'thal_parameters.c')),
 ]
 
@@ -102,14 +103,15 @@ LIBPRIMER3_H_FPS = [
     rpath(pjoin(LIBPRIMER3_PATH, 'dpal.h')),
     rpath(pjoin(LIBPRIMER3_PATH, 'format_output.h')),
     rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3.h')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'masker.h')),  # masker.h is always required
+    rpath(pjoin(LIBPRIMER3_PATH, 'libprimer3flex.h')),   # primer3-py new
+    rpath(pjoin(LIBPRIMER3_PATH, 'masker.h')),           # masker.h is required
     rpath(pjoin(LIBPRIMER3_PATH, 'oligotm.h')),
     rpath(pjoin(LIBPRIMER3_PATH, 'p3_seq_lib.h')),
     rpath(pjoin(LIBPRIMER3_PATH, 'print_boulder.h')),
     rpath(pjoin(LIBPRIMER3_PATH, 'read_boulder.h')),
     rpath(pjoin(LIBPRIMER3_PATH, 'thal.h')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'thalflex.h')),
-    rpath(pjoin(LIBPRIMER3_PATH, 'thalflexsignatures.h')),
+    rpath(pjoin(LIBPRIMER3_PATH, 'thalflex.h')),            # primer3-py new
+    rpath(pjoin(LIBPRIMER3_PATH, 'thalflexsignatures.h')),  # primer3-py new
     rpath(pjoin(LIBPRIMER3_PATH, 'thal_parameters.h')),
 ]
 

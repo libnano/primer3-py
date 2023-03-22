@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void print_format_output(FILE *f,
                          const int *io_version,
                          const p3_global_settings *pa,
-                         const seq_args *sa,
+                         const seq_args_t* sa,
                          const p3retval *,
                          const char *,
                          int   explain_flag);

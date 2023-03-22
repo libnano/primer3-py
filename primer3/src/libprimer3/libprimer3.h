@@ -821,7 +821,7 @@ typedef struct pair_array_t {
  * Arguments relating to a single particular source sequence (for which
  * we will pick primer(s), etc.
  */
-typedef struct seq_args {
+typedef struct seq_args_t {
 
                           /* The net next 3 slots are presented as
                            * indexes within the sequence slot, but
@@ -899,7 +899,7 @@ typedef struct seq_args {
   char *overhang_right_rv;  /* the reverse complement of *overhang_right
                                matching the sequence */
 
-} seq_args;
+} seq_args_t;
 
 /* oligo_array is used to store a list of oligos or primers */
 typedef struct oligo_array {
@@ -977,7 +977,7 @@ char *p3_get_rv_and_gs_warnings(const p3retval *retval,
 const char *p3_get_rv_global_errors(const p3retval *r);
 
 /* Return a char * describing per-sequence errors (usually/always?)
-   errors caused by problems detected in the seq_args * argument to
+   errors caused by problems detected in the seq_args_t* argument to
    choose primers. Returned storage is free'ed on calling
    destroy_p3retval(r). Returns NULL if no error. */
 const char *p3_get_rv_per_sequence_errors(const p3retval *r);
@@ -997,33 +997,33 @@ const  primer_rec *p3_get_oa_i(const oligo_array *x, int i);
 /* We still need accessors (getters) for the elements of
    primer_rec */
 
-/* Functions for seq_args -- create, destroy, set, set slots */
-seq_args *create_seq_arg();
-void destroy_seq_args(seq_args *);
-int p3_set_sa_sequence(seq_args *sargs, const char *sequence);
-void p3_set_sa_primer_sequence_quality(seq_args *sargs, int quality);
-int p3_set_sa_sequence_name(seq_args *sargs, const char* sequence_name);
-int p3_set_sa_left_input(seq_args *sargs, const char *left_input);
-int p3_set_sa_right_input(seq_args *sargs, const char *right_input);
-int p3_set_sa_internal_input(seq_args *sargs, const char *internal_input);
-void p3_set_sa_empty_quality(seq_args *sargs);
-void p3_sa_add_to_quality_array(seq_args *sargs, int quality);
-int p3_sa_add_to_overlap_junctions_array(seq_args *, int);
+/* Functions for seq_args_t -- create, destroy, set, set slots */
+seq_args_t* create_seq_arg();
+void destroy_seq_args(seq_args_t* );
+int p3_set_sa_sequence(seq_args_t* sargs, const char *sequence);
+void p3_set_sa_primer_sequence_quality(seq_args_t* sargs, int quality);
+int p3_set_sa_sequence_name(seq_args_t* sargs, const char* sequence_name);
+int p3_set_sa_left_input(seq_args_t* sargs, const char *left_input);
+int p3_set_sa_right_input(seq_args_t* sargs, const char *right_input);
+int p3_set_sa_internal_input(seq_args_t* sargs, const char *internal_input);
+void p3_set_sa_empty_quality(seq_args_t* sargs);
+void p3_sa_add_to_quality_array(seq_args_t* sargs, int quality);
+int p3_sa_add_to_overlap_junctions_array(seq_args_t* , int);
 
 /* The following three functions return 0 on success,
    1 on error (no space for additional intervals). */
-int p3_add_to_sa_tar2(seq_args *, int, int);
-int p3_add_to_sa_excl2(seq_args *, int, int);
-int p3_add_to_sa_excl_internal2(seq_args *, int, int);
+int p3_add_to_sa_tar2(seq_args_t* , int, int);
+int p3_add_to_sa_excl2(seq_args_t* , int, int);
+int p3_add_to_sa_excl_internal2(seq_args_t* , int, int);
 
-int p3_add_to_sa_ok_regions(seq_args *, int, int, int, int);
+int p3_add_to_sa_ok_regions(seq_args_t* , int, int, int, int);
 
-const interval_array_t2 *p3_get_sa_tar2(const seq_args *sargs);
-const interval_array_t2 *p3_get_sa_excl2(const seq_args *sargs);
-const interval_array_t2 *p3_get_sa_excl_internal2(const seq_args *sargs);
-const interval_array_t4 *p3_get_sa_ok_regions(const seq_args *sargs);
+const interval_array_t2 *p3_get_sa_tar2(const seq_args_t* sargs);
+const interval_array_t2 *p3_get_sa_excl2(const seq_args_t* sargs);
+const interval_array_t2 *p3_get_sa_excl_internal2(const seq_args_t* sargs);
+const interval_array_t4 *p3_get_sa_ok_regions(const seq_args_t* sargs);
 
-const int* p3_get_sa_overlap_junctions(const seq_args *sargs);
+const int* p3_get_sa_overlap_junctions(const seq_args_t* sargs);
 
 /*
   use p3_add_to_interval_array(interval_array_t2 *interval_arr, int i1, int i2);
@@ -1040,15 +1040,15 @@ int p3_add_to_2_interval_array(interval_array_t4 *interval_arr, int i1, int i2, 
 /*
   included region
 */
-void p3_set_sa_incl_s(seq_args *sargs, int incl_s);
-void p3_set_sa_incl_l(seq_args *sargs, int incl_l);
+void p3_set_sa_incl_s(seq_args_t* sargs, int incl_s);
+void p3_set_sa_incl_l(seq_args_t* sargs, int incl_l);
 
-void p3_set_sa_n_quality(seq_args *sargs, int n_quality) ;
-void p3_set_sa_start_codon_pos(seq_args *sargs, int start_codon_pos);
-int p3_set_sa_sequence_file(seq_args *sargs, const char *sequence_file);
-int p3_set_sa_trimmed_sequence(seq_args *sargs, const char *trimmed_sequence);
-int p3_set_sa_trimmed_original_sequence(seq_args *sargs, const char *trimmed_original_sequence);
-int p3_set_sa_upcased_sequence(seq_args *sargs, const char *upcased_sequencd);
+void p3_set_sa_n_quality(seq_args_t* sargs, int n_quality) ;
+void p3_set_sa_start_codon_pos(seq_args_t* sargs, int start_codon_pos);
+int p3_set_sa_sequence_file(seq_args_t* sargs, const char *sequence_file);
+int p3_set_sa_trimmed_sequence(seq_args_t* sargs, const char *trimmed_sequence);
+int p3_set_sa_trimmed_original_sequence(seq_args_t* sargs, const char *trimmed_original_sequence);
+int p3_set_sa_upcased_sequence(seq_args_t* sargs, const char *upcased_sequencd);
 
 
 /* ============================================================ */
@@ -1270,24 +1270,24 @@ void p3_set_gs_min_3_internal_overlap_of_junction(p3_global_settings *p, int min
  * in retval.
  */
 p3retval *choose_primers(const p3_global_settings *pa,
-                         seq_args *sa);
+                         seq_args_t* sa);
 
 /* For testing/debugging: print the values in pa and sa to stdout. */
-void p3_print_args(const p3_global_settings *pa, seq_args *sa) ;
-void p3_print_args_fd(const p3_global_settings *p, seq_args *s, FILE* fd);
+void p3_print_args(const p3_global_settings *pa, seq_args_t* sa) ;
+void p3_print_args_fd(const p3_global_settings *p, seq_args_t* s, FILE* fd);
 
 /* Print out the content of one primer array */
 /* Return 1 on error, otherwise 0. */
-int    p3_print_one_oligo_list(const seq_args *,
+int    p3_print_one_oligo_list(const seq_args_t* ,
                                int, const primer_rec[],
                                const oligo_type, const int,
                                const int, FILE *,int);
 
-char  *pr_oligo_sequence(const seq_args *, const primer_rec *);
-char  *pr_oligo_overhang_sequence(const seq_args *, const primer_rec *);
+char  *pr_oligo_sequence(const seq_args_t* , const primer_rec *);
+char  *pr_oligo_overhang_sequence(const seq_args_t* , const primer_rec *);
 
-char  *pr_oligo_rev_c_sequence(const seq_args *, const primer_rec *);
-char  *pr_oligo_rev_c_overhang_sequence(const seq_args *, const primer_rec *);
+char  *pr_oligo_rev_c_sequence(const seq_args_t* , const primer_rec *);
+char  *pr_oligo_rev_c_overhang_sequence(const seq_args_t* , const primer_rec *);
 
 /* Return NULL on ENOMEM */
 pr_append_str *create_pr_append_str();
@@ -1356,7 +1356,7 @@ const char *p3_get_ol_problem_string(const primer_rec *oligo);
    error, check errno for ENOMEM. Used to implement P3_FILE_FLAG=1.
  */
 int    p3_print_oligo_lists(const p3retval*,
-                            const seq_args *,
+                            const seq_args_t* ,
                             const p3_global_settings *,
                             pr_append_str *err,
                             const char* file_name);
