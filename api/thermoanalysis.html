@@ -4,21 +4,22 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Low-level thermodynamic analysis &mdash; Primer3-py 1.1.0 documentation</title>
+  <title>Low-level thermodynamic analysis &mdash; Primer3-py 1.2.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Building for upload to PyPi" href="../howtobuild.html" />
+    <link rel="next" title="primer3.p3helpers" href="p3helpers.html" />
     <link rel="prev" title="Primary analysis and design API" href="bindings.html" /> 
 </head>
 
@@ -34,7 +35,7 @@
             Primer3-py
           </a>
               <div class="version">
-                1.1.0
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -88,9 +89,13 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="p3helpers.html">primer3.p3helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.reverse_complement"><code class="docutils literal notranslate"><span class="pre">reverse_complement()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.reverse_complement_b"><code class="docutils literal notranslate"><span class="pre">reverse_complement_b()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.sanitize_sequence"><code class="docutils literal notranslate"><span class="pre">sanitize_sequence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.sanitize_sequence_b"><code class="docutils literal notranslate"><span class="pre">sanitize_sequence_b()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../howtobuild.html">Building for upload to PyPi</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../miscellany.html">Miscellany</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changes_link.html">Changelog</a></li>
@@ -154,13 +159,14 @@ method docstrings in <cite>primer3-py</cite> for parameter explanations.</p>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">primer3.thermoanalysis.</span></span><span class="sig-name descname"><span class="pre">ThermoAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">primer3.thermoanalysis.</span></span><span class="sig-name descname"><span class="pre">ThermoAnalysis</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis" title="Permalink to this definition"></a></dt>
 <dd><p>Subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">_ThermoAnalysis</span></code> to enable singleton behavior</p>
+<p>As of v1.2.0 no longer a <code class="xref py py-class docutils literal notranslate"><span class="pre">Singleton</span></code> as thread-safety exists</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcEndStability">
 <span class="sig-name descname"><span class="pre">calcEndStability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcEndStability" title="Permalink to this definition"></a></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_end_stability" title="calc_end_stability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_end_stability()</span></code></a> instead</p>
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_end_stability" title="primer3.thermoanalysis.ThermoAnalysis.calc_end_stability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_end_stability()</span></code></a> instead</p>
 </div>
 <p>Calculate the 3’ end stability of DNA sequence <code class="docutils literal notranslate"><span class="pre">seq1</span></code> against DNA
 sequence <code class="docutils literal notranslate"><span class="pre">seq2</span></code></p>
@@ -184,7 +190,7 @@ sequence <code class="docutils literal notranslate"><span class="pre">seq2</span
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcHairpin">
 <span class="sig-name descname"><span class="pre">calcHairpin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHairpin" title="Permalink to this definition"></a></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_hairpin" title="calc_hairpin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a> instead</p>
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_hairpin" title="primer3.thermoanalysis.ThermoAnalysis.calc_hairpin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a> instead</p>
 </div>
 <p>Calculate the hairpin formation thermodynamics of a DNA
 sequence, <code class="docutils literal notranslate"><span class="pre">seq1</span></code></p>
@@ -208,7 +214,7 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcHeterodimer">
 <span class="sig-name descname"><span class="pre">calcHeterodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHeterodimer" title="Permalink to this definition"></a></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_heterodimer" title="calc_heterodimer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code></a> instead</p>
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_heterodimer" title="primer3.thermoanalysis.ThermoAnalysis.calc_heterodimer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code></a> instead</p>
 </div>
 <p>Calculate the heterodimer formation thermodynamics of two DNA
 sequences, <code class="docutils literal notranslate"><span class="pre">seq1</span></code> and <code class="docutils literal notranslate"><span class="pre">seq2</span></code></p>
@@ -233,7 +239,7 @@ sequences, <code class="docutils literal notranslate"><span class="pre">seq1</sp
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcHomodimer">
 <span class="sig-name descname"><span class="pre">calcHomodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHomodimer" title="Permalink to this definition"></a></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_homodimer" title="calc_homodimer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_homodimer()</span></code></a> instead</p>
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_homodimer" title="primer3.thermoanalysis.ThermoAnalysis.calc_homodimer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_homodimer()</span></code></a> instead</p>
 </div>
 <p>Calculate the homodimer formation thermodynamics of a DNA
 sequence, <code class="docutils literal notranslate"><span class="pre">seq1</span></code></p>
@@ -257,7 +263,7 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcTm">
 <span class="sig-name descname"><span class="pre">calcTm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcTm" title="Permalink to this definition"></a></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="../quickstart.html#calc_tm" title="calc_tm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_tm()</span></code></a> instead</p>
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_tm" title="primer3.thermoanalysis.ThermoAnalysis.calc_tm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_tm()</span></code></a> instead</p>
 </div>
 <p>Calculate the melting temperature (Tm) of a DNA sequence (deg. C).</p>
 <dl class="field-list simple">
@@ -505,9 +511,9 @@ representation.</p>
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">primer3.thermoanalysis.</span></span><span class="sig-name descname"><span class="pre">ThermoResult</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult" title="Permalink to this definition"></a></dt>
 <dd><p>Class that wraps the <code class="docutils literal notranslate"><span class="pre">thal_results</span></code> struct from libprimer3
-to expose tm, dg, dh, and ds values that result from a <a class="reference internal" href="../quickstart.html#calc_hairpin" title="calc_hairpin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a>,
-<a class="reference internal" href="../quickstart.html#calc_homodimer" title="calc_homodimer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_homodimer()</span></code></a>, <a class="reference internal" href="../quickstart.html#calc_heterodimer" title="calc_heterodimer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code></a>, or
-<a class="reference internal" href="../quickstart.html#calc_end_stability" title="calc_end_stability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_end_stability()</span></code></a> calculation.</p>
+to expose tm, dg, dh, and ds values that result from a <code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_hairpin()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_homodimer()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code>, or
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_end_stability()</span></code> calculation.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.ascii_structure_lines">
 <span class="sig-name descname"><span class="pre">ascii_structure_lines</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.ascii_structure_lines" title="Permalink to this definition"></a></dt>
@@ -589,7 +595,7 @@ result of the calculation.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="bindings.html" class="btn btn-neutral float-left" title="Primary analysis and design API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../howtobuild.html" class="btn btn-neutral float-right" title="Building for upload to PyPi" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="p3helpers.html" class="btn btn-neutral float-right" title="primer3.p3helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>primer3.bindings &mdash; Primer3-py 1.1.0 documentation</title>
+  <title>primer3.bindings &mdash; Primer3-py 1.2.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -31,7 +32,7 @@
             Primer3-py
           </a>
               <div class="version">
-                1.1.0
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -44,7 +45,6 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../howtobuild.html">Building for upload to PyPi</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../miscellany.html">Miscellany</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changes_link.html">Changelog</a></li>
@@ -117,8 +117,10 @@
     <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">primer3</span> <span class="kn">import</span> <span class="n">thermoanalysis</span>  <span class="c1"># type: ignore</span>
-<span class="kn">from</span> <span class="nn">primer3</span> <span class="kn">import</span> <span class="n">argdefaults</span>
+<span class="kn">from</span> <span class="nn">primer3</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># type: ignore</span>
+    <span class="n">argdefaults</span><span class="p">,</span>
+    <span class="n">thermoanalysis</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">DEFAULT_P3_ARGS</span> <span class="o">=</span> <span class="n">argdefaults</span><span class="o">.</span><span class="n">Primer3PyArguments</span><span class="p">()</span>
 <span class="n">THERMO_ANALYSIS</span> <span class="o">=</span> <span class="n">thermoanalysis</span><span class="o">.</span><span class="n">ThermoAnalysis</span><span class="p">()</span>
@@ -138,7 +140,7 @@
         <span class="n">max_loop</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">max_loop</span><span class="p">,</span>
         <span class="n">output_structure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39; Calculate the hairpin formation thermodynamics of a DNA sequence.</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Calculate the hairpin formation thermodynamics of a DNA sequence.</span>
 
 <span class="sd">    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap</span>
 <span class="sd">    suggested by the Primer3 team as the longest reasonable sequence length for</span>
@@ -220,7 +222,7 @@
         <span class="n">max_loop</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">max_loop</span><span class="p">,</span>
         <span class="n">output_structure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39; Calculate the homodimerization thermodynamics of a DNA sequence.</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Calculate the homodimerization thermodynamics of a DNA sequence.</span>
 
 <span class="sd">    **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed</span>
 <span class="sd">    by Primer3 as the longest reasonable sequence length for which</span>
@@ -394,7 +396,7 @@
         <span class="n">temp_c</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">temp_c</span><span class="p">,</span>
         <span class="n">max_loop</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">max_loop</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">thermoanalysis</span><span class="o">.</span><span class="n">ThermoResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39; Calculate the 3&#39; end stability of DNA sequence `seq1` against DNA</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Calculate the 3&#39; end stability of DNA sequence `seq1` against DNA</span>
 <span class="sd">    sequence `seq2`.</span>
 
 <span class="sd">    **Note that at least one of the two sequences must by &lt;60 bp in length.**</span>
@@ -600,7 +602,7 @@
 <span class="c1"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
 
 
-<div class="viewcode-block" id="design_primers"><a class="viewcode-back" href="../../quickstart.html#primer3.bindings.design_primers">[docs]</a><span class="k">def</span> <span class="nf">design_primers</span><span class="p">(</span>
+<div class="viewcode-block" id="design_primers"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.design_primers">[docs]</a><span class="k">def</span> <span class="nf">design_primers</span><span class="p">(</span>
         <span class="n">seq_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">global_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">misprime_lib</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -619,6 +621,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A dictionary of Primer3 results (should be identical to the expected</span>
 <span class="sd">        BoulderIO output from ``primer3_main``)</span>
+
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">run_design</span><span class="p">(</span>
         <span class="n">global_args</span><span class="o">=</span><span class="n">global_args</span><span class="p">,</span>

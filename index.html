@@ -4,14 +4,15 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Primer3-py documentation &mdash; Primer3-py 1.1.0 documentation</title>
+  <title>Primer3-py documentation &mdash; Primer3-py 1.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -33,7 +34,7 @@
             Primer3-py
           </a>
               <div class="version">
-                1.1.0
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -46,7 +47,6 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="howtobuild.html">Building for upload to PyPi</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
@@ -86,8 +86,7 @@ analysis and design.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">primer3</span><span class="o">.</span><span class="n">calc_tm</span><span class="p">(</span><span class="s1">&#39;GTAAAACGACGGCCAGT&#39;</span><span class="p">)</span>
 <span class="go">49.16808228911765</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">primer3</span><span class="o">.</span><span class="n">calc_hairpin</span><span class="p">(</span><span class="s1">&#39;CCCCCATCCGATCAGGGGG&#39;</span><span class="p">)</span>
-<span class="go">ThermoResult(structure_found=True, tm=34.15, dg=337.09, dh=-36300.00,</span>
-<span class="go">             ds=-118.13, msg=)</span>
+<span class="go">ThermoResult(structure_found=True, tm=34.15, dg=337.09, dh=-36300.00, ds=-118.13)</span>
 </pre></div>
 </div>
 <p>… and <code class="docutils literal notranslate"><span class="pre">fast</span></code> (<strong>1000X</strong> faster than traditional subprocess wrappers):</p>
@@ -128,11 +127,11 @@ questions: https://github.com/primer3-org/primer3 **</p>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/bindings.html">Primary analysis and design API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/thermoanalysis.html">Low-level thermodynamic analysis</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="howtobuild.html">Building for upload to PyPi</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="howtobuild.html#dependencies">Dependencies:</a></li>
-<li class="toctree-l2"><a class="reference internal" href="howtobuild.html#edit-the-pypirc-file">Edit the <code class="docutils literal notranslate"><span class="pre">~/.pypirc</span></code> file:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/p3helpers.html">primer3.p3helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/p3helpers.html#primer3.p3helpers.reverse_complement"><code class="docutils literal notranslate"><span class="pre">reverse_complement()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/p3helpers.html#primer3.p3helpers.reverse_complement_b"><code class="docutils literal notranslate"><span class="pre">reverse_complement_b()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/p3helpers.html#primer3.p3helpers.sanitize_sequence"><code class="docutils literal notranslate"><span class="pre">sanitize_sequence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/p3helpers.html#primer3.p3helpers.sanitize_sequence_b"><code class="docutils literal notranslate"><span class="pre">sanitize_sequence_b()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
@@ -145,6 +144,7 @@ questions: https://github.com/primer3-org/primer3 **</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-1-2-0-march-22-2023">Version 1.2.0 (March 22, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-1-1-0-march-1-2023">Version 1.1.0 (March 1, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-1-0-0-february-11-2023">Version 1.0.0 (February 11, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changes_link.html#version-0-6-1-may-9-2020">Version 0.6.1 (May 9, 2020)</a></li>

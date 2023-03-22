@@ -4,14 +4,15 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Primer3-py 1.1.0 documentation</title>
+  <title>Changelog &mdash; Primer3-py 1.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -33,7 +34,7 @@
             Primer3-py
           </a>
               <div class="version">
-                1.1.0
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -46,10 +47,10 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="howtobuild.html">Building for upload to PyPi</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-2-0-march-22-2023">Version 1.2.0 (March 22, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-1-0-march-1-2023">Version 1.1.0 (March 1, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-0-0-february-11-2023">Version 1.0.0 (February 11, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-6-1-may-9-2020">Version 0.6.1 (May 9, 2020)</a></li>
@@ -105,6 +106,18 @@
              
   <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h1>
+<section id="version-1-2-0-march-22-2023">
+<h2>Version 1.2.0 (March 22, 2023)<a class="headerlink" href="#version-1-2-0-march-22-2023" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Threadsafe changes made to <code class="docutils literal notranslate"><span class="pre">thal.c</span></code> resulting in new  <code class="docutils literal notranslate"><span class="pre">thalflex.c</span></code> and <code class="docutils literal notranslate"><span class="pre">thalflex.h</span></code> and <code class="docutils literal notranslate"><span class="pre">thalflexsignatures.h</span></code>.</p></li>
+<li><p>Threadsafe changes made to <code class="docutils literal notranslate"><span class="pre">libprimer3.c</span></code> resulting in new  <code class="docutils literal notranslate"><span class="pre">libprimer3flex.c</span></code> and <code class="docutils literal notranslate"><span class="pre">ibprimer3flex.c.h</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libprimer3.seq_args</span></code> datatype is now renamed to <code class="docutils literal notranslate"><span class="pre">libprimer3.seq_args_t</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_threadsafe.py</span></code> add and <code class="docutils literal notranslate"><span class="pre">nogil</span></code> instituted for calls to <code class="docutils literal notranslate"><span class="pre">thal()</span></code> and <code class="docutils literal notranslate"><span class="pre">seqtm()</span></code> added <code class="docutils literal notranslate"><span class="pre">run_design</span></code> and <code class="docutils literal notranslate"><span class="pre">calc_heterodimer</span></code> threadsafe tests</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ThermoAnalysis</span></code> class no longer needs to be a <code class="docutils literal notranslate"><span class="pre">Singleton</span></code> so this was removed as a parent class</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p3helpers.pyx</span></code> houses new sequence and design helper functions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setup.py</span></code> <code class="docutils literal notranslate"><span class="pre">package_data</span></code> and <code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> to assist with future builds from <code class="docutils literal notranslate"><span class="pre">tar.gz</span></code> (<code class="docutils literal notranslate"><span class="pre">conda</span></code>)</p></li>
+</ul>
+</section>
 <section id="version-1-1-0-march-1-2023">
 <h2>Version 1.1.0 (March 1, 2023)<a class="headerlink" href="#version-1-1-0-march-1-2023" title="Permalink to this heading"></a></h2>
 <ul class="simple">

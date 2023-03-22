@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Primer3-py 1.1.0 documentation</title>
+  <title>Index &mdash; Primer3-py 1.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -31,7 +32,7 @@
             Primer3-py
           </a>
               <div class="version">
-                1.1.0
+                1.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,7 +45,6 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="howtobuild.html">Building for upload to PyPi</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
@@ -78,7 +78,6 @@
 
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
- | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -96,48 +95,13 @@
   </ul></td>
 </tr></table>
 
-<h2 id="B">B</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    built-in function
-
-      <ul>
-        <li><a href="quickstart.html#calc_end_stability">calc_end_stability()</a>
-</li>
-        <li><a href="quickstart.html#calc_hairpin">calc_hairpin()</a>
-</li>
-        <li><a href="quickstart.html#calc_heterodimer">calc_heterodimer()</a>
-</li>
-        <li><a href="quickstart.html#calc_homodimer">calc_homodimer()</a>
-</li>
-        <li><a href="quickstart.html#calc_tm">calc_tm()</a>
-</li>
-      </ul></li>
-  </ul></td>
-</tr></table>
-
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    calc_end_stability()
-
-      <ul>
-        <li><a href="quickstart.html#calc_end_stability">built-in function</a>
-</li>
-      </ul></li>
       <li><a href="api/bindings.html#primer3.bindings.calc_end_stability">calc_end_stability() (in module primer3.bindings)</a>
 
       <ul>
         <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis.calc_end_stability">(primer3.thermoanalysis.ThermoAnalysis method)</a>
-</li>
-      </ul></li>
-      <li>
-    calc_hairpin()
-
-      <ul>
-        <li><a href="quickstart.html#calc_hairpin">built-in function</a>
 </li>
       </ul></li>
       <li><a href="api/bindings.html#primer3.bindings.calc_hairpin">calc_hairpin() (in module primer3.bindings)</a>
@@ -146,24 +110,10 @@
         <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis.calc_hairpin">(primer3.thermoanalysis.ThermoAnalysis method)</a>
 </li>
       </ul></li>
-      <li>
-    calc_heterodimer()
-
-      <ul>
-        <li><a href="quickstart.html#calc_heterodimer">built-in function</a>
-</li>
-      </ul></li>
       <li><a href="api/bindings.html#primer3.bindings.calc_heterodimer">calc_heterodimer() (in module primer3.bindings)</a>
 
       <ul>
         <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis.calc_heterodimer">(primer3.thermoanalysis.ThermoAnalysis method)</a>
-</li>
-      </ul></li>
-      <li>
-    calc_homodimer()
-
-      <ul>
-        <li><a href="quickstart.html#calc_homodimer">built-in function</a>
 </li>
       </ul></li>
       <li><a href="api/bindings.html#primer3.bindings.calc_homodimer">calc_homodimer() (in module primer3.bindings)</a>
@@ -172,15 +122,6 @@
         <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis.calc_homodimer">(primer3.thermoanalysis.ThermoAnalysis method)</a>
 </li>
       </ul></li>
-      <li>
-    calc_tm()
-
-      <ul>
-        <li><a href="quickstart.html#calc_tm">built-in function</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/bindings.html#primer3.bindings.calc_tm">calc_tm() (in module primer3.bindings)</a>
 
       <ul>
@@ -193,6 +134,8 @@
         <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis.calcEndStability">(primer3.thermoanalysis.ThermoAnalysis method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/bindings.html#primer3.bindings.calcHairpin">calcHairpin() (in module primer3.bindings)</a>
 
       <ul>
@@ -231,7 +174,7 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/bindings.html#primer3.bindings.design_primers">design_primers() (in module primer3.bindings)</a>, <a href="quickstart.html#primer3.bindings.design_primers">[1]</a>
+      <li><a href="api/bindings.html#primer3.bindings.design_primers">design_primers() (in module primer3.bindings)</a>
 </li>
       <li><a href="api/bindings.html#primer3.bindings.designPrimers">designPrimers() (in module primer3.bindings)</a>
 </li>
@@ -265,6 +208,8 @@
       <ul>
         <li><a href="api/bindings.html#module-primer3.bindings">primer3.bindings</a>
 </li>
+        <li><a href="api/p3helpers.html#module-primer3.p3helpers">primer3.p3helpers</a>
+</li>
         <li><a href="api/thermoanalysis.html#module-primer3.thermoanalysis">primer3.thermoanalysis</a>
 </li>
       </ul></li>
@@ -285,6 +230,13 @@
         <li><a href="api/bindings.html#module-primer3.bindings">module</a>
 </li>
       </ul></li>
+      <li>
+    primer3.p3helpers
+
+      <ul>
+        <li><a href="api/p3helpers.html#module-primer3.p3helpers">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
@@ -300,6 +252,12 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/p3helpers.html#primer3.p3helpers.reverse_complement">reverse_complement() (in module primer3.p3helpers)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/p3helpers.html#primer3.p3helpers.reverse_complement_b">reverse_complement_b() (in module primer3.p3helpers)</a>
+</li>
       <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis.run_design">run_design() (primer3.thermoanalysis.ThermoAnalysis method)</a>
 </li>
   </ul></td>
@@ -310,8 +268,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis.salt_correction_method">salt_correction_method (primer3.thermoanalysis.ThermoAnalysis attribute)</a>
 </li>
+      <li><a href="api/p3helpers.html#primer3.p3helpers.sanitize_sequence">sanitize_sequence() (in module primer3.p3helpers)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/p3helpers.html#primer3.p3helpers.sanitize_sequence_b">sanitize_sequence_b() (in module primer3.p3helpers)</a>
+</li>
       <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis.set_thermo_args">set_thermo_args() (primer3.thermoanalysis.ThermoAnalysis method)</a>
 </li>
       <li><a href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoResult.structure_found">structure_found (primer3.thermoanalysis.ThermoResult attribute)</a>
