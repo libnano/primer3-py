@@ -15,8 +15,7 @@ Routine oligo analysis is simple::
     >>> primer3.calc_tm('GTAAAACGACGGCCAGT')
     49.16808228911765
     >>> primer3.calc_hairpin('CCCCCATCCGATCAGGGGG')
-    ThermoResult(structure_found=True, tm=34.15, dg=337.09, dh=-36300.00,
-                 ds=-118.13, msg=)
+    ThermoResult(structure_found=True, tm=34.15, dg=337.09, dh=-36300.00, ds=-118.13)
 
 ... and `fast` (**~1000X** faster than traditional subprocess wrappers)::
 

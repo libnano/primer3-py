@@ -63,7 +63,7 @@ def calc_hairpin(
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ):
-    ''' Calculate the hairpin formation thermodynamics of a DNA sequence.
+    '''Calculate the hairpin formation thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap
     suggested by the Primer3 team as the longest reasonable sequence length for
@@ -145,7 +145,7 @@ def calc_homodimer(
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
         output_structure: bool = False,
 ):
-    ''' Calculate the homodimerization thermodynamics of a DNA sequence.
+    '''Calculate the homodimerization thermodynamics of a DNA sequence.
 
     **Note that the maximum length of ``seq`` is 60 bp.** This is a cap imposed
     by Primer3 as the longest reasonable sequence length for which
@@ -319,7 +319,7 @@ def calc_end_stability(
         temp_c: Union[float, int] = DEFAULT_P3_ARGS.temp_c,
         max_loop: int = DEFAULT_P3_ARGS.max_loop,
 ) -> thermoanalysis.ThermoResult:
-    ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
+    '''Calculate the 3' end stability of DNA sequence `seq1` against DNA
     sequence `seq2`.
 
     **Note that at least one of the two sequences must by <60 bp in length.**
