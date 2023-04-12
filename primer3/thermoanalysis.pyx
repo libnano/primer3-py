@@ -74,6 +74,8 @@ _DEFAULT_WORD_LEN_2 = 16  # see masker.h
 DEFAULT_P3_ARGS = argdefaults.Primer3PyArguments()
 SNAKE_CASE_DEPRECATED_MSG = 'Function deprecated please use "%s" instead'
 
+include 'thermoanalysis.pxi'
+
 # This lock is required for thread safety for 1.0.0 major release.
 # The goal is remove this requirement in related changes in v1.1.x+ minor
 # release
@@ -449,12 +451,16 @@ cdef class _ThermoAnalysis:
         '''
         if self.global_settings_data != NULL:
             # Free memory for previous global settings
-            p3_destroy_global_settings(self.global_settings_data)
+            p3_destroy_global_settings(
+                <p3_global_settings*> self.global_settings_data
+            )
             self.global_settings_data = NULL
 
         if self.sequence_args_data != NULL:
             # Free memory for previous seq args
-            destroy_seq_args(self.sequence_args_data)
+            destroy_seq_args(
+                <seq_args_t*> self.sequence_args_data
+            )
             self.sequence_args_data = NULL
 
 
@@ -613,6 +619,7 @@ cdef class _ThermoAnalysis:
             unsigned char *s1,
             unsigned char *s2,
             bint output_structure,
+            char* c_ascii_structure,
     ):
         '''
         C only heterodimer computation
@@ -621,6 +628,7 @@ cdef class _ThermoAnalysis:
             s1: sequence string 1
             s2: sequence string 2
             output_structure: If True, build output structure.
+            c_ascii_structure: Optional C structure string
 
         Returns:
             Computed heterodimer result
@@ -628,26 +636,34 @@ cdef class _ThermoAnalysis:
         '''
         cdef:
             ThermoResult tr_obj = ThermoResult()
-            char* c_ascii_structure = NULL
+            bint did_allocate = 0
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1 # thal_alignment_any
         if output_structure:
-            c_ascii_structure = <char *>malloc(
-                (strlen(<const char*>s1) + strlen(<const char*>s2)) * 4 + 24)
-            c_ascii_structure[0] = b'\0'
+            if c_ascii_structure == NULL:
+                c_ascii_structure = <char*> malloc(
+                    (
+                        (strlen(<const char*> s1) +
+                        strlen(<const char*> s2)) * 4 +
+                        24
+                    )
+                )
+                c_ascii_structure[0] = b'\0'
+                did_allocate = 1
             tr_obj.thalres.sec_struct = c_ascii_structure
 
         cdef:
-            thal_args* targs = &self.thalargs
+            thal_args* targs = <thal_args*> &self.thalargs
             int emode = self.eval_mode
-            thal_results* thalres = &tr_obj.thalres
+            thal_results* thalres = <thal_results*> &tr_obj.thalres
             int do_output = 1 if output_structure else 0
+
         with nogil:
             thal(
                 <const unsigned char*> s1,
                 <const unsigned char*> s2,
-                <const thal_args *> targs,
+                <const thal_args*> targs,
                 <const thal_mode> emode,
                 thalres,
                 do_output,
@@ -656,7 +672,8 @@ cdef class _ThermoAnalysis:
             try:
                 tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
-                free(tr_obj.thalres.sec_struct)
+                if did_allocate:
+                    free(tr_obj.thalres.sec_struct)
                 tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
@@ -691,6 +708,7 @@ cdef class _ThermoAnalysis:
             s1,
             s2,
             output_structure,
+            NULL,
         )
         return tr_obj
 
@@ -738,6 +756,7 @@ cdef class _ThermoAnalysis:
                 s1,
                 s2,
                 0,
+                NULL,
             ).tm
             if offtarget_tm > max_offtarget_tm:
                 max_offtarget_seq_idx = i
@@ -751,6 +770,7 @@ cdef class _ThermoAnalysis:
             _ThermoAnalysis self,
             unsigned char *s1,
             bint output_structure,
+            char* c_ascii_structure,
     ):
         '''
         C only homodimer computation
@@ -758,6 +778,7 @@ cdef class _ThermoAnalysis:
         Args:
             s1: sequence string 1
             output_structure: If True, build output structure.
+            c_ascii_structure: Optional C structure string
 
         Returns:
             Computed homodimer ``ThermoResult``
@@ -765,27 +786,29 @@ cdef class _ThermoAnalysis:
         '''
         cdef:
             ThermoResult tr_obj = ThermoResult()
-            char* c_ascii_structure = NULL
+            thal_args* targs = <thal_args*> &self.thalargs
+            int emode = self.eval_mode
+            thal_results* thalres = <thal_results*> &tr_obj.thalres
+            int do_output = 1 if output_structure else 0
+            bint did_allocate = 0
 
         self.thalargs.dimer = 1
         self.thalargs.type = <thal_alignment_type> 1 # thal_alignment_any
+
         if output_structure:
-            c_ascii_structure = <char *> malloc(
-                (strlen(<const char*> s1) * 8 + 24)
-            )
-            c_ascii_structure[0] = b'\0'
+            if c_ascii_structure == NULL:
+                did_allocate = 1
+                c_ascii_structure = <char *> malloc(
+                    (strlen(<const char*> s1) * 8 + 24)
+                )
+                c_ascii_structure[0] = b'\0'
             tr_obj.thalres.sec_struct = c_ascii_structure
 
-        cdef:
-            thal_args* targs = &self.thalargs
-            int emode = self.eval_mode
-            thal_results* thalres = &tr_obj.thalres
-            int do_output = 1 if output_structure else 0
         with nogil:
             thal(
                 <const unsigned char*> s1,
                 <const unsigned char*> s1,
-                <const thal_args *> targs,
+                <const thal_args*> targs,
                 <const thal_mode> emode,
                 thalres,
                 do_output,
@@ -794,7 +817,8 @@ cdef class _ThermoAnalysis:
             try:
                 tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
-                free(c_ascii_structure)
+                if did_allocate:
+                    free(c_ascii_structure)
                 tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
@@ -823,12 +847,14 @@ cdef class _ThermoAnalysis:
             <_ThermoAnalysis> self,
             s1,
             output_structure,
+            NULL,
         )
 
     cdef inline ThermoResult calc_hairpin_c(
             _ThermoAnalysis self,
             unsigned char *s1,
             bint output_structure,
+            char* c_ascii_structure,
     ):
         '''
         C only hairpin computation
@@ -836,6 +862,7 @@ cdef class _ThermoAnalysis:
         Args:
             s1: sequence string 1
             output_structure: If True, build output structure.
+            c_ascii_structure: Optional C structure string
 
         Returns:
             Computed hairpin ``ThermoResult``
@@ -843,27 +870,29 @@ cdef class _ThermoAnalysis:
         '''
         cdef:
             ThermoResult tr_obj = ThermoResult()
-            char* c_ascii_structure = NULL
+            bint did_allocate = 0
 
         self.thalargs.dimer = 0
         self.thalargs.type = <thal_alignment_type> 4 # thal_alignment_hairpin
         if output_structure:
-            c_ascii_structure = <char *> malloc(
-                (strlen(<const char*> s1) * 2 + 64)
-            )
-            c_ascii_structure[0] = b'\0'
+            if c_ascii_structure == NULL:
+                c_ascii_structure = <char*> malloc(
+                    (strlen(<const char*> s1) * 2 + 64)
+                )
+                c_ascii_structure[0] = b'\0'
+                did_allocate = 1
             tr_obj.thalres.sec_struct = c_ascii_structure
 
         cdef:
-            thal_args* targs = &self.thalargs
+            thal_args* targs = <thal_args*> &self.thalargs
             int emode = self.eval_mode
-            thal_results* thalres = &tr_obj.thalres
+            thal_results* thalres = <thal_results*> &tr_obj.thalres
             int do_output = 1 if output_structure else 0
         with nogil:
             thal(
                 <const unsigned char*> s1,
                 <const unsigned char*> s1,
-                <const thal_args *> targs,
+                <const thal_args*> targs,
                 <const thal_mode> emode,
                 thalres,
                 do_output,
@@ -873,7 +902,8 @@ cdef class _ThermoAnalysis:
             try:
                 tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
-                free(c_ascii_structure)
+                if did_allocate:
+                    free(c_ascii_structure)
                 tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
@@ -902,6 +932,7 @@ cdef class _ThermoAnalysis:
             <_ThermoAnalysis> self,
             s1,
             output_structure,
+            NULL,
         )
         return tr_obj
 
@@ -928,15 +959,15 @@ cdef class _ThermoAnalysis:
         self.thalargs.type = <thal_alignment_type> 2 # thal_alignment_end1
 
         cdef:
-            thal_args* targs = &self.thalargs
+            thal_args* targs = <thal_args*> &self.thalargs
             int emode = self.eval_mode
-            thal_results* thalres = &tr_obj.thalres
+            thal_results* thalres = <thal_results*> &tr_obj.thalres
 
         with nogil:
             thal(
                 <const unsigned char*> s1,
                 <const unsigned char*> s2,
-                <const thal_args *> targs,
+                <const thal_args*> targs,
                 <const thal_mode> emode,
                 thalres,
                 0,
@@ -975,7 +1006,10 @@ cdef class _ThermoAnalysis:
         return tr_obj
 
 
-    cdef inline double calc_tm_c(_ThermoAnalysis self, char *s1):
+    cdef inline double calc_tm_c(
+            _ThermoAnalysis self,
+            char *s1,
+    ):
         '''
         C only Tm computation
 
@@ -986,7 +1020,7 @@ cdef class _ThermoAnalysis:
             floating point Tm result
         '''
         cdef:
-            thal_args *ta = &self.thalargs
+            thal_args* targs = <thal_args*> &self.thalargs
             double dmso_conc = self.dmso_conc
             double dmso_fact = self.dmso_fact
             double formamide_conc = self.formamide_conc
@@ -999,10 +1033,10 @@ cdef class _ThermoAnalysis:
         with nogil:
             tm_val = seqtm(
                 <const char*> s1,
-                ta.dna_conc,
-                ta.mv,
-                ta.dv,
-                ta.dntp,
+                targs.dna_conc,
+                targs.mv,
+                targs.dv,
+                targs.dntp,
                 dmso_conc,
                 dmso_fact,
                 formamide_conc,
@@ -1013,7 +1047,10 @@ cdef class _ThermoAnalysis:
             )
         return tm_val.Tm
 
-    def calc_tm(_ThermoAnalysis self, seq1: Union[str, bytes]) -> float:
+    def calc_tm(
+            _ThermoAnalysis self,
+            seq1: Union[str, bytes],
+    ) -> float:
         '''Calculate the melting temperature (Tm) of a DNA sequence (deg. C).
 
         Args:
@@ -1052,11 +1089,11 @@ cdef class _ThermoAnalysis:
         }
 
     def _set_globals_and_seq_args(
-        self,
-        global_args: Dict[str, Any],
-        seq_args: Optional[Dict[str, Any]],
-        misprime_lib: Optional[Dict[str, Any]] = None,
-        mishyb_lib: Optional[Dict[str, Any]] = None,
+            self,
+            global_args: Dict[str, Any],
+            seq_args: Optional[Dict[str, Any]],
+            misprime_lib: Optional[Dict[str, Any]] = None,
+            mishyb_lib: Optional[Dict[str, Any]] = None,
     ) -> None:
         '''
         Sets the Primer3 global settings and sequence settings from a Python
@@ -1066,8 +1103,8 @@ cdef class _ThermoAnalysis:
         ``seq_name``:``seq_value`` key:value pairs.
 
         Args:
-            seq_args: Primer3 sequence/design args as per Primer3 docs
             global_args: Primer3 global args as per Primer3 docs
+            seq_args: Primer3 sequence/design args as per Primer3 docs
             misprime_lib: `Sequence name: sequence` dictionary for mispriming
                 checks.
             mishyb_lib: `Sequence name: sequence` dictionary for
@@ -1081,17 +1118,21 @@ cdef class _ThermoAnalysis:
             seq_lib* mp_lib = NULL
             seq_lib* mh_lib = NULL
             char* arg_input_buffer = NULL
+            p3_global_settings* global_settings_data = NULL
+            seq_args_t* sequence_args_data = NULL
 
 
         err_msg = ''
 
         if self.sequence_args_data != NULL:
             # Free memory for previous seq args
-            destroy_seq_args(self.sequence_args_data)
+            destroy_seq_args(
+                <seq_args_t*> self.sequence_args_data
+            )
             self.sequence_args_data = NULL
 
         if seq_args:
-            self.sequence_args_data = create_seq_arg()
+            self.sequence_args_data = <void*> create_seq_arg()
 
             if self.sequence_args_data == NULL:
                 raise OSError('Could not allocate memory for seq_arg')
@@ -1105,11 +1146,13 @@ cdef class _ThermoAnalysis:
 
         if self.global_settings_data != NULL:
             # Free memory for previous global settings
-            p3_destroy_global_settings(self.global_settings_data)
+            p3_destroy_global_settings(
+                <p3_global_settings*> self.global_settings_data
+            )
             self.global_settings_data = NULL
 
         # Allocate memory for global settings
-        self.global_settings_data = p3_create_global_settings()
+        self.global_settings_data = <void*> p3_create_global_settings()
         if self.global_settings_data == NULL:
             raise OSError('Could not allocate memory for p3 globals')
 
@@ -1136,8 +1179,8 @@ cdef class _ThermoAnalysis:
 
         try:
             pdh_wrap_set_seq_args_globals(
-                self.global_settings_data,
-                self.sequence_args_data,
+                <p3_global_settings*> self.global_settings_data,
+                <seq_args_t*> self.sequence_args_data,
                 kmer_lists_path,
                 arg_input_buffer,
             )
@@ -1145,10 +1188,14 @@ cdef class _ThermoAnalysis:
             print(
                 f'Issue setting globals. bytes provided: \n\t{global_arg_bytes}'
             )
-            p3_destroy_global_settings(self.global_settings_data)
+            p3_destroy_global_settings(
+                <p3_global_settings*> self.global_settings_data
+            )
             self.global_settings_data = NULL
             if seq_args:
-                destroy_seq_args(self.sequence_args_data)
+                destroy_seq_args(
+                    <seq_args_t*> self.sequence_args_data
+                )
                 self.sequence_args_data = NULL
             raise
 
@@ -1162,6 +1209,7 @@ cdef class _ThermoAnalysis:
 
         err_msg = ''
         try:
+            global_settings_data = <p3_global_settings*> self.global_settings_data
             if misprime_lib != None:
                 mp_lib = pdh_create_seq_lib(misprime_lib)
                 if mp_lib == NULL:
@@ -1169,27 +1217,32 @@ cdef class _ThermoAnalysis:
                     raise ValueError(
                         f'Issue creating misprime_lib {misprime_lib}'
                     )
-                self.global_settings_data[0].p_args.repeat_lib = mp_lib
+
+                global_settings_data[0].p_args.repeat_lib = mp_lib
 
             if mishyb_lib != None:
                 mh_lib = pdh_create_seq_lib(mishyb_lib)
                 if mh_lib == NULL:
                     err_msg = f'Issue creating mishyb_lib: {mishyb_lib}'
                     raise ValueError(err_msg)
-                self.global_settings_data[0].o_args.repeat_lib = mh_lib
+                global_settings_data[0].o_args.repeat_lib = mh_lib
         except (OSError, TypeError) as exc:
-            p3_destroy_global_settings(self.global_settings_data)
+            p3_destroy_global_settings(
+                <p3_global_settings*> self.global_settings_data
+            )
             self.global_settings_data = NULL
-            destroy_seq_args(self.sequence_args_data)
+            destroy_seq_args(
+                <seq_args_t*> self.sequence_args_data
+            )
             self.sequence_args_data = NULL
             raise OSError(err_msg) from exc
 
     def run_design(
-        self,
-        global_args: Dict[str, Any],
-        seq_args: Optional[Dict[str, Any]],
-        misprime_lib: Optional[Dict[str, Any]] = None,
-        mishyb_lib: Optional[Dict[str, Any]] = None,
+            self,
+            global_args: Dict[str, Any],
+            seq_args: Optional[Dict[str, Any]],
+            misprime_lib: Optional[Dict[str, Any]] = None,
+            mishyb_lib: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         '''
         Wraps the primer design functionality of Primer3. Should be called
@@ -1220,20 +1273,20 @@ cdef class _ThermoAnalysis:
         )
 
         retval = choose_primers(
-            self.global_settings_data,
-            self.sequence_args_data,
+            <p3_global_settings*> self.global_settings_data,
+            <seq_args_t*> self.sequence_args_data,
         )
         if retval == NULL:
             raise ValueError('Issue choosing primers')
         try:
             results_dict = pdh_design_output_to_dict(
-                self.global_settings_data,
-                self.sequence_args_data,
+                <p3_global_settings*> self.global_settings_data,
+                <seq_args_t*> self.sequence_args_data,
                 retval,
             )
         finally:
             destroy_secundary_structures(
-                self.global_settings_data,
+                <p3_global_settings*> self.global_settings_data,
                 retval,
             )
             destroy_p3retval(retval)
@@ -1251,7 +1304,7 @@ cdef int pr_default_position_penalties(const p3_global_settings* pa):
     return 0
 
 
-cdef int pdh_wrap_set_seq_args_globals(
+cdef inline int pdh_wrap_set_seq_args_globals(
         p3_global_settings* global_settings_data,
         seq_args_t* sequence_args_data,
         object kmer_lists_path,
@@ -1379,7 +1432,7 @@ cdef int pdh_wrap_set_seq_args_globals(
     return 0
 
 
-cdef seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
+cdef inline seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
     '''
     Generates a library of sequences for mispriming checks.
     Input is a Python dictionary with <seq name: sequence> key value
@@ -1440,7 +1493,7 @@ cdef seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
     return sl
 
 
-cdef object pdh_design_output_to_dict(
+cdef inline object pdh_design_output_to_dict(
         const p3_global_settings* global_settings_data,
         const seq_args_t* sequence_args_data,
         const p3retval *retval,
@@ -2116,6 +2169,7 @@ cdef object pdh_design_output_to_dict(
         # End of print parameters of primer pairs
     # End of the for big loop printing all data
     return output_dict
+
 
 class Singleton(type):
     _instances = {}  # type: ignore
