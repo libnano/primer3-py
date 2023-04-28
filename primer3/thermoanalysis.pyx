@@ -1404,15 +1404,16 @@ cdef seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
         char* seq_c = NULL
         char* errfrag = NULL
 
+    sl = create_empty_seq_lib()
     if sl == NULL:
         raise OSError('Could not allocate memory for seq_lib')
 
     for seq_name_str, seq_str in seq_dict.items():
         if isinstance(seq_name_str, str):
             seq_name_b = seq_name_str.encode('utf8')
-            seq_name = seq_name_b
+            seq_name_c = seq_name_b
         elif isinstance(seq_name_str, bytes):
-            seq_name = seq_name
+            seq_name_c = seq_name_str
         else:
             destroy_seq_lib(sl)
             raise TypeError(
@@ -1435,6 +1436,7 @@ cdef seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
             destroy_seq_lib(sl)
             raise OSError(err_msg_b.decode('utf8'))
     reverse_complement_seq_lib(sl)
+
     return sl
 
 

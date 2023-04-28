@@ -141,6 +141,8 @@ cdef extern from "p3_seq_lib.h":
     ctypedef struct seq_lib:
         pass
 
+    seq_lib* create_empty_seq_lib()
+
     int seq_lib_num_seq(const seq_lib* lib)
 
     void destroy_seq_lib(seq_lib *lib)
