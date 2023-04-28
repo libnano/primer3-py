@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.2.1 (April 28, 2023)
+- Bug fixes for `pdh_create_seq_lib` to correct missing `seq_lib` datastructure allocation and variable name typos.
+- Increase test coverage to include `misprime_lib` and `mishyb_lib` arguments
+
 ## Version 1.2.0 (March 22, 2023)
 
 - Threadsafe changes made to `thal.c` resulting in new  `thalflex.c` and `thalflex.h` and `thalflexsignatures.h`.
