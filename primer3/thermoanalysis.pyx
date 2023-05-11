@@ -1921,21 +1921,21 @@ cdef object pdh_design_output_to_dict(
         if seq_lib_num_seq(global_settings_data[0].p_args.repeat_lib) > 0:
             if go_fwd == 1:
                 sqtemp_b = <bytes> fwd[0].repeat_sim.name
-                output_dict['PRIMER_LEFT_{i}_LIBRARY_MISPRIMING'] = (
+                output_dict[f'PRIMER_LEFT_{i}_LIBRARY_MISPRIMING'] = (
                     fwd[0].repeat_sim.score[fwd[0].repeat_sim.max],
                     sqtemp_b.decode('utf8'),
                 )
 
             if go_rev == 1:
                 sqtemp_b = <bytes> rev[0].repeat_sim.name
-                output_dict['PRIMER_RIGHT_{i}_LIBRARY_MISPRIMING'] = (
+                output_dict[f'PRIMER_RIGHT_{i}_LIBRARY_MISPRIMING'] = (
                     rev[0].repeat_sim.score[rev[0].repeat_sim.max],
                     sqtemp_b.decode('utf8'),
                 )
 
             if retval[0].output_type == p3_output_type.primer_pairs:
                 sqtemp_b = <bytes> retval[0].best_pairs.pairs[i].rep_name
-                output_dict['PRIMER_PAIR_{i}_LIBRARY_MISPRIMING'] = (
+                output_dict[f'PRIMER_PAIR_{i}_LIBRARY_MISPRIMING'] = (
                     retval[0].best_pairs.pairs[i].repeat_sim,
                     sqtemp_b.decode('utf8'),
                 )
