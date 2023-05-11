@@ -1966,10 +1966,10 @@ cdef object pdh_design_output_to_dict(
             not pr_default_position_penalties(global_settings_data) or
             not PR_START_CODON_POS_IS_NULL(sequence_args_data)
         ):
-        	if go_fwd == 1:
-            	output_dict[f'PRIMER_LEFT_{i}_POSITION_PENALTY'] = fwd[0].position_penalty
+            if go_fwd == 1:
+                output_dict[f'PRIMER_LEFT_{i}_POSITION_PENALTY'] = fwd[0].position_penalty
             if go_rev == 1:
-            	output_dict[f'PRIMER_RIGHT_{i}_POSITION_PENALTY'] = rev[0].position_penalty
+                output_dict[f'PRIMER_RIGHT_{i}_POSITION_PENALTY'] = rev[0].position_penalty
 
         # Print primer end stability
         if go_fwd == 1:
