@@ -173,7 +173,7 @@ PACKAGE_FPS = (
     LIBPRIMER3_H_FPS +
     KLIB_H_FPS +
     ['p3helpers.pyx', 'p3helpers.h'] +
-    ['thermoanalysis.pxd', 'thermoanalysis.pyx']
+    ['thermoanalysis.pxd', 'thermoanalysis.pxi', 'thermoanalysis.pyx']
 )
 
 # ~~~~~~~~~~~~~~~~~~~~~ Primer3 C library build helpers ~~~~~~~~~~~~~~~~~~~~~ #
