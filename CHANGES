@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.2.2 (May 16, 2023)
+- Bug fixes for output formatting related to penalty, "problem", and mispriming fields
+
 ## Version 1.2.1 (April 28, 2023)
 - Bug fixes for `pdh_create_seq_lib` to correct missing `seq_lib` datastructure allocation and variable name typos.
 - Increase test coverage to include `misprime_lib` and `mishyb_lib` arguments
