@@ -673,7 +673,8 @@ cdef class _ThermoAnalysis:
                 tr_obj.ascii_structure = c_ascii_structure.decode('utf8')
             finally:
                 if did_allocate:
-                    free(tr_obj.thalres.sec_struct)
+                    free(c_ascii_structure)
+                    c_ascii_structure = NULL
                 tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
@@ -819,6 +820,7 @@ cdef class _ThermoAnalysis:
             finally:
                 if did_allocate:
                     free(c_ascii_structure)
+                    c_ascii_structure = NULL
                 tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
@@ -904,6 +906,7 @@ cdef class _ThermoAnalysis:
             finally:
                 if did_allocate:
                     free(c_ascii_structure)
+                    c_ascii_structure = NULL
                 tr_obj.thalres.sec_struct = NULL
         return tr_obj
 
@@ -1684,6 +1687,11 @@ cdef inline object pdh_design_output_to_dict(
     output_dict[f'PRIMER_{int_oligo}_NUM_RETURNED'] = print_int
     output_dict['PRIMER_PAIR_NUM_RETURNED'] = num_pair
 
+    output_dict['PRIMER_PAIR'] = [None] * num_pair
+    output_dict['PRIMER_LEFT'] = [None] * print_fwd
+    output_dict['PRIMER_RIGHT'] = [None] * print_rev
+    output_dict[f'PRIMER_{int_oligo}'] = [None] * print_int
+
     # Start of the loop printing all pairs or primers or oligos
     for i in range(loop_max):
         # What needs to be printed the conditions for primer lists
@@ -1727,36 +1735,44 @@ cdef inline object pdh_design_output_to_dict(
                 go_int = 0
 
         # Print out the Pair Penalties
+        primer_pair_i = {}
+        primer_left_i = {}
+        primer_right_i = {}
+        primer_internal_i = {}
+
         if retval[0].output_type == p3_output_type.primer_pairs:
             temp_double = retval[0].best_pairs.pairs[i].pair_quality
             output_dict[f'PRIMER_PAIR_{i}_PENALTY'] = temp_double
-
+            primer_pair_i['PENALTY'] = temp_double
         # Print single primer penalty
         if go_fwd == 1:
             temp_double = fwd[0].quality
             output_dict[f'PRIMER_LEFT_{i}_PENALTY'] = temp_double
-
+            primer_left_i['PENALTY'] = temp_double
         if go_rev == 1:
             temp_double = rev[0].quality
             output_dict[f'PRIMER_RIGHT_{i}_PENALTY'] = temp_double
-
+            primer_right_i['PENALTY'] = temp_double
         if go_int == 1:
             temp_double = intl[0].quality
             output_dict[f'PRIMER_{int_oligo}_{i}_PENALTY'] = temp_double
+            primer_internal_i['PENALTY'] = temp_double
 
         # Print the oligo_problems
         if (go_fwd == 1) and p3_ol_has_any_problem(fwd):
             problem_b = <bytes> p3_get_ol_problem_string(fwd)
             output_dict[f'PRIMER_LEFT_{i}_PROBLEMS'] = problem_b
+            primer_left_i['PROBLEMS'] = problem_b
 
         if (go_rev == 1) and p3_ol_has_any_problem(rev):
             problem_b = <bytes> p3_get_ol_problem_string(rev)
             output_dict[f'PRIMER_RIGHT_{i}_PROBLEMS'] = problem_b
+            primer_right_i['PROBLEMS'] = problem_b
 
         if (go_int == 1) and p3_ol_has_any_problem(intl):
             problem_b = <bytes> p3_get_ol_problem_string(intl)
             output_dict[f'PRIMER_{int_oligo}_{i}_PROBLEMS'] = problem_b
-
+            primer_internal_i['PROBLEMS'] = problem_b
 
         # Print primer sequences.
         if go_fwd == 1:
@@ -1764,34 +1780,44 @@ cdef inline object pdh_design_output_to_dict(
                 sequence_args_data,
                 fwd,
             )
-            output_dict[f'PRIMER_LEFT_{i}_SEQUENCE'] = sqtemp_b.decode('utf8')
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_LEFT_{i}_SEQUENCE'] = sqtemp_str
+            primer_left_i['SEQUENCE'] = sqtemp_str
 
         if go_rev == 1:
             sqtemp_b = <bytes> pr_oligo_rev_c_overhang_sequence(
                 sequence_args_data,
                 rev,
             )
-            output_dict[f'PRIMER_RIGHT_{i}_SEQUENCE'] = sqtemp_b.decode('utf8')
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_RIGHT_{i}_SEQUENCE'] = sqtemp_str
+            primer_right_i['SEQUENCE'] = sqtemp_str
 
         if go_int == 1:
             sqtemp_b = <bytes> pr_oligo_sequence(sequence_args_data, intl)
-            output_dict[f'PRIMER_{int_oligo}_{i}_SEQUENCE'] = sqtemp_b.decode(
-                'utf8',
-            )
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_{int_oligo}_{i}_SEQUENCE'] = sqtemp_str
+            primer_internal_i['SEQUENCE'] = sqtemp_str
 
         # Print primer start and length
         if go_fwd == 1:
-            output_dict[f'PRIMER_LEFT_{i}'] = [
+            coord_list = [
                 fwd[0].start + incl_s + global_settings_data[0].first_base_index,
                 fwd[0].length,
             ]
+            output_dict[f'PRIMER_LEFT_{i}'] = coord_list
+            primer_left_i['COORDS'] = coord_list
+
         if go_rev == 1:
-            output_dict[f'PRIMER_RIGHT_{i}'] = [
+            coord_list = [
                 rev[0].start + incl_s + global_settings_data[0].first_base_index,
                 rev[0].length,
             ]
+            output_dict[f'PRIMER_RIGHT_{i}'] = coord_list
+            primer_right_i['COORDS'] = coord_list
+
         if go_int == 1:
-            output_dict[f'PRIMER_{int_oligo}_{i}'] = [
+            coord_list = [
                 (
                     intl[0].start +
                     incl_s +
@@ -1799,14 +1825,19 @@ cdef inline object pdh_design_output_to_dict(
                 ),
                 intl[0].length,
             ]
+            output_dict[f'PRIMER_{int_oligo}_{i}'] = coord_list
+            primer_internal_i['COORDS'] = coord_list
 
         # Print primer Tm
         if go_fwd == 1:
             output_dict[f'PRIMER_LEFT_{i}_TM'] = fwd[0].temp
+            primer_left_i['TM'] = fwd[0].temp
         if go_rev == 1:
             output_dict[f'PRIMER_RIGHT_{i}_TM'] = rev[0].temp
+            primer_right_i['TM'] = rev[0].temp
         if go_int == 1:
             output_dict[f'PRIMER_{int_oligo}_{i}_TM'] = intl[0].temp
+            primer_internal_i['TM'] = intl[0].temp
 
         # Print fraction bound at melting temperature
         if (
@@ -1815,36 +1846,43 @@ cdef inline object pdh_design_output_to_dict(
         ):
             if (go_fwd == 1) and (fwd[0].bound > 0.0):
                 output_dict[f'PRIMER_LEFT_{i}_BOUND'] = fwd[0].bound
+                primer_left_i['BOUND'] = fwd[0].bound
             if (go_rev == 1) and (rev[0].bound > 0.0):
                 output_dict[f'PRIMER_RIGHT_{i}_BOUND'] = rev[0].bound
+                primer_right_i['BOUND'] = rev[0].bound
             if (go_int == 1) and (intl[0].bound > 0.0):
                 output_dict[f'PRIMER_{int_oligo}_{i}_BOUND'] = intl[0].bound
+                primer_internal_i['BOUND'] = intl[0].bound
 
         # Print primer GC content
         if go_fwd == 1:
             output_dict[f'PRIMER_LEFT_{i}_GC_PERCENT'] = fwd[0].gc_content
+            primer_left_i['GC_PERCENT'] = fwd[0].gc_content
         if go_rev == 1:
             output_dict[f'PRIMER_RIGHT_{i}_GC_PERCENT'] = rev[0].gc_content
-
+            primer_right_i['GC_PERCENT'] = rev[0].gc_content
         if go_int == 1:
             output_dict[f'PRIMER_{int_oligo}_{i}_GC_PERCENT'] = intl[0].gc_content
-
+            primer_internal_i['GC_PERCENT'] = intl[0].gc_content
         # Print primer self_any
         if (
             (go_fwd == 1) and
             (global_settings_data[0].thermodynamic_oligo_alignment == 0)
         ):
             output_dict[f'PRIMER_LEFT_{i}_SELF_ANY'] = fwd[0].self_any
+            primer_left_i['SELF_ANY'] = fwd[0].self_any
         if (
             (go_rev == 1) and
             (global_settings_data[0].thermodynamic_oligo_alignment == 0)
         ):
             output_dict[f'PRIMER_RIGHT_{i}_SELF_ANY'] = rev[0].self_any
+            primer_right_i['SELF_ANY'] = rev[0].self_any
         if (
             (go_int == 1) and
             (global_settings_data[0].thermodynamic_oligo_alignment == 0)
         ):
             output_dict[f'PRIMER_{int_oligo}_{i}_SELF_ANY'] = intl[0].self_any
+            primer_internal_i['SELF_ANY'] = intl[0].self_any
 
         # Print primer self_any thermodynamical approach
         if (
@@ -1852,16 +1890,19 @@ cdef inline object pdh_design_output_to_dict(
             (global_settings_data[0].thermodynamic_oligo_alignment == 1)
         ):
             output_dict[f'PRIMER_LEFT_{i}_SELF_ANY_TH'] = fwd[0].self_any
+            primer_left_i['SELF_ANY_TH'] = fwd[0].self_any
         if (
             (go_rev == 1) and
             (global_settings_data[0].thermodynamic_oligo_alignment == 1)
         ):
             output_dict[f'PRIMER_RIGHT_{i}_SELF_ANY_TH'] = rev[0].self_any
+            primer_right_i['SELF_ANY_TH'] = rev[0].self_any
         if (
             (go_int == 1) and
             (global_settings_data[0].thermodynamic_oligo_alignment == 1)
         ):
             output_dict[f'PRIMER_{int_oligo}_{i}_SELF_ANY_TH'] = intl[0].self_any
+            primer_internal_i['SELF_ANY_TH'] = intl[0].self_any
 
         # Print primer secondary structures*/
         if (
@@ -1870,22 +1911,27 @@ cdef inline object pdh_design_output_to_dict(
             (fwd[0].self_any_struct != NULL)
         ):
             sqtemp_b = <bytes> fwd[0].self_any_struct
-            output_dict[f'PRIMER_LEFT_{i}_SELF_ANY_STUCT'] = sqtemp_b.decode('utf8')
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_LEFT_{i}_SELF_ANY_STUCT'] = sqtemp_str
+            primer_left_i['SELF_ANY_STUCT'] = sqtemp_str
         if (
             (go_rev == 1) and
             (global_settings_data[0].show_secondary_structure_alignment == 1) and
             (rev[0].self_any_struct != NULL)
         ):
             sqtemp_b = <bytes> rev[0].self_any_struct
-            output_dict[f'PRIMER_RIGHT_{i}_SELF_ANY_STUCT'] = sqtemp_b.decode('utf8')
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_RIGHT_{i}_SELF_ANY_STUCT'] = sqtemp_str
+            primer_right_i['SELF_ANY_STUCT'] = sqtemp_str
         if (
             (go_int == 1) and
             (global_settings_data[0].show_secondary_structure_alignment == 1) and
             (intl[0].self_any_struct != NULL)
         ):
             sqtemp_b = <bytes> intl[0].self_any_struct
-            output_dict[f'PRIMER_{int_oligo}_{i}_SELF_ANY_STUCT'] = sqtemp_b.decode('utf8')
-
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_{int_oligo}_{i}_SELF_ANY_STUCT'] = sqtemp_str
+            primer_internal_i['SELF_ANY_STUCT'] = sqtemp_str
 
         # Print primer self_end
         if (go_fwd == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 0):
@@ -1900,10 +1946,13 @@ cdef inline object pdh_design_output_to_dict(
         # Print primer self_end thermodynamical approach
         if (go_fwd == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 1):
             output_dict[f'PRIMER_LEFT_{i}_SELF_END_TH'] = fwd[0].self_end
+            primer_left_i['SELF_END_TH'] = fwd[0].self_end
         if (go_rev == 1) and (global_settings_data[0].thermodynamic_oligo_alignment == 1):
             output_dict[f'PRIMER_RIGHT_{i}_SELF_END_TH'] = rev[0].self_end
+            primer_right_i['SELF_END_TH'] = rev[0].self_end
         if (go_int == 1) and ((global_settings_data[0].thermodynamic_oligo_alignment == 1)):
             output_dict[f'PRIMER_{int_oligo}_{i}_SELF_END_TH'] = intl[0].self_end
+            primer_internal_i['SELF_END_TH'] = intl[0].self_end
 
         # Print primer secondary structures*/
         if (
@@ -1912,21 +1961,27 @@ cdef inline object pdh_design_output_to_dict(
             (fwd[0].self_end_struct != NULL)
         ):
             sqtemp_b = <bytes> fwd[0].self_end_struct
-            output_dict[f'PRIMER_LEFT_{i}_SELF_END_STUCT'] = sqtemp_b.decode('utf8')
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_LEFT_{i}_SELF_END_STUCT'] = sqtemp_str
+            primer_left_i['SELF_END_STUCT'] = sqtemp_str
         if (
             (go_rev == 1) and
             (global_settings_data[0].show_secondary_structure_alignment == 1) and
             (rev[0].self_end_struct != NULL)
         ):
             sqtemp_b = <bytes> rev[0].self_end_struct
-            output_dict[f'PRIMER_RIGHT_{i}_SELF_END_STUCT'] = sqtemp_b.decode('utf8')
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_RIGHT_{i}_SELF_END_STUCT'] = sqtemp_str
+            primer_right_i['SELF_END_STUCT'] = sqtemp_str
         if (
             (go_int == 1) and
             (global_settings_data[0].show_secondary_structure_alignment == 1) and
             (intl[0].self_end_struct != NULL)
         ):
             sqtemp_b = <bytes> intl[0].self_end_struct
-            output_dict[f'PRIMER_{int_oligo}_{i}_SELF_END_STUCT'] = sqtemp_b.decode('utf8')
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_{int_oligo}_{i}_SELF_END_STUCT'] = sqtemp_str
+            primer_internal_i['SELF_END_STUCT'] = sqtemp_str
 
         # Print primer hairpin
         if (
@@ -1934,17 +1989,19 @@ cdef inline object pdh_design_output_to_dict(
             (global_settings_data[0].thermodynamic_oligo_alignment == 1)
         ):
             output_dict[f'PRIMER_LEFT_{i}_HAIRPIN_TH'] = fwd[0].hairpin_th
+            primer_left_i['HAIRPIN_TH'] = fwd[0].hairpin_th
         if (
             (go_rev == 1) and
             (global_settings_data[0].thermodynamic_oligo_alignment == 1)
         ):
             output_dict[f'PRIMER_RIGHT_{i}_HAIRPIN_TH'] = rev[0].hairpin_th
+            primer_right_i['HAIRPIN_TH'] = rev[0].hairpin_th
         if (
             (go_int == 1) and
             (global_settings_data[0].thermodynamic_oligo_alignment == 1)
         ):
             output_dict[f'PRIMER_{int_oligo}_{i}_HAIRPIN_TH'] = intl[0].hairpin_th
-
+            primer_internal_i['HAIRPIN_TH'] = intl[0].hairpin_th
         # Print primer secondary structures*/
         if (
             (go_fwd == 1) and
@@ -1952,24 +2009,27 @@ cdef inline object pdh_design_output_to_dict(
             (fwd[0].hairpin_struct != NULL)
         ):
             sqtemp_b = <bytes> fwd[0].hairpin_struct
-            output_dict[f'PRIMER_LEFT_{i}_HAIRPIN_STUCT'] = sqtemp_b.decode('utf8')
-
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_LEFT_{i}_HAIRPIN_STUCT'] = sqtemp_str
+            primer_left_i['HAIRPIN_STUCT'] = fwd[0].hairpin_th
         if (
             (go_rev == 1) and
             (global_settings_data[0].show_secondary_structure_alignment == 1) and
             (rev[0].hairpin_struct != NULL)
         ):
             sqtemp_b = <bytes> rev[0].hairpin_struct
-            output_dict[f'PRIMER_RIGHT_{i}_HAIRPIN_STUCT'] = sqtemp_b.decode('utf8')
-
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_RIGHT_{i}_HAIRPIN_STUCT'] = sqtemp_str
+            primer_right_i['HAIRPIN_STUCT'] = rev[0].hairpin_th
         if (
             (go_int == 1) and
             (global_settings_data[0].show_secondary_structure_alignment == 1) and
             (intl[0].hairpin_struct != NULL)
         ):
             sqtemp_b = <bytes> intl[0].hairpin_struct
-            output_dict[f'PRIMER_{int_oligo}_{i}_HAIRPIN_STUCT'] = sqtemp_b.decode('utf8')
-
+            sqtemp_str = sqtemp_b.decode('utf8')
+            output_dict[f'PRIMER_{int_oligo}_{i}_HAIRPIN_STUCT'] = sqtemp_str
+            primer_internal_i['HAIRPIN_STUCT'] = intl[0].hairpin_th
         # Print out primer mispriming scores
         if seq_lib_num_seq(global_settings_data[0].p_args.repeat_lib) > 0:
             if go_fwd == 1:
@@ -1978,10 +2038,17 @@ cdef inline object pdh_design_output_to_dict(
                     fwd[0].repeat_sim.score[fwd[0].repeat_sim.max],
                     sqtemp_b.decode('utf8'),
                 )
-
+                primer_left_i['LIBRARY_MISPRIMING'] = (
+                    fwd[0].repeat_sim.score[fwd[0].repeat_sim.max],
+                    sqtemp_b.decode('utf8'),
+                )
             if go_rev == 1:
                 sqtemp_b = <bytes> rev[0].repeat_sim.name
                 output_dict[f'PRIMER_RIGHT_{i}_LIBRARY_MISPRIMING'] = (
+                    rev[0].repeat_sim.score[rev[0].repeat_sim.max],
+                    sqtemp_b.decode('utf8'),
+                )
+                primer_right_i['LIBRARY_MISPRIMING'] = (
                     rev[0].repeat_sim.score[rev[0].repeat_sim.max],
                     sqtemp_b.decode('utf8'),
                 )
@@ -1992,7 +2059,10 @@ cdef inline object pdh_design_output_to_dict(
                     retval[0].best_pairs.pairs[i].repeat_sim,
                     sqtemp_b.decode('utf8'),
                 )
-
+                primer_pair_i['LIBRARY_MISPRIMING'] = (
+                    retval[0].best_pairs.pairs[i].repeat_sim,
+                    sqtemp_b.decode('utf8'),
+                )
         # Print out internal oligo mispriming scores
         if (
             (go_int == 1) and
@@ -2003,16 +2073,23 @@ cdef inline object pdh_design_output_to_dict(
                 intl[0].repeat_sim.score[intl[0].repeat_sim.max],
                 sqtemp_b.decode('utf8'),
             )
+            primer_internal_i['LIBRARY_MISPRIMING'] = (
+                intl[0].repeat_sim.score[intl[0].repeat_sim.max],
+                sqtemp_b.decode('utf8'),
+            )
 
 
         # If a sequence quality was provided, print it*/
         if sequence_args_data[0].quality != NULL:
             if go_fwd == 1:
                 output_dict[f'PRIMER_LEFT_{i}_MIN_SEQ_QUALITY'] = fwd[0].seq_quality
+                primer_left_i['MIN_SEQ_QUALITY'] = fwd[0].seq_quality
             if go_rev == 1:
                 output_dict[f'PRIMER_RIGHT_{i}_MIN_SEQ_QUALITY'] = rev[0].seq_quality
+                primer_right_i['MIN_SEQ_QUALITY'] = rev[0].seq_quality
             if go_int == 1:
                 output_dict[f'PRIMER_{int_oligo}_{i}_MIN_SEQ_QUALITY'] = intl[0].seq_quality
+                primer_internal_i['MIN_SEQ_QUALITY'] = intl[0].seq_quality
 
         # Print position penalty, this is for backward compatibility
         if (
@@ -2021,16 +2098,18 @@ cdef inline object pdh_design_output_to_dict(
         ):
             if go_fwd == 1:
                 output_dict[f'PRIMER_LEFT_{i}_POSITION_PENALTY'] = fwd[0].position_penalty
+                primer_left_i['POSITION_PENALTY'] = fwd[0].position_penalty
             if go_rev == 1:
                 output_dict[f'PRIMER_RIGHT_{i}_POSITION_PENALTY'] = rev[0].position_penalty
+                primer_right_i['POSITION_PENALTY'] = rev[0].position_penalty
 
         # Print primer end stability
         if go_fwd == 1:
             output_dict[f'PRIMER_LEFT_{i}_END_STABILITY'] = fwd[0].end_stability
-
+            primer_left_i['END_STABILITY'] = fwd[0].end_stability
         if go_rev == 1:
             output_dict[f'PRIMER_RIGHT_{i}_END_STABILITY'] = rev[0].end_stability
-
+            primer_right_i['END_STABILITY'] = rev[0].end_stability
 
         # Print primer template mispriming
         if (
@@ -2040,6 +2119,8 @@ cdef inline object pdh_design_output_to_dict(
         ):
             output_dict[f'PRIMER_LEFT_{i}_TEMPLATE_MISPRIMING'] = \
                 oligo_max_template_mispriming(fwd)
+            primer_left_i['TEMPLATE_MISPRIMING'] = \
+                oligo_max_template_mispriming(fwd)
         if (
             (global_settings_data[0].thermodynamic_template_alignment == 0) and
             (go_rev == 1) and
@@ -2047,7 +2128,8 @@ cdef inline object pdh_design_output_to_dict(
         ):
             output_dict[f'PRIMER_RIGHT_{i}_TEMPLATE_MISPRIMING'] = \
                 oligo_max_template_mispriming(rev)
-
+            primer_right_i['TEMPLATE_MISPRIMING'] = \
+                oligo_max_template_mispriming(rev)
 
         # Print primer template mispriming, thermodynamical approach*/
         if (
@@ -2057,6 +2139,8 @@ cdef inline object pdh_design_output_to_dict(
         ):
             output_dict[f'PRIMER_LEFT_{i}_TEMPLATE_MISPRIMING_TH'] = \
                 oligo_max_template_mispriming_thermod(fwd)
+            primer_left_i['TEMPLATE_MISPRIMING_TH'] = \
+                oligo_max_template_mispriming_thermod(fwd)
 
         if (
             (global_settings_data[0].thermodynamic_template_alignment == 0) and
@@ -2064,6 +2148,8 @@ cdef inline object pdh_design_output_to_dict(
             (oligo_max_template_mispriming(rev) != ALIGN_SCORE_UNDEF)
         ):
             output_dict[f'PRIMER_RIGHT_{i}_TEMPLATE_MISPRIMING_TH'] = \
+                oligo_max_template_mispriming_thermod(rev)
+            primer_right_i['TEMPLATE_MISPRIMING_TH'] = \
                 oligo_max_template_mispriming_thermod(rev)
 
         # Print primer secondary structures*/
@@ -2074,6 +2160,8 @@ cdef inline object pdh_design_output_to_dict(
         ):
             sqtemp_b = <bytes> oligo_max_template_mispriming_struct(fwd)
             output_dict[f'PRIMER_LEFT_{i}_TEMPLATE_MISPRIMING_STUCT'] = sqtemp_b.decode('utf8')
+            primer_left_i['TEMPLATE_MISPRIMING_STUCT'] = sqtemp_b.decode('utf8')
+
         if (
             (go_rev == 1) and
             (global_settings_data[0].show_secondary_structure_alignment == 1) and
@@ -2081,18 +2169,25 @@ cdef inline object pdh_design_output_to_dict(
         ):
             sqtemp_b = <bytes> oligo_max_template_mispriming_struct(rev)
             output_dict[f'PRIMER_RIGHT_{i}_TEMPLATE_MISPRIMING_STUCT'] = sqtemp_b.decode('utf8')
+            primer_right_i['TEMPLATE_MISPRIMING_STUCT'] = sqtemp_b.decode('utf8')
 
         # Print the pair parameters*/
         if retval[0].output_type == p3_output_type.primer_pairs:
             if (go_int == 1) and (sequence_args_data[0].quality != NULL):
                 output_dict[f'PRIMER_{int_oligo}_{i}_MIN_SEQ_QUALITY'] = intl[0].seq_quality
+                primer_internal_i['MIN_SEQ_QUALITY'] = intl[0].seq_quality
+
             # Print pair comp_any
             if global_settings_data[0].thermodynamic_oligo_alignment == 0:
                 output_dict[f'PRIMER_PAIR_{i}_COMPL_ANY'] = \
                     retval[0].best_pairs.pairs[i].compl_any
+                primer_pair_i['COMPL_ANY'] = \
+                    retval[0].best_pairs.pairs[i].compl_any
 
             if global_settings_data[0].thermodynamic_oligo_alignment == 1:
                 output_dict[f'PRIMER_PAIR_{i}_COMPL_ANY_TH'] = \
+                    retval[0].best_pairs.pairs[i].compl_any
+                primer_pair_i['COMPL_ANY_TH'] = \
                     retval[0].best_pairs.pairs[i].compl_any
 
             # Print primer secondary structures */
@@ -2102,14 +2197,19 @@ cdef inline object pdh_design_output_to_dict(
             ):
                 sqtemp_b = <bytes> retval[0].best_pairs.pairs[i].compl_any_struct
                 output_dict[f'PRIMER_PAIR_{i}_COMPL_ANY_STUCT'] = sqtemp_b.decode('utf8')
+                primer_pair_i['COMPL_ANY_STUCT'] = sqtemp_b.decode('utf8')
 
             # Print pair comp_end
             if global_settings_data[0].thermodynamic_oligo_alignment == 0:
                 output_dict[f'PRIMER_PAIR_{i}_COMPL_END'] = \
                     retval[0].best_pairs.pairs[i].compl_end
+                primer_pair_i['COMPL_END'] = \
+                    retval[0].best_pairs.pairs[i].compl_end
 
             if global_settings_data[0].thermodynamic_oligo_alignment == 1:
                 output_dict[f'PRIMER_PAIR_{i}_COMPL_END_TH'] = \
+                    retval[0].best_pairs.pairs[i].compl_end
+                primer_pair_i['COMPL_END_TH'] = \
                     retval[0].best_pairs.pairs[i].compl_end
 
             # Print primer secondary structures*/
@@ -2119,6 +2219,7 @@ cdef inline object pdh_design_output_to_dict(
             ):
                 sqtemp_b = <bytes> retval[0].best_pairs.pairs[i].compl_end_struct
                 output_dict[f'PRIMER_PAIR_{i}_COMPL_END_STUCT'] = sqtemp_b.decode('utf8')
+                primer_pair_i['COMPL_END_STUCT'] = sqtemp_b.decode('utf8')
 
             # Print product size
             product_size = retval[0].best_pairs.pairs[i].product_size
@@ -2127,7 +2228,7 @@ cdef inline object pdh_design_output_to_dict(
             if sequence_args_data[0].overhang_right != NULL:
                 product_size += strlen(sequence_args_data[0].overhang_right)
             output_dict[f'PRIMER_PAIR_{i}_PRODUCT_SIZE'] = product_size
-
+            primer_pair_i['PRODUCT_SIZE'] = product_size
 
             # Print the product Tm if a Tm range is defined
             if (
@@ -2136,12 +2237,21 @@ cdef inline object pdh_design_output_to_dict(
             ):
                 output_dict[f'PRIMER_PAIR_{i}_PRODUCT_TM'] = \
                     retval[0].best_pairs.pairs[i].product_tm
+                primer_pair_i['PRODUCT_TM'] = \
+                    retval[0].best_pairs.pairs[i].product_tm
+
                 output_dict[f'PRIMER_PAIR_{i}_PRODUCT_TM_OLIGO_TM_DIFF'] = \
                     retval[0].best_pairs.pairs[i].product_tm_oligo_tm_diff
+                primer_pair_i['PRODUCT_TM_OLIGO_TM_DIFF'] = \
+                    retval[0].best_pairs.pairs[i].product_tm_oligo_tm_diff
+
                 output_dict[f'PRIMER_PAIR_{i}_T_OPT_A'] = retval[0].best_pairs.pairs[i].t_opt_a
+                primer_pair_i['T_OPT_A'] = retval[0].best_pairs.pairs[i].t_opt_a
             else:
                 output_dict[f'PRIMER_PAIR_{i}_PRODUCT_TM'] = \
                 retval[0].best_pairs.pairs[i].product_tm
+                primer_pair_i['PRODUCT_TM'] = \
+                    retval[0].best_pairs.pairs[i].product_tm
 
             # Print the primer pair template mispriming
             if (
@@ -2150,12 +2260,17 @@ cdef inline object pdh_design_output_to_dict(
             ):
                 output_dict[f'PRIMER_PAIR_{i}_TEMPLATE_MISPRIMING'] = \
                     retval[0].best_pairs.pairs[i].template_mispriming
+                primer_pair_i['TEMPLATE_MISPRIMING'] = \
+                    retval[0].best_pairs.pairs[i].template_mispriming
+
             # Print the primer pair template mispriming. Thermodynamic approach.
             if (
                     (global_settings_data[0].thermodynamic_template_alignment == 1) and
                     (retval[0].best_pairs.pairs[i].template_mispriming != ALIGN_SCORE_UNDEF)
             ):
                 output_dict[f'PRIMER_PAIR_{i}_TEMPLATE_MISPRIMING_TH'] = \
+                    retval[0].best_pairs.pairs[i].template_mispriming
+                primer_pair_i['TEMPLATE_MISPRIMING_TH'] = \
                     retval[0].best_pairs.pairs[i].template_mispriming
 
             # Print primer secondary structures*/
@@ -2166,7 +2281,19 @@ cdef inline object pdh_design_output_to_dict(
                 sqtemp_b = <bytes> retval[0].best_pairs.pairs[i].template_mispriming_struct
                 output_dict[f'PRIMER_PAIR_{i}_TEMPLATE_MISPRIMING_STUCT'] = \
                     sqtemp_b.decode('utf8')
+                primer_pair_i['TEMPLATE_MISPRIMING_STUCT'] = \
+                    sqtemp_b.decode('utf8')
         # End of print parameters of primer pairs
+
+        # Conditionally assign elements to output_dict
+        if primer_pair_i:
+            output_dict['PRIMER_PAIR'][i] = primer_pair_i
+        if primer_left_i:
+            output_dict['PRIMER_LEFT'][i] = primer_left_i
+        if primer_right_i:
+            output_dict['PRIMER_RIGHT'][i] = primer_right_i
+        if primer_internal_i:
+            output_dict['PRIMER_INTERNAL'][i] = primer_internal_i
     # End of the for big loop printing all data
     return output_dict
 

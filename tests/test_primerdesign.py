@@ -517,6 +517,7 @@ class TestDesignBindings(unittest.TestCase):
         )
         self.assertEqual(result['PRIMER_PAIR_NUM_RETURNED'], 5)
         self.assertEqual(result['PRIMER_LEFT_0'], [46, 21])
+        self.assertEqual(result['PRIMER_LEFT'][0]['COORDS'], [46, 21])
 
         bindings.design_primers(
             seq_args=seq_args,
@@ -528,8 +529,31 @@ class TestDesignBindings(unittest.TestCase):
                 'SEQ1': 'TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA',
             },
         )
+
+        self.assertAlmostEqual(
+            result['PRIMER_PAIR_0_PENALTY'],
+            1.37323,
+            places=4,
+        )
+        self.assertAlmostEqual(
+            result['PRIMER_PAIR'][0]['PENALTY'],
+            1.37323,
+            places=4,
+        )
+        self.assertEqual(len(result['PRIMER_PAIR']), 5)
+
         self.assertEqual(result['PRIMER_PAIR_NUM_RETURNED'], 5)
         self.assertEqual(result['PRIMER_LEFT_0'], [46, 21])
+        self.assertEqual(result['PRIMER_LEFT'][0]['COORDS'], [46, 21])
+        self.assertEqual(len(result['PRIMER_LEFT']), 5)
+
+        self.assertEqual(result['PRIMER_RIGHT_0'], [132, 20])
+        self.assertEqual(result['PRIMER_RIGHT'][0]['COORDS'], [132, 20])
+        self.assertEqual(len(result['PRIMER_RIGHT']), 5)
+
+        self.assertEqual(result['PRIMER_INTERNAL_0'], [69, 24])
+        self.assertEqual(result['PRIMER_INTERNAL'][0]['COORDS'], [69, 24])
+        self.assertEqual(len(result['PRIMER_INTERNAL']), 5)
 
 
 def suite():

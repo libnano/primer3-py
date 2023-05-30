@@ -40,4 +40,8 @@ and to build/install using a standard `setup.py` add the lines (fill in the ...s
         ...)
 ```
 
-and it should work
+and it should work.
+
+## Notes
+- Many `_ThermoAnalysis` methods (e.g. `calc_heterodimer_c`) have C string argument
+`c_ascii_structure` to enable 3rd party use for structures reuse
