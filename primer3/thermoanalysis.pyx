@@ -1247,10 +1247,13 @@ cdef class _ThermoAnalysis:
             misprime_lib: Optional[Dict[str, Any]] = None,
             mishyb_lib: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        '''
-        Wraps the primer design functionality of Primer3. Should be called
-        after setting the global and sequence-specific Primer3 parameters
-        (see setGlobals and setSeqArgs, above)
+        '''Wraps the primer design functionality of Primer3.
+
+        .. versionadded:: 2.0.0
+            List versions of `PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}` are added
+            to the design output dictionary keys as a convenience.
+            Original per item `PRIMER_` keys are retained as well for
+            compatibility.
 
         Args:
             seq_args: Primer3 sequence/design args as per Primer3 docs

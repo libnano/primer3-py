@@ -532,6 +532,7 @@ def design_primers(
         mishyb_lib: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     '''Run the Primer3 design process.
+    This is a wrapper around :meth:`_ThermoAnalysis.run_design`.
 
     Args:
         seq_args: Primer3 sequence/design args as per Primer3 docs
