@@ -6182,8 +6182,7 @@ recalc_secundary_structures(
     num_print = retval->best_pairs.num_pairs;
     for (int i = 0 ; i < num_print ; i++) {
       recalc_primer_sec_struct(
-        retval->best_pairs.pairs[i].
-        left,
+        retval->best_pairs.pairs[i].left,
         0,
         pa,
         sa,
@@ -6232,7 +6231,7 @@ recalc_primer_sec_struct(
   char s1[THAL_MAX_ALIGN+1], s1_rev[THAL_MAX_ALIGN+1];
   int overhang_len;
   /* s1 is the forward oligo. */
-  if (primer_type == 0) {  /*left */
+  if (primer_type == 0) {  /* left */
     if (NULL != sa->overhang_left) {
       overhang_len = strlen(sa->overhang_left);
       strcpy(s1, sa->overhang_left);
@@ -6287,9 +6286,11 @@ recalc_primer_sec_struct(
     }
     p3_reverse_complement(s1_rev, s1);
   }
-
   if (pa->thermodynamic_oligo_alignment==0) {
     dpal_results any, end;
+    /* NOTE: important to set these values to NULL to prevent segfaults */
+    any.sec_struct = NULL;
+    end.sec_struct = NULL;
     if (p_rec->self_any > 0.0) {
       dpal(
         (const unsigned char*) s1,
@@ -6322,6 +6323,11 @@ recalc_primer_sec_struct(
   /* Thermodynamic approach, fwd-primer */
   if (pa->thermodynamic_oligo_alignment==1) {
     thal_results any, end, hair;
+    /* NOTE: important to set these values to NULL to prevent segfaults */
+    any.sec_struct = NULL;
+    end.sec_struct = NULL;
+    hair.sec_struct = NULL;
+
     if (p_rec->self_any > 0.0 ) {
       thal(
         (const unsigned char*) s1,

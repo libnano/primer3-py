@@ -496,7 +496,7 @@ thal(const unsigned char *oligo_f,
      const thal_args *a,
      const thal_mode mode,
      thal_results *o,
-     const int print_output)  /* primer3-py modification argumen */
+     const int print_output)  /* primer3-py modification argument */
 {
   double* SH;
   int i, j;
