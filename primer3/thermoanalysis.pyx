@@ -1279,6 +1279,7 @@ cdef class _ThermoAnalysis:
             <p3_global_settings*> self.global_settings_data,
             <seq_args_t*> self.sequence_args_data,
         )
+
         if retval == NULL:
             raise ValueError('Issue choosing primers')
         try:
