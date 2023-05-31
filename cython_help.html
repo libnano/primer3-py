@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Building new Cython modules against thermoanalysis.pxd &mdash; Primer3-py 1.2.2 documentation</title>
+  <title>Building new Cython modules against thermoanalysis.pxd &mdash; Primer3-py 2.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -35,7 +35,7 @@
             Primer3-py
           </a>
               <div class="version">
-                1.2.2
+                2.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -48,7 +48,10 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
 </ul>
@@ -112,7 +115,14 @@
         <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and it should work</p>
+<p>and it should work.</p>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Many <code class="docutils literal notranslate"><span class="pre">_ThermoAnalysis</span></code> methods (e.g. <code class="docutils literal notranslate"><span class="pre">calc_heterodimer_c</span></code>) have C string argument
+<code class="docutils literal notranslate"><span class="pre">c_ascii_structure</span></code> to enable 3rd party use for structures reuse</p></li>
+</ul>
+</section>
 </section>
 
 

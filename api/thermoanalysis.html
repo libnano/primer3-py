@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Low-level thermodynamic analysis &mdash; Primer3-py 1.2.2 documentation</title>
+  <title>Low-level thermodynamic analysis &mdash; Primer3-py 2.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -35,7 +35,7 @@
             Primer3-py
           </a>
               <div class="version">
-                1.2.2
+                2.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -426,9 +426,13 @@ max_offtarget_tm (double)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.run_design">
 <span class="sig-name descname"><span class="pre">run_design</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.run_design" title="Permalink to this definition"></a></dt>
-<dd><p>Wraps the primer design functionality of Primer3. Should be called
-after setting the global and sequence-specific Primer3 parameters
-(see setGlobals and setSeqArgs, above)</p>
+<dd><p>Wraps the primer design functionality of Primer3.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.0.0: </span>List versions of <cite>PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}</cite> are added
+to the design output dictionary keys as a convenience.
+Original per item <cite>PRIMER_</cite> keys are retained as well for
+compatibility.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
