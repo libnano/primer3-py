@@ -1,6 +1,6 @@
 include README.md LICENSE CHANGES AUTHORS setup.py
 include .pre-commit-config.yaml dev-requirements.txt setup.cfg
-include primer3/*.pxd primer3/*.pyx primer3/*.h
+include primer3/*.pxd primer3/*.pxi primer3/*.pyx primer3/*.h
 include primer3/src/libprimer3/*.h primer3/src/libprimer3/*.c
 include primer3/src/libprimer3/klib/khash.h
 include primer3/src/libprimer3/klib/README.md

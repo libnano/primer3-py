@@ -496,7 +496,7 @@ thal(const unsigned char *oligo_f,
      const thal_args *a,
      const thal_mode mode,
      thal_results *o,
-     const int print_output)  /* primer3-py modification argumen */
+     const int print_output)  /* primer3-py modification argument */
 {
   double* SH;
   int i, j;
@@ -680,6 +680,7 @@ thal(const unsigned char *oligo_f,
         if (print_output == 1) { /* primer3-py update to supress undesired printing */
           fputs("No secondary structure could be calculated\n", stderr);
         }
+        o->no_structure = 1;
     }
 
     if(o->temp == -_INFINITY && (!strcmp(o->msg, ""))) { o->temp=0.0; }

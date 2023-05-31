@@ -5283,8 +5283,7 @@ recalc_secundary_structures(
     num_print = retval->best_pairs.num_pairs;
     for (int i = 0 ; i < num_print ; i++) {
       recalc_primer_sec_struct(
-        retval->best_pairs.pairs[i].
-        left,
+        retval->best_pairs.pairs[i].left,
         0,
         pa,
         sa,
@@ -5381,6 +5380,10 @@ recalc_primer_sec_struct(
 
   if (pa->thermodynamic_oligo_alignment==0) {
     dpal_results any, end;
+    /* NOTE: important to set these values to NULL to prevent segfaults */
+    any.sec_struct = NULL;
+    end.sec_struct = NULL;
+
     if (p_rec->self_any > 0.0) {
       dpal((const unsigned char *) s1, (const unsigned char *) s1_rev,
            dpal_arg_to_use->local, DPM_STRUCT, &any);
@@ -5397,6 +5400,11 @@ recalc_primer_sec_struct(
   /* Thermodynamic approach, fwd-primer */
   if (pa->thermodynamic_oligo_alignment==1) {
     thal_results any, end, hair;
+    /* NOTE: important to set these values to NULL to prevent segfaults */
+    any.sec_struct = NULL;
+    end.sec_struct = NULL;
+    hair.sec_struct = NULL;
+
     if (p_rec->self_any > 0.0 ) {
       thal(
         (const unsigned char *) s1,
