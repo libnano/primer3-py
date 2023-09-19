@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>primer3.bindings &mdash; Primer3-py 2.0.0 documentation</title>
+  <title>primer3.bindings &mdash; Primer3-py 2.0.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -32,7 +32,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.0.0
+                2.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,7 +130,9 @@
 <span class="c1"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Low level bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
 
 
-<div class="viewcode-block" id="calc_hairpin"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_hairpin">[docs]</a><span class="k">def</span> <span class="nf">calc_hairpin</span><span class="p">(</span>
+<div class="viewcode-block" id="calc_hairpin">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_hairpin">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_hairpin</span><span class="p">(</span>
         <span class="n">seq</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
         <span class="n">dv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">dv_conc</span><span class="p">,</span>
@@ -170,7 +172,10 @@
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calc_hairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">output_structure</span><span class="p">)</span><span class="o">.</span><span class="n">check_exc</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calcHairpin"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHairpin">[docs]</a><span class="k">def</span> <span class="nf">calcHairpin</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calcHairpin">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHairpin">[docs]</a>
+<span class="k">def</span> <span class="nf">calcHairpin</span><span class="p">(</span>
         <span class="n">seq</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
         <span class="n">dv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">dv_conc</span><span class="p">,</span>
@@ -212,7 +217,10 @@
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHairpin</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">output_structure</span><span class="p">)</span><span class="o">.</span><span class="n">check_exc</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calc_homodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_homodimer">[docs]</a><span class="k">def</span> <span class="nf">calc_homodimer</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calc_homodimer">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_homodimer">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_homodimer</span><span class="p">(</span>
         <span class="n">seq</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
         <span class="n">dv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">dv_conc</span><span class="p">,</span>
@@ -252,7 +260,10 @@
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calc_homodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">output_structure</span><span class="p">)</span><span class="o">.</span><span class="n">check_exc</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calcHomodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHomodimer">[docs]</a><span class="k">def</span> <span class="nf">calcHomodimer</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calcHomodimer">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHomodimer">[docs]</a>
+<span class="k">def</span> <span class="nf">calcHomodimer</span><span class="p">(</span>
         <span class="n">seq</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
         <span class="n">dv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">dv_conc</span><span class="p">,</span>
@@ -294,7 +305,10 @@
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcHomodimer</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">output_structure</span><span class="p">)</span><span class="o">.</span><span class="n">check_exc</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calc_heterodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_heterodimer">[docs]</a><span class="k">def</span> <span class="nf">calc_heterodimer</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calc_heterodimer">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_heterodimer">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_heterodimer</span><span class="p">(</span>
         <span class="n">seq1</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">seq2</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
@@ -339,7 +353,10 @@
     <span class="p">)</span><span class="o">.</span><span class="n">check_exc</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calcHeterodimer"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHeterodimer">[docs]</a><span class="k">def</span> <span class="nf">calcHeterodimer</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calcHeterodimer">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHeterodimer">[docs]</a>
+<span class="k">def</span> <span class="nf">calcHeterodimer</span><span class="p">(</span>
         <span class="n">seq1</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">seq2</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
@@ -386,7 +403,10 @@
     <span class="p">)</span><span class="o">.</span><span class="n">check_exc</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calc_end_stability"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_end_stability">[docs]</a><span class="k">def</span> <span class="nf">calc_end_stability</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calc_end_stability">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_end_stability">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_end_stability</span><span class="p">(</span>
         <span class="n">seq1</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">seq2</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
@@ -427,7 +447,10 @@
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calc_end_stability</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span><span class="o">.</span><span class="n">check_exc</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calcEndStability"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcEndStability">[docs]</a><span class="k">def</span> <span class="nf">calcEndStability</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calcEndStability">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcEndStability">[docs]</a>
+<span class="k">def</span> <span class="nf">calcEndStability</span><span class="p">(</span>
         <span class="n">seq1</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">seq2</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
@@ -470,7 +493,10 @@
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcEndStability</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span><span class="o">.</span><span class="n">check_exc</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calc_tm"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_tm">[docs]</a><span class="k">def</span> <span class="nf">calc_tm</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calc_tm">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calc_tm">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_tm</span><span class="p">(</span>
         <span class="n">seq</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
         <span class="n">dv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">dv_conc</span><span class="p">,</span>
@@ -517,7 +543,10 @@
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calc_tm</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="calcTm"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcTm">[docs]</a><span class="k">def</span> <span class="nf">calcTm</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calcTm">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcTm">[docs]</a>
+<span class="k">def</span> <span class="nf">calcTm</span><span class="p">(</span>
         <span class="n">seq</span><span class="p">:</span> <span class="n">Str_Bytes_T</span><span class="p">,</span>
         <span class="n">mv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">mv_conc</span><span class="p">,</span>
         <span class="n">dv_conc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_P3_ARGS</span><span class="o">.</span><span class="n">dv_conc</span><span class="p">,</span>
@@ -566,43 +595,55 @@
     <span class="k">return</span> <span class="n">THERMO_ANALYSIS</span><span class="o">.</span><span class="n">calcTm</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span></div>
 
 
+
 <span class="c1"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Tm-only aliases ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
 <span class="k">def</span> <span class="nf">calc_hairpin_tm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">calc_hairpin</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span>
 
 
-<div class="viewcode-block" id="calcHairpinTm"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHairpinTm">[docs]</a><span class="k">def</span> <span class="nf">calcHairpinTm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="calcHairpinTm">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHairpinTm">[docs]</a>
+<span class="k">def</span> <span class="nf">calcHairpinTm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;.. deprecated:: 1.0.0. Choose :func:`calc_hairpin_tm` function instead</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">calcHairpin</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">calc_homodimer_tm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">calc_homodimer</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span>
 
 
-<div class="viewcode-block" id="calcHomodimerTm"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHomodimerTm">[docs]</a><span class="k">def</span> <span class="nf">calcHomodimerTm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="calcHomodimerTm">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHomodimerTm">[docs]</a>
+<span class="k">def</span> <span class="nf">calcHomodimerTm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;.. deprecated:: 1.0.0. Choose :func:`calc_homodimer_tm`  function instead</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">calcHomodimer</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">calc_heterodimer_tm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">calc_heterodimer</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span>
 
 
-<div class="viewcode-block" id="calcHeterodimerTm"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHeterodimerTm">[docs]</a><span class="k">def</span> <span class="nf">calcHeterodimerTm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="calcHeterodimerTm">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.calcHeterodimerTm">[docs]</a>
+<span class="k">def</span> <span class="nf">calcHeterodimerTm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;.. deprecated:: 1.0.0. Choose :func:`calc_heterodimer_tm` function</span>
 <span class="sd">    instead</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">calcHeterodimer</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">tm</span></div>
+
 <span class="c1"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Design bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
 
 
-<div class="viewcode-block" id="design_primers"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.design_primers">[docs]</a><span class="k">def</span> <span class="nf">design_primers</span><span class="p">(</span>
+<div class="viewcode-block" id="design_primers">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.design_primers">[docs]</a>
+<span class="k">def</span> <span class="nf">design_primers</span><span class="p">(</span>
         <span class="n">seq_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">global_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">misprime_lib</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -632,7 +673,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="designPrimers"><a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.designPrimers">[docs]</a><span class="k">def</span> <span class="nf">designPrimers</span><span class="p">(</span>
+
+<div class="viewcode-block" id="designPrimers">
+<a class="viewcode-back" href="../../api/bindings.html#primer3.bindings.designPrimers">[docs]</a>
+<span class="k">def</span> <span class="nf">designPrimers</span><span class="p">(</span>
         <span class="n">seq_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">global_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">misprime_lib</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -662,6 +706,7 @@
         <span class="n">misprime_lib</span><span class="o">=</span><span class="n">misprime_lib</span><span class="p">,</span>
         <span class="n">mishyb_lib</span><span class="o">=</span><span class="n">mishyb_lib</span><span class="p">,</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
            </div>

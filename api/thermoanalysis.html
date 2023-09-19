@@ -4,18 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Low-level thermodynamic analysis &mdash; Primer3-py 2.0.0 documentation</title>
+  <title>Low-level thermodynamic analysis &mdash; Primer3-py 2.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,7 +35,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.0.0
+                2.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -127,9 +127,9 @@
            <div itemprop="articleBody">
              
   <section id="module-primer3.thermoanalysis">
-<span id="low-level-thermodynamic-analysis"></span><h1>Low-level thermodynamic analysis<a class="headerlink" href="#module-primer3.thermoanalysis" title="Permalink to this heading"></a></h1>
+<span id="low-level-thermodynamic-analysis"></span><h1>Low-level thermodynamic analysis<a class="headerlink" href="#module-primer3.thermoanalysis" title="Link to this heading"></a></h1>
 <section id="primer3-thermoanalysis">
-<h2>primer3.thermoanalysis<a class="headerlink" href="#primer3-thermoanalysis" title="Permalink to this heading"></a></h2>
+<h2>primer3.thermoanalysis<a class="headerlink" href="#primer3-thermoanalysis" title="Link to this heading"></a></h2>
 <p>Contains Cython functions and classes that enable repeated thermodynamic
 calculations using common calculation parameters.</p>
 <p>The parameters included in this module map to the <cite>ntthal</cite> binary
@@ -159,12 +159,12 @@ method docstrings in <cite>primer3-py</cite> for parameter explanations.</p>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">primer3.thermoanalysis.</span></span><span class="sig-name descname"><span class="pre">ThermoAnalysis</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">primer3.thermoanalysis.</span></span><span class="sig-name descname"><span class="pre">ThermoAnalysis</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis" title="Link to this definition"></a></dt>
 <dd><p>Subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">_ThermoAnalysis</span></code> to enable singleton behavior</p>
 <p>As of v1.2.0 no longer a <code class="xref py py-class docutils literal notranslate"><span class="pre">Singleton</span></code> as thread-safety exists</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcEndStability">
-<span class="sig-name descname"><span class="pre">calcEndStability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcEndStability" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calcEndStability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcEndStability" title="Link to this definition"></a></dt>
 <dd><div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_end_stability" title="primer3.thermoanalysis.ThermoAnalysis.calc_end_stability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_end_stability()</span></code></a> instead</p>
 </div>
@@ -188,7 +188,7 @@ sequence <code class="docutils literal notranslate"><span class="pre">seq2</span
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcHairpin">
-<span class="sig-name descname"><span class="pre">calcHairpin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHairpin" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calcHairpin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHairpin" title="Link to this definition"></a></dt>
 <dd><div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_hairpin" title="primer3.thermoanalysis.ThermoAnalysis.calc_hairpin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_hairpin()</span></code></a> instead</p>
 </div>
@@ -212,7 +212,7 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcHeterodimer">
-<span class="sig-name descname"><span class="pre">calcHeterodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHeterodimer" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calcHeterodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHeterodimer" title="Link to this definition"></a></dt>
 <dd><div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_heterodimer" title="primer3.thermoanalysis.ThermoAnalysis.calc_heterodimer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code></a> instead</p>
 </div>
@@ -237,7 +237,7 @@ sequences, <code class="docutils literal notranslate"><span class="pre">seq1</sp
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcHomodimer">
-<span class="sig-name descname"><span class="pre">calcHomodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHomodimer" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calcHomodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcHomodimer" title="Link to this definition"></a></dt>
 <dd><div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_homodimer" title="primer3.thermoanalysis.ThermoAnalysis.calc_homodimer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_homodimer()</span></code></a> instead</p>
 </div>
@@ -261,7 +261,7 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calcTm">
-<span class="sig-name descname"><span class="pre">calcTm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcTm" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calcTm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calcTm" title="Link to this definition"></a></dt>
 <dd><div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 1.0.0.: </span>Choose <a class="reference internal" href="#primer3.thermoanalysis.ThermoAnalysis.calc_tm" title="primer3.thermoanalysis.ThermoAnalysis.calc_tm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_tm()</span></code></a> instead</p>
 </div>
@@ -281,25 +281,28 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calc_end_stability">
-<span class="sig-name descname"><span class="pre">calc_end_stability</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_end_stability" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calc_end_stability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_end_stability" title="Link to this definition"></a></dt>
 <dd><p>Calculate the 3’ end stability of DNA sequence <cite>seq1</cite> against DNA
 sequence <cite>seq2</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq1</strong> – sequence string 1</p></li>
-<li><p><strong>seq2</strong> – sequence string 2</p></li>
+<li><p><strong>seq1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – sequence string 1</p></li>
+<li><p><strong>seq2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – sequence string 2</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Computed end stability <code class="docutils literal notranslate"><span class="pre">ThermoResult</span></code></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#primer3.thermoanalysis.ThermoResult" title="primer3.thermoanalysis.ThermoResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Computed end stability <code class="docutils literal notranslate"><span class="pre">ThermoResult</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calc_hairpin">
-<span class="sig-name descname"><span class="pre">calc_hairpin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_hairpin" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calc_hairpin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_hairpin" title="Link to this definition"></a></dt>
 <dd><p>Calculate the hairpin formation thermodynamics of a DNA
 sequence, <code class="docutils literal notranslate"><span class="pre">seq1</span></code></p>
 <dl class="field-list simple">
@@ -317,7 +320,7 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calc_heterodimer">
-<span class="sig-name descname"><span class="pre">calc_heterodimer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_heterodimer" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calc_heterodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_heterodimer" title="Link to this definition"></a></dt>
 <dd><p>Calculate the heterodimer formation thermodynamics of two DNA
 sequences, <code class="docutils literal notranslate"><span class="pre">seq1</span></code> and <code class="docutils literal notranslate"><span class="pre">seq2</span></code></p>
 <dl class="field-list simple">
@@ -336,7 +339,7 @@ sequences, <code class="docutils literal notranslate"><span class="pre">seq1</sp
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calc_homodimer">
-<span class="sig-name descname"><span class="pre">calc_homodimer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_homodimer" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calc_homodimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_homodimer" title="Link to this definition"></a></dt>
 <dd><p>Calculate the homodimer formation thermodynamics of a DNA
 sequence, <code class="docutils literal notranslate"><span class="pre">seq1</span></code></p>
 <dl class="field-list simple">
@@ -354,45 +357,48 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.calc_tm">
-<span class="sig-name descname"><span class="pre">calc_tm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_tm" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calc_tm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.calc_tm" title="Link to this definition"></a></dt>
 <dd><p>Calculate the melting temperature (Tm) of a DNA sequence (deg. C).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seq1</strong> – (str | bytes) sequence string 1</p>
+<dd class="field-odd"><p><strong>seq1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]) – (str | bytes) sequence string 1</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>floating point Tm result</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>floating point Tm result</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.dna_conc">
-<span class="sig-name descname"><span class="pre">dna_conc</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dna_conc" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dna_conc</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dna_conc" title="Link to this definition"></a></dt>
 <dd><p>Concentration of DNA oligos (nM)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.dntp_conc">
-<span class="sig-name descname"><span class="pre">dntp_conc</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dntp_conc" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dntp_conc</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dntp_conc" title="Link to this definition"></a></dt>
 <dd><p>Concentration of dNTPs (mM)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.dv_conc">
-<span class="sig-name descname"><span class="pre">dv_conc</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dv_conc" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dv_conc</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.dv_conc" title="Link to this definition"></a></dt>
 <dd><p>Concentration of divalent cations (mM)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.max_loop">
-<span class="sig-name descname"><span class="pre">max_loop</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.max_loop" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">max_loop</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.max_loop" title="Link to this definition"></a></dt>
 <dd><p>Maximum hairpin loop size (bp)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.mispriming_check">
-<span class="sig-name descname"><span class="pre">mispriming_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.mispriming_check" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">mispriming_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">putative_seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tm_threshold</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.mispriming_check" title="Link to this definition"></a></dt>
 <dd><p>Calculate the heterodimer formation thermodynamics of a DNA
 sequence, <code class="docutils literal notranslate"><span class="pre">putative_seq</span></code> with a list of sequences relative to
 a melting temperature threshold</p>
@@ -419,13 +425,13 @@ max_offtarget_tm (double)</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.mv_conc">
-<span class="sig-name descname"><span class="pre">mv_conc</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.mv_conc" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">mv_conc</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.mv_conc" title="Link to this definition"></a></dt>
 <dd><p>Concentration of monovalent cations (mM)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.run_design">
-<span class="sig-name descname"><span class="pre">run_design</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.run_design" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_design</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">misprime_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mishyb_lib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.run_design" title="Link to this definition"></a></dt>
 <dd><p>Wraps the primer design functionality of Primer3.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.0.0: </span>List versions of <cite>PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}</cite> are added
@@ -436,23 +442,26 @@ compatibility.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq_args</strong> – Primer3 sequence/design args as per Primer3 docs</p></li>
-<li><p><strong>global_args</strong> – Primer3 global args as per Primer3 docs</p></li>
-<li><p><strong>misprime_lib</strong> – <cite>Sequence name: sequence</cite> dictionary for mispriming
+<li><p><strong>seq_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Primer3 sequence/design args as per Primer3 docs</p></li>
+<li><p><strong>global_args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Primer3 global args as per Primer3 docs</p></li>
+<li><p><strong>misprime_lib</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <cite>Sequence name: sequence</cite> dictionary for mispriming
 checks.</p></li>
-<li><p><strong>mishyb_lib</strong> – <cite>Sequence name: sequence</cite> dictionary for
+<li><p><strong>mishyb_lib</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <cite>Sequence name: sequence</cite> dictionary for
 mishybridization checks.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>primer3 key value results dictionary</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>primer3 key value results dictionary</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.salt_correction_method">
-<span class="sig-name descname"><span class="pre">salt_correction_method</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.salt_correction_method" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">salt_correction_method</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.salt_correction_method" title="Link to this definition"></a></dt>
 <dd><p>Method used for salt corrections applied to melting temperature
 calculations. May be provided as a string (see
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">salt_correction_methods_dict</span></code>) or the respective integer
@@ -461,24 +470,24 @@ representation.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.set_thermo_args">
-<span class="sig-name descname"><span class="pre">set_thermo_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.set_thermo_args" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_thermo_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dntp_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmso_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmso_fact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formamide_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annealing_temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">37.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nn_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tm_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'santalucia'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">salt_corrections_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'santalucia'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.set_thermo_args" title="Link to this definition"></a></dt>
 <dd><p>Set parameters in global <code class="xref py py-class docutils literal notranslate"><span class="pre">_ThermoAnalysis</span></code> instance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mv_conc</strong> – Monovalent cation conc. (mM)</p></li>
-<li><p><strong>dv_conc</strong> – Divalent cation conc. (mM)</p></li>
-<li><p><strong>dntp_conc</strong> – dNTP conc. (mM)</p></li>
-<li><p><strong>dna_conc</strong> – DNA conc. (nM)</p></li>
-<li><p><strong>dmso_conc</strong> – Concentration of DMSO (%)</p></li>
-<li><p><strong>dmso_fact</strong> – DMSO correction factor, default 0.6</p></li>
-<li><p><strong>formamide_conc</strong> – Concentration of formamide (mol/l)</p></li>
-<li><p><strong>annealing_temp_c</strong> – Actual annealing temperature of the PCR reaction
+<li><p><strong>mv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Monovalent cation conc. (mM)</p></li>
+<li><p><strong>dv_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Divalent cation conc. (mM)</p></li>
+<li><p><strong>dntp_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – dNTP conc. (mM)</p></li>
+<li><p><strong>dna_conc</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – DNA conc. (nM)</p></li>
+<li><p><strong>dmso_conc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Concentration of DMSO (%)</p></li>
+<li><p><strong>dmso_fact</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – DMSO correction factor, default 0.6</p></li>
+<li><p><strong>formamide_conc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Concentration of formamide (mol/l)</p></li>
+<li><p><strong>annealing_temp_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Actual annealing temperature of the PCR reaction
 in (C)</p></li>
-<li><p><strong>temp_c</strong> – Simulation temperature for dG (Celsius)</p></li>
-<li><p><strong>max_nn_length</strong> – Maximum length for nearest-neighbor calcs</p></li>
-<li><p><strong>tm_method</strong> – Tm calculation method (breslauer or santalucia)</p></li>
-<li><p><strong>salt_corrections_method</strong> – Salt correction method (schildkraut, owczarzy,
+<li><p><strong>temp_c</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Simulation temperature for dG (Celsius)</p></li>
+<li><p><strong>max_nn_length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum length for nearest-neighbor calcs</p></li>
+<li><p><strong>tm_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Tm calculation method (breslauer or santalucia)</p></li>
+<li><p><strong>salt_corrections_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Salt correction method (schildkraut, owczarzy,
 santalucia)</p></li>
 </ul>
 </dd>
@@ -487,13 +496,13 @@ santalucia)</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.temp_c">
-<span class="sig-name descname"><span class="pre">temp_c</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.temp_c" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">temp_c</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.temp_c" title="Link to this definition"></a></dt>
 <dd><p>Simulation temperature (deg. C)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.tm_method">
-<span class="sig-name descname"><span class="pre">tm_method</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.tm_method" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">tm_method</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.tm_method" title="Link to this definition"></a></dt>
 <dd><p>Method used to calculate melting temperatures. May be provided as
 a string (see <code class="xref py py-attr docutils literal notranslate"><span class="pre">tm_methods_dict</span></code>) or the respective integer
 representation.</p>
@@ -501,10 +510,13 @@ representation.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoAnalysis.todict">
-<span class="sig-name descname"><span class="pre">todict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.todict" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">todict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoAnalysis.todict" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dictionary form of the <code class="xref py py-class docutils literal notranslate"><span class="pre">_ThermoAnalysis</span></code> instance</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary form of the <code class="xref py py-class docutils literal notranslate"><span class="pre">_ThermoAnalysis</span></code> instance</p>
 </dd>
 </dl>
 </dd></dl>
@@ -513,14 +525,14 @@ representation.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">primer3.thermoanalysis.</span></span><span class="sig-name descname"><span class="pre">ThermoResult</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">primer3.thermoanalysis.</span></span><span class="sig-name descname"><span class="pre">ThermoResult</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult" title="Link to this definition"></a></dt>
 <dd><p>Class that wraps the <code class="docutils literal notranslate"><span class="pre">thal_results</span></code> struct from libprimer3
 to expose tm, dg, dh, and ds values that result from a <code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_hairpin()</span></code>,
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_homodimer()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_heterodimer()</span></code>, or
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">calc_end_stability()</span></code> calculation.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.ascii_structure_lines">
-<span class="sig-name descname"><span class="pre">ascii_structure_lines</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.ascii_structure_lines" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ascii_structure_lines</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.ascii_structure_lines" title="Link to this definition"></a></dt>
 <dd><p>ASCII structure representation split into individual lines</p>
 <p>e.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
@@ -535,7 +547,7 @@ to expose tm, dg, dh, and ds values that result from a <code class="xref py py-m
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.check_exc">
-<span class="sig-name descname"><span class="pre">check_exc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.check_exc" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_exc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.check_exc" title="Link to this definition"></a></dt>
 <dd><p>Check the <code class="docutils literal notranslate"><span class="pre">.msg</span></code> attribute of the internal thalres struct and
 raise a <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code> exception if it is not an empty string.
 Otherwise, return a reference to the current object.</p>
@@ -543,49 +555,55 @@ Otherwise, return a reference to the current object.</p>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Message of internal C error</p>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#primer3.thermoanalysis.ThermoResult" title="primer3.thermoanalysis.ThermoResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code></a></p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.dg">
-<span class="sig-name descname"><span class="pre">dg</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.dg" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dg</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.dg" title="Link to this definition"></a></dt>
 <dd><p>delta G (Gibbs free energy) of the structure (cal/mol)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.dh">
-<span class="sig-name descname"><span class="pre">dh</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.dh" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dh</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.dh" title="Link to this definition"></a></dt>
 <dd><p>delta H (entropy) of the structure (cal/mol)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.ds">
-<span class="sig-name descname"><span class="pre">ds</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.ds" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ds</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.ds" title="Link to this definition"></a></dt>
 <dd><p>delta S (enthalpy) of the structure (cal/K*mol)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.structure_found">
-<span class="sig-name descname"><span class="pre">structure_found</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.structure_found" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">structure_found</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.structure_found" title="Link to this definition"></a></dt>
 <dd><p>Whether or not a structure (hairpin, dimer, etc) was found as a
 result of the calculation.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.tm">
-<span class="sig-name descname"><span class="pre">tm</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.tm" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">tm</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.tm" title="Link to this definition"></a></dt>
 <dd><p>Melting temperature of the structure in deg. C</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.todict">
-<span class="sig-name descname"><span class="pre">todict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.todict" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">todict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.todict" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pts</strong> – precision to round floats to</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>dictionary form of the <a class="reference internal" href="#primer3.thermoanalysis.ThermoResult" title="primer3.thermoanalysis.ThermoResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code></a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary form of the <a class="reference internal" href="#primer3.thermoanalysis.ThermoResult" title="primer3.thermoanalysis.ThermoResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermoResult</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>

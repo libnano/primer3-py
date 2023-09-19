@@ -4,18 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Primer3-py 2.0.0 documentation</title>
+  <title>Changelog &mdash; Primer3-py 2.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,7 +34,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.0.0
+                2.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-0-1-september-18-2023">Version 2.0.1 (September 18, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-0-0-may-30-2023">Version 2.0.0 (May 30, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-2-2-may-16-2023">Version 1.2.2 (May 16, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-2-1-april-28-2023">Version 1.2.1 (April 28, 2023)</a></li>
@@ -108,33 +109,39 @@
            <div itemprop="articleBody">
              
   <section id="changelog">
-<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h1>
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="version-2-0-1-september-18-2023">
+<h2>Version 2.0.1 (September 18, 2023)<a class="headerlink" href="#version-2-0-1-september-18-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed bug in <code class="docutils literal notranslate"><span class="pre">todict</span></code> method of <code class="docutils literal notranslate"><span class="pre">ThermoAnalysis</span></code></p></li>
+</ul>
+</section>
 <section id="version-2-0-0-may-30-2023">
-<h2>Version 2.0.0 (May 30, 2023)<a class="headerlink" href="#version-2-0-0-may-30-2023" title="Permalink to this heading"></a></h2>
+<h2>Version 2.0.0 (May 30, 2023)<a class="headerlink" href="#version-2-0-0-may-30-2023" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Migrated primer3 header file Cython extern imports to <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxi</span></code></p></li>
 <li><p>Optional C structure string argument <code class="docutils literal notranslate"><span class="pre">c_ascii_structure</span></code> added to <code class="docutils literal notranslate"><span class="pre">_ThermoAnalysis</span></code> methods to enable 3rd party use for structures</p></li>
 <li><p>Version bump to 2.0.0 due to breaking change</p></li>
 <li><p>Fix issue whereby no_structure is not correctly 1 set to 1 when no secondary structure in found</p></li>
-<li><p>Add list version of <code class="docutils literal notranslate"><span class="pre">PRIMER_{PAIR,</span> <span class="pre">LEFT,</span> <span class="pre">RIGHT,</span> <span class="pre">INTERNAL}</span></code> to design output dictionary keys.Retaining original keys as well for compatibility.</p></li>
+<li><p>Add list version of <code class="docutils literal notranslate"><span class="pre">PRIMER_{PAIR,</span> <span class="pre">LEFT,</span> <span class="pre">RIGHT,</span> <span class="pre">INTERNAL}</span></code> to design output dictionary keys. Retaining original keys as well for compatibility.</p></li>
 <li><p>Fix for  missing <code class="docutils literal notranslate"><span class="pre">thal_result.sec_struct</span></code> and <code class="docutils literal notranslate"><span class="pre">dpal_results.sec_struct</span></code> initialization to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> in <code class="docutils literal notranslate"><span class="pre">recalc_primer_sec_struct</span></code></p></li>
 </ul>
 </section>
 <section id="version-1-2-2-may-16-2023">
-<h2>Version 1.2.2 (May 16, 2023)<a class="headerlink" href="#version-1-2-2-may-16-2023" title="Permalink to this heading"></a></h2>
+<h2>Version 1.2.2 (May 16, 2023)<a class="headerlink" href="#version-1-2-2-may-16-2023" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Bug fixes for output formatting related to penalty, “problem”, and mispriming fields</p></li>
 </ul>
 </section>
 <section id="version-1-2-1-april-28-2023">
-<h2>Version 1.2.1 (April 28, 2023)<a class="headerlink" href="#version-1-2-1-april-28-2023" title="Permalink to this heading"></a></h2>
+<h2>Version 1.2.1 (April 28, 2023)<a class="headerlink" href="#version-1-2-1-april-28-2023" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Bug fixes for <code class="docutils literal notranslate"><span class="pre">pdh_create_seq_lib</span></code> to correct missing <code class="docutils literal notranslate"><span class="pre">seq_lib</span></code> datastructure allocation and variable name typos.</p></li>
 <li><p>Increase test coverage to include <code class="docutils literal notranslate"><span class="pre">misprime_lib</span></code> and <code class="docutils literal notranslate"><span class="pre">mishyb_lib</span></code> arguments</p></li>
 </ul>
 </section>
 <section id="version-1-2-0-march-22-2023">
-<h2>Version 1.2.0 (March 22, 2023)<a class="headerlink" href="#version-1-2-0-march-22-2023" title="Permalink to this heading"></a></h2>
+<h2>Version 1.2.0 (March 22, 2023)<a class="headerlink" href="#version-1-2-0-march-22-2023" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Threadsafe changes made to <code class="docutils literal notranslate"><span class="pre">thal.c</span></code> resulting in new  <code class="docutils literal notranslate"><span class="pre">thalflex.c</span></code> and <code class="docutils literal notranslate"><span class="pre">thalflex.h</span></code> and <code class="docutils literal notranslate"><span class="pre">thalflexsignatures.h</span></code>.</p></li>
 <li><p>Threadsafe changes made to <code class="docutils literal notranslate"><span class="pre">libprimer3.c</span></code> resulting in new  <code class="docutils literal notranslate"><span class="pre">libprimer3flex.c</span></code> and <code class="docutils literal notranslate"><span class="pre">ibprimer3flex.c.h</span></code>.</p></li>
@@ -146,14 +153,14 @@
 </ul>
 </section>
 <section id="version-1-1-0-march-1-2023">
-<h2>Version 1.1.0 (March 1, 2023)<a class="headerlink" href="#version-1-1-0-march-1-2023" title="Permalink to this heading"></a></h2>
+<h2>Version 1.1.0 (March 1, 2023)<a class="headerlink" href="#version-1-1-0-march-1-2023" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Added specificity to error non-N IUPAC error for issue #59</p></li>
 <li><p>Wheel build support for python 3.8 to move towards following the CPython EOL model for issue #88. See https://devguide.python.org/versions/</p></li>
 </ul>
 </section>
 <section id="version-1-0-0-february-11-2023">
-<h2>Version 1.0.0 (February 11, 2023)<a class="headerlink" href="#version-1-0-0-february-11-2023" title="Permalink to this heading"></a></h2>
+<h2>Version 1.0.0 (February 11, 2023)<a class="headerlink" href="#version-1-0-0-february-11-2023" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Migrated <code class="docutils literal notranslate"><span class="pre">primer3</span></code> source to 2.6.1 version, which adds new arguments for melting temperature code</p></li>
 <li><p>Intergrated all Python C-API related code into <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pyx</span></code>/<code class="docutils literal notranslate"><span class="pre">pxd</span></code></p></li>
@@ -174,21 +181,21 @@
 </ul>
 </section>
 <section id="version-0-6-1-may-9-2020">
-<h2>Version 0.6.1 (May 9, 2020)<a class="headerlink" href="#version-0-6-1-may-9-2020" title="Permalink to this heading"></a></h2>
+<h2>Version 0.6.1 (May 9, 2020)<a class="headerlink" href="#version-0-6-1-may-9-2020" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Fixed issue related to absolute paths populated in <code class="docutils literal notranslate"><span class="pre">SOURCES.txt</span></code> of sdist</p></li>
 <li><p>Clean up in <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> and better Windows build support</p></li>
 </ul>
 </section>
 <section id="version-0-6-0-may-10-2019">
-<h2>Version 0.6.0 (May 10, 2019)<a class="headerlink" href="#version-0-6-0-may-10-2019" title="Permalink to this heading"></a></h2>
+<h2>Version 0.6.0 (May 10, 2019)<a class="headerlink" href="#version-0-6-0-may-10-2019" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Added functionality for bindings to expose the ASCII representation of
 computed dimer and hairpin structures</p></li>
 </ul>
 </section>
 <section id="version-0-5-7-august-10-2018">
-<h2>Version 0.5.7 (August 10, 2018)<a class="headerlink" href="#version-0-5-7-august-10-2018" title="Permalink to this heading"></a></h2>
+<h2>Version 0.5.7 (August 10, 2018)<a class="headerlink" href="#version-0-5-7-august-10-2018" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Changes to upper case sequences in seqtm() in oligotm.c because calls to <code class="docutils literal notranslate"><span class="pre">ThermoAnalysis.calcTm</span></code> returned 0.0 for strings with lower case letters</p></li>
 <li><p>disabled existing tests on Windows due to incompatibility with process and
@@ -196,7 +203,7 @@ memory calls.  TODO: create more tests for <code class="docutils literal notrans
 </ul>
 </section>
 <section id="version-0-5-6-july-12-2018">
-<h2>Version 0.5.6 (July 12, 2018)<a class="headerlink" href="#version-0-5-6-july-12-2018" title="Permalink to this heading"></a></h2>
+<h2>Version 0.5.6 (July 12, 2018)<a class="headerlink" href="#version-0-5-6-july-12-2018" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Fixes to <code class="docutils literal notranslate"><span class="pre">primerdesign_helpers.c</span></code> C macro errors.</p></li>
 <li><p>Added the <code class="docutils literal notranslate"><span class="pre">todict(</span></code>)<code class="docutils literal notranslate"><span class="pre">methods</span> <span class="pre">in</span></code>t<code class="docutils literal notranslate"><span class="pre">hermoanalysis.pyx</span></code> for serialization help for
@@ -204,62 +211,62 @@ tests there</p></li>
 </ul>
 </section>
 <section id="version-0-5-5-october-30-2017">
-<h2>Version 0.5.5 (October 30, 2017)<a class="headerlink" href="#version-0-5-5-october-30-2017" title="Permalink to this heading"></a></h2>
+<h2>Version 0.5.5 (October 30, 2017)<a class="headerlink" href="#version-0-5-5-october-30-2017" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Remove unicode character from <code class="docutils literal notranslate"><span class="pre">README.rst</span></code></p></li>
 </ul>
 </section>
 <section id="version-0-5-4-june-20-2017">
-<h2>Version 0.5.4 (June 20, 2017)<a class="headerlink" href="#version-0-5-4-june-20-2017" title="Permalink to this heading"></a></h2>
+<h2>Version 0.5.4 (June 20, 2017)<a class="headerlink" href="#version-0-5-4-june-20-2017" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Migration of Cython extension build process to <code class="docutils literal notranslate"><span class="pre">build_clib</span></code> to remove Cython
 as a runtime requirement for <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> (thanks to &#64;tdsmith)</p></li>
 </ul>
 </section>
 <section id="version-0-5-3-may-6-2017">
-<h2>Version 0.5.3 (May 6, 2017)<a class="headerlink" href="#version-0-5-3-may-6-2017" title="Permalink to this heading"></a></h2>
+<h2>Version 0.5.3 (May 6, 2017)<a class="headerlink" href="#version-0-5-3-may-6-2017" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Fixed improper assignment of <code class="docutils literal notranslate"><span class="pre">&quot;PRIMER_PAIR_MAX_COMPL_END_TH&quot;</span></code> during design
 arg parsing</p></li>
 </ul>
 </section>
 <section id="version-0-5-2-may-1-2017">
-<h2>Version 0.5.2 (May 1, 2017)<a class="headerlink" href="#version-0-5-2-may-1-2017" title="Permalink to this heading"></a></h2>
+<h2>Version 0.5.2 (May 1, 2017)<a class="headerlink" href="#version-0-5-2-may-1-2017" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Fixed issue where <code class="docutils literal notranslate"><span class="pre">pa-&gt;num_intervals</span></code> was not properly set via the bindings</p></li>
 <li><p>Fixed typo that caused incorrect output for <code class="docutils literal notranslate"><span class="pre">PRIMER_PAIR_EXPLAIN</span></code></p></li>
 </ul>
 </section>
 <section id="version-0-5-1-may-25-2016">
-<h2>Version 0.5.1 (May 25, 2016)<a class="headerlink" href="#version-0-5-1-may-25-2016" title="Permalink to this heading"></a></h2>
+<h2>Version 0.5.1 (May 25, 2016)<a class="headerlink" href="#version-0-5-1-may-25-2016" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Update <code class="docutils literal notranslate"><span class="pre">thal.c</span></code> to incorporate traceback fix from Primer3 dev team
 (thanks Triinu)</p></li>
 </ul>
 </section>
 <section id="version-0-5-0-february-25-2016">
-<h2>Version 0.5.0 (February 25, 2016)<a class="headerlink" href="#version-0-5-0-february-25-2016" title="Permalink to this heading"></a></h2>
+<h2>Version 0.5.0 (February 25, 2016)<a class="headerlink" href="#version-0-5-0-february-25-2016" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Update <code class="docutils literal notranslate"><span class="pre">libprimer3</span></code> to version 2.3.7</p></li>
 <li><p>Better test coverage for low level bindings</p></li>
 </ul>
 </section>
 <section id="version-0-4-3-december-1-2015">
-<h2>Version 0.4.3 (December 1, 2015)<a class="headerlink" href="#version-0-4-3-december-1-2015" title="Permalink to this heading"></a></h2>
+<h2>Version 0.4.3 (December 1, 2015)<a class="headerlink" href="#version-0-4-3-december-1-2015" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Fixed compilation errors, unicode-related build problems</p></li>
 <li><p>Fixed memory allocation / deallocation issues with mispriming libraries</p></li>
 </ul>
 </section>
 <section id="version-0-4-2-september-18-2015">
-<h2>Version 0.4.2 (September 18, 2015)<a class="headerlink" href="#version-0-4-2-september-18-2015" title="Permalink to this heading"></a></h2>
+<h2>Version 0.4.2 (September 18, 2015)<a class="headerlink" href="#version-0-4-2-september-18-2015" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">misprimingCheck</span></code> function to <code class="docutils literal notranslate"><span class="pre">primer3/thermoanalysis.pyx</span></code></p></li>
 <li><p>Corrected unclear syntax in C API code</p></li>
 </ul>
 </section>
 <section id="version-0-4-1-november-28-2014">
-<h2>Version 0.4.1 (November 28, 2014)<a class="headerlink" href="#version-0-4-1-november-28-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.4.1 (November 28, 2014)<a class="headerlink" href="#version-0-4-1-november-28-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Better documentation regarding max. seq. lengths for thermo. calcs</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">calcHairpin</span></code>, <code class="docutils literal notranslate"><span class="pre">calcHomodimer</span></code>, <code class="docutils literal notranslate"><span class="pre">calcHeterodimer</span></code>, and <code class="docutils literal notranslate"><span class="pre">calcEndStability</span></code> now raise
@@ -267,7 +274,7 @@ arg parsing</p></li>
 </ul>
 </section>
 <section id="version-0-4-0-november-25-2014">
-<h2>Version 0.4.0 (November 25, 2014)<a class="headerlink" href="#version-0-4-0-november-25-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.4.0 (November 25, 2014)<a class="headerlink" href="#version-0-4-0-november-25-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Several major bug fixes in the design bindings pipeline</p></li>
 <li><p>Better testing framework for the design bindings</p></li>
@@ -276,14 +283,14 @@ arg parsing</p></li>
 </ul>
 </section>
 <section id="version-0-3-1-august-13-2014">
-<h2>Version 0.3.1 (August 13, 2014)<a class="headerlink" href="#version-0-3-1-august-13-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.3.1 (August 13, 2014)<a class="headerlink" href="#version-0-3-1-august-13-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Improved support for sequences stored in Bytes objects</p></li>
 <li><p>Renamed getThermoParams to loadThermoParams for clarity</p></li>
 </ul>
 </section>
 <section id="version-0-3-0-august-12-2014">
-<h2>Version 0.3.0 (August 12, 2014)<a class="headerlink" href="#version-0-3-0-august-12-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.3.0 (August 12, 2014)<a class="headerlink" href="#version-0-3-0-august-12-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Fixed memory leak in global param struct allocation for design bindings</p></li>
 <li><p>Integrated C API patch code into <code class="docutils literal notranslate"><span class="pre">libprimer3</span></code></p></li>
@@ -295,28 +302,28 @@ structure was found, the return value was <code class="docutils literal notransl
 </ul>
 </section>
 <section id="version-0-2-5-august-7-2014">
-<h2>Version 0.2.5 (August 7, 2014)<a class="headerlink" href="#version-0-2-5-august-7-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.2.5 (August 7, 2014)<a class="headerlink" href="#version-0-2-5-august-7-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Fixed incorrect tm/salt correction method lookups in <code class="docutils literal notranslate"><span class="pre">calcTm</span></code> function in
 both bindings and wrappers</p></li>
 </ul>
 </section>
 <section id="version-0-2-4-june-17-2014">
-<h2>Version 0.2.4 (June 17, 2014)<a class="headerlink" href="#version-0-2-4-june-17-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.2.4 (June 17, 2014)<a class="headerlink" href="#version-0-2-4-june-17-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Addressed bug in mispriming/mishybridization library parsing in which
 memory for the global parameters struct was not being properly allocated</p></li>
 </ul>
 </section>
 <section id="version-0-2-3-june-5-2014">
-<h2>Version 0.2.3 (June 5, 2014)<a class="headerlink" href="#version-0-2-3-june-5-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.2.3 (June 5, 2014)<a class="headerlink" href="#version-0-2-3-june-5-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Corrected several potential sources of memory leaks in the C API design
 bindings.</p></li>
 </ul>
 </section>
 <section id="version-0-2-2-june-3-2014">
-<h2>Version 0.2.2 (June 3, 2014)<a class="headerlink" href="#version-0-2-2-june-3-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.2.2 (June 3, 2014)<a class="headerlink" href="#version-0-2-2-june-3-2014" title="Link to this heading"></a></h2>
 <ul>
 <li><p>Corrected issue with parsing <code class="docutils literal notranslate"><span class="pre">&quot;SEQUENCE_PRIMER_PAIR_OK_REGION_LIST&quot;</span></code> as a
 python sequence object. <code class="docutils literal notranslate"><span class="pre">&quot;SEQUENCE_PRIMER_PAIR_OK_REGION_LIST&quot;</span></code> should now
@@ -330,13 +337,13 @@ two). -1 should be used in the case where an index is ommitted. For example:</p>
 </ul>
 </section>
 <section id="version-0-2-1-april-24-2014">
-<h2>Version 0.2.1 (April 24, 2014)<a class="headerlink" href="#version-0-2-1-april-24-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.2.1 (April 24, 2014)<a class="headerlink" href="#version-0-2-1-april-24-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>C API path fix</p></li>
 </ul>
 </section>
 <section id="version-0-2-april-23-2014">
-<h2>Version 0.2 (April 23, 2014)<a class="headerlink" href="#version-0-2-april-23-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.2 (April 23, 2014)<a class="headerlink" href="#version-0-2-april-23-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Corrected installation issue (replace inplace with <code class="docutils literal notranslate"><span class="pre">build_lib</span></code> in <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code>)</p></li>
 <li><p>Documentation updates</p></li>
@@ -344,7 +351,7 @@ two). -1 should be used in the case where an index is ommitted. For example:</p>
 </ul>
 </section>
 <section id="version-0-1-march-3-2014">
-<h2>Version 0.1 (March 3, 2014)<a class="headerlink" href="#version-0-1-march-3-2014" title="Permalink to this heading"></a></h2>
+<h2>Version 0.1 (March 3, 2014)<a class="headerlink" href="#version-0-1-march-3-2014" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Initial release</p></li>
 </ul>
