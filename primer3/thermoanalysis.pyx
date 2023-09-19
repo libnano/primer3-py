@@ -548,7 +548,7 @@ cdef class _ThermoAnalysis:
         representation.
 
         '''
-        return self._salt_correction_method
+        return self._salt_correction_methods_int_dict[self._salt_correction_method]
 
     @salt_correction_method.setter
     def salt_correction_method(self, value: Union[int, str]):
@@ -1082,7 +1082,7 @@ cdef class _ThermoAnalysis:
             'dv_conc':      self.dv_conc,
             'dntp_conc':    self.dntp_conc,
             'dna_conc':     self.dna_conc,
-            'temp_c':       self.temp,
+            'temp_c':       self.temp_c,
             'max_loop':     self.max_loop,
             # 'temp_only':    self.temp_only,
             # 'debug':        self.thalargs.debug,
