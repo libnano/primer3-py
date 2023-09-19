@@ -6,7 +6,7 @@
 - Optional C structure string argument `c_ascii_structure` added to `_ThermoAnalysis` methods to enable 3rd party use for structures
 - Version bump to 2.0.0 due to breaking change
 - Fix issue whereby no_structure is not correctly 1 set to 1 when no secondary structure in found
-- Add list version of `PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}` to design output dictionary keys.Retaining original keys as well for compatibility.
+- Add list version of `PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}` to design output dictionary keys. Retaining original keys as well for compatibility.
 - Fix for  missing `thal_result.sec_struct` and `dpal_results.sec_struct` initialization to `NULL` in `recalc_primer_sec_struct`
 
 ## Version 1.2.2 (May 16, 2023)
