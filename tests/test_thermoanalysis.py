@@ -34,7 +34,10 @@ try:
 except (ImportError, ModuleNotFoundError):  # For Windows compatibility
     resource = None  # type: ignore
 
-from primer3 import bindings
+from primer3 import (
+    bindings,
+    thermoanalysis,
+)
 
 from . import wrappers
 
@@ -408,6 +411,24 @@ class TestLowLevelBindings(unittest.TestCase):
                 f'calc_heterodimer > {delta_bytes_limit} bytes -- potential '
                 f'\n\t memory leak (mem increase: {em - sm})',
             )
+
+    def test_todict(self):
+        '''Unit test coverage for ``Thermoanalysis.todict``'''
+        args = {
+            'mv_conc': 51.0,
+            'dv_conc': 1.7,
+            'dntp_conc': 0.5,
+            'dna_conc': 52.0,
+            'temp_c': 36.0,
+            'max_loop': 31,
+            'max_nn_length': 61,
+            'tm_method': 'santalucia',
+            'salt_correction_method': 'santalucia',
+        }
+        ta = thermoanalysis.ThermoAnalysis(**args)
+        dict_out = ta.todict()
+        for k, v in args.items():
+            assert v == dict_out[k]
 
 
 def suite():
