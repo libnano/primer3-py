@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>primer3.p3helpers &mdash; Primer3-py 2.0.1 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>primer3.p3helpers &mdash; Primer3-py 2.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="../_static/documentation_options.js?v=c2377ec0"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.0.1
+                2.0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -98,12 +100,12 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – sequence string</p></li>
+<li><p><strong>seq</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – sequence string</p></li>
 <li><p><strong>do_sanitize</strong> – If True, convert non-IUPAC characters to N’s</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Reverse complement of sequence string</p>
@@ -121,12 +123,12 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>) – sequence in bytes</p></li>
+<li><p><strong>seq</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></span>) – sequence in bytes</p></li>
 <li><p><strong>do_sanitize</strong> – If True, convert non-IUPAC characters to N’s</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Reverse complement of sequence in bytes</p>
@@ -150,10 +152,10 @@ IUPAC {R,Y,M,K,S,W,H,D,B,V,r,y,m,k,s,w,h,d,b,v}</p>
 keeping</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seq</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – sequence to sanitize nonstandard with <a href="#id3"><span class="problematic" id="id4">`</span></a>N`s or <a href="#id5"><span class="problematic" id="id6">`</span></a>n`s</p>
+<dd class="field-odd"><p><strong>seq</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – sequence to sanitize nonstandard with <a href="#id3"><span class="problematic" id="id4">`</span></a>N`s or <a href="#id5"><span class="problematic" id="id6">`</span></a>n`s</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>sanitized version of <code class="docutils literal notranslate"><span class="pre">seq</span></code></p>
@@ -174,10 +176,10 @@ IUPAC {R,Y,M,K,S,W,H,D,B,V,r,y,m,k,s,w,h,d,b,v}</p>
 keeping</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seq</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>) – sequence to sanitize nonstandard with <a href="#id9"><span class="problematic" id="id10">`</span></a>N`s or <a href="#id11"><span class="problematic" id="id12">`</span></a>n`s</p>
+<dd class="field-odd"><p><strong>seq</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></span>) – sequence to sanitize nonstandard with <a href="#id9"><span class="problematic" id="id10">`</span></a>N`s or <a href="#id11"><span class="problematic" id="id12">`</span></a>n`s</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>sanitized version of <code class="docutils literal notranslate"><span class="pre">seq</span></code></p>
