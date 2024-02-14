@@ -16,6 +16,7 @@
 - Fix issue whereby no_structure is not correctly 1 set to 1 when no secondary structure in found
 - Add list version of `PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}` to design output dictionary keys. Retaining original keys as well for compatibility.
 - Fix for  missing `thal_result.sec_struct` and `dpal_results.sec_struct` initialization to `NULL` in `recalc_primer_sec_struct`
+- Removed deprecated camelCase aliases (e.g. must now use `design_primers`` in place of `designPrimers`, see changes in v1.0.0)
 
 ## Version 1.2.2 (May 16, 2023)
 
