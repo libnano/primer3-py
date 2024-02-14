@@ -51,6 +51,8 @@
 - Expanded test coverage and now using pytest for testing
 - Added `pre-commit` hooks
 - Call signature update and pattern update: `designPrimers` now `design_primers` integrates setting of sequence arguments and global arguments as they are coupled in `primer3_boulder_main.c`
+  Note `primer3.primerdesign` was removed, including `setGlobals`.
+  Replace `setGlobals(GLOBALS, MISPRIME, MISHYB)` and `designPrimers(SEQARGS)` with a single call `design_primers(SEQARGS, GLOBALS, MISPRIME, MISHYB)`.
 - `primer3` C code bug fixes to improve compiler warnings
 - Using `primer3` `read_boulder_record` to setup primer3 data structures instead of reproducing code in `primer3-py` C or Cython via a code signature update
 - `drawDimer` and `drawHairpin` updates to unify sequence structure output for testing
