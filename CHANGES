@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.0.3 (February 15, 2024)
+
+- Fix `_ThermoAnalysis._set_globals_and_seq_args` for improper checks on `misprime_lib` and
+`mishyb_lib` leading to incorrect initialization of `mp_lib` and `mh_lib`. See issue #133
+
 ## Version 2.0.2 (February 9, 2024)
 
 - Support for python 3.12 (build, test, docs)
