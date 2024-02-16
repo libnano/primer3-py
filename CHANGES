@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.0.3 (February 15, 2024)
+
+- Fix `_ThermoAnalysis._set_globals_and_seq_args` for improper checks on `misprime_lib` and
+`mishyb_lib` leading to incorrect initialization of `mp_lib` and `mh_lib`. See issue #133
+
 ## Version 2.0.2 (February 9, 2024)
 
 - Support for python 3.12 (build, test, docs)
@@ -50,7 +55,9 @@
 - Migrated `primer3/wrappers.py` to `tests/wrappers.py` to indicate it should not be used.
 - Expanded test coverage and now using pytest for testing
 - Added `pre-commit` hooks
-- Call signature update and pattern update: `designPrimers` now `design_primers` integrates setting of sequence arguments and global arguments as they are coupled in `primer3_boulder_main.c`
+- Call signature update and pattern update: `designPrimers` now `design_primers` integrates setting of sequence arguments and global arguments as they are coupled in `primer3_boulder_main.c`.
+  Note `primer3.primerdesign` was removed, including `setGlobals`.
+  Replace `setGlobals(GLOBALS, MISPRIME, MISHYB)` and `designPrimers(SEQARGS)` with a single call `design_primers(SEQARGS, GLOBALS, MISPRIME, MISHYB)`.
 - `primer3` C code bug fixes to improve compiler warnings
 - Using `primer3` `read_boulder_record` to setup primer3 data structures instead of reproducing code in `primer3-py` C or Cython via a code signature update
 - `drawDimer` and `drawHairpin` updates to unify sequence structure output for testing

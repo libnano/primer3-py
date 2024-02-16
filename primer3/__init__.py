@@ -26,10 +26,10 @@ import os
 from typing import List
 
 # Per PEP-440 https://peps.python.org/pep-0440/#public-version-identifiers
-__version__ = '2.0.2'
+__version__ = '2.0.3'
 __author__ = 'Ben Pruitt, Nick Conway'
 __copyright__ = (
-    'Copyright 2014-2023, Ben Pruitt & Nick Conway; 2014-2018 Wyss Institute'
+    'Copyright 2014-2024, Ben Pruitt & Nick Conway; 2014-2018 Wyss Institute'
 )
 __license__ = 'GPLv2'
 DESCRIPTION = 'Python bindings for Primer3'
