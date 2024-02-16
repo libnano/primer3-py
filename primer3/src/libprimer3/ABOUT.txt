@@ -1,4 +1,4 @@
-The source files in this directory are derived from the Primer 2.3.7
+The source files in this directory are derived from the Primer 2.6.1
 source and have been modified to make the library more amenable to
 Python bindings.
 
