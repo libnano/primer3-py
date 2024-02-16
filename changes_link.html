@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Primer3-py 2.0.2 documentation</title>
+  <title>Changelog &mdash; Primer3-py 2.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=c2377ec0"></script>
+        <script src="_static/documentation_options.js?v=664ffad9"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -36,7 +36,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.0.2
+                2.0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-0-3-february-15-2024">Version 2.0.3 (February 15, 2024)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-0-2-february-9-2024">Version 2.0.2 (February 9, 2024)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-0-1-september-18-2023">Version 2.0.1 (September 18, 2023)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-0-0-may-30-2023">Version 2.0.0 (May 30, 2023)</a></li>
@@ -113,6 +114,13 @@
              
   <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="version-2-0-3-february-15-2024">
+<h2>Version 2.0.3 (February 15, 2024)<a class="headerlink" href="#version-2-0-3-february-15-2024" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">_ThermoAnalysis._set_globals_and_seq_args</span></code> for improper checks on <code class="docutils literal notranslate"><span class="pre">misprime_lib</span></code> and
+<code class="docutils literal notranslate"><span class="pre">mishyb_lib</span></code> leading to incorrect initialization of <code class="docutils literal notranslate"><span class="pre">mp_lib</span></code> and <code class="docutils literal notranslate"><span class="pre">mh_lib</span></code>. See issue #133</p></li>
+</ul>
+</section>
 <section id="version-2-0-2-february-9-2024">
 <h2>Version 2.0.2 (February 9, 2024)<a class="headerlink" href="#version-2-0-2-february-9-2024" title="Link to this heading"></a></h2>
 <ul class="simple">
@@ -177,7 +185,9 @@
 <li><p>Migrated <code class="docutils literal notranslate"><span class="pre">primer3/wrappers.py</span></code> to <code class="docutils literal notranslate"><span class="pre">tests/wrappers.py</span></code> to indicate it should not be used.</p></li>
 <li><p>Expanded test coverage and now using pytest for testing</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> hooks</p></li>
-<li><p>Call signature update and pattern update: <code class="docutils literal notranslate"><span class="pre">designPrimers</span></code> now <code class="docutils literal notranslate"><span class="pre">design_primers</span></code> integrates setting of sequence arguments and global arguments as they are coupled in <code class="docutils literal notranslate"><span class="pre">primer3_boulder_main.c</span></code></p></li>
+<li><p>Call signature update and pattern update: <code class="docutils literal notranslate"><span class="pre">designPrimers</span></code> now <code class="docutils literal notranslate"><span class="pre">design_primers</span></code> integrates setting of sequence arguments and global arguments as they are coupled in <code class="docutils literal notranslate"><span class="pre">primer3_boulder_main.c</span></code>.
+Note <code class="docutils literal notranslate"><span class="pre">primer3.primerdesign</span></code> was removed, including <code class="docutils literal notranslate"><span class="pre">setGlobals</span></code>.
+Replace <code class="docutils literal notranslate"><span class="pre">setGlobals(GLOBALS,</span> <span class="pre">MISPRIME,</span> <span class="pre">MISHYB)</span></code> and <code class="docutils literal notranslate"><span class="pre">designPrimers(SEQARGS)</span></code> with a single call <code class="docutils literal notranslate"><span class="pre">design_primers(SEQARGS,</span> <span class="pre">GLOBALS,</span> <span class="pre">MISPRIME,</span> <span class="pre">MISHYB)</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">primer3</span></code> C code bug fixes to improve compiler warnings</p></li>
 <li><p>Using <code class="docutils literal notranslate"><span class="pre">primer3</span></code> <code class="docutils literal notranslate"><span class="pre">read_boulder_record</span></code> to setup primer3 data structures instead of reproducing code in <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> C or Cython via a code signature update</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">drawDimer</span></code> and <code class="docutils literal notranslate"><span class="pre">drawHairpin</span></code> updates to unify sequence structure output for testing</p></li>
@@ -377,7 +387,7 @@ two). -1 should be used in the case where an index is ommitted. For example:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Copyright 2014-2023, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
+    <p>&#169; Copyright Copyright 2014-2024, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
