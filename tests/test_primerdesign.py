@@ -27,8 +27,8 @@ from __future__ import print_function
 import os
 import random
 import sys
+import time
 import unittest
-from time import sleep
 from typing import (
     Any,
     Dict,
@@ -431,7 +431,7 @@ class TestDesignBindings(unittest.TestCase):
                     ],
                 },
             )
-        sleep(0.1)  # Pause for any GC
+        time.sleep(0.1)  # Pause for any GC
         em = _get_mem_usage()
         print(
             f'\n\tMemory usage before {run_count} runs of design_primers: {sm}',
@@ -554,6 +554,29 @@ class TestDesignBindings(unittest.TestCase):
         self.assertEqual(result['PRIMER_INTERNAL_0'], [69, 24])
         self.assertEqual(result['PRIMER_INTERNAL'][0]['COORDS'], [69, 24])
         self.assertEqual(len(result['PRIMER_INTERNAL']), 5)
+
+        # Test timing of this function of empty dictionaries compared to None
+        t1 = time.time()
+        bindings.design_primers(
+            seq_args=seq_args,
+            global_args=global_args,
+            misprime_lib={},
+            mishyb_lib={},
+        )
+        dt1 = time.time() - t1
+
+        t2 = time.time()
+        bindings.design_primers(
+            seq_args=seq_args,
+            global_args=global_args,
+            misprime_lib=None,
+            mishyb_lib=None,
+        )
+        dt2 = time.time() - t2
+        # If the difference is less than 1 second, we are good
+        # Should be way less than 1 second but we are being conservative for
+        # the test in the cloud
+        assert abs(dt1 - dt2) < 1.0
 
     def test_PRIMER_SECONDARY_STRUCTURE_ALIGNMENT(self):
         '''Ensure all result pointers are initialized to NULL.

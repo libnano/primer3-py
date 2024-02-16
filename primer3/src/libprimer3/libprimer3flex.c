@@ -300,6 +300,9 @@ pr_set_default_global_args_1(
   memset(a, 0, sizeof(p3_global_settings));
 
   /* Arguments for primers ================================= */
+  a->p_args.repeat_lib = NULL;
+  a->o_args.repeat_lib = NULL;
+
   a->p_args.opt_size          = 20;
   a->p_args.min_size          = 18;
   a->p_args.max_size          = 27;

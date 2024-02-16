@@ -1213,23 +1213,24 @@ cdef class _ThermoAnalysis:
         err_msg = ''
         try:
             global_settings_data = <p3_global_settings*> self.global_settings_data
-            if misprime_lib != None:
-                mp_lib = pdh_create_seq_lib(misprime_lib)
-                if mp_lib == NULL:
-                    err_msg = f'Issue creating misprime_lib {misprime_lib}'
-                    raise ValueError(
-                        f'Issue creating misprime_lib {misprime_lib}'
-                    )
 
-                global_settings_data[0].p_args.repeat_lib = mp_lib
+            if misprime_lib is None:
+                misprime_lib = {}
 
-            if mishyb_lib != None:
-                mh_lib = pdh_create_seq_lib(mishyb_lib)
-                if mh_lib == NULL:
-                    err_msg = f'Issue creating mishyb_lib: {mishyb_lib}'
-                    raise ValueError(err_msg)
-                global_settings_data[0].o_args.repeat_lib = mh_lib
+            mp_lib = pdh_create_seq_lib(misprime_lib)
+
+            global_settings_data[0].p_args.repeat_lib = mp_lib
+
+            if mishyb_lib is None:
+                mishyb_lib = {}
+
+            mh_lib = pdh_create_seq_lib(mishyb_lib)
+
+            global_settings_data[0].o_args.repeat_lib = mh_lib
+
         except (OSError, TypeError) as exc:
+            # Caught the exception, now raise a new one from the original
+            # post cleanup
             p3_destroy_global_settings(
                 <p3_global_settings*> self.global_settings_data
             )
