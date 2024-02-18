@@ -50,7 +50,8 @@ void free_amplicon_result(amplicon_result *res) {
 }
 
 void amp_init_all(void **alloc_box, int max_count) {
-    for (int i = 0 ; i < max_count ; i++) {
+    int i;
+    for (i = 0 ; i < max_count ; i++) {
         alloc_box[i] = NULL;
     }
 }
@@ -62,7 +63,8 @@ void *amp_malloc(void **alloc_box, int *alloc_count, size_t size) {
 }
 
 void amp_free_all(void **alloc_box, int alloc_count) {
-    for (int i = 0 ; i < alloc_count ; i++) {
+    int i;
+    for (i = 0 ; i < alloc_count ; i++) {
         free(alloc_box[i + 1]);
     }
 }

@@ -6028,7 +6028,8 @@ destroy_secundary_structures(
     if (num_print > retval->fwd.num_elem) {
       num_print = retval->fwd.num_elem;
     }
-    for (int i = 0 ; i < num_print ; i++) {
+    int i;
+    for (i = 0 ; i < num_print ; i++) {
       destroy_primer_sec_struct(
         &retval->fwd.oligo[i]
       );
@@ -6037,7 +6038,8 @@ destroy_secundary_structures(
     if (num_print > retval->rev.num_elem) {
       num_print = retval->rev.num_elem;
     }
-    for (int i = 0 ; i < num_print ; i++) {
+    int i;
+    for (i = 0 ; i < num_print ; i++) {
       destroy_primer_sec_struct(
         &retval->rev.oligo[i]
       );
@@ -6046,7 +6048,8 @@ destroy_secundary_structures(
     if (num_print > retval->intl.num_elem) {
       num_print = retval->intl.num_elem;
     }
-    for (int i = 0 ; i < num_print ; i++) {
+    int i;
+    for (i = 0 ; i < num_print ; i++) {
       destroy_primer_sec_struct(
         &retval->intl.oligo[i]
       );
@@ -6054,7 +6057,8 @@ destroy_secundary_structures(
   } else {
     /* Get how may primers should be max. printed */
     num_print = retval->best_pairs.num_pairs;
-    for (int i = 0 ; i < num_print ; i++) {
+    int i;
+    for (i = 0 ; i < num_print ; i++) {
       destroy_primer_sec_struct(
         retval->best_pairs.pairs[i].left
       );
@@ -6142,7 +6146,8 @@ recalc_secundary_structures(
     if (num_print > retval->fwd.num_elem) {
       num_print = retval->fwd.num_elem;
     }
-    for (int i = 0 ; i < num_print ; i++) {
+    int i;
+    for (i = 0 ; i < num_print ; i++) {
       recalc_primer_sec_struct(
         &retval->fwd.oligo[i],
         0,
@@ -6156,7 +6161,8 @@ recalc_secundary_structures(
     if (num_print > retval->rev.num_elem) {
       num_print = retval->rev.num_elem;
     }
-    for (int i = 0 ; i < num_print ; i++) {
+    int i;
+    for (i = 0 ; i < num_print ; i++) {
       recalc_primer_sec_struct(
         &retval->rev.oligo[i],
         1,
@@ -6170,7 +6176,8 @@ recalc_secundary_structures(
     if (num_print > retval->intl.num_elem) {
       num_print = retval->intl.num_elem;
     }
-    for (int i = 0 ; i < num_print ; i++) {
+    int i;
+    for (i = 0 ; i < num_print ; i++) {
       recalc_primer_sec_struct(
         &retval->intl.oligo[i],
         2,
@@ -6183,7 +6190,8 @@ recalc_secundary_structures(
   } else {
     /* Get how may primers should be max. printed */
     num_print = retval->best_pairs.num_pairs;
-    for (int i = 0 ; i < num_print ; i++) {
+    int i;
+    for (i = 0 ; i < num_print ; i++) {
       recalc_primer_sec_struct(
         retval->best_pairs.pairs[i].left,
         0,
