@@ -98,9 +98,12 @@ jobs:
     steps:
       - name: Download wheels & sdist
         uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
 
       - name: Check files
-        run: ls -lR .
+        run: ls -lR dist/
 
       - name: Upload to PyPI
         # upload to PyPI on every tag starting with 'v'
