@@ -37,7 +37,7 @@ jobs:
       #     platforms: 'arm64'
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.5
+        uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_PROJECT_REQUIRES_PYTHON: "==${{ matrix.python-version }}.*"
 
@@ -63,9 +63,9 @@ jobs:
           CIBW_TEST_COMMAND_LINUX: "pytest {project}/tests/test_thermoanalysis.py -v"
           CIBW_TEST_COMMAND_WINDOWS: "pytest {project}\\tests\\test_thermoanalysis.py"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-${{ matrix.python-version }}-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -80,14 +80,14 @@ jobs:
           python-version: '3.13'
 
       - name: Install wheel
-        run: python3 -m pip install wheel
+        run: python3 -m pip install wheel "setuptools>=67.1.0"
 
       - name: Build sdist
         run: python3 setup.py sdist --formats=gztar
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-sdist
           path: dist/*.tar.gz
 
   upload_pypi:
@@ -96,14 +96,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: dist
-          path: dist
+      - name: Download wheels & sdist
+        uses: actions/download-artifact@v4
 
       - name: Check files
-        run: ls -lR dist
+        run: ls -lR .
 
       - name: Upload to PyPI
         # upload to PyPI on every tag starting with 'v'
