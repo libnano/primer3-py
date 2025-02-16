@@ -110,7 +110,7 @@ class TestThermoAnalysisInThread(unittest.TestCase):
         for t in thread_list:
             t.join()
 
-        print(f'total: {(time.time()-t0):0.2}')
+        print(f'total: {(time.time() - t0):0.2}')
 
         taf = thermoanalysis.ThermoAnalysis()
         t0 = time.time()
@@ -125,7 +125,7 @@ class TestThermoAnalysisInThread(unittest.TestCase):
             )
             self.assertEqual(new_res.tm, res.tm)
             self.assertEqual(new_res.dh, res.dh)
-        print(f'total: {(time.time()-t0):0.2}')
+        print(f'total: {(time.time() - t0):0.2}')
 
     def test_primer_design_thread_safety(self):
         '''Test primer design (`run_design`) for thread safety
@@ -207,7 +207,7 @@ class TestThermoAnalysisInThread(unittest.TestCase):
             )
             thread_list.append(t)
             t.start()
-        print(f'total: {(time.time()-t0):0.2}')
+        print(f'total: {(time.time() - t0):0.2}')
 
         taf = thermoanalysis.ThermoAnalysis()
         t0 = time.time()
@@ -220,4 +220,4 @@ class TestThermoAnalysisInThread(unittest.TestCase):
                 mishyb_lib=None,
             )
             self.assertEqual(new_res, res)
-        print(f'total: {(time.time()-t0):0.2}')
+        print(f'total: {(time.time() - t0):0.2}')
