@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2023. Ben Pruitt & Nick Conway; 2014-2018 Wyss Institute
+# Copyright (C) 2014-2025. Ben Pruitt & Nick Conway; 2014-2018 Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ from typing import List
 __version__ = '2.0.3'
 __author__ = 'Ben Pruitt, Nick Conway'
 __copyright__ = (
-    'Copyright 2014-2024, Ben Pruitt & Nick Conway; 2014-2018 Wyss Institute'
+    'Copyright 2014-2025, Ben Pruitt & Nick Conway; 2014-2018 Wyss Institute'
 )
 __license__ = 'GPLv2'
 DESCRIPTION = 'Python bindings for Primer3'

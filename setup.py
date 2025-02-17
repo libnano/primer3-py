@@ -15,7 +15,7 @@ Installation
 ------------
 
 **Primer3-py** has no external runtime library dependencies and should compile
-on easily most Linux and MacOS systems that are running Python 3.8 - 3.11.
+on easily most Linux and MacOS systems that are running Python 3.8 - 3.13.
 Windows compilation is also generally easy.
 
 To build **Primer3-py** within the package directory run::
@@ -368,7 +368,8 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
-        'Development Status :: 4 - Beta',
+        'Programming Language :: Python :: 3.13',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',

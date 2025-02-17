@@ -44,7 +44,7 @@ doi: 10.1093/nar/gks596
 
 All project code, including the derivative Primer3 library, is licensed
 under GPLv2. The included Python and Python C API bindings are
-Copyright (c) 2014 Ben Pruitt, Nick Conway; Wyss Institute for
+Copyright (c) 2014-2025 Ben Pruitt, Nick Conway; 2014-2018 Wyss Institute for
 Biologically Inspired Engineering.
 
 See LICENSE for full GPLv2 license.
