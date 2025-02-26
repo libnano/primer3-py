@@ -1,4 +1,4 @@
-# Copyright (C) 2023. Ben Pruitt & Nick Conway
+# Copyright (C) 2023-2025. Ben Pruitt & Nick Conway
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -56,7 +56,7 @@ class Primer3PyArguments:
 
     dmso_conc: float = 0.0
     dmso_fact: float = 0.6
-    formamide_conc: float = 0.8
+    formamide_conc: float = 0.0
     annealing_temp_c: float = -10.0  # per `oligotm_main.c`` and `libprimer.c`
 
     def todict(self) -> dict:
