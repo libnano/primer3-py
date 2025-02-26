@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Building new Cython modules against thermoanalysis.pxd &mdash; Primer3-py 2.0.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>Building new Cython modules against thermoanalysis.pxd &mdash; Primer3-py 2.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=664ffad9"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=20623aea"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -36,9 +34,6 @@
           <a href="index.html" class="icon icon-home">
             Primer3-py
           </a>
-              <div class="version">
-                2.0.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -97,7 +92,7 @@
 <span class="sd">cimport A.B and not from A cimport B</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">primer3</span> <span class="kn">import</span> <span class="n">thermoanalysis</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">primer3</span><span class="w"> </span><span class="kn">import</span> <span class="n">thermoanalysis</span>
 
 <span class="n">cdef</span> <span class="n">thermoanalysis</span><span class="o">.</span><span class="n">ThermoAnalysis</span> <span class="n">a</span> <span class="o">=</span> <span class="n">thermoanalysis</span><span class="o">.</span><span class="n">ThermoAnalysis</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MAX NN LENGTH&quot;</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">max_nn_length</span><span class="p">)</span>
@@ -108,7 +103,7 @@
 </pre></div>
 </div>
 <p>and to build/install using a standard <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> add the lines (fill in the …s)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">primer3</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span><span class="w"> </span><span class="nn">primer3</span>
 
     <span class="o">...</span>
     <span class="n">my_ext</span> <span class="o">=</span> <span class="n">Extension</span><span class="p">(</span>
@@ -138,7 +133,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Copyright 2014-2024, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
+    <p>&#169; Copyright Copyright 2014-2025, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
