@@ -6,6 +6,11 @@ on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+    branches:
+      - "**docs**"  # Matches any branch that contains "docs"
+
+  # Trigger on request (note this pushes to gh-pages and NOT gh-pages-test)
+  workflow_dispatch:
 
 jobs:
   docs:
@@ -24,9 +29,17 @@ jobs:
         cd docs/
         make html
         cd ..
-    - name: Commit documentation changes to the gh-pages branch
+    - name: Determine target branch
       run: |
-        git clone https://github.com/libnano/primer3-py.git --branch gh-pages --single-branch gh-pages
+        TAG_NAME=${GITHUB_REF#refs/tags/}
+        if [[ "$TAG_NAME" == v* || "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+          echo "BRANCH_NAME=gh-pages" >> $GITHUB_ENV
+        else
+          echo "BRANCH_NAME=gh-pages-test" >> $GITHUB_ENV
+        fi
+    - name: Commit documentation changes to the target branch
+      run: |
+        git clone https://github.com/libnano/primer3-py.git  --branch $BRANCH_NAME --single-branch gh-pages
         cp -r docs/_build/html/* gh-pages/
         cd gh-pages
         git config --local user.email "action@github.com"
@@ -35,10 +48,10 @@ jobs:
         git commit -m "Update documentation" -a || true
         # The above command will fail if no changes were present, so we ignore
         # the return code.
-    - name: Push changes to the gh-pages branch
+    - name: Push changes to the target branch
       uses: ad-m/github-push-action@master
       with:
-        branch: gh-pages
+        branch: ${{ env.BRANCH_NAME }}
         directory: gh-pages
         github_token: ${{ secrets.PRIMER3_TOKEN }}
         force: true
