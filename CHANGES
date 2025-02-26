@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.1.0 (February 26, 2025)
+
+- Support for python 3.13
+- Silence stderr output during ascii structure generation (issue #146)
+- Updated default formamide concentration to match latest primer3web value + oligotm default (issue #140)
+
 ## Version 2.0.3 (February 15, 2024)
 
 - Fix `_ThermoAnalysis._set_globals_and_seq_args` for improper checks on `misprime_lib` and
