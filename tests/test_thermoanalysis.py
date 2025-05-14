@@ -430,6 +430,43 @@ class TestLowLevelBindings(unittest.TestCase):
         for k, v in args.items():
             assert v == dict_out[k]
 
+    def test_calc_tm_acgt_validation(self):
+        '''Test that calc_tm properly validates and converts ACGT sequences'''
+        # Test already uppercase ACGT (should use fast path)
+        seq = 'ACGT' * 10
+        tm1 = bindings.calc_tm(seq)
+        self.assertTrue(tm1 > 0)  # Should get a valid Tm
+
+        # Test lowercase conversion
+        seq_lower = 'acgt' * 10
+        tm2 = bindings.calc_tm(seq_lower)
+        self.assertEqual(tm1, tm2)  # Should get same Tm after conversion
+
+        # Test mixed case
+        seq_mixed = 'AcGt' * 10
+        tm3 = bindings.calc_tm(seq_mixed)
+        self.assertEqual(tm1, tm3)  # Should get same Tm after conversion
+
+        # Test invalid bases
+        with self.assertRaises(ValueError) as cm:
+            bindings.calc_tm('ACGTN')
+        self.assertIn("'N'", str(cm.exception))
+
+        # Test bytes input
+        seq_bytes = b'ACGT' * 10
+        tm4 = bindings.calc_tm(seq_bytes)
+        self.assertEqual(tm1, tm4)  # Should get same Tm with bytes input
+
+        # Test lowercase bytes
+        seq_bytes_lower = b'acgt' * 10
+        tm5 = bindings.calc_tm(seq_bytes_lower)
+        self.assertEqual(tm1, tm5)  # Should get same Tm after conversion
+
+        # Test invalid bytes
+        with self.assertRaises(ValueError) as cm:
+            bindings.calc_tm(b'ACGTN')
+        self.assertIn("'N'", str(cm.exception))
+
 
 def suite():
     '''Define the test suite'''

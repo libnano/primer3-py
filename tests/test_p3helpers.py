@@ -101,6 +101,105 @@ class TestP3Helpers(unittest.TestCase):
             'ZACGT',
         )
 
+    def test_ensure_acgt_uppercase(self):
+        # 1. Test already uppercase ACGT (fast path)
+        seq = 'ACGT'
+        out_seq = p3helpers.ensure_acgt_uppercase(seq)
+        self.assertEqual(out_seq, 'ACGT')
+        # Verify it's the same object (no new allocation)
+        self.assertIs(out_seq, seq)
+
+        # 2. Test lowercase to uppercase conversion
+        seq = 'acgt'
+        out_seq = p3helpers.ensure_acgt_uppercase(seq)
+        self.assertEqual(out_seq, 'ACGT')
+        # Verify it's a new object
+        self.assertIsNot(out_seq, seq)
+
+        # 3. Test mixed case
+        seq = 'AcGt'
+        out_seq = p3helpers.ensure_acgt_uppercase(seq)
+        self.assertEqual(out_seq, 'ACGT')
+
+        # 4. Test empty sequence
+        seq = ''
+        out_seq = p3helpers.ensure_acgt_uppercase(seq)
+        self.assertEqual(out_seq, '')
+        # Verify empty string returns same object
+        self.assertIs(out_seq, seq)
+
+        # 5. Test bytes already uppercase ACGT (fast path)
+        seq = b'ACGT'
+        out_seq = p3helpers.ensure_acgt_uppercase_b(seq)
+        self.assertEqual(out_seq, b'ACGT')
+        # Verify it's the same object
+        self.assertIs(out_seq, seq)
+
+        # 6. Test bytes lowercase to uppercase
+        seq = b'acgt'
+        out_seq = p3helpers.ensure_acgt_uppercase_b(seq)
+        self.assertEqual(out_seq, b'ACGT')
+        # Verify it's a new object
+        self.assertIsNot(out_seq, seq)
+
+        # 7. Test bytes mixed case
+        seq = b'AcGt'
+        out_seq = p3helpers.ensure_acgt_uppercase_b(seq)
+        self.assertEqual(out_seq, b'ACGT')
+
+        # 8. Test bytes empty sequence
+        seq = b''
+        out_seq = p3helpers.ensure_acgt_uppercase_b(seq)
+        self.assertEqual(out_seq, b'')
+        # Verify empty bytes returns same object
+        self.assertIs(out_seq, seq)
+
+        # 9. Test invalid chars at different positions (string)
+        invalid_positions = [
+            'NACGT',  # Start
+            'ACGTN',  # End
+            'ACNGT',  # Middle
+        ]
+        for seq in invalid_positions:
+            with self.assertRaises(ValueError) as cm:
+                p3helpers.ensure_acgt_uppercase(seq)
+            err_msg = str(cm.exception)
+            self.assertIn('position', err_msg)
+            self.assertIn(seq, err_msg)
+            self.assertIn("'N'", err_msg)
+
+        # 10. Test invalid chars at different positions (bytes)
+        invalid_positions = [
+            b'NACGT',  # Start
+            b'ACGTN',  # End
+            b'ACNGT',  # Middle
+        ]
+        for seq in invalid_positions:
+            with self.assertRaises(ValueError) as cm:
+                p3helpers.ensure_acgt_uppercase_b(seq)
+            err_msg = str(cm.exception)
+            self.assertIn('position', err_msg)
+            self.assertIn(str(seq), err_msg)
+            self.assertIn("'N'", err_msg)
+
+        # 11. Test performance (fast path vs slow path)
+        def time_conversion(seq, n=1000):
+            import time
+            start = time.time()
+            for _ in range(n):
+                p3helpers.ensure_acgt_uppercase(seq)
+            return time.time() - start
+
+        # Test fast path is actually faster
+        slow_time = time_conversion('acgt' * 100)  # needs conversion
+        fast_time = time_conversion('ACGT' * 100)  # already correct
+        self.assertLess(fast_time, slow_time)
+
+        # 12. Test long sequence
+        long_seq = 'ACGT' * 1000
+        out_seq = p3helpers.ensure_acgt_uppercase(long_seq)
+        self.assertIs(out_seq, long_seq)  # Should use fast path
+
 
 def suite():
     '''Define the test suite'''

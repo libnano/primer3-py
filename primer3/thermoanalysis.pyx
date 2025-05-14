@@ -51,6 +51,7 @@ Calculations are performed under the following paradigm:
     oligo_calc.mv_conc = 80  # Increase the monovalent ion conc to 80 mM
 
 '''
+from cython cimport typeof
 from libc.stdlib cimport (
     free,
     malloc,
@@ -67,7 +68,10 @@ from typing import (
     Union,
 )
 
+import primer3.p3helpers as p3h
 from primer3 import argdefaults
+
+cimport primer3.p3helpers as p3h
 
 _DID_LOAD_THERM_PARAMS = False
 _DEFAULT_WORD_LEN_2 = 16  # see masker.h
@@ -93,24 +97,13 @@ def get_dunder_file() -> str:
 
 # ~~~~~~~~~~~~~~~ Utility functions to enforce utf8 encoding ~~~~~~~~~~~~~~~ #
 
-cdef unsigned char[:] _chars(s):
-    cdef unsigned char[:] o
-    if isinstance(s, str):
-        # encode to the specific encoding used inside of the module
-        o = memoryview(bytearray((<str>s).encode('utf8')))
-        return o
-    return memoryview(s)
-
-
 cdef inline bytes _bytes(s):
-    # Note that this check gets optimized out by the C compiler and is
-    # recommended over the IF/ELSE Cython compile-time directives
-    # See: Cython/Includes/cpython/version.pxd
     if isinstance(s, str):
-        # encode to the specific encoding used inside of the module
-        return (<str>s).encode('utf8')
-    else:
+        return s.encode('utf8')
+    elif isinstance(s, bytes):
         return s
+    else:
+        raise TypeError(f'Expected str or bytes, got {type(s)}')
 
 
 # ~~~~~~~~~ Load base thermodynamic parameters into memory from file ~~~~~~~~ #
@@ -290,16 +283,16 @@ def _conditional_get_enum_int(
         :class:`TypeError`: invalid type for the key
 
     '''
-    if isinstance(arg_value, (int, long)):
+    if isinstance(arg_value, int):
         return arg_value
     elif isinstance(arg_value, str):
-        if arg_value not in dict_obj:
-            raise ValueError(
-                f'{arg_name}: {arg_value} argument not in {dict_obj}',
-            )
-        return dict_obj[arg_value]
+        if arg_value in dict_obj:
+            return dict_obj[arg_value]
+        raise ValueError(
+            f'{arg_name}: {arg_value} argument not in {dict_obj}',
+        )
     raise TypeError(
-        f'{arg_name}: {arg_value} invalid type {type(arg_value)}',
+        f'{arg_name}: {arg_value} argument must be a string or integer',
     )
 
 
@@ -343,9 +336,9 @@ cdef class _ThermoAnalysis:
                 temp_only: int = DEFAULT_P3_ARGS.temp_only,
                 debug: int = 0,
                 max_nn_length: int = DEFAULT_P3_ARGS.max_nn_length,
-                tm_method: Union[int, str] = DEFAULT_P3_ARGS.tm_method_int,
+                tm_method: Union[int, str] = DEFAULT_P3_ARGS.tm_method,
                 salt_correction_method: Union[int, str] = \
-                    DEFAULT_P3_ARGS.salt_corrections_method_int,
+                    DEFAULT_P3_ARGS.salt_corrections_method,
         ):
         '''
         NOTE: this class uses properties to enable multi type value assignment
@@ -1062,14 +1055,20 @@ cdef class _ThermoAnalysis:
         Returns:
             floating point Tm result
 
+        Raises:
+            ValueError: If sequence contains non-ACGT bases
         '''
-        # first convert any unicode to a byte string and then
-        # cooerce to a unsigned char *
+        # Validate and convert to uppercase if needed
+        if isinstance(seq1, str):
+            seq1 = p3h.ensure_acgt_uppercase(seq1)
+        else:
+            seq1 = p3h.ensure_acgt_uppercase_b(seq1)
+
+        # Convert to bytes and call C function
         py_s1 = <bytes> _bytes(seq1)
         cdef char* s1 = py_s1
 
-        tr_obj  = _ThermoAnalysis.calc_tm_c(<_ThermoAnalysis> self, s1)
-        return tr_obj
+        return _ThermoAnalysis.calc_tm_c(<_ThermoAnalysis> self, s1)
 
     def todict(self) -> Dict[str, Any]:
         '''
@@ -2420,6 +2419,8 @@ class ThermoAnalysis(_ThermoAnalysis):
         Returns:
             floating point Tm result
 
+        Raises:
+            ValueError: If sequence contains non-ACGT bases
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_tm')
         return self.calc_tm(seq1)
