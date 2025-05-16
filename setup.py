@@ -359,6 +359,12 @@ def try_cythonize(extension_list, *args, **kwargs):
 
 
 setup(
+    # Note: We intentionally ignore setuptools warnings about undeclared
+    # packages in primer3/src/libprimer3/ and its subdirectories. These
+    # directories contain C source code, headers, and configuration files -
+    # they are not meant to be Python packages despite being potentially
+    # importable by Python's rules. They are correctly handled as package
+    # data via package_data.
     packages=['primer3'],
     ext_modules=try_cythonize(cython_extensions),
     package_data={'primer3': PACKAGE_FPS},

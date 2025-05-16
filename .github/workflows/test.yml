@@ -1,4 +1,8 @@
-name: build, pytest and pre-commit
+# Primary CI workflow that runs on every push and PR
+# - Builds the package
+# - Runs all tests
+# - Runs pre-commit hooks for code quality
+name: Test
 
 on: [push, pull_request, workflow_dispatch]
 

@@ -1,0 +1,209 @@
+# Release workflow that builds and publishes packages to PyPI
+# - Builds wheels for all supported Python versions and platforms
+# - Builds source distribution
+# - Uses __init__.py version as source of truth (supports any valid PEP 440 version)
+# - For test builds: adds .devN suffix (e.g., 2.1.0.dev1 or 2.1.0a1.dev1)
+# - For production: uses base version, adds .postN only if rebuild needed
+# See https://github.com/pypa/cibuildwheel for details
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      is_test:
+        description: 'Push to TestPyPI'
+        type: boolean
+        default: true
+        required: true
+      build_number:
+        description: 'Build number (adds .devN for test, .postN for production rebuild if > 1)'
+        type: string
+        required: true
+        default: '1'
+
+jobs:
+  validate:
+    name: Validate version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for tags
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Get version from __init__.py
+        id: get-version
+        run: |
+          # Extract version from __init__.py
+          # This supports any valid PEP 440 version including pre-releases (e.g., 2.1.0a1)
+          VERSION=$(python -c "exec(open('primer3/__init__.py').read()); print(__version__)")
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Base version from __init__.py: ${VERSION}"
+
+          # If this is a tagged commit, validate tag matches version
+          # For pre-releases: tag should match exactly (e.g., v2.1.0a1)
+          GIT_TAG=$(git describe --exact-match --tags HEAD 2>/dev/null || echo "")
+          if [[ -n "$GIT_TAG" ]]; then
+            # Remove 'v' prefix if present
+            TAG_VERSION=${GIT_TAG#v}
+            if [[ "$VERSION" != "$TAG_VERSION" ]]; then
+              echo "Error: __init__.py version ${VERSION} does not match git tag ${TAG_VERSION}"
+              exit 1
+            fi
+            echo "Version matches git tag"
+          fi
+
+  build_wheels:
+    name: Build wheel for ${{ matrix.os }}, Python ${{ matrix.python-version }}
+    needs: validate
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-2022]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set version
+        run: |
+          # Get base version from validate job
+          BASE_VERSION="${{ needs.validate.outputs.version }}"
+
+          if [[ "${{ inputs.is_test }}" == "true" ]]; then
+            # Test builds always use .devN
+            VERSION="${BASE_VERSION}.dev${{ inputs.build_number }}"
+          else
+            # Production builds only use .postN if build_number > 1
+            if [[ "${{ inputs.build_number }}" == "1" ]]; then
+              VERSION="${BASE_VERSION}"
+            else
+              # Subtract 1 from build_number for post suffix (so first retry is post1)
+              POST_NUM=$((${{ inputs.build_number }} - 1))
+              VERSION="${BASE_VERSION}.post${POST_NUM}"
+            fi
+          fi
+          echo "PACKAGE_VERSION=${VERSION}" >> $GITHUB_ENV
+          # Update version in setup.py
+          sed -i.bak "s/version=.*,/version='${VERSION}',/" setup.py
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
+        env:
+          CIBW_PROJECT_REQUIRES_PYTHON: "==${{ matrix.python-version }}.*"
+
+          # Skip musl linux and PyPy versions
+          CIBW_SKIP: "{*-musllinux_*,pp*}"
+
+          # Build only on 64-bit architectures.
+          CIBW_ARCHS_MACOS: "${{ matrix.python-version > 3.8  && 'x86_64 arm64' || 'x86_64' }}"
+
+          # NOTE: Commented out to be used with QEMU block above
+          # CIBW_ARCHS_LINUX: "x86_64 aarch64"
+
+          CIBW_ARCHS_LINUX: "auto64"
+          CIBW_ARCHS_WINDOWS: "auto64"
+          MACOSX_DEPLOYMENT_TARGET: "10.14"
+          CIBW_BEFORE_BUILD: >-
+            python -m pip install --upgrade pip &&
+            python -m pip install "Cython==3.0.12" pytest "setuptools>=67.1.0" wheel build &&
+            cd {project} &&
+            python -m pip install -e .
+          CIBW_TEST_COMMAND_MACOS: "pytest {project}/tests/test_thermoanalysis.py -v"
+          CIBW_TEST_COMMAND_LINUX: "pytest {project}/tests/test_thermoanalysis.py -v"
+          CIBW_TEST_COMMAND_WINDOWS: "pytest {project}\\tests\\test_thermoanalysis.py"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.python-version }}-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set version
+        run: |
+          # Get base version from validate job
+          BASE_VERSION="${{ needs.validate.outputs.version }}"
+
+          if [[ "${{ inputs.is_test }}" == "true" ]]; then
+            # Test builds always use .devN
+            VERSION="${BASE_VERSION}.dev${{ inputs.build_number }}"
+          else
+            # Production builds only use .postN if build_number > 1
+            if [[ "${{ inputs.build_number }}" == "1" ]]; then
+              VERSION="${BASE_VERSION}"
+            else
+              # Subtract 1 from build_number for post suffix (so first retry is post1)
+              POST_NUM=$((${{ inputs.build_number }} - 1))
+              VERSION="${BASE_VERSION}.post${POST_NUM}"
+            fi
+          fi
+          echo "PACKAGE_VERSION=${VERSION}" >> $GITHUB_ENV
+          # Update version in setup.py
+          sed -i.bak "s/version=.*,/version='${VERSION}',/" setup.py
+
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build "setuptools>=67.1.0" "Cython==3.0.12" wheel
+
+      - name: Build sdist
+        run: python -m build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-sdist
+          path: dist/*.tar.gz
+
+  upload_pypi:
+    name: Upload wheels and sdist tar.gz to PyPI
+    needs: [validate, build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+      - name: Download wheels & sdist
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Check files
+        run: ls -lR dist/
+
+      - name: Upload to PyPI
+        if: inputs.is_test == false
+        uses: pypa/gh-action-pypi-publish@v1.8.11
+        with:
+          password: ${{ secrets.PRIMER3_PYPI_API_TOKEN }}
+          verify_metadata: true
+          verbose: true
+
+      - name: Upload to TestPyPI
+        if: inputs.is_test == true
+        uses: pypa/gh-action-pypi-publish@v1.8.11
+        with:
+          password: ${{ secrets.PRIMER3_TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
+          verify_metadata: true
+          verbose: true

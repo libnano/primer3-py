@@ -1,7 +1,11 @@
-# NOTE: repo needs a secrets PRIMER3_TOKEN that is a
-# GitHub Personal Access Token (Fine Grained) with "Contents" Read Write
-# permission
-name: "Push New Tagged Version Docs Build"
+# Documentation workflow for building and publishing Sphinx docs
+# - Builds HTML documentation using Sphinx
+# - Publishes to gh-pages on version tags
+# - Publishes to gh-pages-test on doc branches
+# - Allows manual publishing to either branch via workflow dispatch
+#
+# NOTE: Requires PRIMER3_TOKEN secret with "Contents" Read/Write permissions
+name: Documentation
 
 on:
   push:
@@ -10,8 +14,17 @@ on:
     branches:
       - "**docs**"  # Matches any branch that contains "docs"
 
-  # Trigger on request (note this pushes to gh-pages and NOT gh-pages-test)
+  # Allow manual triggering with branch choice
   workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Target branch for documentation'
+        required: true
+        default: 'gh-pages-test'
+        type: 'choice'
+        options:
+          - 'gh-pages'
+          - 'gh-pages-test'
 
 jobs:
   docs:
@@ -46,7 +59,9 @@ jobs:
     - name: Determine target branch
       run: |
         TAG_NAME=${GITHUB_REF#refs/tags/}
-        if [[ "$TAG_NAME" == v* || "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+        if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+          echo "BRANCH_NAME=${{ github.event.inputs.target_branch }}" >> $GITHUB_ENV
+        elif [[ "$TAG_NAME" == v* ]]; then
           echo "BRANCH_NAME=gh-pages" >> $GITHUB_ENV
         else
           echo "BRANCH_NAME=gh-pages-test" >> $GITHUB_ENV
