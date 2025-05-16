@@ -1,7 +1,8 @@
 # NOTE: repo needs a secrets PRIMER3_TOKEN that is a
 # GitHub Personal Access Token (Fine Grained) with "Contents" Read Write
 # permission
-name: "Push New Tagged Version Docs Build" # Build on a new version tag
+name: "Push New Tagged Version Docs Build"
+
 on:
   push:
     tags:
@@ -15,20 +16,33 @@ on:
 jobs:
   docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-    - uses: actions/checkout@v3.3.0
-    - name: Set up Python
-      uses: actions/setup-python@v4.4.0
+    - uses: actions/checkout@v4
       with:
-        python-version: '3.12'
-    - name: Install and run sphinx to build the docs
+        fetch-depth: 1  # Shallow clone is fine for docs
+        persist-credentials: false  # Don't persist credentials as we use PRIMER3_TOKEN explicitly
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        cache: 'pip'  # Enable pip dependency caching
+
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install cython myst-parser sphinx sphinx_rtd_theme==2.0.0 sphinx-autodoc-typehints setuptools
-        python setup.py build_ext --inplace
+        python -m pip install "Cython==3.0.12" myst-parser sphinx sphinx_rtd_theme==2.0.0 sphinx-autodoc-typehints "setuptools>=67.1.0" wheel build
+        python -m build
+        python -m pip install -e .
+
+    - name: Build documentation
+      run: |
         cd docs/
         make html
         cd ..
+
     - name: Determine target branch
       run: |
         TAG_NAME=${GITHUB_REF#refs/tags/}
@@ -37,19 +51,19 @@ jobs:
         else
           echo "BRANCH_NAME=gh-pages-test" >> $GITHUB_ENV
         fi
+
     - name: Commit documentation changes to the target branch
       run: |
-        git clone https://github.com/libnano/primer3-py.git  --branch $BRANCH_NAME --single-branch gh-pages
+        git clone https://github.com/libnano/primer3-py.git --branch $BRANCH_NAME --single-branch gh-pages
         cp -r docs/_build/html/* gh-pages/
         cd gh-pages
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add .
         git commit -m "Update documentation" -a || true
-        # The above command will fail if no changes were present, so we ignore
-        # the return code.
-    - name: Push changes to the target branch
-      uses: ad-m/github-push-action@master
+
+    - name: Push changes
+      uses: ad-m/github-push-action@v0.8.0
       with:
         branch: ${{ env.BRANCH_NAME }}
         directory: gh-pages

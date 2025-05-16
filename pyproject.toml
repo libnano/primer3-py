@@ -1,0 +1,40 @@
+[build-system]
+requires = [
+    "setuptools>=65.6.3",
+    "wheel",
+    "Cython==3.0.12",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "primer3-py"
+dynamic = ["version"]
+description = "Simple primer design and analysis"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "GPLv2"}
+authors = [
+    {name = "Ben Pruitt", email = "bpruittvt@gmail.com"},
+]
+classifiers = [
+    "Programming Language :: C",
+    "Programming Language :: Cython",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+]
+
+[project.urls]
+Homepage = "https://github.com/libnano/primer3-py"
+Documentation = "http://libnano.github.io/primer3-py"
+
+[tool.setuptools.dynamic]
+version = {attr = "primer3.__version__"}
