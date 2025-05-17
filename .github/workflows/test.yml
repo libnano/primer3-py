@@ -1,3 +1,4 @@
+# .github/workflows/test.yml
 # Primary CI workflow that runs on every push and PR
 # - Builds the package
 # - Runs all tests

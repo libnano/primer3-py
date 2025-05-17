@@ -1,3 +1,4 @@
+# .github/workflows/release.yml
 # Release workflow that builds and publishes packages to PyPI
 # - Builds wheels for all supported Python versions and platforms
 # - Builds source distribution

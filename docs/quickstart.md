@@ -2,28 +2,55 @@
 
 **Primer3-py** is designed to be simple to install and use.
 
-```{contents}
-```
 
 ## Requirements
 
 **Primer3-py** is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.13 builds are supported.
 
-Wheels are released for CPython versions following the [EOL model](https://devguide.python.org/versions/).
+Wheels are released for CPython versions following the [EOL model](https://devguide.python.org/versions/). Pre-built wheels are available for:
+- MacOS (x86-64, arm64)
+- Linux (x86-64)
+- Windows (x86-64)
+
+For other platforms (e.g., Linux aarch64), the package can be built from source but is not officially supported.
 
 
 ## Installation
 
-If you want to install the latest stable build of **Primer3-py**, you can
-install it using `pip`:
+### Standard Installation
+
+To install the latest stable version:
 
 ```bash
-$ pip install primer3-py
+pip install primer3-py
 ```
 
-**NOTE**: We support wheel builds for PyPi for the 3 most recent CPython versions. Target platforms for wheels are MacOS `x86-64` `arm64`, Linux `x86-64`, and Windows `x86-64`.
+### Development Installation
 
-If your Python version and platform fall outside this such as Linux `aarch64` it is confirmed `primer3-py` builds on this platform but it is not supported as our build GitHub actions runners do not run these builds expediently.
+For development or to work with the latest code:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/libnano/primer3-py
+   cd primer3-py
+   ```
+
+2. Install development dependencies:
+   ```bash
+   pip install -r dev-requirements.txt
+   ```
+
+3. Install in development mode:
+   ```bash
+   pip install -e .
+   ```
+
+### Windows-Specific Setup
+
+If building on Windows, you'll need the TDM-GCC MinGW Compiler:
+1. Download and install from [TDM-GCC MinGW](https://jmeubank.github.io/tdm-gcc/)
+2. Ensure the compiler is in your system PATH
+3. Use the installation commands above
 
 ## Thermodynamic analysis
 
@@ -116,15 +143,17 @@ Example usage:
 bindings.design_primers(
     seq_args={
         'SEQUENCE_ID': 'MH1000',
-        'SEQUENCE_TEMPLATE': 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT'
-                             'AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA'
-                             'ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG'
-                             'CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG'
-                             'TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA'
-                             'TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA'
-                             'ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA'
-                             'TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA'
-                             'GATGTTTCCCTCTAGTAG',
+        'SEQUENCE_TEMPLATE': (
+            'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT'
+            'AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA'
+            'ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG'
+            'CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG'
+            'TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA'
+            'TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA'
+            'ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA'
+            'TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA'
+            'GATGTTTCCCTCTAGTAG',
+        )
         'SEQUENCE_INCLUDED_REGION': [36,342]
     },
     global_args={
@@ -201,256 +230,48 @@ the latest version of the TDM-GCC MinGW Compiler if building in a
 
 ## Testing
 
-Every commit pushed to
-[the primer3-py GitHub repo](https://github.com/libnano/primer3-py) is tested to
-ensure it builds properly and passes our unit testing framework as a GitHub action
+Every commit pushed to [the primer3-py GitHub repo](https://github.com/libnano/primer3-py)
+is tested via GitHub Actions to ensure it builds properly and passes our unit tests.
 
-If you'd like to run the tests yourself, we suggest the following workflow:
+If you'd like to run the tests yourself:
 
+```bash
+# Clone the repository
+git clone https://github.com/libnano/primer3-py
+cd primer3-py
+
+# (Recommended) Create and activate a virtual environment
+python -m venv p3p-test-env
+source p3p-test-env/bin/activate  # On Unix/macOS
+# p3p-test-env\Scripts\activate   # On Windows
+
+# Install development dependencies
+pip install -r dev-requirements.txt
+
+# Build the package in-place (this builds the Cython extensions and primer3 binaries in the package directory)
+# --no-build-isolation: Use local environment's packages (including our dev-requirements.txt) instead of creating a clean env
+# --no-deps: Don't install or upgrade any package dependencies
+# -e: Install in "editable" mode, creating links to the source code
+pip install --no-build-isolation --no-deps -e .
+
+# Run tests from the package directory
+pytest
+
+# When finished, deactivate the virtual environment
+deactivate
 ```
-$ git clone https://github.com/libnano/primer3-py
-$ cd primer3-py
-$ python setup.py build_ext --inplace
-$ pytest
-```
 
-NOTE: `pip` / `conda` install `pytest` if not in your environment
+The in-place build is necessary because the tests require access to the primer3 binaries
+and other test resources that are part of the package directory structure but not installed
+to site-packages.
 
+Using a virtual environment is recommended to ensure a clean, isolated development environment
+and avoid conflicts with other Python packages in your system.
 
 ## Contributing
 
-Contributions are welcomed via pull requests.
-
-Contact the `primer3-py` maintainers prior to beginning your work to make sure
-it makes sense for the project.
+Contributions are welcomed via pull requests. Contact the `primer3-py` maintainers prior to beginning your work to make sure it makes sense for the project.
 
 By contributing, you also agree to release your code under the GPLv2.
 
-After a successful PR you will be listed under the [contributors](https://github.com/libnano/primer3-py/graphs/contributors).
-
-### Development Workflow
-
-We use a fork-based development workflow to maintain code quality and security. This section describes the process for both contributors and maintainers.
-
-#### Repository Structure
-
-```mermaid
-graph TD
-    A[upstream/master] -->|fork| B[fork/master]
-    B -->|branch| C[fork/feature branch]
-    C -->|PR| A
-    A -->|branch| D[upstream/2.1.0-staging]
-    D -->|"version/docs updates + testing"| A
-```
-
-#### Fork-based Development (Required)
-
-All development work, including by core team members, should be done in forks:
-
-1. Fork the repository on GitHub
-2. Clone your fork locally:
-   ```bash
-   git clone git@github.com:username/primer3-py.git
-   cd primer3-py
-   ```
-3. Add upstream remote:
-   ```bash
-   git remote add upstream git@github.com:libnano/primer3-py.git
-   ```
-
-#### Branch Management
-
-- In your fork:
-  - Keep your `master` in sync with upstream
-  - Create feature branches from master
-  - Use descriptive prefixes:
-    - `feat/` for new features
-    - `fix/` for bug fixes
-    - `docs/` for documentation updates
-- In upstream (maintainers only):
-  - `master` branch is protected
-  - Version-specific staging branches (e.g., `2.1.0-staging`) for release preparation
-  - No long-lived development branches
-
-#### Development Process
-
-1. Sync with upstream before starting new work:
-   ```bash
-   git fetch upstream
-   git checkout master
-   git reset --hard upstream/master
-   ```
-
-2. Create a feature branch:
-   ```bash
-   git checkout -b feat/my-feature
-   ```
-
-3. Regular sync with upstream while working:
-   ```bash
-   git fetch upstream
-   git rebase upstream/master
-   ```
-
-4. Push changes to your fork:
-   ```bash
-   git push origin feat/my-feature
-   ```
-
-5. Open PR against upstream master when ready
-
-#### Release Process (Maintainers Only)
-
-When sufficient changes have accumulated in master for a release:
-
-1. Determine version impact from accumulated changes (e.g., 2.1.0)
-
-2. Create version-specific staging branch:
-   ```bash
-   git checkout -b 2.1.0-staging upstream/master
-   ```
-
-3. Update version, documentation, and changelog
-4. Run test builds and documentation builds
-5. Create PR from staging to master for final review
-6. After merge, create release and tag
-
-#### Handling Hotfixes
-
-For urgent fixes that need immediate release:
-
-1. Create hotfix branch in your fork:
-   ```bash
-   git checkout -b hotfix/urgent-fix upstream/master
-   ```
-
-2. Make minimal necessary changes
-3. Open PR directly to upstream master
-4. Release as patch version after merge
-5. No staging branch needed for simple fixes
-
-# Release Process and Versioning
-
-## Version Numbers
-
-Primer3-py follows [PEP 440](https://peps.python.org/pep-0440/) versioning conventions. The version number is maintained in a single source of truth: `primer3/__init__.py`.
-
-### Version Format Types
-
-1. **Release versions** (e.g., `2.1.0`):
-   - Standard format: `X.Y.Z` (major.minor.patch)
-   - Used for stable releases
-   - Stored in source code and git tags
-
-2. **Pre-release versions** (e.g., `2.1.0a1`, `2.1.0b1`, `2.1.0rc1`):
-   - Used for feature-complete code that needs testing
-   - Alpha (`a`): Early testing, expect bugs
-   - Beta (`b`): Feature complete, testing for bugs
-   - Release Candidate (`rc`): Final testing before release
-   - Stored in source code and git tags
-
-3. **Development builds** (e.g., `2.1.0.dev1` or `2.1.0a1.dev1`):
-   - Added automatically by CI/CD for test builds
-   - NOT stored in source code
-   - Used for testing package builds on TestPyPI
-   - Can be combined with pre-releases
-
-4. **Post-releases** (e.g., `2.1.0.post1`):
-   - Added automatically by CI/CD for production rebuilds
-   - Used when fixing packaging/build issues only
-   - NOT stored in source code
-   - Source remains unchanged from base version
-
-### Version Number Guidelines
-
-- Source code version (in `__init__.py`): Always use base version (`X.Y.Z` or pre-release like `X.Y.Za1`)
-- Git tags: Must be prefixed with 'v' and match source code version exactly (e.g., `v2.1.0`)
-- Test builds: CI/CD automatically adds `.devN` suffix
-- Production rebuilds: CI/CD automatically adds `.postN` suffix if needed
-
-## Release Process
-
-### 1. Preparing a Release
-
-1. Update version in `__init__.py` to target version
-2. Update `CHANGES` file:
-   - Add new version section at the top with release date
-   - List all significant changes since the last release, ensuring each entry:
-     - Matches corresponding PR descriptions
-     - References related issue numbers (e.g., "Fix formamide concentration (issue #140)")
-     - Groups changes by type (e.g., Features, Bug Fixes, Documentation)
-3. Update copyright end dates in source files if needed (e.g., `__init__.py`)
-4. For pre-releases, use appropriate suffix:
-   ```python
-   __version__ = "2.1.0a1"  # Alpha release
-   __version__ = "2.1.0b1"  # Beta release
-   __version__ = "2.1.0rc1"  # Release candidate
-   ```
-5. Commit changes and push to GitHub
-
-### 2. Testing Releases
-
-1. Go to GitHub Actions → Release workflow
-2. Click "Run workflow"
-3. Configure:
-   - Set "Push to TestPyPI" to `true`
-   - Set "Build number" (increments `.devN` suffix)
-4. Review build logs and test on TestPyPI
-5. Go to GitHub Actions → Docs workflow
-6. Click "Run workflow" and select your branch
-7. Review the documentation build for any errors
-8. Test the documentation locally if needed
-9. Repeat with incremented build numbers if needed
-
-### 3. Production Release
-
-1. Go to GitHub Actions → Release workflow
-2. Click "Run workflow"
-3. Configure:
-   - Set "Push to TestPyPI" to `false`
-   - Set "Build number" to `1` for first attempt
-4. If build fails due to packaging (not code):
-   - Increment build number
-   - CI/CD will add `.postN` suffix automatically
-5. Go to GitHub Actions → Docs workflow
-6. Click "Run workflow" and select your branch
-7. Verify the documentation builds and deploys successfully
-8. After successful release:
-   - For pre-releases (alpha/beta/rc):
-     ```bash
-     git tag v2.1.0a1  # Use actual version number
-     git push origin v2.1.0a1
-     ```
-   - For full releases:
-     - Create a new GitHub release at https://github.com/libnano/primer3-py/releases/new
-     - Tag version: `v2.1.0` (use actual version number)
-     - Title: `v2.1.0` (use actual version number)
-     - Description: Copy the relevant section from CHANGES as the release description
-     - This will automatically create and push the git tag
-
-### When to Use Each Version Type
-
-1. **Version Number Components** (X.Y.Z):
-   - **Major (X)**: Breaking API changes including:
-     - Removal of package functions
-     - Changes to function parameters
-     - Changes to function output formats
-     - Core algorithm changes
-   - **Minor (Y)**: New features and functionality in a backward-compatible manner
-   - **Patch (Z)**: Backward-compatible bug fixes and minor improvements
-
-2. **Pre-releases** (`a`/`b`/`rc`):
-   - Used when you want to publicly test a new version before final release
-   - Particularly important for major version changes
-   - Allows community testing while indicating the code is not yet production-ready
-
-3. **Development builds** (`.devN`):
-   - For testing the complete build and distribution system
-   - Verifying packaging on TestPyPI
-   - CI/CD pipeline verification
-   - Not for production use
-
-4. **Post-releases** (`.postN`):
-   - Fix packaging issues
-   - No code changes
-   - Build environment issues
+For detailed contribution guidelines, development setup, workflows, and release process, see our [Development Guide](development.md).

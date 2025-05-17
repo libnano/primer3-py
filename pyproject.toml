@@ -15,6 +15,7 @@ requires-python = ">=3.8"
 license = {text = "GPLv2"}
 authors = [
     {name = "Ben Pruitt", email = "bpruittvt@gmail.com"},
+    {name = "Nick Conway", email = "a.grinner@gmail.com"},
 ]
 classifiers = [
     "Programming Language :: C",

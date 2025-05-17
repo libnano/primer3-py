@@ -13,8 +13,8 @@ functionalities into your projects and applications.
 The included `libprimer3` source is a derivative of the Primer3 v2.6.1
 library that includes a number of optimizations and improvements to make it
 more amenable to Python C API / Cython bindings. Every effort has been made
-to insure that the underlying algorithms and calculations deterministically
-product the same results as the vanilla v2.6.1 Primer3 library.
+to ensure that the underlying algorithms and calculations deterministically
+produce the same results as the vanilla v2.6.1 Primer3 library.
 
 ## Future work
 

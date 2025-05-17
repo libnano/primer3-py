@@ -1,6 +1,8 @@
 ## primer3-py: simple oligo analysis and primer design
 
-<a href="https://github.com/libnano/primer3-py/actions/" rel="actions">![Actions](https://github.com/libnano/primer3-py/actions/workflows/primer3-py-ci-github-action.yml/badge.svg)</a>
+<a href="https://github.com/libnano/primer3-py/actions/workflows/test.yml" rel="actions">![Tests](https://github.com/libnano/primer3-py/actions/workflows/test.yml/badge.svg)</a>
+<a href="https://github.com/libnano/primer3-py/actions/workflows/docs.yml" rel="docs">![Documentation](https://github.com/libnano/primer3-py/actions/workflows/docs.yml/badge.svg)</a>
+<a href="https://github.com/libnano/primer3-py/actions/workflows/release.yml" rel="release">![Release](https://github.com/libnano/primer3-py/actions/workflows/release.yml/badge.svg)</a>
 <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">![License](https://img.shields.io/pypi/l/primer3-py.png)</a>
 <a href="https://pypi.python.org/pypi/primer3-py" rel="pypi">![PyPi](https://img.shields.io/pypi/v/primer3-py.png)</a>
 
@@ -42,4 +44,8 @@ questions: https://github.com/primer3-org/primer3 **
 A copy of the Primer3 2.6.1 design parameters manual can be found at:
 [primer3 v2.6.1 manual](https://htmlpreview.github.io/?https://github.com/primer3-org/primer3/blob/v2.6.1/src/primer3_manual.htm)
 
-For documentation of the bindings, see https://libnano.github.io/primer3-py
+For documentation, see:
+- [API Documentation](https://libnano.github.io/primer3-py)
+- [Quick Start Guide](https://libnano.github.io/primer3-py/quickstart.html)
+- [Development Guide](https://libnano.github.io/primer3-py/development.html)
+- [Release Process](https://libnano.github.io/primer3-py/development.html#release-process)
