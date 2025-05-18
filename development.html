@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Development Guide &mdash; Primer3-py 2.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=20623aea"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Building new Cython modules against thermoanalysis.pxd" href="cython_help.html" />
+    <link rel="prev" title="primer3.p3helpers" href="api/p3helpers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Primer3-py
+          </a>
+              <div class="version">
+                2.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#development-environment-setup">Development Environment Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-workflow">Development Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#branching-strategy">Branching Strategy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#branch-types">Branch Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow-details">Workflow Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#continuous-integration">Continuous Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#test-workflow-test-yml">Test Workflow (<code class="docutils literal notranslate"><span class="pre">test.yml</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-workflow-docs-yml">Documentation Workflow (<code class="docutils literal notranslate"><span class="pre">docs.yml</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-workflow-release-yml">Release Workflow (<code class="docutils literal notranslate"><span class="pre">release.yml</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pull-request-guidelines">Pull Request Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#coding-standards">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-numbers">Version Numbers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#version-format-types">Version Format Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#version-number-guidelines">Version Number Guidelines</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-process">Release Process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preparing-a-release">1. Preparing a Release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-releases">2. Testing Releases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#production-release">3. Production Release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#when-to-use-each-version-type">When to Use Each Version Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Primer3-py</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Development Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/development.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="development-guide">
+<h1>Development Guide<a class="headerlink" href="#development-guide" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://github.com/libnano/primer3-py/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/libnano/primer3-py/actions/workflows/test.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/libnano/primer3-py/actions/workflows/docs.yml"><img alt="Documentation" src="https://github.com/libnano/primer3-py/actions/workflows/docs.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/libnano/primer3-py/actions/workflows/release.yml"><img alt="Release" src="https://github.com/libnano/primer3-py/actions/workflows/release.yml/badge.svg" /></a></p>
+<p>Thank you for your interest in contributing to primer3-py! This document provides comprehensive guidelines for development, contribution, and release processes.</p>
+<section id="development-environment-setup">
+<h2>Development Environment Setup<a class="headerlink" href="#development-environment-setup" title="Link to this heading"></a></h2>
+<p>Development requires Python 3.8+ and our development dependencies.</p>
+<ol class="arabic">
+<li><p>Set up your Python environment:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span><span class="k">in</span><span class="w"> </span>editable<span class="w"> </span>mode<span class="w"> </span>with<span class="w"> </span>development<span class="w"> </span>dependencies
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install pre-commit hooks:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="development-workflow">
+<h2>Development Workflow<a class="headerlink" href="#development-workflow" title="Link to this heading"></a></h2>
+<p>We use a fork-based development workflow:</p>
+<ol class="arabic">
+<li><p>Fork the repository on GitHub</p></li>
+<li><p>Clone your fork:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:username/primer3-py.git
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>primer3-py
+</pre></div>
+</div>
+</li>
+<li><p>Add upstream remote:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>git@github.com:libnano/primer3-py.git
+</pre></div>
+</div>
+</li>
+<li><p>Create a feature branch:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Create<span class="w"> </span>a<span class="w"> </span>feature,<span class="w"> </span>fix,<span class="w"> </span>or<span class="w"> </span>docs<span class="w"> </span>branch
+<span class="gp">$ </span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feat/my-feature
+</pre></div>
+</div>
+</li>
+<li><p>Make your changes, following our <a class="reference internal" href="#coding-standards">coding standards</a></p></li>
+<li><p>Run tests and checks:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Run<span class="w"> </span>the<span class="w"> </span><span class="nb">test</span><span class="w"> </span>suite
+<span class="gp">$ </span>pytest
+
+<span class="gp"># </span>Run<span class="w"> </span>all<span class="w"> </span>pre-commit<span class="w"> </span>hooks
+<span class="gp">$ </span>pre-commit<span class="w"> </span>run<span class="w"> </span>-a
+</pre></div>
+</div>
+</li>
+<li><p>Push changes and open a PR</p></li>
+</ol>
+</section>
+<section id="branching-strategy">
+<h2>Branching Strategy<a class="headerlink" href="#branching-strategy" title="Link to this heading"></a></h2>
+<p>We follow a fork-based development model with version-specific staging branches:</p>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>graph TD
+    A[upstream/master] --&gt;|fork| B[fork/master]
+    B --&gt;|branch| C[fork/feature branch]
+    C --&gt;|PR| A
+    A --&gt;|branch| D[upstream/2.1.0-staging]
+    D --&gt;|version/docs updates + testing| A
+
+    %% Styling
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#dfd,stroke:#333,stroke-width:2px
+    style D fill:#fdd,stroke:#333,stroke-width:2px
+</pre></div>
+</div>
+<section id="branch-types">
+<h3>Branch Types<a class="headerlink" href="#branch-types" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Main Branch</strong> (<code class="docutils literal notranslate"><span class="pre">master</span></code>):</p>
+<ul class="simple">
+<li><p>Primary development branch</p></li>
+<li><p>All features and fixes merge here first</p></li>
+<li><p>Always contains the latest development code</p></li>
+</ul>
+</li>
+<li><p><strong>Staging Branches</strong> (e.g., <code class="docutils literal notranslate"><span class="pre">2.1.0-staging</span></code>):</p>
+<ul class="simple">
+<li><p>Created for each version being prepared for release</p></li>
+<li><p>Used for version-specific changes and testing</p></li>
+<li><p>Named according to the target version (e.g., <code class="docutils literal notranslate"><span class="pre">2.1.0-staging</span></code>)</p></li>
+<li><p>Merged back to master after successful release</p></li>
+</ul>
+</li>
+<li><p><strong>Feature Branches</strong>:</p>
+<ul class="simple">
+<li><p>Created in personal forks</p></li>
+<li><p>Used for developing new features or fixes</p></li>
+<li><p>Should have descriptive names (e.g., <code class="docutils literal notranslate"><span class="pre">feat/pin_cython</span></code>, <code class="docutils literal notranslate"><span class="pre">fix/formamide_conc</span></code>)</p></li>
+<li><p>Submit PRs from these branches to upstream master</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="workflow-details">
+<h3>Workflow Details<a class="headerlink" href="#workflow-details" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Feature Development</strong>:</p>
+<ul class="simple">
+<li><p>Fork the repository</p></li>
+<li><p>Create feature branch from master</p></li>
+<li><p>Develop and test changes</p></li>
+<li><p>Submit PR to upstream master</p></li>
+</ul>
+</li>
+<li><p><strong>Release Preparation</strong>:</p>
+<ul class="simple">
+<li><p>Create version-specific staging branch from master</p></li>
+<li><p>Make version/documentation updates</p></li>
+<li><p>Perform testing and validation</p></li>
+<li><p>Merge back to master when ready</p></li>
+</ul>
+</li>
+<li><p><strong>Maintenance</strong>:</p>
+<ul class="simple">
+<li><p>Keep your fork’s master in sync with upstream</p></li>
+<li><p>Rebase feature branches on latest master when needed</p></li>
+<li><p>Clean up branches after merging</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="continuous-integration">
+<h2>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Link to this heading"></a></h2>
+<p>We use GitHub Actions for CI/CD. Three main workflows are available:</p>
+<section id="test-workflow-test-yml">
+<h3>Test Workflow (<code class="docutils literal notranslate"><span class="pre">test.yml</span></code>)<a class="headerlink" href="#test-workflow-test-yml" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Runs on every push and PR</p></li>
+<li><p>Builds the package</p></li>
+<li><p>Runs all tests</p></li>
+<li><p>Runs pre-commit hooks</p></li>
+<li><p>Manual trigger available via workflow_dispatch</p></li>
+</ul>
+</section>
+<section id="documentation-workflow-docs-yml">
+<h3>Documentation Workflow (<code class="docutils literal notranslate"><span class="pre">docs.yml</span></code>)<a class="headerlink" href="#documentation-workflow-docs-yml" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Builds Sphinx documentation</p></li>
+<li><p>Publishes to gh-pages on version tags</p></li>
+<li><p>Publishes to gh-pages-test on doc branches</p></li>
+<li><p>Manual builds available with branch selection</p></li>
+<li><p>Requires PRIMER3_TOKEN secret for publishing</p></li>
+</ul>
+</section>
+<section id="release-workflow-release-yml">
+<h3>Release Workflow (<code class="docutils literal notranslate"><span class="pre">release.yml</span></code>)<a class="headerlink" href="#release-workflow-release-yml" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Builds wheels for all supported Python versions</p></li>
+<li><p>Builds source distribution</p></li>
+<li><p>Validates versions against <strong>init</strong>.py</p></li>
+<li><p>Supports test builds (.devN) and production (.postN)</p></li>
+<li><p>Manual trigger with test/production options</p></li>
+</ul>
+</section>
+</section>
+<section id="pull-request-guidelines">
+<h2>Pull Request Guidelines<a class="headerlink" href="#pull-request-guidelines" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>PR Description:</p>
+<ul class="simple">
+<li><p>Use clear, descriptive titles</p></li>
+<li><p>Reference related issues</p></li>
+<li><p>Describe all significant changes</p></li>
+<li><p>Use markdown for code blocks</p></li>
+</ul>
+</li>
+<li><p>Code Requirements:</p>
+<ul class="simple">
+<li><p>Add tests for new functionality</p></li>
+<li><p>Update documentation as needed</p></li>
+<li><p>Follow existing code style</p></li>
+<li><p>Keep changes focused and atomic</p></li>
+</ul>
+</li>
+<li><p>Review Process:</p>
+<ul class="simple">
+<li><p>Address all CI failures</p></li>
+<li><p>Respond to reviewer feedback</p></li>
+<li><p>Rebase if needed for clean history</p></li>
+<li><p>Squash commits if requested</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="coding-standards">
+<h2>Coding Standards<a class="headerlink" href="#coding-standards" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Python Code:</p>
+<ul>
+<li><p>Follow PEP 8</p></li>
+<li><p>Always use type hints for function parameters and return values</p></li>
+<li><p>Document public APIs</p></li>
+<li><p>Keep functions focused and testable</p></li>
+<li><p>Respect 80 character line length limit</p></li>
+<li><p>Review and follow <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> linter configuration</p></li>
+<li><p>Always run pre-commit hooks before committing:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Run<span class="w"> </span>all<span class="w"> </span>pre-commit<span class="w"> </span>hooks<span class="w"> </span>on<span class="w"> </span>all<span class="w"> </span>files
+<span class="gp">$ </span>pre-commit<span class="w"> </span>run<span class="w"> </span>-a
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Cython Code:</p>
+<ul class="simple">
+<li><p>Follow Python conventions where applicable</p></li>
+<li><p>Document complex algorithms</p></li>
+<li><p>Optimize only with benchmarks</p></li>
+</ul>
+</li>
+<li><p>Documentation:</p>
+<ul class="simple">
+<li><p>Use clear, concise language</p></li>
+<li><p>Include code examples</p></li>
+<li><p>Keep API docs up to date</p></li>
+<li><p>Follow Google docstring style</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="version-numbers">
+<h2>Version Numbers<a class="headerlink" href="#version-numbers" title="Link to this heading"></a></h2>
+<p>Primer3-py follows <a class="reference external" href="https://peps.python.org/pep-0440/">PEP 440</a> versioning conventions. The version number is maintained in a single source of truth: <code class="docutils literal notranslate"><span class="pre">primer3/__init__.py</span></code>.</p>
+<section id="version-format-types">
+<h3>Version Format Types<a class="headerlink" href="#version-format-types" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Release versions</strong> (e.g., <code class="docutils literal notranslate"><span class="pre">2.1.0</span></code>):</p>
+<ul class="simple">
+<li><p>Standard format: <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> (major.minor.patch)</p></li>
+<li><p>Used for stable releases</p></li>
+<li><p>Stored in source code and git tags</p></li>
+</ul>
+</li>
+<li><p><strong>Pre-release versions</strong> (e.g., <code class="docutils literal notranslate"><span class="pre">2.1.0a1</span></code>, <code class="docutils literal notranslate"><span class="pre">2.1.0b1</span></code>, <code class="docutils literal notranslate"><span class="pre">2.1.0rc1</span></code>):</p>
+<ul class="simple">
+<li><p>Used for feature-complete code that needs testing</p></li>
+<li><p>Alpha (<code class="docutils literal notranslate"><span class="pre">a</span></code>): Early testing, expect bugs</p></li>
+<li><p>Beta (<code class="docutils literal notranslate"><span class="pre">b</span></code>): Feature complete, testing for bugs</p></li>
+<li><p>Release Candidate (<code class="docutils literal notranslate"><span class="pre">rc</span></code>): Final testing before release</p></li>
+<li><p>Stored in source code and git tags</p></li>
+</ul>
+</li>
+<li><p><strong>Development builds</strong> (e.g., <code class="docutils literal notranslate"><span class="pre">2.1.0.dev1</span></code> or <code class="docutils literal notranslate"><span class="pre">2.1.0a1.dev1</span></code>):</p>
+<ul class="simple">
+<li><p>Added automatically by CI/CD for test builds</p></li>
+<li><p>NOT stored in source code</p></li>
+<li><p>Used for testing package builds on TestPyPI</p></li>
+<li><p>Can be combined with pre-releases</p></li>
+</ul>
+</li>
+<li><p><strong>Post-releases</strong> (e.g., <code class="docutils literal notranslate"><span class="pre">2.1.0.post1</span></code>):</p>
+<ul class="simple">
+<li><p>Added automatically by CI/CD for production rebuilds</p></li>
+<li><p>Used when fixing packaging/build issues only</p></li>
+<li><p>NOT stored in source code</p></li>
+<li><p>Source remains unchanged from base version</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="version-number-guidelines">
+<h3>Version Number Guidelines<a class="headerlink" href="#version-number-guidelines" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Source code version (in <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>): Always use base version (<code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> or pre-release like <code class="docutils literal notranslate"><span class="pre">X.Y.Za1</span></code>)</p></li>
+<li><p>Git tags: Must be prefixed with ‘v’ and match source code version exactly (e.g., <code class="docutils literal notranslate"><span class="pre">v2.1.0</span></code>)</p></li>
+<li><p>Test builds: CI/CD automatically adds <code class="docutils literal notranslate"><span class="pre">.devN</span></code> suffix</p></li>
+<li><p>Production rebuilds: CI/CD automatically adds <code class="docutils literal notranslate"><span class="pre">.postN</span></code> suffix if needed</p></li>
+</ul>
+</section>
+</section>
+<section id="release-process">
+<h2>Release Process<a class="headerlink" href="#release-process" title="Link to this heading"></a></h2>
+<section id="preparing-a-release">
+<h3>1. Preparing a Release<a class="headerlink" href="#preparing-a-release" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Update version in <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> to target version</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">CHANGES</span></code> file:</p>
+<ul class="simple">
+<li><p>Add new version section at the top with release date</p></li>
+<li><p>List all significant changes since the last release, ensuring each entry:</p>
+<ul>
+<li><p>Matches corresponding PR descriptions</p></li>
+<li><p>References related issue numbers (e.g., “Fix formamide concentration (issue #140)”)</p></li>
+<li><p>Groups changes by type (e.g., Features, Bug Fixes, Documentation)</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Update copyright end dates in source files if needed (e.g., <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>)</p></li>
+<li><p>For pre-releases, use appropriate suffix:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.1.0a1&quot;</span>  <span class="c1"># Alpha release</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.1.0b1&quot;</span>  <span class="c1"># Beta release</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.1.0rc1&quot;</span>  <span class="c1"># Release candidate</span>
+</pre></div>
+</div>
+</li>
+<li><p>Commit changes and push to GitHub</p></li>
+</ol>
+</section>
+<section id="testing-releases">
+<h3>2. Testing Releases<a class="headerlink" href="#testing-releases" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Go to GitHub Actions → Release workflow</p></li>
+<li><p>Click “Run workflow”</p></li>
+<li><p>Configure:</p>
+<ul class="simple">
+<li><p>Set “Push to TestPyPI” to <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+<li><p>Set “Build number” (increments <code class="docutils literal notranslate"><span class="pre">.devN</span></code> suffix)</p></li>
+</ul>
+</li>
+<li><p>Review build logs and test on TestPyPI</p></li>
+<li><p>Go to GitHub Actions → Docs workflow</p></li>
+<li><p>Click “Run workflow” and select your branch</p></li>
+<li><p>Review the documentation build for any errors</p></li>
+<li><p>Test the documentation locally if needed</p></li>
+<li><p>Repeat with incremented build numbers if needed</p></li>
+</ol>
+</section>
+<section id="production-release">
+<h3>3. Production Release<a class="headerlink" href="#production-release" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Go to GitHub Actions → Release workflow</p></li>
+<li><p>Click “Run workflow”</p></li>
+<li><p>Configure:</p>
+<ul class="simple">
+<li><p>Set “Push to TestPyPI” to <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>Set “Build number” to <code class="docutils literal notranslate"><span class="pre">1</span></code> for first attempt</p></li>
+</ul>
+</li>
+<li><p>If build fails due to packaging (not code):</p>
+<ul class="simple">
+<li><p>Increment build number</p></li>
+<li><p>CI/CD will add <code class="docutils literal notranslate"><span class="pre">.postN</span></code> suffix automatically</p></li>
+</ul>
+</li>
+<li><p>Go to GitHub Actions → Docs workflow</p></li>
+<li><p>Click “Run workflow” and select your branch</p></li>
+<li><p>Verify the documentation builds and deploys successfully</p></li>
+<li><p>After successful release:</p>
+<ul>
+<li><p>For pre-releases (alpha/beta/rc):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Tag<span class="w"> </span>and<span class="w"> </span>push<span class="w"> </span>an<span class="w"> </span>alpha/beta/rc<span class="w"> </span>release
+<span class="gp">$ </span>git<span class="w"> </span>tag<span class="w"> </span>v2.1.0a1
+<span class="gp">$ </span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v2.1.0a1
+</pre></div>
+</div>
+</li>
+<li><p>For full releases:</p>
+<ul class="simple">
+<li><p>Create a new GitHub release at https://github.com/libnano/primer3-py/releases/new</p></li>
+<li><p>Tag version: <code class="docutils literal notranslate"><span class="pre">v2.1.0</span></code> (use actual version number)</p></li>
+<li><p>Title: <code class="docutils literal notranslate"><span class="pre">v2.1.0</span></code> (use actual version number)</p></li>
+<li><p>Description: Copy the relevant section from CHANGES as the release description</p></li>
+<li><p>This will automatically create and push the git tag</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="when-to-use-each-version-type">
+<h3>When to Use Each Version Type<a class="headerlink" href="#when-to-use-each-version-type" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Version Number Components</strong> (X.Y.Z):</p>
+<ul class="simple">
+<li><p><strong>Major (X)</strong>: Breaking API changes including:</p>
+<ul>
+<li><p>Removal of package functions</p></li>
+<li><p>Changes to function parameters</p></li>
+<li><p>Changes to function output formats</p></li>
+<li><p>Core algorithm changes</p></li>
+</ul>
+</li>
+<li><p><strong>Minor (Y)</strong>: New features and functionality in a backward-compatible manner</p></li>
+<li><p><strong>Patch (Z)</strong>: Backward-compatible bug fixes and minor improvements</p></li>
+</ul>
+</li>
+<li><p><strong>Pre-releases</strong> (<code class="docutils literal notranslate"><span class="pre">a</span></code>/<code class="docutils literal notranslate"><span class="pre">b</span></code>/<code class="docutils literal notranslate"><span class="pre">rc</span></code>):</p>
+<ul class="simple">
+<li><p>Used when you want to publicly test a new version before final release</p></li>
+<li><p>Particularly important for major version changes</p></li>
+<li><p>Allows community testing while indicating the code is not yet production-ready</p></li>
+</ul>
+</li>
+<li><p><strong>Development builds</strong> (<code class="docutils literal notranslate"><span class="pre">.devN</span></code>):</p>
+<ul class="simple">
+<li><p>For testing the complete build and distribution system</p></li>
+<li><p>Verifying packaging on TestPyPI</p></li>
+<li><p>CI/CD pipeline verification</p></li>
+<li><p>Not for production use</p></li>
+</ul>
+</li>
+<li><p><strong>Post-releases</strong> (<code class="docutils literal notranslate"><span class="pre">.postN</span></code>):</p>
+<ul class="simple">
+<li><p>Fix packaging issues</p></li>
+<li><p>No code changes</p></li>
+<li><p>Build environment issues</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Open an issue for bugs or feature requests</p></li>
+<li><p>Join discussions in existing issues</p></li>
+<li><p>Contact maintainers for guidance</p></li>
+<li><p>Check documentation for common solutions</p></li>
+</ul>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p>By contributing, you agree that your contributions will be licensed under the GPLv2 License.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api/p3helpers.html" class="btn btn-neutral float-left" title="primer3.p3helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cython_help.html" class="btn btn-neutral float-right" title="Building new Cython modules against thermoanalysis.pxd" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright 2014-2025, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
