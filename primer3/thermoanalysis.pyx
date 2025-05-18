@@ -73,17 +73,16 @@ from primer3 import argdefaults
 
 cimport primer3.p3helpers as p3h
 
+# This lock is required for thread safety for 1.0.0 major release.
+# The goal is remove this requirement in related changes in v1.1.x+ minor
+# release
+
 _DID_LOAD_THERM_PARAMS = False
 _DEFAULT_WORD_LEN_2 = 16  # see masker.h
 DEFAULT_P3_ARGS = argdefaults.Primer3PyArguments()
 SNAKE_CASE_DEPRECATED_MSG = 'Function deprecated please use "%s" instead'
 
 include 'thermoanalysis.pxi'
-
-# This lock is required for thread safety for 1.0.0 major release.
-# The goal is remove this requirement in related changes in v1.1.x+ minor
-# release
-
 
 Str_Bytes_T = Union[str, bytes]
 
@@ -673,10 +672,10 @@ cdef class _ThermoAnalysis:
 
     cpdef ThermoResult calc_heterodimer(
             _ThermoAnalysis self,
-            Str_Bytes_T seq1,
-            Str_Bytes_T seq2,
+            object seq1,
+            object seq2,
             bint output_structure = False,
-    ) -> ThermoResult:
+    ):
         ''' Calculate the heterodimer formation thermodynamics of two DNA
         sequences, ``seq1`` and ``seq2``
 
@@ -708,10 +707,10 @@ cdef class _ThermoAnalysis:
 
     cpdef tuple mispriming_check(
             _ThermoAnalysis self,
-            Str_Bytes_T putative_seq,
-            list sequences,
+            object putative_seq,
+            object sequences,
             double tm_threshold,
-    ) -> tuple:
+    ):
         '''
         Calculate the heterodimer formation thermodynamics of a DNA
         sequence, ``putative_seq`` with a list of sequences relative to
@@ -819,9 +818,9 @@ cdef class _ThermoAnalysis:
 
     cpdef ThermoResult calc_homodimer(
             _ThermoAnalysis self,
-            Str_Bytes_T seq1,
+            object seq1,
             bint output_structure = False,
-    ) -> ThermoResult:
+    ):
         ''' Calculate the homodimer formation thermodynamics of a DNA
         sequence, ``seq1``
 
@@ -905,9 +904,9 @@ cdef class _ThermoAnalysis:
 
     cpdef ThermoResult calc_hairpin(
             _ThermoAnalysis self,
-            Str_Bytes_T seq1,
+            object seq1,
             bint output_structure = False,
-    ) -> ThermoResult:
+    ):
         ''' Calculate the hairpin formation thermodynamics of a DNA
         sequence, ``seq1``
 
@@ -937,7 +936,7 @@ cdef class _ThermoAnalysis:
             _ThermoAnalysis self,
             unsigned char *s1,
             unsigned char *s2,
-    ) -> ThermoResult:
+    ):
         '''
         C only end stability computation
 
@@ -972,8 +971,8 @@ cdef class _ThermoAnalysis:
 
     def calc_end_stability(
             _ThermoAnalysis self,
-            Str_Bytes_T seq1,
-            Str_Bytes_T seq2,
+            object seq1,
+            object seq2,
     ) -> ThermoResult:
         ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
         sequence `seq2`
@@ -1005,7 +1004,7 @@ cdef class _ThermoAnalysis:
     cdef inline double calc_tm_c(
             _ThermoAnalysis self,
             char *s1,
-    ) -> double:
+    ):
         '''
         C only Tm computation
 
@@ -1045,7 +1044,7 @@ cdef class _ThermoAnalysis:
 
     def calc_tm(
             _ThermoAnalysis self,
-            Str_Bytes_T seq1,
+            object seq1,
     ) -> float:
         '''Calculate the melting temperature (Tm) of a DNA sequence (deg. C).
 
@@ -1096,7 +1095,7 @@ cdef class _ThermoAnalysis:
             seq_args: Optional[Dict[str, Any]],
             misprime_lib: Optional[Dict[str, Any]] = None,
             mishyb_lib: Optional[Dict[str, Any]] = None,
-    ) -> None:
+    ):
         '''
         Sets the Primer3 global settings and sequence settings from a Python
         dictionaries containing `key: value` pairs that correspond to the
