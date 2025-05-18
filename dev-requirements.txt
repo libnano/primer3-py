@@ -1,3 +1,0 @@
-Cython
-pre-commit
-pytest

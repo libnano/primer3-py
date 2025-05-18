@@ -18,47 +18,46 @@ Installation
 on easily most Linux and MacOS systems that are running Python 3.8 - 3.13.
 Windows compilation is also generally easy.
 
-To build **Primer3-py** within the package directory run::
-
-  $ python setup.py build_ext --inplace
-
-If you would like to install primer3-py in your local Python environment
-you may do so using either pip or the setup.py script::
+To install from PyPI::
 
   $ pip install primer3-py
-            or
-  $ python setup.py install
 
-Create wheels with wheel installed and tar.gz::
+To install from local source::
 
-  $ python setup.py bdist_wheel
-  $ python setup.py sdist --formats=gztar
+  $ pip install .
+
+For development installation (editable mode)::
+
+  $ pip install -e .
+
+To build distribution packages::
+
+  $ python -m build
+
+This will create both wheel and source distribution in the dist/ directory.
 '''
 
 import os
 import shutil
 import subprocess
 import sys
-
-try:
-    from setuptools import (
-        Extension,
-        setup,
-    )
-    from setuptools.command import (
-        build_clib,
-        install_lib,
-        sdist,
-    )
-except ImportError:
-    from distutils.core import setup, Extension
-    from distutils.command import install_lib, sdist, build_clib
-
 from distutils import log as setup_log
 from os.path import join as pjoin
 from os.path import relpath as rpath
 
-with open('README.md') as fd:
+from setuptools import (
+    Extension,
+    setup,
+)
+from setuptools.command import (
+    build_clib,
+    install_lib,
+    sdist,
+)
+from setuptools.command.build_ext import build_ext as _build_ext
+
+# Read long description from README.md
+with open('README.md', encoding='utf-8') as fd:
     LONG_DESCRIPTION = fd.read()
 
 # Platform-dependent binary for `make` commands
@@ -284,6 +283,18 @@ class CustomBuildClib(build_clib.build_clib):
         super().run()
 
 
+class CustomBuildExt(_build_ext):
+    """Custom build_ext command that ensures primer3 binaries are built."""
+
+    def run(self):
+        global P3_BUILT
+        if not P3_BUILT:
+            p3Clean()
+            p3Build()
+            P3_BUILT = True
+        super().run()
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~ Cython / C API extension setup ~~~~~~~~~~~~~~~~~~~~~ #
 
 if WINDOWS_OS:
@@ -347,33 +358,13 @@ def try_cythonize(extension_list, *args, **kwargs):
     )
 
 
-import primer3
-
 setup(
-    name='primer3-py',
-    version=primer3.__version__,
-    license=primer3.__license__,
-    author=primer3.__author__,
-    author_email='bpruittvt@gmail.com',
-    url='https://github.com/libnano/primer3-py',
-    description=primer3.DESCRIPTION,
-    long_description=LONG_DESCRIPTION,
-    long_description_content_type='text/markdown',
-    classifiers=[
-        'Programming Language :: C',
-        'Programming Language :: Cython',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: 3.12',
-        'Programming Language :: Python :: 3.13',
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Science/Research',
-        'Topic :: Scientific/Engineering :: Bio-Informatics',
-        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-    ],
+    # Note: We intentionally ignore setuptools warnings about undeclared
+    # packages in primer3/src/libprimer3/ and its subdirectories. These
+    # directories contain C source code, headers, and configuration files -
+    # they are not meant to be Python packages despite being potentially
+    # importable by Python's rules. They are correctly handled as package
+    # data via package_data.
     packages=['primer3'],
     ext_modules=try_cythonize(cython_extensions),
     package_data={'primer3': PACKAGE_FPS},
@@ -381,8 +372,14 @@ setup(
         'install_lib': CustomInstallLib,
         'sdist': CustomSdist,
         'build_clib': CustomBuildClib,
+        'build_ext': CustomBuildExt,
     },
-    test_suite='tests',
-    setup_requires=['Cython', 'setuptools>=65.6.3'],
+    install_requires=[],
     zip_safe=False,
+    # Build configuration
+    options={
+        'build': {
+            'build_base': 'build',
+        },
+    },
 )

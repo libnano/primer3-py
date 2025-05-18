@@ -1,0 +1,37 @@
+# .github/workflows/test.yml
+# Primary CI workflow that runs on every push and PR
+# - Builds the package
+# - Runs all tests
+# - Runs pre-commit hooks for code quality
+name: Test
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+    defaults:
+      run:
+        shell: bash -l {0}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'  # Enable pip dependency caching
+    - name: Install package with dev dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -e ".[dev]"
+    - name: Run tests & pre-commit hooks
+      run: |
+        pytest
+        pre-commit run --all-files

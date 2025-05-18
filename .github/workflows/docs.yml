@@ -1,0 +1,85 @@
+# .github/workflows/docs.yml
+# Documentation workflow for building and publishing Sphinx docs
+# - Builds HTML documentation using Sphinx
+# - Publishes to gh-pages on version tags
+# - Publishes to gh-pages-test on doc branches
+# - Allows manual publishing to either branch via workflow dispatch
+#
+# NOTE: Requires PRIMER3_TOKEN secret with "Contents" Read/Write permissions
+name: Documentation
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+    branches:
+      - "**docs**"  # Matches any branch that contains "docs"
+
+  # Allow manual triggering with branch choice
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Target branch for documentation'
+        required: true
+        default: 'gh-pages-test'
+        type: 'choice'
+        options:
+          - 'gh-pages'
+          - 'gh-pages-test'
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1  # Shallow clone is fine for docs
+        persist-credentials: false  # Don't persist credentials as we use PRIMER3_TOKEN explicitly
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        cache: 'pip'  # Enable pip dependency caching
+
+    - name: Install package with docs dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -e ".[docs]"
+
+    - name: Build documentation
+      run: |
+        cd docs/
+        make html
+        cd ..
+
+    - name: Determine target branch
+      run: |
+        TAG_NAME=${GITHUB_REF#refs/tags/}
+        if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+          echo "BRANCH_NAME=${{ github.event.inputs.target_branch }}" >> $GITHUB_ENV
+        elif [[ "$TAG_NAME" == v* ]]; then
+          echo "BRANCH_NAME=gh-pages" >> $GITHUB_ENV
+        else
+          echo "BRANCH_NAME=gh-pages-test" >> $GITHUB_ENV
+        fi
+
+    - name: Commit documentation changes to the target branch
+      run: |
+        git clone https://github.com/libnano/primer3-py.git --branch $BRANCH_NAME --single-branch gh-pages
+        cp -r docs/_build/html/* gh-pages/
+        cd gh-pages
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Update documentation" -a || true
+
+    - name: Push changes
+      uses: ad-m/github-push-action@v0.8.0
+      with:
+        branch: ${{ env.BRANCH_NAME }}
+        directory: gh-pages
+        github_token: ${{ secrets.PRIMER3_TOKEN }}
+        force: true

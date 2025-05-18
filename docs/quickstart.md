@@ -2,28 +2,50 @@
 
 **Primer3-py** is designed to be simple to install and use.
 
-```{contents}
-```
 
 ## Requirements
 
 **Primer3-py** is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.13 builds are supported.
 
-Wheels are released for CPython versions following the [EOL model](https://devguide.python.org/versions/).
+Wheels are released for CPython versions following the [EOL model](https://devguide.python.org/versions/). Pre-built wheels are available for:
+- MacOS (x86-64, arm64)
+- Linux (x86-64)
+- Windows (x86-64)
+
+For other platforms (e.g., Linux aarch64), the package can be built from source but is not officially supported.
 
 
 ## Installation
 
-If you want to install the latest stable build of **Primer3-py**, you can
-install it using `pip`:
+### Standard Installation
 
-```bash
+To install the latest stable version:
+
+```console
 $ pip install primer3-py
 ```
 
-**NOTE**: We support wheel builds for PyPi for the 3 most recent CPython versions. Target platforms for wheels are MacOS `x86-64` `arm64`, Linux `x86-64`, and Windows `x86-64`.
+### Development Installation
 
-If your Python version and platform fall outside this such as Linux `aarch64` it is confirmed `primer3-py` builds on this platform but it is not supported as our build GitHub actions runners do not run these builds expediently.
+For development or to work with the latest code:
+
+1. Clone the repository:
+   ```console
+   $ git clone https://github.com/libnano/primer3-py
+   $ cd primer3-py
+   ```
+
+2. Install in development mode with dev dependencies:
+   ```console
+   $ pip install -e ".[dev]"
+   ```
+
+### Windows-Specific Setup
+
+If building on Windows, you'll need the TDM-GCC MinGW Compiler:
+1. Download and install from [TDM-GCC MinGW](https://jmeubank.github.io/tdm-gcc/)
+2. Ensure the compiler is in your system PATH
+3. Use the installation commands above
 
 ## Thermodynamic analysis
 
@@ -112,19 +134,21 @@ documentation.
 
 Example usage:
 
-```
+```python
 bindings.design_primers(
     seq_args={
         'SEQUENCE_ID': 'MH1000',
-        'SEQUENCE_TEMPLATE': 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT'
-                             'AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA'
-                             'ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG'
-                             'CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG'
-                             'TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA'
-                             'TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA'
-                             'ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA'
-                             'TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA'
-                             'GATGTTTCCCTCTAGTAG',
+        'SEQUENCE_TEMPLATE': (
+            'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT'
+            'AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA'
+            'ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG'
+            'CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG'
+            'TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA'
+            'TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA'
+            'ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA'
+            'TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA'
+            'GATGTTTCCCTCTAGTAG',
+        ),
         'SEQUENCE_INCLUDED_REGION': [36,342]
     },
     global_args={
@@ -148,8 +172,8 @@ bindings.design_primers(
         'PRIMER_PAIR_MAX_COMPL_ANY': 12,
         'PRIMER_PAIR_MAX_COMPL_END': 8,
         'PRIMER_PRODUCT_SIZE_RANGE': [
-            [75,100],[100,125],[125,150],
-            [150,175],[175,200],[200,225]
+            [75,100], [100,125], [125,150],
+            [150,175], [175,200], [200,225]
         ],
     })
 ```
@@ -157,42 +181,21 @@ bindings.design_primers(
 ## Advanced Installation
 
 Users interested in contributing to development may want to work with the
-latest development build. To get the latest and greatest code, head over
+latest development build. To get the latest and greatest code, head over to
 [our Github repo](https://github.com/libnano/primer3-py) and clone the
-repo or download a tarball. Building from source is easy.
+repo or download a tarball. Building from source is easy:
 
-If you don't install the latest build via pip or conda, you might have to install
-`Cython`, prior to running the `setup.py` script:
+```console
+# For regular installation from source
+$ pip install .
 
-```
-$ pip install Cython
-```
-
-Or via `conda`:
-
-```
-$ conda install Cython
+# For development installation (recommended)
+$ pip install -e .
 ```
 
-Then run:
-
-```
-$ python setup.py install
-```
-
-or if you are developing `primer3-py` enhancements:
-
-```
-$ python setup.py build_ext --inplace
-```
-
-We recommend running `setup.py` with either `build_ext --inplace` or
-`develop` rather than `install` if you are testing development builds.
-`build_ext --inplace` will build the Cython and C API extensions in the
-package directory without copying any files to your local environment
-site-packages directory (so you can import and run tests from within the
-package) and `develop` will build in place and then put symlinks in your
-site packages directory (this will allow Primer3-py)
+We recommend using the development installation (`-e` flag) if you are testing or
+developing `primer3-py` enhancements. This creates an "editable" installation that
+links to your source code, allowing you to modify the code without reinstalling.
 
 NOTE: If you're attempting to build on Windows, please review the `primer3`
 documentation regarding environment requirements. You'll need to install
@@ -201,100 +204,42 @@ the latest version of the TDM-GCC MinGW Compiler if building in a
 
 ## Testing
 
-Every commit pushed to
-[the primer3-py GitHub repo](https://github.com/libnano/primer3-py) is tested to
-ensure it builds properly and passes our unit testing framework as a GitHub action
+Every commit pushed to [the primer3-py GitHub repo](https://github.com/libnano/primer3-py)
+is tested via GitHub Actions to ensure it builds properly and passes our unit tests.
 
-If you'd like to run the tests yourself, we suggest the following workflow:
+If you'd like to run the tests yourself:
 
-```
+```console
+# Clone the repository
 $ git clone https://github.com/libnano/primer3-py
 $ cd primer3-py
-$ python setup.py build_ext --inplace
+
+# Create and activate a virtual environment
+$ python -m venv p3p-test-env
+
+# On Unix/macOS:
+$ source p3p-test-env/bin/activate
+
+# On Windows (run this instead of the source command above):
+# p3p-test-env\Scripts\activate
+
+# Install development dependencies and the package in editable mode
+$ pip install -e ".[dev]"
+
+# Run tests from the package directory
 $ pytest
+
+# When finished, deactivate the virtual environment
+$ deactivate
 ```
 
-NOTE: `pip` / `conda` install `pytest` if not in your environment
-
+Using a virtual environment is recommended to ensure a clean, isolated development environment
+and avoid conflicts with other Python packages in your system.
 
 ## Contributing
 
-Contributions are welcomed via pull requests.
+Contributions are welcomed via pull requests. Contact the `primer3-py` maintainers prior to beginning your work to make sure it makes sense for the project.
 
-Contact the `primer3-py` maintainers prior to beginning your work to make sure
-it makes sense for the project.
+By contributing, you also agree to release your code under the GPLv2.
 
-By contributing, you also agree to release your code under the GPLv2
-
-After a successful PR will be listed under the [contributors](https://github.com/libnano/primer3-py/graphs/contributors).
-
-
-### Forking
-
-A forking workflow is preferred for all pull requests.
-
-### Branch naming
-
-Branch naming is preferred to use the format:
-
-```
-<GitHub user-name>-<short keyword description of change>
-```
-
-Keep branch names not too long.  A good example would be for the user `grinner`
-for a documentation update for the 1.0.0 staging branch:
-
-```bash
-$ git checkout -b grinner-docs-update-1.0.0-pass-01
-```
-
-With the trailing 01 indicative of it being part of several potential
-
-Another example pass that focuses on code clarity comments would be:
-
-```bash
-$ git checkout -b grinner-code-clarity-and-comments
-```
-
-### Development
-
-Development requires the use of C Python 3.8+, [pytest](https://docs.pytest.org) and
-[pre-commit](https://pre-commit.com) as they are used to build and run primer3-py
-code CI in the GitHub Action.
-
-Install these dependencies in your python development environment
-(`virtualenv`, `conda`, etc):
-
-```bash
-$ pip install cython pre-commit pytest
-# or
-$ conda install cython pre-commit pytest
-```
-
-Install `pre-commit` in repo the with:
-
-```bash
-$ pre-commit install
-```
-
-To ensure the git hook is excecuted on every commit.
-
-### Pull Requests
-
-Pull Requests should meet the following requirements:
-
-1. Excellent PR description describing all changes made. Please use markdown syntax highlighting to help readability.
-2. If change is code related, have test coverage for the changes implemented.
-3. Attempt to make the PR 1 commit only. Multiple are OK if it helps illustrate the change better.
-4. Commit messages should describe the changes.
-5. Provided you contact the maintainers in advance, theu will code review your PR, provide feedback and squash merge your code on approval.
-
-**TIP**: Interactive `rebase` is helpful to fix old commit messages.
-For example, run:
-
-```bash
-$ git rebase -i HEAD~2
-```
-
-To rebase the last 2 commits. Use `s` to mark the most recent commit(s), save, then
-modify the collective commit messages to update poor commit messages.
+For detailed contribution guidelines, development setup, workflows, and release process, see our [Development Guide](development.md).
