@@ -11,13 +11,13 @@ Thank you for your interest in contributing to primer3-py! This document provide
 Development requires Python 3.8+ and the development dependencies listed in `dev-requirements.txt`.
 
 1. Set up your Python environment:
-   ```bash
-   pip install -r dev-requirements.txt
+   ```console
+   $ pip install -r dev-requirements.txt
    ```
 
 2. Install pre-commit hooks:
-   ```bash
-   pre-commit install
+   ```console
+   $ pre-commit install
    ```
 
 ## Development Workflow
@@ -25,28 +25,33 @@ Development requires Python 3.8+ and the development dependencies listed in `dev
 We use a fork-based development workflow:
 
 1. Fork the repository on GitHub
+
 2. Clone your fork:
-   ```bash
-   git clone git@github.com:username/primer3-py.git
-   cd primer3-py
+   ```console
+   $ git clone git@github.com:username/primer3-py.git
+   $ cd primer3-py
    ```
 
 3. Add upstream remote:
-   ```bash
-   git remote add upstream git@github.com:libnano/primer3-py.git
+   ```console
+   $ git remote add upstream git@github.com:libnano/primer3-py.git
    ```
 
 4. Create a feature branch:
-   ```bash
-   git checkout -b feat/my-feature  # or fix/, docs/, etc.
+   ```console
+   # Create a feature, fix, or docs branch
+   $ git checkout -b feat/my-feature
    ```
 
 5. Make your changes, following our [coding standards](#coding-standards)
 
 6. Run tests and checks:
-   ```bash
-   pytest                 # Run tests
-   pre-commit run -a      # Run all pre-commit hooks
+   ```console
+   # Run the test suite
+   $ pytest
+
+   # Run all pre-commit hooks
+   $ pre-commit run -a
    ```
 
 7. Push changes and open a PR
@@ -61,7 +66,13 @@ graph TD
     B -->|branch| C[fork/feature branch]
     C -->|PR| A
     A -->|branch| D[upstream/2.1.0-staging]
-    D -->|"version/docs updates + testing"| A
+    D -->|version/docs updates + testing| A
+
+    %% Styling
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#dfd,stroke:#333,stroke-width:2px
+    style D fill:#fdd,stroke:#333,stroke-width:2px
 ```
 
 ### Branch Types
@@ -157,8 +168,9 @@ We use GitHub Actions for CI/CD. Three main workflows are available:
    - Respect 80 character line length limit
    - Review and follow `setup.cfg` linter configuration
    - Always run pre-commit hooks before committing:
-     ```bash
-     pre-commit run -a
+     ```console
+     # Run all pre-commit hooks on all files
+     $ pre-commit run -a
      ```
 
 2. Cython Code:
@@ -258,9 +270,10 @@ Primer3-py follows [PEP 440](https://peps.python.org/pep-0440/) versioning conve
 7. Verify the documentation builds and deploys successfully
 8. After successful release:
    - For pre-releases (alpha/beta/rc):
-     ```bash
-     git tag v2.1.0a1  # Use actual version number
-     git push origin v2.1.0a1
+     ```console
+     # Tag and push an alpha/beta/rc release
+     $ git tag v2.1.0a1
+     $ git push origin v2.1.0a1
      ```
    - For full releases:
      - Create a new GitHub release at https://github.com/libnano/primer3-py/releases/new

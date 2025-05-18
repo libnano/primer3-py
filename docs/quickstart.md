@@ -21,8 +21,8 @@ For other platforms (e.g., Linux aarch64), the package can be built from source 
 
 To install the latest stable version:
 
-```bash
-pip install primer3-py
+```console
+$ pip install primer3-py
 ```
 
 ### Development Installation
@@ -30,19 +30,19 @@ pip install primer3-py
 For development or to work with the latest code:
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/libnano/primer3-py
-   cd primer3-py
+   ```console
+   $ git clone https://github.com/libnano/primer3-py
+   $ cd primer3-py
    ```
 
 2. Install development dependencies:
-   ```bash
-   pip install -r dev-requirements.txt
+   ```console
+   $ pip install -r dev-requirements.txt
    ```
 
 3. Install in development mode:
-   ```bash
-   pip install -e .
+   ```console
+   $ pip install -e .
    ```
 
 ### Windows-Specific Setup
@@ -139,7 +139,7 @@ documentation.
 
 Example usage:
 
-```
+```python
 bindings.design_primers(
     seq_args={
         'SEQUENCE_ID': 'MH1000',
@@ -153,7 +153,7 @@ bindings.design_primers(
             'ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA'
             'TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA'
             'GATGTTTCCCTCTAGTAG',
-        )
+        ),
         'SEQUENCE_INCLUDED_REGION': [36,342]
     },
     global_args={
@@ -177,8 +177,8 @@ bindings.design_primers(
         'PRIMER_PAIR_MAX_COMPL_ANY': 12,
         'PRIMER_PAIR_MAX_COMPL_END': 8,
         'PRIMER_PRODUCT_SIZE_RANGE': [
-            [75,100],[100,125],[125,150],
-            [150,175],[175,200],[200,225]
+            [75,100], [100,125], [125,150],
+            [150,175], [175,200], [200,225]
         ],
     })
 ```
@@ -186,42 +186,21 @@ bindings.design_primers(
 ## Advanced Installation
 
 Users interested in contributing to development may want to work with the
-latest development build. To get the latest and greatest code, head over
+latest development build. To get the latest and greatest code, head over to
 [our Github repo](https://github.com/libnano/primer3-py) and clone the
-repo or download a tarball. Building from source is easy.
+repo or download a tarball. Building from source is easy:
 
-If you don't install the latest build via pip or conda, you might have to install
-`Cython`, prior to running the `setup.py` script:
+```console
+# For regular installation from source
+$ pip install .
 
-```
-$ pip install Cython
-```
-
-Or via `conda`:
-
-```
-$ conda install Cython
+# For development installation (recommended)
+$ pip install -e .
 ```
 
-Then run:
-
-```
-$ python setup.py install
-```
-
-or if you are developing `primer3-py` enhancements:
-
-```
-$ python setup.py build_ext --inplace
-```
-
-We recommend running `setup.py` with either `build_ext --inplace` or
-`develop` rather than `install` if you are testing development builds.
-`build_ext --inplace` will build the Cython and C API extensions in the
-package directory without copying any files to your local environment
-site-packages directory (so you can import and run tests from within the
-package) and `develop` will build in place and then put symlinks in your
-site packages directory (this will allow Primer3-py)
+We recommend using the development installation (`-e` flag) if you are testing or
+developing `primer3-py` enhancements. This creates an "editable" installation that
+links to your source code, allowing you to modify the code without reinstalling.
 
 NOTE: If you're attempting to build on Windows, please review the `primer3`
 documentation regarding environment requirements. You'll need to install
@@ -235,30 +214,35 @@ is tested via GitHub Actions to ensure it builds properly and passes our unit te
 
 If you'd like to run the tests yourself:
 
-```bash
+```console
 # Clone the repository
-git clone https://github.com/libnano/primer3-py
-cd primer3-py
+$ git clone https://github.com/libnano/primer3-py
+$ cd primer3-py
 
-# (Recommended) Create and activate a virtual environment
-python -m venv p3p-test-env
-source p3p-test-env/bin/activate  # On Unix/macOS
-# p3p-test-env\Scripts\activate   # On Windows
+# Create and activate a virtual environment
+$ python -m venv p3p-test-env
+
+# On Unix/macOS:
+$ source p3p-test-env/bin/activate
+
+# On Windows (run this instead of the source command above):
+# p3p-test-env\Scripts\activate
 
 # Install development dependencies
-pip install -r dev-requirements.txt
+$ pip install -r dev-requirements.txt
 
-# Build the package in-place (this builds the Cython extensions and primer3 binaries in the package directory)
-# --no-build-isolation: Use local environment's packages (including our dev-requirements.txt) instead of creating a clean env
+# Build the package in-place
+# This builds the Cython extensions and primer3 binaries in the package directory
+# --no-build-isolation: Use local environment's packages
 # --no-deps: Don't install or upgrade any package dependencies
 # -e: Install in "editable" mode, creating links to the source code
-pip install --no-build-isolation --no-deps -e .
+$ pip install --no-build-isolation --no-deps -e .
 
 # Run tests from the package directory
-pytest
+$ pytest
 
 # When finished, deactivate the virtual environment
-deactivate
+$ deactivate
 ```
 
 The in-place build is necessary because the tests require access to the primer3 binaries
