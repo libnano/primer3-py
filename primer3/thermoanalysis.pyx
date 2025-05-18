@@ -673,10 +673,10 @@ cdef class _ThermoAnalysis:
 
     cpdef ThermoResult calc_heterodimer(
             _ThermoAnalysis self,
-            object seq1,
-            object seq2,
-            bint output_structure = False
-        ):
+            Str_Bytes_T seq1,
+            Str_Bytes_T seq2,
+            bint output_structure = False,
+    ) -> ThermoResult:
         ''' Calculate the heterodimer formation thermodynamics of two DNA
         sequences, ``seq1`` and ``seq2``
 
@@ -708,10 +708,10 @@ cdef class _ThermoAnalysis:
 
     cpdef tuple mispriming_check(
             _ThermoAnalysis self,
-            object putative_seq,
-            object sequences,
+            Str_Bytes_T putative_seq,
+            list sequences,
             double tm_threshold,
-    ):
+    ) -> tuple:
         '''
         Calculate the heterodimer formation thermodynamics of a DNA
         sequence, ``putative_seq`` with a list of sequences relative to
@@ -819,9 +819,9 @@ cdef class _ThermoAnalysis:
 
     cpdef ThermoResult calc_homodimer(
             _ThermoAnalysis self,
-            object seq1,
+            Str_Bytes_T seq1,
             bint output_structure = False,
-    ):
+    ) -> ThermoResult:
         ''' Calculate the homodimer formation thermodynamics of a DNA
         sequence, ``seq1``
 
@@ -905,9 +905,9 @@ cdef class _ThermoAnalysis:
 
     cpdef ThermoResult calc_hairpin(
             _ThermoAnalysis self,
-            object seq1,
+            Str_Bytes_T seq1,
             bint output_structure = False,
-    ):
+    ) -> ThermoResult:
         ''' Calculate the hairpin formation thermodynamics of a DNA
         sequence, ``seq1``
 
@@ -937,7 +937,7 @@ cdef class _ThermoAnalysis:
             _ThermoAnalysis self,
             unsigned char *s1,
             unsigned char *s2,
-    ):
+    ) -> ThermoResult:
         '''
         C only end stability computation
 
@@ -972,8 +972,8 @@ cdef class _ThermoAnalysis:
 
     def calc_end_stability(
             _ThermoAnalysis self,
-            seq1: Union[str, bytes],
-            seq2: Union[str, bytes],
+            Str_Bytes_T seq1,
+            Str_Bytes_T seq2,
     ) -> ThermoResult:
         ''' Calculate the 3' end stability of DNA sequence `seq1` against DNA
         sequence `seq2`
@@ -1005,7 +1005,7 @@ cdef class _ThermoAnalysis:
     cdef inline double calc_tm_c(
             _ThermoAnalysis self,
             char *s1,
-    ):
+    ) -> double:
         '''
         C only Tm computation
 
@@ -1045,7 +1045,7 @@ cdef class _ThermoAnalysis:
 
     def calc_tm(
             _ThermoAnalysis self,
-            seq1: Union[str, bytes],
+            Str_Bytes_T seq1,
     ) -> float:
         '''Calculate the melting temperature (Tm) of a DNA sequence (deg. C).
 

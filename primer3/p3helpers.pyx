@@ -55,7 +55,10 @@ cdef inline void copy_c_char_buffer(
     memcpy(out_buf, in_buf, str_length)
 
 
-cdef int ss_rev_comp_seq(char* seq, Py_ssize_t length) except -1 nogil:
+cdef int ss_rev_comp_seq(
+    char* seq,
+    Py_ssize_t length,
+) except -1 nogil:
     '''Reverse complement sequence C string
 
     Args:
@@ -113,7 +116,10 @@ cdef int ss_sanitize_seq(
     return 0
 
 
-cdef int ss_needs_conversion(const char* seq, Py_ssize_t length) except -1 nogil:
+cdef int ss_needs_conversion(
+    const char* seq,
+    Py_ssize_t length,
+) except -1 nogil:
     '''Fast check if sequence needs conversion (contains lowercase or non-ACGT chars)
     using lookup table for O(1) per-character checks.
 
@@ -159,8 +165,8 @@ cdef int ss_ensure_acgt_upper(
 
 
 cpdef str reverse_complement(
-        str seq,
-        bint do_sanitize = False,
+    str seq,
+    bint do_sanitize = False,
 ):
     '''Compute reverse complement of the python string sequence
 
@@ -196,8 +202,8 @@ cpdef str reverse_complement(
 
 
 cpdef bytes reverse_complement_b(
-        bytes seq,
-        bint do_sanitize = False,
+    bytes seq,
+    bint do_sanitize = False,
 ):
     '''Compute reverse complement of the bytes sequence
 
@@ -244,7 +250,9 @@ cpdef bytes reverse_complement_b(
     return seq_out
 
 
-cpdef str sanitize_sequence(str seq):
+cpdef str sanitize_sequence(
+    str seq,
+):
     '''Sanitize sequence with non-standard bases with `N`s
     IUPAC {R,Y,M,K,S,W,H,D,B,V,r,y,m,k,s,w,h,d,b,v}
 
@@ -280,7 +288,7 @@ cpdef str sanitize_sequence(str seq):
 
 
 cpdef bytes sanitize_sequence_b(
-        bytes seq,
+    bytes seq,
 ):
     '''Sanitize bytes sequence with non-standard bases with `N`s
     IUPAC {R,Y,M,K,S,W,H,D,B,V,r,y,m,k,s,w,h,d,b,v}
@@ -328,7 +336,9 @@ cpdef bytes sanitize_sequence_b(
     return seq_out
 
 
-cpdef str ensure_acgt_uppercase(str seq):
+cpdef str ensure_acgt_uppercase(
+    str seq,
+):
     '''Convert sequence to uppercase and validate it contains only A, C, G, T bases.
     This is stricter than sanitize_sequence() as it only allows A, C, G, T bases.
 
@@ -373,7 +383,7 @@ cpdef str ensure_acgt_uppercase(str seq):
 
 
 cpdef bytes ensure_acgt_uppercase_b(
-        bytes seq,
+    bytes seq,
 ):
     '''Convert bytes sequence to uppercase and validate it contains only A, C, G, T bases.
     This is stricter than sanitize_sequence_b() as it only allows A, C, G, T bases.
