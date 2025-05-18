@@ -23,13 +23,13 @@ on:
         default: '1'
 
 jobs:
-  validate:
-    name: Validate version
+  validate-version:
+    name: Validate package version
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Need full history for tags
@@ -61,23 +61,24 @@ jobs:
             echo "Version matches git tag"
           fi
 
-  build_wheels:
-    name: Build wheel for ${{ matrix.os }}, Python ${{ matrix.python-version }}
-    needs: validate
+  build-wheels:
+    name: Build wheel for ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    needs: validate-version
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-2022]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+      fail-fast: false
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set version
+      - name: Configure version
         run: |
           # Get base version from validate job
-          BASE_VERSION="${{ needs.validate.outputs.version }}"
+          BASE_VERSION="${{ needs.validate-version.outputs.version }}"
 
           if [[ "${{ inputs.is_test }}" == "true" ]]; then
             # Test builds always use .devN
@@ -100,16 +101,8 @@ jobs:
         uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_PROJECT_REQUIRES_PYTHON: "==${{ matrix.python-version }}.*"
-
-          # Skip musl linux and PyPy versions
-          CIBW_SKIP: "{*-musllinux_*,pp*}"
-
-          # Build only on 64-bit architectures.
+          CIBW_SKIP: "{*-musllinux_*,pp*}"  # Skip musl linux and PyPy versions
           CIBW_ARCHS_MACOS: "${{ matrix.python-version > 3.8  && 'x86_64 arm64' || 'x86_64' }}"
-
-          # NOTE: Commented out to be used with QEMU block above
-          # CIBW_ARCHS_LINUX: "x86_64 aarch64"
-
           CIBW_ARCHS_LINUX: "auto64"
           CIBW_ARCHS_WINDOWS: "auto64"
           MACOSX_DEPLOYMENT_TARGET: "10.14"
@@ -122,22 +115,24 @@ jobs:
           CIBW_TEST_COMMAND_LINUX: "pytest {project}/tests/test_thermoanalysis.py -v"
           CIBW_TEST_COMMAND_WINDOWS: "pytest {project}\\tests\\test_thermoanalysis.py"
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload wheel artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.python-version }}-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
-  build_sdist:
+  build-sdist:
     name: Build source distribution
-    needs: validate
+    needs: validate-version
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set version
+      - name: Configure version
         run: |
           # Get base version from validate job
-          BASE_VERSION="${{ needs.validate.outputs.version }}"
+          BASE_VERSION="${{ needs.validate-version.outputs.version }}"
 
           if [[ "${{ inputs.is_test }}" == "true" ]]; then
             # Test builds always use .devN
@@ -156,8 +151,8 @@ jobs:
           # Update version in setup.py
           sed -i.bak "s/version=.*,/version='${VERSION}',/" setup.py
 
-      - uses: actions/setup-python@v5
-        name: Install Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'pip'
@@ -170,29 +165,30 @@ jobs:
       - name: Build sdist
         run: python -m build --sdist
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload sdist artifact
+        uses: actions/upload-artifact@v4
         with:
           name: dist-sdist
           path: dist/*.tar.gz
 
-  upload_pypi:
-    name: Upload wheels and sdist tar.gz to PyPI
-    needs: [validate, build_wheels, build_sdist]
+  publish:
+    name: Publish to ${{ inputs.is_test && 'TestPyPI' || 'PyPI' }}
+    needs: [validate-version, build-wheels, build-sdist]
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
+      id-token: write  # Required for trusted publishing
 
     steps:
-      - name: Download wheels & sdist
+      - name: Download distribution artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist
           merge-multiple: true
 
-      - name: Check files
+      - name: Verify distribution files
         run: ls -lR dist/
 
-      - name: Upload to PyPI
+      - name: Publish to PyPI
         if: inputs.is_test == false
         uses: pypa/gh-action-pypi-publish@v1.8.11
         with:
@@ -200,7 +196,7 @@ jobs:
           verify_metadata: true
           verbose: true
 
-      - name: Upload to TestPyPI
+      - name: Publish to TestPyPI
         if: inputs.is_test == true
         uses: pypa/gh-action-pypi-publish@v1.8.11
         with:

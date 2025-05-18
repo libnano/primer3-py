@@ -28,12 +28,14 @@ on:
           - 'gh-pages-test'
 
 jobs:
-  docs:
+  build-and-deploy:
+    name: Build and deploy documentation
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
       with:
         fetch-depth: 1  # Shallow clone is fine for docs
         persist-credentials: false  # Don't persist credentials as we use PRIMER3_TOKEN explicitly
@@ -42,9 +44,9 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.13'
-        cache: 'pip'  # Enable pip dependency caching
+        cache: 'pip'
 
-    - name: Install package with docs dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install -e ".[docs]"
@@ -55,7 +57,7 @@ jobs:
         make html
         cd ..
 
-    - name: Determine target branch
+    - name: Determine deployment branch
       run: |
         TAG_NAME=${GITHUB_REF#refs/tags/}
         if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
@@ -66,7 +68,7 @@ jobs:
           echo "BRANCH_NAME=gh-pages-test" >> $GITHUB_ENV
         fi
 
-    - name: Commit documentation changes to the target branch
+    - name: Prepare deployment
       run: |
         git clone https://github.com/libnano/primer3-py.git --branch $BRANCH_NAME --single-branch gh-pages
         cp -r docs/_build/html/* gh-pages/
@@ -76,7 +78,7 @@ jobs:
         git add .
         git commit -m "Update documentation" -a || true
 
-    - name: Push changes
+    - name: Deploy documentation
       uses: ad-m/github-push-action@v0.8.0
       with:
         branch: ${{ env.BRANCH_NAME }}
