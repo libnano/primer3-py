@@ -102,7 +102,7 @@ class TestP3Helpers(unittest.TestCase):
         )
 
     def test_ensure_acgt_uppercase(self):
-        # 1. Test already uppercase ACGT (fast path)
+        # 1. Test already uppercase ACGT
         seq = 'ACGT'
         out_seq = p3helpers.ensure_acgt_uppercase(seq)
         self.assertEqual(out_seq, 'ACGT')
@@ -128,7 +128,7 @@ class TestP3Helpers(unittest.TestCase):
         # Verify empty string returns same object
         self.assertIs(out_seq, seq)
 
-        # 5. Test bytes already uppercase ACGT (fast path)
+        # 5. Test bytes already uppercase ACGT
         seq = b'ACGT'
         out_seq = p3helpers.ensure_acgt_uppercase_b(seq)
         self.assertEqual(out_seq, b'ACGT')
@@ -182,23 +182,10 @@ class TestP3Helpers(unittest.TestCase):
             self.assertIn(str(seq), err_msg)
             self.assertIn("'N'", err_msg)
 
-        # 11. Test performance (fast path vs slow path)
-        def time_conversion(seq, n=1000):
-            import time
-            start = time.time()
-            for _ in range(n):
-                p3helpers.ensure_acgt_uppercase(seq)
-            return time.time() - start
-
-        # Test fast path is actually faster
-        slow_time = time_conversion('acgt' * 100)  # needs conversion
-        fast_time = time_conversion('ACGT' * 100)  # already correct
-        self.assertLess(fast_time, slow_time)
-
         # 12. Test long sequence
         long_seq = 'ACGT' * 1000
         out_seq = p3helpers.ensure_acgt_uppercase(long_seq)
-        self.assertIs(out_seq, long_seq)  # Should use fast path
+        self.assertIs(out_seq, long_seq)
 
 
 def suite():

@@ -432,7 +432,7 @@ class TestLowLevelBindings(unittest.TestCase):
 
     def test_calc_tm_acgt_validation(self) -> None:
         '''Test that calc_tm properly validates and converts ACGT sequences'''
-        # Test already uppercase ACGT (should use fast path)
+        # Test uppercase ACGT
         seq = 'ACGT' * 10
         tm1 = bindings.calc_tm(seq)
         self.assertTrue(tm1 > 0)  # Should get a valid Tm
@@ -455,12 +455,12 @@ class TestLowLevelBindings(unittest.TestCase):
         # Test bytes input
         seq_bytes = b'ACGT' * 10
         tm4 = bindings.calc_tm(seq_bytes)
-        self.assertEqual(tm1, tm4)  # Should get same Tm with bytes input
+        self.assertEqual(tm1, tm4)  # Should handle bytes input correctly
 
         # Test lowercase bytes
         seq_bytes_lower = b'acgt' * 10
         tm5 = bindings.calc_tm(seq_bytes_lower)
-        self.assertEqual(tm1, tm5)  # Should get same Tm after conversion
+        self.assertEqual(tm1, tm5)  # Should handle lowercase bytes correctly
 
         # Test invalid bytes
         with self.assertRaises(ValueError) as cm:
