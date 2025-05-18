@@ -8,11 +8,12 @@ Thank you for your interest in contributing to primer3-py! This document provide
 
 ## Development Environment Setup
 
-Development requires Python 3.8+ and the development dependencies listed in `dev-requirements.txt`.
+Development requires Python 3.8+ and our development dependencies.
 
 1. Set up your Python environment:
    ```console
-   $ pip install -r dev-requirements.txt
+   # Install the package in editable mode with development dependencies
+   $ pip install -e ".[dev]"
    ```
 
 2. Install pre-commit hooks:

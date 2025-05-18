@@ -27,13 +27,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'  # Enable pip dependency caching
-    - name: Install dependencies
+    - name: Install package with dev dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install pytest pre-commit "setuptools>=67.1.0" "Cython==3.0.12" wheel
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Build and test
+        python -m pip install -e ".[dev]"
+    - name: Run tests & pre-commit hooks
       run: |
-        python -m pip install -e .
         pytest
         pre-commit run --all-files

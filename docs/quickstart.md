@@ -35,14 +35,9 @@ For development or to work with the latest code:
    $ cd primer3-py
    ```
 
-2. Install development dependencies:
+2. Install in development mode with dev dependencies:
    ```console
-   $ pip install -r dev-requirements.txt
-   ```
-
-3. Install in development mode:
-   ```console
-   $ pip install -e .
+   $ pip install -e ".[dev]"
    ```
 
 ### Windows-Specific Setup
@@ -228,15 +223,8 @@ $ source p3p-test-env/bin/activate
 # On Windows (run this instead of the source command above):
 # p3p-test-env\Scripts\activate
 
-# Install development dependencies
-$ pip install -r dev-requirements.txt
-
-# Build the package in-place
-# This builds the Cython extensions and primer3 binaries in the package directory
-# --no-build-isolation: Use local environment's packages
-# --no-deps: Don't install or upgrade any package dependencies
-# -e: Install in "editable" mode, creating links to the source code
-$ pip install --no-build-isolation --no-deps -e .
+# Install development dependencies and the package in editable mode
+$ pip install -e ".[dev]"
 
 # Run tests from the package directory
 $ pytest
@@ -244,10 +232,6 @@ $ pytest
 # When finished, deactivate the virtual environment
 $ deactivate
 ```
-
-The in-place build is necessary because the tests require access to the primer3 binaries
-and other test resources that are part of the package directory structure but not installed
-to site-packages.
 
 Using a virtual environment is recommended to ensure a clean, isolated development environment
 and avoid conflicts with other Python packages in your system.

@@ -44,12 +44,10 @@ jobs:
         python-version: '3.13'
         cache: 'pip'  # Enable pip dependency caching
 
-    - name: Install dependencies
+    - name: Install package with docs dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install "Cython==3.0.12" myst-parser sphinx sphinx_rtd_theme==2.0.0 sphinx-autodoc-typehints "setuptools>=67.1.0" wheel build
-        python -m build
-        python -m pip install -e .
+        python -m pip install -e ".[docs]"
 
     - name: Build documentation
       run: |

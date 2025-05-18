@@ -33,6 +33,19 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
 ]
 
+# Dev & doc dependencies
+[project.optional-dependencies]
+dev = [
+    "pre-commit>=3.5.0",
+    "pytest>=7.4.0",
+]
+docs = [
+    "myst-parser",
+    "sphinx",
+    "sphinx_rtd_theme==2.0.0",
+    "sphinx-autodoc-typehints",
+]
+
 [project.urls]
 Homepage = "https://github.com/libnano/primer3-py"
 Documentation = "http://libnano.github.io/primer3-py"
