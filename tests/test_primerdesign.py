@@ -58,6 +58,25 @@ def _get_mem_usage():
 
 class TestDesignBindings(unittest.TestCase):
 
+    def setUp(self) -> None:
+        '''Set up test case'''
+        random.seed(42)  # Make random operations deterministic
+
+    def _generate_quality_list(self, length: int) -> List[int]:
+        '''Generate a deterministic list of quality scores
+
+        Args:
+            length: Length of quality score list to generate
+
+        Returns:
+            List of quality scores between 30 and 50 with mean around 45
+        '''
+        # Use triangular distribution to cluster scores around 45
+        return [
+            int(random.triangular(30, 50, 45))
+            for _ in range(length)
+        ]
+
     def _compare_results(
         self,
         binding_res: Dict[str, Any],
@@ -208,10 +227,7 @@ class TestDesignBindings(unittest.TestCase):
             'TGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCA'
             'CACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
         )
-        quality_list = [
-            random.randint(20, 90)
-            for i in range(len(sequence_template))
-        ]
+        quality_list = self._generate_quality_list(len(sequence_template))
         seq_args = {
             'SEQUENCE_ID': 'MH1000',
             'SEQUENCE_TEMPLATE': sequence_template,

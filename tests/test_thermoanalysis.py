@@ -52,6 +52,10 @@ from . import wrappers
 
 class TestLowLevelBindings(unittest.TestCase):
 
+    def setUp(self) -> None:
+        '''Set up test case'''
+        random.seed(42)  # Make random operations deterministic
+
     def rand_args(self) -> None:
         self.seq1 = ''.join([
             random.choice('ATGC') for _ in

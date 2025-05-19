@@ -32,6 +32,7 @@ import unittest
 from typing import (
     Any,
     Dict,
+    List,
 )
 
 from primer3 import thermoanalysis  # type: ignore
@@ -58,26 +59,64 @@ def make_rand_seq_pair() -> Dict[str, str]:
     '''
     Returns:
         dictionary of 2 unique sequences keyed by seq1 and seq2
-
     '''
     return dict(
         seq1=''.join([
-            random.choice('ATGC') for _ in
-            range(random.randint(20, 59))
+            random.choice('ATGC')
+            for _ in range(random.randint(20, 59))
         ]),
         seq2=''.join([
-            random.choice('ATGC') for _ in
-            range(random.randint(20, 59))
+            random.choice('ATGC')
+            for _ in range(random.randint(20, 59))
         ]),
     )
 
 
 class TestThermoAnalysisInThread(unittest.TestCase):
 
+    def setUp(self) -> None:
+        '''Set up test case'''
+        random.seed(42)  # Make random operations deterministic
+
+    def _generate_random_sequence(self, base_seq: str, i: int) -> str:
+        '''Generate a deterministic random sequence based on index
+
+        Args:
+            base_seq: Base sequence to append to
+            i: Thread index to use as seed
+
+        Returns:
+            Base sequence with deterministic random suffix
+        '''
+        # Use a new seed based on thread index to ensure deterministic but
+        # different sequences
+        local_random = random.Random(42 + i)
+        return base_seq + ''.join([
+            local_random.choice('ATGC') for _ in
+            range(60)
+        ])
+
+    def _generate_quality_list(self, length: int, i: int) -> List[int]:
+        '''Generate a deterministic list of quality scores
+
+        Args:
+            length: Length of quality score list to generate
+            i: Thread index to use as seed
+
+        Returns:
+            List of quality scores between 20 and 90
+        '''
+        # Use a new seed based on thread index to ensure deterministic but
+        # different scores
+        local_random = random.Random(42 + i)
+        return [
+            local_random.randint(20, 90)
+            for _ in range(length)
+        ]
+
     def test_calc_heterodimer_thread_safety(self):
         '''Test `calc_heterodimer` (and by extension all thal-dependents) for
-        thread safety
-
+        thread safety.
         '''
         def het_thread(
                 _results_list,
@@ -132,22 +171,23 @@ class TestThermoAnalysisInThread(unittest.TestCase):
 
         '''
         def tdesign_run(_global_args, _results_list, i):
-            sequence_template = (
-                'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACA'
-                'GCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGC'
-                'TAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTG'
-                'TTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATG'
-                'GAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGAT'
-                'AACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTT'
-                'TCCCTCTAGTAG'
-            ) + ''.join([
-                random.choice('ATGC') for _ in
-                range(60)
-            ])
-            quality_list = [
-                random.randint(20, 90)
-                for i in range(len(sequence_template))
-            ]
+            base_seq = (
+                'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGT'
+                'GAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGT'
+                'TTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGG'
+                'ACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTA'
+                'CTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA'
+                'ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCC'
+                'ACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG'
+            )
+            sequence_template = self._generate_random_sequence(
+                base_seq=base_seq,
+                i=i,
+            )
+            quality_list = self._generate_quality_list(
+                length=len(sequence_template),
+                i=i,
+            )
             seq_args = {
                 'SEQUENCE_ID': 'MH1000',
                 'SEQUENCE_TEMPLATE': sequence_template,
