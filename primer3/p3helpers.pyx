@@ -45,14 +45,22 @@ cdef inline void copy_c_char_buffer(
     char* out_buf,
     Py_ssize_t str_length,
 ) noexcept nogil:
-    '''Copy string to buffer
+    '''Copy bytes from input buffer to output buffer.
+
+    This is a low-level helper that performs a direct memory copy without any bounds checking.
+    The caller must ensure buffers are properly sized.
+
+    Safety requirements:
+    - in_buf must be valid for at least str_length bytes
+    - out_buf must be valid for at least str_length bytes
+    - Buffers must not overlap
 
     Args:
-        in_buf: input buffer
-        out_buf: output buffer (must be at least str_length bytes)
+        in_buf: input buffer to copy from
+        out_buf: output buffer to copy to
         str_length: number of bytes to copy
     '''
-    memcpy(out_buf, in_buf, <size_t> str_length + 1)
+    memcpy(out_buf, in_buf, <size_t> str_length)  # Copy exactly str_length bytes
 
 
 cdef int ss_rev_comp_seq(
@@ -235,6 +243,7 @@ cpdef bytes reverse_complement_b(
 
     # MUST COPY as python does not mutate bytes
     copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
+    seq_operate_c[seq_len] = 0  # ensure null terminated
 
     check = ss_rev_comp_seq(seq_operate_c, seq_len)
     if check:
@@ -329,6 +338,7 @@ cpdef bytes sanitize_sequence_b(
 
     # MUST COPY as python does not mutate bytes
     copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
+    seq_operate_c[seq_len] = 0  # ensure null terminated
 
     check = ss_sanitize_seq(seq_operate_c, seq_len)
     if check:
@@ -430,6 +440,7 @@ cpdef bytes ensure_acgt_uppercase_b(
 
     try:
         copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
+        seq_operate_c[seq_len] = 0  # ensure null terminated
 
         if ss_ensure_acgt_upper(seq_operate_c, seq_len):
             # Find the problematic character
