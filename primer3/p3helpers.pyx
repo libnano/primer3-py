@@ -225,7 +225,8 @@ cpdef bytes reverse_complement_b(
         bytes seq_out
         int check = 0
 
-    seq_operate_c = <char *> PyMem_Malloc(seq_len * sizeof(char))
+    # Allocate one extra byte for null termination
+    seq_operate_c = <char *> PyMem_Malloc((seq_len + 1) * sizeof(char))
     if seq_operate_c == NULL:
         raise OSError('malloc failure')
 
@@ -234,9 +235,13 @@ cpdef bytes reverse_complement_b(
 
     # MUST COPY as python does not mutate bytes
     copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
+    # Ensure null termination
+    seq_operate_c[seq_len] = 0
 
     check = ss_rev_comp_seq(seq_operate_c, seq_len)
     if check:
+        PyMem_Free(seq_operate_c)
+        seq_operate_c = NULL
         raise ValueError(f'Invalid base in sequence {seq}')
     if do_sanitize:
         check = ss_sanitize_seq(seq_operate_c, seq_len)
@@ -244,7 +249,8 @@ cpdef bytes reverse_complement_b(
             PyMem_Free(seq_operate_c)
             seq_operate_c = NULL
             raise ValueError(f'Invalid base in sequence {seq}')
-    seq_out = seq_operate_c
+    # Create bytes object of exact length without null terminator
+    seq_out = seq_operate_c[:seq_len]
     PyMem_Free(seq_operate_c)
     seq_operate_c = NULL
     return seq_out
@@ -315,7 +321,8 @@ cpdef bytes sanitize_sequence_b(
         bytes seq_out
         int check = 0
 
-    seq_operate_c = <char *> PyMem_Malloc(seq_len * sizeof(char))
+    # Allocate one extra byte for null termination
+    seq_operate_c = <char *> PyMem_Malloc((seq_len + 1) * sizeof(char))
     if seq_operate_c == NULL:
         raise OSError('malloc failure')
 
@@ -324,13 +331,16 @@ cpdef bytes sanitize_sequence_b(
 
     # MUST COPY as python does not mutate bytes
     copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
+    # Ensure null termination
+    seq_operate_c[seq_len] = 0
 
     check = ss_sanitize_seq(seq_operate_c, seq_len)
     if check:
         PyMem_Free(seq_operate_c)
         seq_operate_c = NULL
-        raise ValueError(f'Invalid base in equence {seq}')
-    seq_out = seq_operate_c
+        raise ValueError(f'Invalid base in sequence {seq}')
+    # Create bytes object of exact length without null terminator
+    seq_out = seq_operate_c[:seq_len]
     PyMem_Free(seq_operate_c)
     seq_operate_c = NULL
     return seq_out
