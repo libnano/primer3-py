@@ -45,14 +45,14 @@ cdef inline void copy_c_char_buffer(
     char* out_buf,
     Py_ssize_t str_length,
 ) noexcept nogil:
-    '''Copy string to buffer without null terminator since we track length.
+    '''Copy string to buffer
 
     Args:
         in_buf: input buffer
         out_buf: output buffer (must be at least str_length bytes)
         str_length: number of bytes to copy
     '''
-    memcpy(out_buf, in_buf, str_length)
+    memcpy(out_buf, in_buf, <size_t> str_length + 1)
 
 
 cdef int ss_rev_comp_seq(
@@ -235,8 +235,6 @@ cpdef bytes reverse_complement_b(
 
     # MUST COPY as python does not mutate bytes
     copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
-    # Ensure null termination
-    seq_operate_c[seq_len] = 0
 
     check = ss_rev_comp_seq(seq_operate_c, seq_len)
     if check:
@@ -331,8 +329,6 @@ cpdef bytes sanitize_sequence_b(
 
     # MUST COPY as python does not mutate bytes
     copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
-    # Ensure null termination
-    seq_operate_c[seq_len] = 0
 
     check = ss_sanitize_seq(seq_operate_c, seq_len)
     if check:
@@ -428,7 +424,7 @@ cpdef bytes ensure_acgt_uppercase_b(
         return seq  # Return original if already uppercase ACGT
 
     # Slow path: needs conversion
-    seq_operate_c = <char *> PyMem_Malloc(seq_len * sizeof(char))
+    seq_operate_c = <char *> PyMem_Malloc((seq_len + 1) * sizeof(char))
     if seq_operate_c == NULL:
         raise OSError('malloc failure')
 
