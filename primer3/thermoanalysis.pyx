@@ -1095,7 +1095,7 @@ cdef class _ThermoAnalysis:
             seq_args: Optional[Dict[str, Any]],
             misprime_lib: Optional[Dict[str, Any]] = None,
             mishyb_lib: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> None:
         '''
         Sets the Primer3 global settings and sequence settings from a Python
         dictionaries containing `key: value` pairs that correspond to the
