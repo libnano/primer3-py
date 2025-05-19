@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "generation_timestamp": "2025-05-19T09:05:52.910774",
-    "primer3_py_version": "2.1.0",
+    "generation_timestamp": "2025-05-19T18:52:05.599355",
+    "primer3_py_version": "2.2.0",
     "primer3_lib_version": "libprimer3 release 2.6.1",
     "python_version": "3.11.5 (main, Sep 11 2023, 08:31:25) [Clang 14.0.6 ]",
     "platform": {
@@ -13,13 +13,13 @@
     "dependencies": {
       "setuptools": "75.8.0",
       "wheel": "0.38.4",
-      "Cython": "not installed",
-      "pre-commit": "3.4.0",
+      "Cython": "3.1.1",
+      "pre-commit": "3.5.0",
       "pytest": "7.4.0",
       "tomli": "2.0.1"
     },
     "git_info": {
-      "branch": "feat/deterministic_tests",
+      "branch": "2.2.0-staging",
       "latest_tag": "v2.1.0"
     }
   },
