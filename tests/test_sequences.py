@@ -139,13 +139,18 @@ def calculate_thermo_values() -> Dict[str, Any]:
     return results
 
 
-def save_thermo_values(values, filename='tests/thermo_standard_values.json'):
+def save_thermo_values(
+        values: Dict[str, Any],
+        filename: str = 'tests/thermo_standard_values.json',
+) -> None:
     '''Save thermodynamic values to a JSON file'''
     with open(filename, 'w') as f:
         json.dump(values, f, indent=2)
 
 
-def load_thermo_values(filename='tests/thermo_standard_values.json'):
+def load_thermo_values(
+        filename: str = 'tests/thermo_standard_values.json',
+) -> Dict[str, Any]:
     '''Load thermodynamic values from a JSON file'''
     with open(filename, 'r') as f:
         return json.load(f)
