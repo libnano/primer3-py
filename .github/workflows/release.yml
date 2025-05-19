@@ -44,7 +44,7 @@ jobs:
         run: |
           # Extract version from __init__.py
           # This supports any valid PEP 440 version including pre-releases (e.g., 2.1.0a1)
-          VERSION=$(python -c "exec(open('primer3/__init__.py').read()); print(__version__)")
+          VERSION=$(sed -n "s/^__version__ = '\(.*\)'/\1/p" primer3/__init__.py)
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Base version from __init__.py: ${VERSION}"
 
