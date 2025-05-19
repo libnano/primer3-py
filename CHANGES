@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.0 (May 19, 2025)
+
+- Test improvements (determinism + increased coverage)
+- Sanitize `calc_tm` input (see issue #115)
+- Modernize build system & release process (see issue #154)
+
 ## Version 2.1.0 (February 26, 2025)
 
 - Support for python 3.13
