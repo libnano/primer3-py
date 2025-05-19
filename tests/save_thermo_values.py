@@ -96,7 +96,7 @@ def get_dependency_versions() -> Dict[str, str]:
         try:
             deps[name] = version(name)
         except PackageNotFoundError:
-            deps[name] = 'not installed'
+            deps[name] = 'Not installed'
 
     # Get dev dependencies
     dev_deps = pyproject.get('project', {}).get(
@@ -107,7 +107,7 @@ def get_dependency_versions() -> Dict[str, str]:
         try:
             deps[name] = version(name)
         except PackageNotFoundError:
-            deps[name] = 'not installed'
+            deps[name] = 'Not installed'
 
     return deps
 
