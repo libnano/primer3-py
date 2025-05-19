@@ -28,6 +28,10 @@ from __future__ import print_function
 
 import json
 import unittest
+from typing import (
+    Any,
+    Dict,
+)
 
 from primer3 import (
     argdefaults,
@@ -35,7 +39,7 @@ from primer3 import (
 )
 
 # Use the default values from argdefaults.py
-STANDARD_CONDITIONS = {
+STANDARD_CONDITIONS: Dict[str, Any] = {
     'mv_conc': argdefaults.Primer3PyArguments.mv_conc,  # 50.0 mM
     'dv_conc': argdefaults.Primer3PyArguments.dv_conc,  # 1.5 mM
     'dntp_conc': argdefaults.Primer3PyArguments.dntp_conc,  # 0.6 mM
@@ -48,7 +52,7 @@ STANDARD_CONDITIONS = {
 }
 
 # Test sequences organized by structural properties
-TEST_SEQUENCES = {
+TEST_SEQUENCES: Dict[str, Dict[str, Any]] = {
     'homopolymers': {
         'polyA': 'AAAAAAAAAAAAAAAAAAAA',
         'polyT': 'TTTTTTTTTTTTTTTTTTTT',
@@ -99,14 +103,14 @@ TEST_SEQUENCES = {
 }
 
 
-def calculate_thermo_values():
+def calculate_thermo_values() -> Dict[str, Any]:
     '''Calculate thermodynamic values for all test sequences under standard
     conditions
     '''
     thermo = thermoanalysis.ThermoAnalysis()
     thermo.set_thermo_args(**STANDARD_CONDITIONS)
 
-    results = {}
+    results: Dict[str, Dict[str, Any]] = {}
 
     # Calculate values for single sequences
     for category, sequences in TEST_SEQUENCES.items():

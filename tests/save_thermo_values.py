@@ -34,6 +34,7 @@ from importlib.metadata import (
     version,
 )
 from pathlib import Path
+from typing import Dict
 
 import tomli
 
@@ -47,8 +48,12 @@ sys.path.insert(0, str(project_root))
 from tests.test_sequences import calculate_thermo_values
 
 
-def get_git_info():
-    '''Get git branch and latest tag information.'''
+def get_git_info() -> Dict[str, str]:
+    '''Get git branch and latest tag information.
+
+    Returns:
+        Dictionary containing git branch and latest tag
+    '''
     try:
         branch = subprocess.check_output(
             ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
@@ -71,8 +76,12 @@ def get_git_info():
         }
 
 
-def get_dependency_versions():
-    '''Get versions of dependencies from pyproject.toml.'''
+def get_dependency_versions() -> Dict[str, str]:
+    '''Get versions of dependencies from pyproject.toml.
+
+    Returns:
+        Dictionary containing versions of Python dependencies
+    '''
     deps = {}
 
     # Read pyproject.toml
@@ -106,7 +115,7 @@ def get_dependency_versions():
 def save_thermo_values_with_metadata(
         values,
         filename='tests/thermo_standard_values.json',
-):
+) -> None:
     '''Save thermodynamic values with metadata to a JSON file.'''
     metadata = {
         'generation_timestamp': datetime.now().isoformat(),
