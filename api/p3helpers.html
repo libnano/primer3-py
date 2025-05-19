@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>primer3.p3helpers &mdash; Primer3-py 2.1.0 documentation</title>
+  <title>primer3.p3helpers &mdash; Primer3-py 2.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=20623aea"></script>
+        <script src="../_static/documentation_options.js?v=b21de401"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.1.0
+                2.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -53,6 +53,8 @@
 <li class="toctree-l2"><a class="reference internal" href="bindings.html">Primary analysis and design API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="thermoanalysis.html">Low-level thermodynamic analysis</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">primer3.p3helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#primer3.p3helpers.ensure_acgt_uppercase"><code class="docutils literal notranslate"><span class="pre">ensure_acgt_uppercase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#primer3.p3helpers.ensure_acgt_uppercase_b"><code class="docutils literal notranslate"><span class="pre">ensure_acgt_uppercase_b()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#primer3.p3helpers.reverse_complement"><code class="docutils literal notranslate"><span class="pre">reverse_complement()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#primer3.p3helpers.reverse_complement_b"><code class="docutils literal notranslate"><span class="pre">reverse_complement_b()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#primer3.p3helpers.sanitize_sequence"><code class="docutils literal notranslate"><span class="pre">sanitize_sequence()</span></code></a></li>
@@ -95,24 +97,64 @@
 <p>Contains Cython functions and classes that aid primer design</p>
 </section>
 <dl class="py function">
+<dt class="sig sig-object py" id="primer3.p3helpers.ensure_acgt_uppercase">
+<span class="sig-prename descclassname"><span class="pre">primer3.p3helpers.</span></span><span class="sig-name descname"><span class="pre">ensure_acgt_uppercase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.p3helpers.ensure_acgt_uppercase" title="Link to this definition"></a></dt>
+<dd><p>Convert sequence to uppercase and validate it contains only A, C, G, T bases.
+This is stricter than sanitize_sequence() as it only allows A, C, G, T bases.</p>
+<p>If the sequence is already uppercase ACGT, returns the original string without
+any allocation or copying.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>seq</strong> – sequence to convert to uppercase and validate</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>uppercase version of seq containing only A, C, G, T bases</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If sequence contains any characters other than A, C, G, T (case insensitive)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.p3helpers.ensure_acgt_uppercase_b">
+<span class="sig-prename descclassname"><span class="pre">primer3.p3helpers.</span></span><span class="sig-name descname"><span class="pre">ensure_acgt_uppercase_b</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.p3helpers.ensure_acgt_uppercase_b" title="Link to this definition"></a></dt>
+<dd><p>Convert bytes sequence to uppercase and validate it contains only A, C, G, T bases.
+This is stricter than sanitize_sequence_b() as it only allows A, C, G, T bases.</p>
+<p>If the sequence is already uppercase ACGT, returns the original bytes without
+any allocation or copying.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>seq</strong> – sequence to convert to uppercase and validate</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>uppercase version of seq containing only A, C, G, T bases</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If sequence contains any characters other than A, C, G, T (case insensitive)</p></li>
+<li><p><strong>OSError</strong> – malloc failure</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="primer3.p3helpers.reverse_complement">
 <span class="sig-prename descclassname"><span class="pre">primer3.p3helpers.</span></span><span class="sig-name descname"><span class="pre">reverse_complement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_sanitize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#primer3.p3helpers.reverse_complement" title="Link to this definition"></a></dt>
 <dd><p>Compute reverse complement of the python string sequence</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – sequence string</p></li>
+<li><p><strong>seq</strong> – sequence string</p></li>
 <li><p><strong>do_sanitize</strong> – If True, convert non-IUPAC characters to N’s</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reverse complement of sequence string</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Reverse complement of sequence string</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – Invalid base in sequence</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Invalid base in sequence</p>
 </dd>
 </dl>
 </dd></dl>
@@ -124,18 +166,15 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></span>) – sequence in bytes</p></li>
+<li><p><strong>seq</strong> – sequence in bytes</p></li>
 <li><p><strong>do_sanitize</strong> – If True, convert non-IUPAC characters to N’s</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reverse complement of sequence in bytes</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Reverse complement of sequence in bytes</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>ValueError</strong> – Invalid base in sequence</p></li>
 <li><p><strong>OSError</strong> – <code class="docutils literal notranslate"><span class="pre">malloc</span></code> failure</p></li>
 </ul>
@@ -153,16 +192,13 @@ IUPAC {R,Y,M,K,S,W,H,D,B,V,r,y,m,k,s,w,h,d,b,v}</p>
 keeping</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seq</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – sequence to sanitize nonstandard with <a href="#id3"><span class="problematic" id="id4">`</span></a>N`s or <a href="#id5"><span class="problematic" id="id6">`</span></a>n`s</p>
+<dd class="field-odd"><p><strong>seq</strong> – sequence to sanitize nonstandard with <a href="#id3"><span class="problematic" id="id4">`</span></a>N`s or <a href="#id5"><span class="problematic" id="id6">`</span></a>n`s</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sanitized version of <code class="docutils literal notranslate"><span class="pre">seq</span></code></p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>sanitized version of <code class="docutils literal notranslate"><span class="pre">seq</span></code></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – Invalid base in sequence</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Invalid base in sequence</p>
 </dd>
 </dl>
 </dd></dl>
@@ -177,16 +213,13 @@ IUPAC {R,Y,M,K,S,W,H,D,B,V,r,y,m,k,s,w,h,d,b,v}</p>
 keeping</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seq</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></span>) – sequence to sanitize nonstandard with <a href="#id9"><span class="problematic" id="id10">`</span></a>N`s or <a href="#id11"><span class="problematic" id="id12">`</span></a>n`s</p>
+<dd class="field-odd"><p><strong>seq</strong> – sequence to sanitize nonstandard with <a href="#id9"><span class="problematic" id="id10">`</span></a>N`s or <a href="#id11"><span class="problematic" id="id12">`</span></a>n`s</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sanitized version of <code class="docutils literal notranslate"><span class="pre">seq</span></code></p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>sanitized version of <code class="docutils literal notranslate"><span class="pre">seq</span></code></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>ValueError</strong> – Invalid base in sequence</p></li>
 <li><p><strong>OSError</strong> – <code class="docutils literal notranslate"><span class="pre">malloc</span></code> failure</p></li>
 </ul>
