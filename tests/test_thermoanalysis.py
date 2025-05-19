@@ -52,7 +52,7 @@ from . import wrappers
 
 class TestLowLevelBindings(unittest.TestCase):
 
-    def randArgs(self) -> None:
+    def rand_args(self) -> None:
         self.seq1 = ''.join([
             random.choice('ATGC') for _ in
             range(random.randint(20, 59))
@@ -93,7 +93,7 @@ class TestLowLevelBindings(unittest.TestCase):
     def test_calc_tm(self) -> None:
         '''Test basic calc_tm input'''
         for _ in range(100):
-            self.randArgs()
+            self.rand_args()
             binding_tm = bindings.calc_tm(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
@@ -121,7 +121,7 @@ class TestLowLevelBindings(unittest.TestCase):
     def test_calc_hairpin(self) -> None:
         '''Test basic hairpin input'''
         for _ in range(1):
-            self.randArgs()
+            self.rand_args()
             binding_res = bindings.calc_hairpin(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
@@ -154,7 +154,7 @@ class TestLowLevelBindings(unittest.TestCase):
     def test_calc_homodimer(self) -> None:
         '''Test basic homodimer input'''
         for _ in range(100):
-            self.randArgs()
+            self.rand_args()
             binding_res = bindings.calc_homodimer(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
@@ -189,7 +189,7 @@ class TestLowLevelBindings(unittest.TestCase):
     def test_calc_heterodimer(self) -> None:
         '''Test basic heterodimer input'''
         for _ in range(100):
-            self.randArgs()
+            self.rand_args()
             binding_res = bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
@@ -248,7 +248,7 @@ class TestLowLevelBindings(unittest.TestCase):
 
     def test_max_length_heterodimer(self) -> None:
         '''Test longest heterodimer input of 10000 mer per `THAL_MAX_SEQ` '''
-        self.randArgs()
+        self.rand_args()
 
         seq_small = ''.join([
             random.choice('ATGC') for _ in
@@ -317,7 +317,7 @@ class TestLowLevelBindings(unittest.TestCase):
     def test_calc_end_stability(self) -> None:
         '''Test calc_end_stability'''
         for _ in range(100):
-            self.randArgs()
+            self.rand_args()
             binding_res = bindings.calc_end_stability(
                 seq1=self.seq1,
                 seq2=self.seq2,
@@ -342,7 +342,7 @@ class TestLowLevelBindings(unittest.TestCase):
 
     def test_correction_methods(self) -> None:
         '''Test different correction_methods'''
-        self.randArgs()
+        self.rand_args()
         for sc_method in ['schildkraut', 'santalucia', 'owczarzy']:
             for tm_method in ['breslauer', 'santalucia']:
                 binding_tm = bindings.calc_tm(
@@ -385,7 +385,7 @@ class TestLowLevelBindings(unittest.TestCase):
         sm = _get_mem_usage()
         run_count = 100
         for x in range(run_count):
-            self.randArgs()
+            self.rand_args()
             bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
