@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Low-level thermodynamic analysis &mdash; Primer3-py 2.1.0 documentation</title>
+  <title>Low-level thermodynamic analysis &mdash; Primer3-py 2.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=20623aea"></script>
+        <script src="../_static/documentation_options.js?v=b21de401"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.1.0
+                2.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -89,15 +89,19 @@
 <li class="toctree-l4"><a class="reference internal" href="#primer3.thermoanalysis.ThermoResult.todict"><code class="docutils literal notranslate"><span class="pre">ThermoResult.todict()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#primer3.thermoanalysis.get_libprimer3_version"><code class="docutils literal notranslate"><span class="pre">get_libprimer3_version()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="p3helpers.html">primer3.p3helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.ensure_acgt_uppercase"><code class="docutils literal notranslate"><span class="pre">ensure_acgt_uppercase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.ensure_acgt_uppercase_b"><code class="docutils literal notranslate"><span class="pre">ensure_acgt_uppercase_b()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.reverse_complement"><code class="docutils literal notranslate"><span class="pre">reverse_complement()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.reverse_complement_b"><code class="docutils literal notranslate"><span class="pre">reverse_complement_b()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.sanitize_sequence"><code class="docutils literal notranslate"><span class="pre">sanitize_sequence()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="p3helpers.html#primer3.p3helpers.sanitize_sequence_b"><code class="docutils literal notranslate"><span class="pre">sanitize_sequence_b()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../miscellany.html">Miscellany</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changes_link.html">Changelog</a></li>
@@ -278,6 +282,9 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>floating point Tm result</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If sequence contains non-ACGT bases</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -289,8 +296,8 @@ sequence <cite>seq2</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq1</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]</span>) – sequence string 1</p></li>
-<li><p><strong>seq2</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]</span>) – sequence string 2</p></li>
+<li><p><strong>seq1</strong> – sequence string 1</p></li>
+<li><p><strong>seq2</strong> – sequence string 2</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -363,13 +370,16 @@ sequence, <code class="docutils literal notranslate"><span class="pre">seq1</spa
 <dd><p>Calculate the melting temperature (Tm) of a DNA sequence (deg. C).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>seq1</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>]</span>) – (str | bytes) sequence string 1</p>
+<dd class="field-odd"><p><strong>seq1</strong> – (str | bytes) sequence string 1</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>floating point Tm result</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If sequence contains non-ACGT bases</p>
 </dd>
 </dl>
 </dd></dl>
@@ -610,6 +620,20 @@ result of the calculation.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="primer3.thermoanalysis.get_libprimer3_version">
+<span class="sig-prename descclassname"><span class="pre">primer3.thermoanalysis.</span></span><span class="sig-name descname"><span class="pre">get_libprimer3_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#primer3.thermoanalysis.get_libprimer3_version" title="Link to this definition"></a></dt>
+<dd><p>Get the version of the underlying libprimer3 C library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The version string of libprimer3</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

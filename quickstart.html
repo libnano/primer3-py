@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; Primer3-py 2.1.0 documentation</title>
+  <title>Getting Started &mdash; Primer3-py 2.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=20623aea"></script>
+        <script src="_static/documentation_options.js?v=b21de401"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.1.0
+                2.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -50,7 +50,12 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#standard-installation">Standard Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#development-installation">Development Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows-specific-setup">Windows-Specific Setup</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#thermodynamic-analysis">Thermodynamic analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#primer-design">Primer design</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a></li>
@@ -58,16 +63,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced-installation">Advanced Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#forking">Forking</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#branch-naming">Branch naming</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#development">Development</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pull-requests">Pull Requests</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
@@ -98,52 +98,57 @@
            <div itemprop="articleBody">
              
   <section id="getting-started">
-<h1><a class="toc-backref" href="#id1" role="doc-backlink">Getting Started</a><a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
 <p><strong>Primer3-py</strong> is designed to be simple to install and use.</p>
-<nav class="contents" id="contents">
-<p class="topic-title">Contents</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#getting-started" id="id1">Getting Started</a></p>
-<ul>
-<li><p><a class="reference internal" href="#requirements" id="id2">Requirements</a></p></li>
-<li><p><a class="reference internal" href="#installation" id="id3">Installation</a></p></li>
-<li><p><a class="reference internal" href="#thermodynamic-analysis" id="id4">Thermodynamic analysis</a></p></li>
-<li><p><a class="reference internal" href="#primer-design" id="id5">Primer design</a></p>
-<ul>
-<li><p><a class="reference internal" href="#workflow" id="id6">Workflow</a></p></li>
-</ul>
-</li>
-<li><p><a class="reference internal" href="#advanced-installation" id="id7">Advanced Installation</a></p></li>
-<li><p><a class="reference internal" href="#testing" id="id8">Testing</a></p></li>
-<li><p><a class="reference internal" href="#contributing" id="id9">Contributing</a></p>
-<ul>
-<li><p><a class="reference internal" href="#forking" id="id10">Forking</a></p></li>
-<li><p><a class="reference internal" href="#branch-naming" id="id11">Branch naming</a></p></li>
-<li><p><a class="reference internal" href="#development" id="id12">Development</a></p></li>
-<li><p><a class="reference internal" href="#pull-requests" id="id13">Pull Requests</a></p></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</nav>
 <section id="requirements">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
 <p><strong>Primer3-py</strong> is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.13 builds are supported.</p>
-<p>Wheels are released for CPython versions following the <a class="reference external" href="https://devguide.python.org/versions/">EOL model</a>.</p>
+<p>Wheels are released for CPython versions following the <a class="reference external" href="https://devguide.python.org/versions/">EOL model</a>. Pre-built wheels are available for:</p>
+<ul class="simple">
+<li><p>MacOS (x86-64, arm64)</p></li>
+<li><p>Linux (x86-64)</p></li>
+<li><p>Windows (x86-64)</p></li>
+</ul>
+<p>For other platforms (e.g., Linux aarch64), the package can be built from source but is not officially supported.</p>
 </section>
 <section id="installation">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Installation</a><a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<p>If you want to install the latest stable build of <strong>Primer3-py</strong>, you can
-install it using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>primer3-py
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<section id="standard-installation">
+<h3>Standard Installation<a class="headerlink" href="#standard-installation" title="Link to this heading"></a></h3>
+<p>To install the latest stable version:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>primer3-py
 </pre></div>
 </div>
-<p><strong>NOTE</strong>: We support wheel builds for PyPi for the 3 most recent CPython versions. Target platforms for wheels are MacOS <code class="docutils literal notranslate"><span class="pre">x86-64</span></code> <code class="docutils literal notranslate"><span class="pre">arm64</span></code>, Linux <code class="docutils literal notranslate"><span class="pre">x86-64</span></code>, and Windows <code class="docutils literal notranslate"><span class="pre">x86-64</span></code>.</p>
-<p>If your Python version and platform fall outside this such as Linux <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> it is confirmed <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> builds on this platform but it is not supported as our build GitHub actions runners do not run these builds expediently.</p>
+</section>
+<section id="development-installation">
+<h3>Development Installation<a class="headerlink" href="#development-installation" title="Link to this heading"></a></h3>
+<p>For development or to work with the latest code:</p>
+<ol class="arabic">
+<li><p>Clone the repository:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/libnano/primer3-py
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>primer3-py
+</pre></div>
+</div>
+</li>
+<li><p>Install in development mode with dev dependencies:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="windows-specific-setup">
+<h3>Windows-Specific Setup<a class="headerlink" href="#windows-specific-setup" title="Link to this heading"></a></h3>
+<p>If building on Windows, you’ll need the TDM-GCC MinGW Compiler:</p>
+<ol class="arabic simple">
+<li><p>Download and install from <a class="reference external" href="https://jmeubank.github.io/tdm-gcc/">TDM-GCC MinGW</a></p></li>
+<li><p>Ensure the compiler is in your system PATH</p></li>
+<li><p>Use the installation commands above</p></li>
+</ol>
+</section>
 </section>
 <section id="thermodynamic-analysis">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Thermodynamic analysis</a><a class="headerlink" href="#thermodynamic-analysis" title="Link to this heading"></a></h2>
+<h2>Thermodynamic analysis<a class="headerlink" href="#thermodynamic-analysis" title="Link to this heading"></a></h2>
 <p>The thermodynamic <a class="reference internal" href="api/bindings.html#module-primer3.bindings" title="primer3.bindings"><code class="xref py py-mod docutils literal notranslate"><span class="pre">primer3.bindings</span></code></a> include support for <strong>Tm, homodimer, heterodimer,
 hairpin,</strong> and <strong>3’ end stability calculations</strong>:</p>
 <p>All of these low-level thermodynamic functions share a set of keyword arguments
@@ -192,7 +197,7 @@ NOTE. camelCase methods are deprecated.  Please write all new code with
 <a class="reference internal" href="api/thermoanalysis.html#primer3.thermoanalysis.ThermoAnalysis" title="primer3.thermoanalysis.ThermoAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">primer3.thermoanalysis.ThermoAnalysis</span></code></a> snake case methods</p>
 </section>
 <section id="primer-design">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Primer design</a><a class="headerlink" href="#primer-design" title="Link to this heading"></a></h2>
+<h2>Primer design<a class="headerlink" href="#primer-design" title="Link to this heading"></a></h2>
 <p><strong>Primer3-py</strong> includes bindings for the Primer3 primer design pipeline. The
 parameters for the design process are provided as Python dictionaries that
 mirror the BoulderIO input files required by the Primer3 binaries. There
@@ -216,25 +221,27 @@ input and the Python binding input:</p>
 </pre></div>
 </div>
 <section id="workflow">
-<h3><a class="toc-backref" href="#id6" role="doc-backlink">Workflow</a><a class="headerlink" href="#workflow" title="Link to this heading"></a></h3>
+<h3>Workflow<a class="headerlink" href="#workflow" title="Link to this heading"></a></h3>
 <p>The easiest way to run the primer design pipeline is with
 <a class="reference internal" href="api/bindings.html#primer3.bindings.design_primers" title="primer3.bindings.design_primers"><code class="xref py py-func docutils literal notranslate"><span class="pre">primer3.bindings.design_primers()</span></code></a>. Notice that Primer3 parameters prefixed with
 “SEQUENCE_” are provided in a separate dictionary from those prefixed with
 “PRIMER_”. For more advanced / modular approaches, see the <a class="reference internal" href="api/bindings.html"><span class="doc">Primary analysis and design API</span></a>
 documentation.</p>
 <p>Example usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bindings</span><span class="o">.</span><span class="n">design_primers</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bindings</span><span class="o">.</span><span class="n">design_primers</span><span class="p">(</span>
     <span class="n">seq_args</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">&#39;SEQUENCE_ID&#39;</span><span class="p">:</span> <span class="s1">&#39;MH1000&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;SEQUENCE_TEMPLATE&#39;</span><span class="p">:</span> <span class="s1">&#39;GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT&#39;</span>
-                             <span class="s1">&#39;AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA&#39;</span>
-                             <span class="s1">&#39;ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG&#39;</span>
-                             <span class="s1">&#39;CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG&#39;</span>
-                             <span class="s1">&#39;TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA&#39;</span>
-                             <span class="s1">&#39;TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA&#39;</span>
-                             <span class="s1">&#39;ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA&#39;</span>
-                             <span class="s1">&#39;TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA&#39;</span>
-                             <span class="s1">&#39;GATGTTTCCCTCTAGTAG&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;SEQUENCE_TEMPLATE&#39;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s1">&#39;GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT&#39;</span>
+            <span class="s1">&#39;AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA&#39;</span>
+            <span class="s1">&#39;ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG&#39;</span>
+            <span class="s1">&#39;CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG&#39;</span>
+            <span class="s1">&#39;TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA&#39;</span>
+            <span class="s1">&#39;TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA&#39;</span>
+            <span class="s1">&#39;ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA&#39;</span>
+            <span class="s1">&#39;TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA&#39;</span>
+            <span class="s1">&#39;GATGTTTCCCTCTAGTAG&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="s1">&#39;SEQUENCE_INCLUDED_REGION&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">36</span><span class="p">,</span><span class="mi">342</span><span class="p">]</span>
     <span class="p">},</span>
     <span class="n">global_args</span><span class="o">=</span><span class="p">{</span>
@@ -258,8 +265,8 @@ documentation.</p>
         <span class="s1">&#39;PRIMER_PAIR_MAX_COMPL_ANY&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
         <span class="s1">&#39;PRIMER_PAIR_MAX_COMPL_END&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
         <span class="s1">&#39;PRIMER_PRODUCT_SIZE_RANGE&#39;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">[</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="p">],[</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">],[</span><span class="mi">125</span><span class="p">,</span><span class="mi">150</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">150</span><span class="p">,</span><span class="mi">175</span><span class="p">],[</span><span class="mi">175</span><span class="p">,</span><span class="mi">200</span><span class="p">],[</span><span class="mi">200</span><span class="p">,</span><span class="mi">225</span><span class="p">]</span>
+            <span class="p">[</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">],</span> <span class="p">[</span><span class="mi">125</span><span class="p">,</span><span class="mi">150</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">150</span><span class="p">,</span><span class="mi">175</span><span class="p">],</span> <span class="p">[</span><span class="mi">175</span><span class="p">,</span><span class="mi">200</span><span class="p">],</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span><span class="mi">225</span><span class="p">]</span>
         <span class="p">],</span>
     <span class="p">})</span>
 </pre></div>
@@ -267,118 +274,62 @@ documentation.</p>
 </section>
 </section>
 <section id="advanced-installation">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Advanced Installation</a><a class="headerlink" href="#advanced-installation" title="Link to this heading"></a></h2>
+<h2>Advanced Installation<a class="headerlink" href="#advanced-installation" title="Link to this heading"></a></h2>
 <p>Users interested in contributing to development may want to work with the
-latest development build. To get the latest and greatest code, head over
+latest development build. To get the latest and greatest code, head over to
 <a class="reference external" href="https://github.com/libnano/primer3-py">our Github repo</a> and clone the
-repo or download a tarball. Building from source is easy.</p>
-<p>If you don’t install the latest build via pip or conda, you might have to install
-<code class="docutils literal notranslate"><span class="pre">Cython</span></code>, prior to running the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install Cython
+repo or download a tarball. Building from source is easy:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>For<span class="w"> </span>regular<span class="w"> </span>installation<span class="w"> </span>from<span class="w"> </span><span class="nb">source</span>
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>.
+
+<span class="gp"># </span>For<span class="w"> </span>development<span class="w"> </span>installation<span class="w"> </span><span class="o">(</span>recommended<span class="o">)</span>
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
-<p>Or via <code class="docutils literal notranslate"><span class="pre">conda</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install Cython
-</pre></div>
-</div>
-<p>Then run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py install
-</pre></div>
-</div>
-<p>or if you are developing <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> enhancements:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build_ext --inplace
-</pre></div>
-</div>
-<p>We recommend running <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> with either <code class="docutils literal notranslate"><span class="pre">build_ext</span> <span class="pre">--inplace</span></code> or
-<code class="docutils literal notranslate"><span class="pre">develop</span></code> rather than <code class="docutils literal notranslate"><span class="pre">install</span></code> if you are testing development builds.
-<code class="docutils literal notranslate"><span class="pre">build_ext</span> <span class="pre">--inplace</span></code> will build the Cython and C API extensions in the
-package directory without copying any files to your local environment
-site-packages directory (so you can import and run tests from within the
-package) and <code class="docutils literal notranslate"><span class="pre">develop</span></code> will build in place and then put symlinks in your
-site packages directory (this will allow Primer3-py)</p>
+<p>We recommend using the development installation (<code class="docutils literal notranslate"><span class="pre">-e</span></code> flag) if you are testing or
+developing <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> enhancements. This creates an “editable” installation that
+links to your source code, allowing you to modify the code without reinstalling.</p>
 <p>NOTE: If you’re attempting to build on Windows, please review the <code class="docutils literal notranslate"><span class="pre">primer3</span></code>
 documentation regarding environment requirements. You’ll need to install
 the latest version of the TDM-GCC MinGW Compiler if building in a
 <code class="docutils literal notranslate"><span class="pre">MinGW</span> <span class="pre">/</span> <span class="pre">Mingw-w64</span></code> environment: <a class="reference external" href="https://jmeubank.github.io/tdm-gcc/">TDM-GCC MinGW Compiler</a></p>
 </section>
 <section id="testing">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Testing</a><a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
-<p>Every commit pushed to
-<a class="reference external" href="https://github.com/libnano/primer3-py">the primer3-py GitHub repo</a> is tested to
-ensure it builds properly and passes our unit testing framework as a GitHub action</p>
-<p>If you’d like to run the tests yourself, we suggest the following workflow:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/libnano/primer3-py
-$ cd primer3-py
-$ python setup.py build_ext --inplace
-$ pytest
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<p>Every commit pushed to <a class="reference external" href="https://github.com/libnano/primer3-py">the primer3-py GitHub repo</a>
+is tested via GitHub Actions to ensure it builds properly and passes our unit tests.</p>
+<p>If you’d like to run the tests yourself:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Clone<span class="w"> </span>the<span class="w"> </span>repository
+<span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/libnano/primer3-py
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>primer3-py
+
+<span class="gp"># </span>Create<span class="w"> </span>and<span class="w"> </span>activate<span class="w"> </span>a<span class="w"> </span>virtual<span class="w"> </span>environment
+<span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>p3p-test-env
+
+<span class="gp"># </span>On<span class="w"> </span>Unix/macOS:
+<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>p3p-test-env/bin/activate
+
+<span class="gp"># </span>On<span class="w"> </span>Windows<span class="w"> </span><span class="o">(</span>run<span class="w"> </span>this<span class="w"> </span>instead<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="nb">source</span><span class="w"> </span><span class="nb">command</span><span class="w"> </span>above<span class="o">)</span>:
+<span class="gp"># </span>p3p-test-env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+
+<span class="gp"># </span>Install<span class="w"> </span>development<span class="w"> </span>dependencies<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span><span class="k">in</span><span class="w"> </span>editable<span class="w"> </span>mode
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+
+<span class="gp"># </span>Run<span class="w"> </span>tests<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span>directory
+<span class="gp">$ </span>pytest
+
+<span class="gp"># </span>When<span class="w"> </span>finished,<span class="w"> </span>deactivate<span class="w"> </span>the<span class="w"> </span>virtual<span class="w"> </span>environment
+<span class="gp">$ </span>deactivate
 </pre></div>
 </div>
-<p>NOTE: <code class="docutils literal notranslate"><span class="pre">pip</span></code> / <code class="docutils literal notranslate"><span class="pre">conda</span></code> install <code class="docutils literal notranslate"><span class="pre">pytest</span></code> if not in your environment</p>
+<p>Using a virtual environment is recommended to ensure a clean, isolated development environment
+and avoid conflicts with other Python packages in your system.</p>
 </section>
 <section id="contributing">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">Contributing</a><a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
-<p>Contributions are welcomed via pull requests.</p>
-<p>Contact the <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> maintainers prior to beginning your work to make sure
-it makes sense for the project.</p>
-<p>By contributing, you also agree to release your code under the GPLv2</p>
-<p>After a successful PR will be listed under the <a class="reference external" href="https://github.com/libnano/primer3-py/graphs/contributors">contributors</a>.</p>
-<section id="forking">
-<h3><a class="toc-backref" href="#id10" role="doc-backlink">Forking</a><a class="headerlink" href="#forking" title="Link to this heading"></a></h3>
-<p>A forking workflow is preferred for all pull requests.</p>
-</section>
-<section id="branch-naming">
-<h3><a class="toc-backref" href="#id11" role="doc-backlink">Branch naming</a><a class="headerlink" href="#branch-naming" title="Link to this heading"></a></h3>
-<p>Branch naming is preferred to use the format:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">GitHub</span> <span class="n">user</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;-&lt;</span><span class="n">short</span> <span class="n">keyword</span> <span class="n">description</span> <span class="n">of</span> <span class="n">change</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<p>Keep branch names not too long.  A good example would be for the user <code class="docutils literal notranslate"><span class="pre">grinner</span></code>
-for a documentation update for the 1.0.0 staging branch:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>grinner-docs-update-1.0.0-pass-01
-</pre></div>
-</div>
-<p>With the trailing 01 indicative of it being part of several potential</p>
-<p>Another example pass that focuses on code clarity comments would be:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>grinner-code-clarity-and-comments
-</pre></div>
-</div>
-</section>
-<section id="development">
-<h3><a class="toc-backref" href="#id12" role="doc-backlink">Development</a><a class="headerlink" href="#development" title="Link to this heading"></a></h3>
-<p>Development requires the use of C Python 3.8+, <a class="reference external" href="https://docs.pytest.org">pytest</a> and
-<a class="reference external" href="https://pre-commit.com">pre-commit</a> as they are used to build and run primer3-py
-code CI in the GitHub Action.</p>
-<p>Install these dependencies in your python development environment
-(<code class="docutils literal notranslate"><span class="pre">virtualenv</span></code>, <code class="docutils literal notranslate"><span class="pre">conda</span></code>, etc):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>cython<span class="w"> </span>pre-commit<span class="w"> </span>pytest
-<span class="c1"># or</span>
-$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>cython<span class="w"> </span>pre-commit<span class="w"> </span>pytest
-</pre></div>
-</div>
-<p>Install <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> in repo the with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pre-commit<span class="w"> </span>install
-</pre></div>
-</div>
-<p>To ensure the git hook is excecuted on every commit.</p>
-</section>
-<section id="pull-requests">
-<h3><a class="toc-backref" href="#id13" role="doc-backlink">Pull Requests</a><a class="headerlink" href="#pull-requests" title="Link to this heading"></a></h3>
-<p>Pull Requests should meet the following requirements:</p>
-<ol class="arabic simple">
-<li><p>Excellent PR description describing all changes made. Please use markdown syntax highlighting to help readability.</p></li>
-<li><p>If change is code related, have test coverage for the changes implemented.</p></li>
-<li><p>Attempt to make the PR 1 commit only. Multiple are OK if it helps illustrate the change better.</p></li>
-<li><p>Commit messages should describe the changes.</p></li>
-<li><p>Provided you contact the maintainers in advance, theu will code review your PR, provide feedback and squash merge your code on approval.</p></li>
-</ol>
-<p><strong>TIP</strong>: Interactive <code class="docutils literal notranslate"><span class="pre">rebase</span></code> is helpful to fix old commit messages.
-For example, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>HEAD~2
-</pre></div>
-</div>
-<p>To rebase the last 2 commits. Use <code class="docutils literal notranslate"><span class="pre">s</span></code> to mark the most recent commit(s), save, then
-modify the collective commit messages to update poor commit messages.</p>
-</section>
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
+<p>Contributions are welcomed via pull requests. Contact the <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> maintainers prior to beginning your work to make sure it makes sense for the project.</p>
+<p>By contributing, you also agree to release your code under the GPLv2.</p>
+<p>For detailed contribution guidelines, development setup, workflows, and release process, see our <a class="reference internal" href="development.html"><span class="std std-doc">Development Guide</span></a>.</p>
 </section>
 </section>
 
