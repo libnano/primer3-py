@@ -161,12 +161,12 @@ class TestThermodynamicRelationships(unittest.TestCase):
     different types of DNA structures and sequences.
     '''
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.conditions = STANDARD_CONDITIONS.copy()
         self.thermo = thermoanalysis.ThermoAnalysis()
         self.thermo.set_thermo_args(**self.conditions)
 
-    def test_gc_content_effect(self):
+    def test_gc_content_effect(self) -> None:
         '''Test that GC-rich sequences have higher melting temperatures than
         AT-rich ones
         '''
@@ -178,7 +178,7 @@ class TestThermodynamicRelationships(unittest.TestCase):
 
         self.assertGreater(gc_tm, at_tm)
 
-    def test_hairpin_stability(self):
+    def test_hairpin_stability(self) -> None:
         '''Test that perfect hairpins are more stable than mismatched ones'''
         perfect = TEST_SEQUENCES['hairpins']['perfect']
         mismatched = TEST_SEQUENCES['hairpins']['mismatched']
@@ -188,7 +188,7 @@ class TestThermodynamicRelationships(unittest.TestCase):
 
         self.assertLess(perfect_dg, mismatched_dg)
 
-    def test_hairpin_stability_relationships(self):
+    def test_hairpin_stability_relationships(self) -> None:
         '''Test that hairpin stabilities follow expected order: perfect <
         mismatched < bulged.
         '''
@@ -203,7 +203,7 @@ class TestThermodynamicRelationships(unittest.TestCase):
         self.assertLess(perfect_dg, mismatched_dg)
         self.assertLess(mismatched_dg, bulged_dg)
 
-    def test_heterodimer_stability_relationships(self):
+    def test_heterodimer_stability_relationships(self) -> None:
         '''Test that heterodimer stabilities follow expected order:
         complementary < overlapping < mismatched.
         '''
@@ -224,7 +224,7 @@ class TestThermodynamicRelationships(unittest.TestCase):
         self.assertLess(comp_dg, overlap_dg)
         self.assertLess(overlap_dg, mismatch_dg)
 
-    def test_end_stability_relationships(self):
+    def test_end_stability_relationships(self) -> None:
         '''Test that end stability follows expected order: perfect < partial <
         mismatched.
         '''
@@ -245,7 +245,7 @@ class TestThermodynamicRelationships(unittest.TestCase):
         self.assertLess(perfect_dg, partial_dg)
         self.assertLess(partial_dg, mismatched_dg)
 
-    def test_parameter_effects(self):
+    def test_parameter_effects(self) -> None:
         '''Test that changing parameters affects all sequences consistently'''
         base_conditions = self.conditions.copy()
         high_salt_conditions = base_conditions.copy()
@@ -270,13 +270,13 @@ class TestThermodynamicRegression(unittest.TestCase):
     previously calculated across different types of DNA structures.
     '''
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.conditions = STANDARD_CONDITIONS.copy()
         self.thermo = thermoanalysis.ThermoAnalysis()
         self.thermo.set_thermo_args(**self.conditions)
         self.standard_values = load_thermo_values()['values']
 
-    def assert_thermo_result_equal(self, result1, result2, places=2):
+    def assert_thermo_result_equal(self, result1, result2, places=2) -> None:
         '''Assert that two thermodynamic results are approximately equal'''
         for key, value in result1.items():
             if isinstance(value, (int, float)):
@@ -284,14 +284,14 @@ class TestThermodynamicRegression(unittest.TestCase):
             elif isinstance(value, dict):
                 self.assert_thermo_result_equal(value, result2[key], places)
 
-    def test_hairpin_regression(self):
+    def test_hairpin_regression(self) -> None:
         '''Test that hairpin calculations match standard values'''
         for name, seq in TEST_SEQUENCES['hairpins'].items():
             result = self.thermo.calc_hairpin(seq).todict()
             standard = self.standard_values['hairpins'][name]['hairpin']
             self.assert_thermo_result_equal(result, standard)
 
-    def test_homodimer_regression(self):
+    def test_homodimer_regression(self) -> None:
         '''Test that homodimer calculations match standard values'''
         for category in ['homopolymers', 'palindromes', 'hairpins']:
             for name, seq in TEST_SEQUENCES[category].items():
@@ -299,7 +299,7 @@ class TestThermodynamicRegression(unittest.TestCase):
                 standard = self.standard_values[category][name]['homodimer']
                 self.assert_thermo_result_equal(result, standard)
 
-    def test_heterodimer_regression(self):
+    def test_heterodimer_regression(self) -> None:
         '''Test that heterodimer calculations match standard values'''
         for name, pair in TEST_SEQUENCES['heterodimers'].items():
             result = self.thermo.calc_heterodimer(
@@ -308,7 +308,7 @@ class TestThermodynamicRegression(unittest.TestCase):
             standard = self.standard_values['heterodimers'][name]['heterodimer']
             self.assert_thermo_result_equal(result, standard)
 
-    def test_end_stability_regression(self):
+    def test_end_stability_regression(self) -> None:
         '''Test that end stability calculations match standard values'''
         for name, pair in TEST_SEQUENCES['end_stability'].items():
             result = self.thermo.calc_end_stability(
