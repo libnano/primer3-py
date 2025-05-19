@@ -2423,3 +2423,14 @@ class ThermoAnalysis(_ThermoAnalysis):
         '''
         pywarnings.warn(SNAKE_CASE_DEPRECATED_MSG % 'calc_tm')
         return self.calc_tm(seq1)
+
+cdef extern from "libprimer3.h":
+    const char* libprimer3_release()
+
+def get_libprimer3_version() -> str:
+    '''Get the version of the underlying libprimer3 C library.
+
+    Returns:
+        str: The version string of libprimer3
+    '''
+    return libprimer3_release().decode('utf-8')

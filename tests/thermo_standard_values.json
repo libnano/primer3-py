@@ -1,0 +1,336 @@
+{
+  "metadata": {
+    "generation_timestamp": "2025-05-19T09:05:52.910774",
+    "primer3_py_version": "2.1.0",
+    "primer3_lib_version": "libprimer3 release 2.6.1",
+    "python_version": "3.11.5 (main, Sep 11 2023, 08:31:25) [Clang 14.0.6 ]",
+    "platform": {
+      "system": "Darwin",
+      "release": "24.3.0",
+      "version": "Darwin Kernel Version 24.3.0: Thu Jan  2 20:23:36 PST 2025; root:xnu-11215.81.4~3/RELEASE_ARM64_T8112",
+      "machine": "arm64"
+    },
+    "dependencies": {
+      "setuptools": "75.8.0",
+      "wheel": "0.38.4",
+      "Cython": "not installed",
+      "pre-commit": "3.4.0",
+      "pytest": "7.4.0",
+      "tomli": "2.0.1"
+    },
+    "git_info": {
+      "branch": "feat/deterministic_tests",
+      "latest_tag": "v2.1.0"
+    }
+  },
+  "values": {
+    "homopolymers": {
+      "polyA": {
+        "tm": 41.50854350297266,
+        "hairpin": {
+          "structure_found": false,
+          "ascii_structure": null,
+          "tm": 0.0,
+          "dg": 0.0,
+          "dh": 0.0,
+          "ds": 0.0
+        },
+        "homodimer": {
+          "structure_found": false,
+          "ascii_structure": null,
+          "tm": 0.0,
+          "dg": 0.0,
+          "dh": 0.0,
+          "ds": 0.0
+        }
+      },
+      "polyT": {
+        "tm": 41.50854350297266,
+        "hairpin": {
+          "structure_found": false,
+          "ascii_structure": null,
+          "tm": 0.0,
+          "dg": 0.0,
+          "dh": 0.0,
+          "ds": 0.0
+        },
+        "homodimer": {
+          "structure_found": false,
+          "ascii_structure": null,
+          "tm": 0.0,
+          "dg": 0.0,
+          "dh": 0.0,
+          "ds": 0.0
+        }
+      },
+      "polyG": {
+        "tm": 77.82778595000809,
+        "hairpin": {
+          "structure_found": false,
+          "ascii_structure": null,
+          "tm": 0.0,
+          "dg": 0.0,
+          "dh": 0.0,
+          "ds": 0.0
+        },
+        "homodimer": {
+          "structure_found": false,
+          "ascii_structure": null,
+          "tm": 0.0,
+          "dg": 0.0,
+          "dh": 0.0,
+          "ds": 0.0
+        }
+      },
+      "polyC": {
+        "tm": 77.82778595000809,
+        "hairpin": {
+          "structure_found": false,
+          "ascii_structure": null,
+          "tm": 0.0,
+          "dg": 0.0,
+          "dh": 0.0,
+          "ds": 0.0
+        },
+        "homodimer": {
+          "structure_found": false,
+          "ascii_structure": null,
+          "tm": 0.0,
+          "dg": 0.0,
+          "dh": 0.0,
+          "ds": 0.0
+        }
+      }
+    },
+    "palindromes": {
+      "gc_rich": {
+        "tm": 83.40529626638005,
+        "hairpin": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 91.72140335141319,
+          "dg": -11698.0103735326,
+          "dh": -78000.0,
+          "ds": -213.77394688527295
+        },
+        "homodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 84.26057136046398,
+          "dg": -35908.203349516305,
+          "dh": -193200.0,
+          "ds": -507.1474984700426
+        }
+      },
+      "at_rich": {
+        "tm": 30.791977097697497,
+        "hairpin": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 42.65951873982726,
+          "dg": -836.8953735294796,
+          "dh": -46700.0,
+          "ds": -147.873946885283
+        },
+        "homodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 31.700770547109187,
+          "dg": -8063.238349510034,
+          "dh": -132200.0,
+          "ds": -400.2474984700628
+        }
+      },
+      "mixed": {
+        "tm": 56.5804226725744,
+        "hairpin": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 66.12299266077463,
+          "dg": -4291.970373529488,
+          "dh": -50000.0,
+          "ds": -147.37394688528298
+        },
+        "homodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 57.46276026089612,
+          "dg": -20276.6033495163,
+          "dh": -160200.0,
+          "ds": -451.1474984700426
+        }
+      }
+    },
+    "hairpins": {
+      "perfect": {
+        "tm": 74.38950118493187,
+        "hairpin": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 85.19706340038698,
+          "dg": -9172.782644611016,
+          "dh": -68200.0,
+          "ds": -190.31828907105913
+        },
+        "homodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 63.22726945279118,
+          "dg": -22942.34793382995,
+          "dh": -150400.0,
+          "ds": -410.95486721318736
+        }
+      },
+      "mismatched": {
+        "tm": 69.52387235309823,
+        "hairpin": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 72.1041538167027,
+          "dg": -4626.27018676785,
+          "dh": -45500.0,
+          "ds": -131.78697344263148
+        },
+        "homodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 34.960353145988165,
+          "dg": -10470.293518143611,
+          "dh": -112600.0,
+          "ds": -329.29133155523584
+        }
+      },
+      "bulged": {
+        "tm": 73.6124596735225,
+        "hairpin": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 73.12132912200786,
+          "dg": -3525.8504578462657,
+          "dh": -33800.0,
+          "ds": -97.61131562841766
+        },
+        "homodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 43.24182327994464,
+          "dg": -13804.021975986792,
+          "dh": -131200.0,
+          "ds": -378.5135515847597
+        }
+      }
+    },
+    "heterodimers": {
+      "complementary": {
+        "heterodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 60.886596558106135,
+          "dg": -22428.288349513172,
+          "dh": -156800.0,
+          "ds": -433.2474984700527
+        },
+        "end_stability": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 60.886596558106135,
+          "dg": -22428.288349513172,
+          "dh": -156800.0,
+          "ds": -433.2474984700527
+        }
+      },
+      "mismatched": {
+        "heterodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": -35.93540086407427,
+          "dg": -2668.137457846265,
+          "dh": -27800.0,
+          "ds": -81.03131562841766
+        },
+        "end_stability": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": -56.07147605877984,
+          "dg": -1654.6612289277862,
+          "dh": -22300.0,
+          "ds": -66.56565781419383
+        }
+      },
+      "overlapping": {
+        "heterodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 23.35342550189091,
+          "dg": -8224.063602454169,
+          "dh": -65000.0,
+          "ds": -183.0596046994868
+        },
+        "end_stability": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 20.8827471190894,
+          "dg": -7767.858602454182,
+          "dh": -62900.0,
+          "ds": -177.75960469948677
+        }
+      }
+    },
+    "end_stability": {
+      "perfect": {
+        "heterodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 13.86103831400402,
+          "dg": -6483.2686024541745,
+          "dh": -58700.0,
+          "ds": -168.3596046994868
+        },
+        "end_stability": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": 13.86103831400402,
+          "dg": -6483.2686024541745,
+          "dh": -58700.0,
+          "ds": -168.3596046994868
+        }
+      },
+      "partial": {
+        "heterodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": -12.481523331351923,
+          "dg": -4211.1286867678455,
+          "dh": -36900.0,
+          "ds": -105.39697344263149
+        },
+        "end_stability": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": -28.399120224383097,
+          "dg": -3760.617457849364,
+          "dh": -27900.0,
+          "ds": -77.83131562840767
+        }
+      },
+      "mismatched": {
+        "heterodimer": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": -43.0225498163484,
+          "dg": -2800.588686764743,
+          "dh": -24200.0,
+          "ds": -68.99697344264149
+        },
+        "end_stability": {
+          "structure_found": true,
+          "ascii_structure": null,
+          "tm": -65.97631797973199,
+          "dg": -1821.3862289277836,
+          "dh": -18900.0,
+          "ds": -55.065657814193834
+        }
+      }
+    }
+  }
+}
