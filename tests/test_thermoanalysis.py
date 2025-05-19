@@ -31,8 +31,16 @@ from time import sleep
 
 try:
     import resource
+
+    def _get_mem_usage():
+        ''' Get current process memory usage in bytes '''
+        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 except (ImportError, ModuleNotFoundError):  # For Windows compatibility
     resource = None  # type: ignore
+
+    def _get_mem_usage():  # type: ignore
+        ''' Dummy memory usage function for Windows '''
+        return 0
 
 from primer3 import (
     bindings,
@@ -40,11 +48,6 @@ from primer3 import (
 )
 
 from . import wrappers
-
-
-def _get_mem_usage() -> float:
-    ''' Get current process memory usage in bytes '''
-    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
 class TestLowLevelBindings(unittest.TestCase):
