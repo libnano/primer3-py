@@ -31,8 +31,16 @@ from time import sleep
 
 try:
     import resource
+
+    def _get_mem_usage():
+        ''' Get current process memory usage in bytes '''
+        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 except (ImportError, ModuleNotFoundError):  # For Windows compatibility
     resource = None  # type: ignore
+
+    def _get_mem_usage():  # type: ignore
+        ''' Dummy memory usage function for Windows '''
+        return 0
 
 from primer3 import (
     bindings,
@@ -42,14 +50,9 @@ from primer3 import (
 from . import wrappers
 
 
-def _get_mem_usage():
-    ''' Get current process memory usage in bytes '''
-    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-
-
 class TestLowLevelBindings(unittest.TestCase):
 
-    def randArgs(self):
+    def rand_args(self) -> None:
         self.seq1 = ''.join([
             random.choice('ATGC') for _ in
             range(random.randint(20, 59))
@@ -87,10 +90,10 @@ class TestLowLevelBindings(unittest.TestCase):
         # self.annealing_temp_c = -10.0  # see oligotm_main.c
         # self.max_nn_length = 60
 
-    def test_calc_tm(self):
+    def test_calc_tm(self) -> None:
         '''Test basic calc_tm input'''
         for _ in range(100):
-            self.randArgs()
+            self.rand_args()
             binding_tm = bindings.calc_tm(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
@@ -115,10 +118,10 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             self.assertAlmostEqual(binding_tm, wrapper_tm, delta=0.5)
 
-    def test_calc_hairpin(self):
+    def test_calc_hairpin(self) -> None:
         '''Test basic hairpin input'''
         for _ in range(1):
-            self.randArgs()
+            self.rand_args()
             binding_res = bindings.calc_hairpin(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
@@ -148,10 +151,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 wrapper_res.ascii_structure.replace('\r\n', '\n'),
             )
 
-    def test_calc_homodimer(self):
+    def test_calc_homodimer(self) -> None:
         '''Test basic homodimer input'''
         for _ in range(100):
-            self.randArgs()
+            self.rand_args()
             binding_res = bindings.calc_homodimer(
                 seq=self.seq1,
                 mv_conc=self.mv_conc,
@@ -183,10 +186,10 @@ class TestLowLevelBindings(unittest.TestCase):
                 wrapper_res.ascii_structure.replace('\r\n', '\n'),
             )
 
-    def test_calc_heterodimer(self):
+    def test_calc_heterodimer(self) -> None:
         '''Test basic heterodimer input'''
         for _ in range(100):
-            self.randArgs()
+            self.rand_args()
             binding_res = bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
@@ -243,9 +246,9 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             self.assertAlmostEqual(binding_12_res.tm, binding_21_res.tm, 2)
 
-    def test_max_length_heterodimer(self):
+    def test_max_length_heterodimer(self) -> None:
         '''Test longest heterodimer input of 10000 mer per `THAL_MAX_SEQ` '''
-        self.randArgs()
+        self.rand_args()
 
         seq_small = ''.join([
             random.choice('ATGC') for _ in
@@ -311,10 +314,10 @@ class TestLowLevelBindings(unittest.TestCase):
         )
         self.assertAlmostEqual(binding_12_res.tm, binding_21_res.tm, 2)
 
-    def test_calc_end_stability(self):
+    def test_calc_end_stability(self) -> None:
         '''Test calc_end_stability'''
         for _ in range(100):
-            self.randArgs()
+            self.rand_args()
             binding_res = bindings.calc_end_stability(
                 seq1=self.seq1,
                 seq2=self.seq2,
@@ -337,9 +340,9 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             self.assertAlmostEqual(binding_res.tm, wrapper_res.tm, 2)
 
-    def test_correction_methods(self):
+    def test_correction_methods(self) -> None:
         '''Test different correction_methods'''
-        self.randArgs()
+        self.rand_args()
         for sc_method in ['schildkraut', 'santalucia', 'owczarzy']:
             for tm_method in ['breslauer', 'santalucia']:
                 binding_tm = bindings.calc_tm(
@@ -377,12 +380,12 @@ class TestLowLevelBindings(unittest.TestCase):
         sys.platform == 'win32',
         'Windows does not support resource module',
     )
-    def test_memory_leaks(self):
+    def test_memory_leaks(self) -> None:
         '''Test for memory leaks'''
         sm = _get_mem_usage()
         run_count = 100
         for x in range(run_count):
-            self.randArgs()
+            self.rand_args()
             bindings.calc_heterodimer(
                 seq1=self.seq1,
                 seq2=self.seq2,
@@ -412,7 +415,7 @@ class TestLowLevelBindings(unittest.TestCase):
                 f'\n\t memory leak (mem increase: {em - sm})',
             )
 
-    def test_todict(self):
+    def test_todict(self) -> None:
         '''Unit test coverage for ``Thermoanalysis.todict``'''
         args = {
             'mv_conc': 51.0,
@@ -430,12 +433,51 @@ class TestLowLevelBindings(unittest.TestCase):
         for k, v in args.items():
             assert v == dict_out[k]
 
+    def test_calc_tm_acgt_validation(self) -> None:
+        '''Test that calc_tm properly validates and converts ACGT sequences'''
+        # Test uppercase ACGT
+        seq = 'ACGT' * 10
+        tm1 = bindings.calc_tm(seq)
+        self.assertTrue(tm1 > 0)  # Should get a valid Tm
 
-def suite():
-    '''Define the test suite'''
-    suite = unittest.TestSuite()
-    suite.addTest(TestLowLevelBindings())
-    return suite
+        # Test lowercase conversion
+        seq_lower = 'acgt' * 10
+        tm2 = bindings.calc_tm(seq_lower)
+        self.assertEqual(tm1, tm2)  # Should get same Tm after conversion
+
+        # Test mixed case
+        seq_mixed = 'AcGt' * 10
+        tm3 = bindings.calc_tm(seq_mixed)
+        self.assertEqual(tm1, tm3)  # Should get same Tm after conversion
+
+        # Test invalid bases
+        with self.assertRaises(ValueError) as cm:
+            bindings.calc_tm('ACGTN')
+        self.assertIn("'N'", str(cm.exception))
+
+        # Test bytes input
+        seq_bytes = b'ACGT' * 10
+        tm4 = bindings.calc_tm(seq_bytes)
+        self.assertEqual(tm1, tm4)  # Should handle bytes input correctly
+
+        # Test lowercase bytes
+        seq_bytes_lower = b'acgt' * 10
+        tm5 = bindings.calc_tm(seq_bytes_lower)
+        self.assertEqual(tm1, tm5)  # Should handle lowercase bytes correctly
+
+        # Test invalid bytes
+        with self.assertRaises(ValueError) as cm:
+            bindings.calc_tm(b'ACGTN')
+        self.assertIn("'N'", str(cm.exception))
+
+
+def suite() -> unittest.TestSuite:
+    '''Run all tests'''
+    s = unittest.TestSuite()
+    s.addTests((
+        unittest.makeSuite(TestLowLevelBindings),
+    ))
+    return s
 
 
 if __name__ == '__main__':

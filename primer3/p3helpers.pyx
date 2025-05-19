@@ -26,35 +26,47 @@ from cpython.mem cimport (
     PyMem_Free,
     PyMem_Malloc,
 )
+from cython cimport typeof
 from libc.string cimport memcpy
 
 
 cdef extern from "p3helpers.h":
     const char COMP_BASE_LUT[128]
     const char SANITIZE_LUT[128]
-
+    const char ACGT_UPPER_LUT[128]
+    const char IS_UPPERCASE_ACGT_LUT[128]
 
 cdef:
     char INVALID_BASE = 63 # '?' character
 
 
 cdef inline void copy_c_char_buffer(
-    char*   in_buf,
-    char*   out_buf,
-    int     str_length,
-):
-    '''Copy string to buffer.  Unsafe
+    const char* in_buf,
+    char* out_buf,
+    Py_ssize_t str_length,
+) noexcept nogil:
+    '''Copy bytes from input buffer to output buffer.
+
+    This is a low-level helper that performs a direct memory copy without any bounds checking.
+    The caller must ensure buffers are properly sized.
+
+    Safety requirements:
+    - in_buf must be valid for at least str_length bytes
+    - out_buf must be valid for at least str_length bytes
+    - Buffers must not overlap
 
     Args:
-        in_buf: input buffer
-        out_buf: output buffer. Assume buffer size is equal to or greater than
-            in_buf size.
-        str_length: known number of bytes to copy
+        in_buf: input buffer to copy from
+        out_buf: output buffer to copy to
+        str_length: number of bytes to copy
     '''
-    memcpy(out_buf, in_buf, <size_t> str_length + 1)
+    memcpy(out_buf, in_buf, <size_t> str_length)  # Copy exactly str_length bytes
 
 
-cdef int ss_rev_comp_seq(char* seq, Py_ssize_t length) nogil:
+cdef int ss_rev_comp_seq(
+    char* seq,
+    Py_ssize_t length,
+) except -1 nogil:
     '''Reverse complement sequence C string
 
     Args:
@@ -91,7 +103,7 @@ cdef int ss_rev_comp_seq(char* seq, Py_ssize_t length) nogil:
 cdef int ss_sanitize_seq(
     char* seq,
     Py_ssize_t length,
-) nogil:
+) except -1 nogil:
     '''Sanitize sequence C string IUPAC non-{A,C,G,T,a,c,g,t} bases with {N, n}
 
     Args:
@@ -112,10 +124,58 @@ cdef int ss_sanitize_seq(
     return 0
 
 
-def reverse_complement(
-        seq: str,
-        bint do_sanitize = False,
-) -> str:
+cdef int ss_needs_conversion(
+    const char* seq,
+    Py_ssize_t length,
+) except -1 nogil:
+    '''Fast check if sequence needs conversion (contains lowercase or non-ACGT chars)
+    using lookup table for O(1) per-character checks.
+
+    Args:
+        seq: sequence to check
+        length: length of sequence
+
+    Returns:
+        1 if sequence needs conversion, 0 if it's already uppercase ACGT
+    '''
+    cdef:
+        const char* end_ptr = seq + length
+
+    while seq < end_ptr:
+        if not IS_UPPERCASE_ACGT_LUT[<unsigned char> seq[0]]:
+            return 1
+        seq += 1
+    return 0
+
+
+cdef int ss_ensure_acgt_upper(
+    char* seq,
+    Py_ssize_t length,
+) except -1 nogil:
+    '''Convert sequence to uppercase and validate it contains only A, C, G, T bases
+
+    Args:
+        seq: sequence to convert to uppercase and validate
+        length: length of sequence
+
+    Returns:
+        0 on success, 1 on error (non-ACGT base)
+    '''
+    cdef:
+        char*       end_ptr = seq + length
+
+    while seq < end_ptr:
+        seq[0] = ACGT_UPPER_LUT[<unsigned char> seq[0]]
+        if seq[0] == INVALID_BASE:
+            return 1
+        seq += 1
+    return 0
+
+
+cpdef str reverse_complement(
+    str seq,
+    bint do_sanitize = False,
+):
     '''Compute reverse complement of the python string sequence
 
     Args:
@@ -149,10 +209,10 @@ def reverse_complement(
     return seq_b.decode('utf8')
 
 
-def reverse_complement_b(
-        seq: bytes,
-        bint do_sanitize = False,
-) -> bytes:
+cpdef bytes reverse_complement_b(
+    bytes seq,
+    bint do_sanitize = False,
+):
     '''Compute reverse complement of the bytes sequence
 
     Args:
@@ -173,7 +233,8 @@ def reverse_complement_b(
         bytes seq_out
         int check = 0
 
-    seq_operate_c = <char *> PyMem_Malloc(seq_len * sizeof(char))
+    # Allocate one extra byte for null termination
+    seq_operate_c = <char *> PyMem_Malloc((seq_len + 1) * sizeof(char))
     if seq_operate_c == NULL:
         raise OSError('malloc failure')
 
@@ -181,10 +242,13 @@ def reverse_complement_b(
     seq_c = seq
 
     # MUST COPY as python does not mutate bytes
-    copy_c_char_buffer(seq_c, seq_operate_c, seq_len + 1)
+    copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
+    seq_operate_c[seq_len] = 0  # ensure null terminated
 
     check = ss_rev_comp_seq(seq_operate_c, seq_len)
     if check:
+        PyMem_Free(seq_operate_c)
+        seq_operate_c = NULL
         raise ValueError(f'Invalid base in sequence {seq}')
     if do_sanitize:
         check = ss_sanitize_seq(seq_operate_c, seq_len)
@@ -192,13 +256,16 @@ def reverse_complement_b(
             PyMem_Free(seq_operate_c)
             seq_operate_c = NULL
             raise ValueError(f'Invalid base in sequence {seq}')
-    seq_out = seq_operate_c
+    # Create bytes object of exact length without null terminator
+    seq_out = seq_operate_c[:seq_len]
     PyMem_Free(seq_operate_c)
     seq_operate_c = NULL
     return seq_out
 
 
-def sanitize_sequence(seq: str) -> str:
+cpdef str sanitize_sequence(
+    str seq,
+):
     '''Sanitize sequence with non-standard bases with `N`s
     IUPAC {R,Y,M,K,S,W,H,D,B,V,r,y,m,k,s,w,h,d,b,v}
 
@@ -233,9 +300,9 @@ def sanitize_sequence(seq: str) -> str:
     return seq_b.decode('utf8')
 
 
-def sanitize_sequence_b(
-        seq: bytes,
-) -> bytes:
+cpdef bytes sanitize_sequence_b(
+    bytes seq,
+):
     '''Sanitize bytes sequence with non-standard bases with `N`s
     IUPAC {R,Y,M,K,S,W,H,D,B,V,r,y,m,k,s,w,h,d,b,v}
 
@@ -261,7 +328,8 @@ def sanitize_sequence_b(
         bytes seq_out
         int check = 0
 
-    seq_operate_c = <char *> PyMem_Malloc(seq_len * sizeof(char))
+    # Allocate one extra byte for null termination
+    seq_operate_c = <char *> PyMem_Malloc((seq_len + 1) * sizeof(char))
     if seq_operate_c == NULL:
         raise OSError('malloc failure')
 
@@ -269,14 +337,122 @@ def sanitize_sequence_b(
     seq_c = seq
 
     # MUST COPY as python does not mutate bytes
-    copy_c_char_buffer(seq_c, seq_operate_c, seq_len + 1)
+    copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
+    seq_operate_c[seq_len] = 0  # ensure null terminated
 
     check = ss_sanitize_seq(seq_operate_c, seq_len)
     if check:
         PyMem_Free(seq_operate_c)
         seq_operate_c = NULL
-        raise ValueError(f'Invalid base in equence {seq}')
-    seq_out = seq_operate_c
+        raise ValueError(f'Invalid base in sequence {seq}')
+    # Create bytes object of exact length without null terminator
+    seq_out = seq_operate_c[:seq_len]
     PyMem_Free(seq_operate_c)
     seq_operate_c = NULL
     return seq_out
+
+
+cpdef str ensure_acgt_uppercase(
+    str seq,
+):
+    '''Convert sequence to uppercase and validate it contains only A, C, G, T bases.
+    This is stricter than sanitize_sequence() as it only allows A, C, G, T bases.
+
+    If the sequence is already uppercase ACGT, returns the original string without
+    any allocation or copying.
+
+    Args:
+        seq: sequence to convert to uppercase and validate
+
+    Returns:
+        uppercase version of seq containing only A, C, G, T bases
+
+    Raises:
+        ValueError: If sequence contains any characters other than A, C, G, T (case insensitive)
+    '''
+    cdef:
+        char* seq_c = NULL
+        Py_ssize_t seq_len = len(seq)
+        int needs_conversion = 0
+
+    if seq_len == 0:
+        return seq
+
+    seq_b = seq.encode('utf8')
+    seq_c = seq_b
+
+    # Fast path: check if sequence needs conversion
+    needs_conversion = ss_needs_conversion(seq_c, seq_len)
+    if not needs_conversion:
+        return seq  # Return original if already uppercase ACGT
+
+    # Slow path: needs conversion
+    if ss_ensure_acgt_upper(seq_c, seq_len):
+        # Find the problematic character
+        for i, c in enumerate(seq):
+            if c.upper() not in 'ACGT':
+                raise ValueError(
+                    f"Sequence contains non-ACGT base '{c}' at position {i}: {seq}"
+                )
+
+    return seq_b.decode('utf8')
+
+
+cpdef bytes ensure_acgt_uppercase_b(
+    bytes seq,
+):
+    '''Convert bytes sequence to uppercase and validate it contains only A, C, G, T bases.
+    This is stricter than sanitize_sequence_b() as it only allows A, C, G, T bases.
+
+    If the sequence is already uppercase ACGT, returns the original bytes without
+    any allocation or copying.
+
+    Args:
+        seq: sequence to convert to uppercase and validate
+
+    Returns:
+        uppercase version of seq containing only A, C, G, T bases
+
+    Raises:
+        ValueError: If sequence contains any characters other than A, C, G, T (case insensitive)
+        OSError: malloc failure
+    '''
+    cdef:
+        char* seq_c = NULL
+        Py_ssize_t seq_len = len(seq)
+        char* seq_operate_c = NULL
+        bytes seq_out
+        int needs_conversion = 0
+
+    if seq_len == 0:
+        return seq
+
+    # Fast path: check if sequence needs conversion
+    seq_c = seq
+    needs_conversion = ss_needs_conversion(seq_c, seq_len)
+    if not needs_conversion:
+        return seq  # Return original if already uppercase ACGT
+
+    # Slow path: needs conversion
+    seq_operate_c = <char *> PyMem_Malloc((seq_len + 1) * sizeof(char))
+    if seq_operate_c == NULL:
+        raise OSError('malloc failure')
+
+    try:
+        copy_c_char_buffer(seq_c, seq_operate_c, seq_len)
+        seq_operate_c[seq_len] = 0  # ensure null terminated
+
+        if ss_ensure_acgt_upper(seq_operate_c, seq_len):
+            # Find the problematic character
+            for i, c in enumerate(seq.decode('utf8')):
+                if c.upper() not in 'ACGT':
+                    raise ValueError(
+                        f"Sequence contains non-ACGT base '{c}' at position {i}: {seq}"
+                    )
+
+        # Create bytes object with the correct length
+        seq_out = seq_operate_c[:seq_len]
+        return seq_out
+    finally:
+        PyMem_Free(seq_operate_c)
+        seq_operate_c = NULL
