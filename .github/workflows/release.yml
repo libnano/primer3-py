@@ -76,6 +76,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure version
+        shell: bash
         run: |
           # Get base version from validate job
           BASE_VERSION="${{ needs.validate-version.outputs.version }}"
@@ -130,6 +131,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure version
+        shell: bash
         run: |
           # Get base version from validate job
           BASE_VERSION="${{ needs.validate-version.outputs.version }}"
@@ -204,3 +206,4 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           verify_metadata: true
           verbose: true
+          skip_existing: false
