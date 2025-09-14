@@ -192,7 +192,7 @@ jobs:
 
       - name: Publish to PyPI
         if: inputs.is_test == false
-        uses: pypa/gh-action-pypi-publish@v1.12.4
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           password: ${{ secrets.PRIMER3_PYPI_API_TOKEN }}
           verify-metadata: true
@@ -200,7 +200,7 @@ jobs:
 
       - name: Publish to TestPyPI
         if: inputs.is_test == true
-        uses: pypa/gh-action-pypi-publish@v1.12.4
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           password: ${{ secrets.PRIMER3_TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
