@@ -101,9 +101,16 @@ static const char *pr_program_name = "TMP";
 /*
  * Hack to support old SunOS headers.  (We do not try to declare _all_
  * undeclared functions; only those with non-int return types.)
+ * Only declare if we're on a very old pre-ANSI C system that might not have
+ * proper stdlib.h declarations. ANSI C (C89) and later guarantee strtod()
+ * is properly declared in stdlib.h, so we skip this on modern systems to
+ * avoid conflicts with the standard library declaration.
  */
 #ifndef __cplusplus
+#if !defined(__STDC__) && defined(__sun) && !defined(__SVR4)
+/* Very old pre-ANSI C SunOS systems might need this declaration */
 extern double strtod();
+#endif
 #endif
 
 /*
