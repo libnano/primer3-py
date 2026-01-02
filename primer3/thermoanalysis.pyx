@@ -102,7 +102,10 @@ cdef inline bytes _bytes(s):
     elif isinstance(s, bytes):
         return s
     else:
-        raise TypeError(f'Expected str or bytes, got {type(s)}')
+        try:
+            return str(s).encode('utf8')
+        except Exception:
+            raise TypeError(f'Expected str or bytes, got {type(s)}')
 
 
 # ~~~~~~~~~ Load base thermodynamic parameters into memory from file ~~~~~~~~ #
@@ -1057,11 +1060,21 @@ cdef class _ThermoAnalysis:
         Raises:
             ValueError: If sequence contains non-ACGT bases
         '''
+
         # Validate and convert to uppercase if needed
-        if isinstance(seq1, str):
-            seq1 = p3h.ensure_acgt_uppercase(seq1)
-        else:
+        if isinstance(seq1, bytes):
             seq1 = p3h.ensure_acgt_uppercase_b(seq1)
+        else:
+            # Path for strings AND custom objects
+            # If it is a custom object (not a string), convert it now.
+            if not isinstance(seq1, str):
+                try:
+                    seq1 = str(seq1)
+                except Exception:
+                    raise TypeError(f"Expected str, bytes or string-convertible object, got {type(seq1)}")
+
+            # Now safely call the string validator
+            seq1 = p3h.ensure_acgt_uppercase(seq1)
 
         # Convert to bytes and call C function
         py_s1 = <bytes> _bytes(seq1)
