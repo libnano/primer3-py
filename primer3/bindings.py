@@ -48,7 +48,7 @@ from primer3 import (  # type: ignore
 DEFAULT_P3_ARGS = argdefaults.Primer3PyArguments()
 THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
 
-Str_Bytes_T = Union[str, bytes]
+Str_Bytes_T = Union[str, bytes, object]
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Low level bindings ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
