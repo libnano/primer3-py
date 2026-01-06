@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.3.0 (Jan 6, 2026)
+
+- Support for Python 3.14
+- Support for objects that implement the __str__ interface (see issue #164)
+- Support for modern GCC (see issue #165)
+
 ## Version 2.2.0 (May 19, 2025)
 
 - Test improvements (determinism + increased coverage)
