@@ -187,12 +187,12 @@ cdef class ThermoResult:
 
     @property
     def ds(self) -> float:
-        ''' delta S (enthalpy) of the structure (cal/K*mol) '''
+        ''' delta S (entropy) of the structure (cal/K*mol) '''
         return self.thalres.ds
 
     @property
     def dh(self) -> float:
-        ''' delta H (entropy) of the structure (cal/mol) '''
+        ''' delta H (enthalpy) of the structure (cal/mol) '''
         return self.thalres.dh
 
     @property
