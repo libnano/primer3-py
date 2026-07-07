@@ -1495,7 +1495,7 @@ cdef inline seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
         if isinstance(seq_str, str):
             seq_b = seq_str.encode('utf8')
             seq_c = seq_b
-        elif isinstance(seq_name_str, bytes):
+        elif isinstance(seq_str, bytes):
             seq_c = seq_str
         else:
             destroy_seq_lib(sl)
