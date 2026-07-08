@@ -1151,9 +1151,14 @@ cdef class _ThermoAnalysis:
             if self.sequence_args_data == NULL:
                 raise OSError('Could not allocate memory for seq_arg')
 
-            global_args.update(seq_args)
+            # Merge into a new dict; do NOT mutate the caller's global_args
+            # (a design call must not pollute the user's dict with the
+            # sequence tags, which would then leak into a subsequent call).
+            combined_args = {**global_args, **seq_args}
+        else:
+            combined_args = global_args
 
-        global_arg_bytes = argdefaults.format_boulder_io(global_args)
+        global_arg_bytes = argdefaults.format_boulder_io(combined_args)
         arg_input_buffer = global_arg_bytes
         if arg_input_buffer == NULL:
             raise ValueError(global_arg_bytes)
@@ -1170,7 +1175,7 @@ cdef class _ThermoAnalysis:
         if self.global_settings_data == NULL:
             raise OSError('Could not allocate memory for p3 globals')
 
-        kmer_lists_path = global_args.get('PRIMER_MASK_KMERLIST_PATH', '')
+        kmer_lists_path = combined_args.get('PRIMER_MASK_KMERLIST_PATH', '')
         if kmer_lists_path:
             local_dir = op.dirname(op.realpath(get_dunder_file()))
             libprimer3_dir = op.join(local_dir, 'src', 'libprimer3')

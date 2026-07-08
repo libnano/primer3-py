@@ -609,6 +609,29 @@ class TestDesignBindings(unittest.TestCase):
             ),
         )
 
+    def test_design_does_not_mutate_global_args(self):
+        '''design_primers must not merge seq_args into the caller's
+        global_args dict.
+        '''
+        seq_args = {
+            'SEQUENCE_ID': 'MH1000',
+            'SEQUENCE_TEMPLATE': (
+                'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT'
+                'AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA'
+                'ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG'
+            ),
+            'SEQUENCE_INCLUDED_REGION': [0, 135],
+        }
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 25,
+        }
+        global_args_snapshot = dict(global_args)
+        bindings.design_primers(seq_args, global_args)
+        self.assertEqual(global_args, global_args_snapshot)
+        self.assertNotIn('SEQUENCE_TEMPLATE', global_args)
+
     def test_misprime_lib_bad_sequence_raises_cleanly(self):
         '''A library sequence that the C seq_lib rejects (e.g. an empty
         sequence value) must raise a clean exception rather than
