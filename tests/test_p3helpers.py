@@ -101,6 +101,21 @@ class TestP3Helpers(unittest.TestCase):
             'ZACGT',
         )
 
+    def test_high_bytes_rejected_not_oob(self):
+        # Bytes >= 0x80 index the lookup tables, which must have 256 entries.
+        # A 128-entry table would read out of bounds here; instead these
+        # inputs must be rejected cleanly (invalid base), not crash. Even-
+        # length inputs so the high byte is always in a validated position
+        # (reverse_complement does not validate the lone middle base of an
+        # odd-length sequence).
+        for bad in (b'\x80\x80', b'\xff\xff', b'\xc3\xa9', b'A\xffCG'):
+            with self.assertRaises(ValueError):
+                p3helpers.reverse_complement_b(bad)
+            with self.assertRaises(ValueError):
+                p3helpers.sanitize_sequence_b(bad)
+            with self.assertRaises(ValueError):
+                p3helpers.ensure_acgt_uppercase_b(bad)
+
     def test_ensure_acgt_uppercase(self):
         # 1. Test already uppercase ACGT
         seq = 'ACGT'

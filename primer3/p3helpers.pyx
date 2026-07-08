@@ -31,10 +31,10 @@ from libc.string cimport memcpy
 
 
 cdef extern from "p3helpers.h":
-    const char COMP_BASE_LUT[128]
-    const char SANITIZE_LUT[128]
-    const char ACGT_UPPER_LUT[128]
-    const char IS_UPPERCASE_ACGT_LUT[128]
+    const char COMP_BASE_LUT[256]
+    const char SANITIZE_LUT[256]
+    const char ACGT_UPPER_LUT[256]
+    const char IS_UPPERCASE_ACGT_LUT[256]
 
 cdef:
     char INVALID_BASE = 63 # '?' character
@@ -443,8 +443,11 @@ cpdef bytes ensure_acgt_uppercase_b(
         seq_operate_c[seq_len] = 0  # ensure null terminated
 
         if ss_ensure_acgt_upper(seq_operate_c, seq_len):
-            # Find the problematic character
-            for i, c in enumerate(seq.decode('utf8')):
+            # Find the problematic character. Iterate raw bytes (not
+            # seq.decode) so a non-UTF8 byte (>= 0x80) yields a ValueError
+            # rather than a UnicodeDecodeError.
+            for i in range(seq_len):
+                c = chr(seq[i])
                 if c.upper() not in 'ACGT':
                     raise ValueError(
                         f"Sequence contains non-ACGT base '{c}' at position {i}: {seq}"
