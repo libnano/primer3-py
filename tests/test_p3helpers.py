@@ -101,6 +101,18 @@ class TestP3Helpers(unittest.TestCase):
             'ZACGT',
         )
 
+    def test_reverse_complement_odd_middle_base(self):
+        # The lone middle base of an odd-length sequence must be validated
+        # like every other position. Regression: previously the middle base
+        # complement was assigned without checking for INVALID_BASE, so an
+        # invalid middle base was silently accepted and returned as '?'.
+        for bad in ('Z', 'ACZGT', b'Z', b'ACZGT', b'\x80', b'AC\x80GT'):
+            with self.assertRaises(ValueError):
+                if isinstance(bad, bytes):
+                    p3helpers.reverse_complement_b(bad)
+                else:
+                    p3helpers.reverse_complement(bad)
+
     def test_high_bytes_rejected_not_oob(self):
         # Bytes >= 0x80 index the lookup tables, which must have 256 entries.
         # A 128-entry table would read out of bounds here; instead these

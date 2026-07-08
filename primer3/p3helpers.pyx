@@ -96,6 +96,8 @@ cdef int ss_rev_comp_seq(
 
     if length % 2:
         seq[0] = COMP_BASE_LUT[<unsigned char> seq[0]]
+        if seq[0] == INVALID_BASE:
+            return 1
 
     return 0
 
