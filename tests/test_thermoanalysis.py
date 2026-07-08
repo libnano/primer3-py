@@ -122,6 +122,21 @@ class TestLowLevelBindings(unittest.TestCase):
             )
             self.assertAlmostEqual(binding_tm, wrapper_tm, delta=0.5)
 
+    def test_calc_tm_short_sequences(self) -> None:
+        '''Sequences shorter than 2 nt must return the OLIGOTM_ERROR sentinel
+        rather than reading out of bounds (empty) or returning a nonsense Tm
+        (1 nt). See docs/included_primer3_modifications.md (oligotm.c).
+        '''
+        OLIGOTM_ERROR = -999999.9999
+        for seq in ('', 'A', 'a', b'', b'C'):
+            self.assertAlmostEqual(
+                bindings.calc_tm(seq),
+                OLIGOTM_ERROR,
+                places=3,
+            )
+        # A 2-nt sequence is still computed normally (not the sentinel).
+        self.assertGreater(bindings.calc_tm('AT'), OLIGOTM_ERROR)
+
     def test_calc_hairpin(self) -> None:
         '''Test basic hairpin input'''
         for _ in range(1):
