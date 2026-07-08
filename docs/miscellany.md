@@ -16,6 +16,9 @@ more amenable to Python C API / Cython bindings. Every effort has been made
 to ensure that the underlying algorithms and calculations deterministically
 produce the same results as the vanilla v2.6.1 Primer3 library.
 
+Intentional, behavior-affecting changes to the included C sources are tracked
+in [](included_primer3_modifications.md).
+
 ## Future work
 
 We are happy with the current state of **Primer3-py** and have no intention of
