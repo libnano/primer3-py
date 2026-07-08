@@ -594,6 +594,21 @@ class TestDesignBindings(unittest.TestCase):
         # the test in the cloud
         assert abs(dt1 - dt2) < 1.0
 
+        # Library sequence values may be bytes as well as str; both must
+        # produce identical output. (pdh_create_seq_lib previously
+        # type-checked the dict key instead of the value, raising a spurious
+        # TypeError for bytes sequence values.)
+        libs_str = {'SEQ1': 'CACCATGGAGCTCCTGATATTAAAGGCGAATGCCATT'}
+        libs_bytes = {'SEQ1': b'CACCATGGAGCTCCTGATATTAAAGGCGAATGCCATT'}
+        self.assertEqual(
+            bindings.design_primers(
+                seq_args, global_args, misprime_lib=libs_bytes,
+            ),
+            bindings.design_primers(
+                seq_args, global_args, misprime_lib=libs_str,
+            ),
+        )
+
     def test_PRIMER_SECONDARY_STRUCTURE_ALIGNMENT(self):
         '''Ensure all result pointers are initialized to NULL.
         '''
