@@ -116,6 +116,19 @@ class TestP3Helpers(unittest.TestCase):
             with self.assertRaises(ValueError):
                 p3helpers.ensure_acgt_uppercase_b(bad)
 
+    def test_str_non_ascii_rejected(self):
+        # str helpers must operate on the UTF-8 byte length, not the code-point
+        # count, and must reject non-ASCII characters cleanly (a multi-byte
+        # char encodes to bytes >= 0x80). Regression for the code-point/byte
+        # length mismatch and in-place bytes mutation.
+        for bad in ('ACGTé', 'éACGT', 'ACéGT'):
+            with self.assertRaises(ValueError):
+                p3helpers.reverse_complement(bad)
+            with self.assertRaises(ValueError):
+                p3helpers.sanitize_sequence(bad)
+            with self.assertRaises(ValueError):
+                p3helpers.ensure_acgt_uppercase(bad)
+
     def test_ensure_acgt_uppercase(self):
         # 1. Test already uppercase ACGT
         seq = 'ACGT'
