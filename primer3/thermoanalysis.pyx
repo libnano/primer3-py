@@ -1138,6 +1138,15 @@ cdef class _ThermoAnalysis:
 
         err_msg = ''
 
+        # A design requires a sequence-args struct. If seq_args is empty/None
+        # the struct is never allocated and a NULL seq_args_t* would be passed
+        # to read_boulder_record / choose_primers (NULL deref in the C core).
+        if not seq_args:
+            raise ValueError(
+                'seq_args must be a non-empty dict '
+                '(a primer design requires at least a SEQUENCE_TEMPLATE)'
+            )
+
         if self.sequence_args_data != NULL:
             # Free memory for previous seq args
             destroy_seq_args(

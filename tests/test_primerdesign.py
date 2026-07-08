@@ -632,6 +632,19 @@ class TestDesignBindings(unittest.TestCase):
         self.assertEqual(global_args, global_args_snapshot)
         self.assertNotIn('SEQUENCE_TEMPLATE', global_args)
 
+    def test_design_requires_seq_args(self):
+        '''design_primers with empty/None seq_args must raise cleanly rather
+        than passing a NULL seq_args_t* into the C core.
+        '''
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 25,
+        }
+        for bad in (None, {}):
+            with self.assertRaises(ValueError):
+                bindings.design_primers(bad, global_args)
+
     def test_misprime_lib_bad_sequence_raises_cleanly(self):
         '''A library sequence that the C seq_lib rejects (e.g. an empty
         sequence value) must raise a clean exception rather than
