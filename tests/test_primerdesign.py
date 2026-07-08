@@ -632,6 +632,32 @@ class TestDesignBindings(unittest.TestCase):
         self.assertEqual(global_args, global_args_snapshot)
         self.assertNotIn('SEQUENCE_TEMPLATE', global_args)
 
+    def test_overlap_junction_list_bounds(self):
+        '''An overlap-junction list longer than PR_MAX_INTERVAL_ARRAY (200)
+        must be rejected rather than overrunning the fixed seq_args array.
+        See docs/included_primer3_modifications.md (read_boulder.c).
+        '''
+        seq_args = {
+            'SEQUENCE_ID': 'MH1000',
+            'SEQUENCE_TEMPLATE': (
+                'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT'
+                'AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA'
+                'ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG'
+            ),
+            'SEQUENCE_INCLUDED_REGION': [0, 135],
+            # 250 junction positions -- more than PR_MAX_INTERVAL_ARRAY (200)
+            'SEQUENCE_OVERLAP_JUNCTION_LIST': ' '.join(
+                str(i) for i in range(1, 251)
+            ),
+        }
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 25,
+        }
+        with self.assertRaises((ValueError, OSError)):
+            bindings.design_primers(seq_args, global_args)
+
     def test_design_requires_seq_args(self):
         '''design_primers with empty/None seq_args must raise cleanly rather
         than passing a NULL seq_args_t* into the C core.

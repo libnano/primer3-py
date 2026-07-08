@@ -1368,6 +1368,15 @@ parse_intron_list(char *s,
     if (t > INT_MAX || t < INT_MIN) {
       return 0;
     }
+    /* primer3-py: bounds-check the destination fixed array (see
+     * docs/included_primer3_modifications.md). Without this, a list with more
+     * than PR_MAX_INTERVAL_ARRAY values overruns sa->primer_overlap_junctions
+     * / sa->intl_overlap_junctions and corrupts adjacent seq_args fields. The
+     * sibling interval parsers already bounds-check; this one did not. */
+    if (*count >= PR_MAX_INTERVAL_ARRAY) {
+      *count = 0;
+      return 0;
+    }
     list[*count] = t;
     (*count)++;
 
