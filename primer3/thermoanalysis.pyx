@@ -1135,9 +1135,6 @@ cdef class _ThermoAnalysis:
             p3_global_settings* global_settings_data = NULL
             seq_args_t* sequence_args_data = NULL
 
-
-        err_msg = ''
-
         # A design requires a sequence-args struct. If seq_args is empty/None
         # the struct is never allocated and a NULL seq_args_t* would be passed
         # to read_boulder_record / choose_primers (NULL deref in the C core).
@@ -1231,11 +1228,10 @@ cdef class _ThermoAnalysis:
         if self.global_settings_data == NULL or self.sequence_args_data == NULL:
             raise ValueError(
                 'Error setting Primer3 global args and sequence args\n'
-                'seq_args {seq_args}\n\n'
-                'global_args {global_args}\n\n'
+                f'seq_args {seq_args}\n\n'
+                f'global_args {global_args}\n\n'
             )
 
-        err_msg = ''
         try:
             global_settings_data = <p3_global_settings*> self.global_settings_data
 
@@ -1264,7 +1260,9 @@ cdef class _ThermoAnalysis:
                 <seq_args_t*> self.sequence_args_data
             )
             self.sequence_args_data = NULL
-            raise OSError(err_msg) from exc
+            raise OSError(
+                f'Error creating mispriming/mishybridization library: {exc}'
+            ) from exc
 
     def run_design(
             self,
