@@ -609,6 +609,30 @@ class TestDesignBindings(unittest.TestCase):
             ),
         )
 
+    def test_misprime_lib_bad_sequence_raises_cleanly(self):
+        '''A library sequence that the C seq_lib rejects (e.g. an empty
+        sequence value) must raise a clean exception rather than
+        dereferencing a NULL errfrag pointer.
+        '''
+        seq_args = {
+            'SEQUENCE_ID': 'MH1000',
+            'SEQUENCE_TEMPLATE': (
+                'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT'
+                'AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA'
+                'ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG'
+            ),
+            'SEQUENCE_INCLUDED_REGION': [0, 135],
+        }
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 25,
+        }
+        with self.assertRaises(OSError):
+            bindings.design_primers(
+                seq_args, global_args, misprime_lib={'SEQ1': ''},
+            )
+
     def test_PRIMER_SECONDARY_STRUCTURE_ALIGNMENT(self):
         '''Ensure all result pointers are initialized to NULL.
         '''

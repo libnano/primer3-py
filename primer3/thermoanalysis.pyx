@@ -1504,9 +1504,15 @@ cdef inline seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
             )
 
         if add_seq_to_seq_lib(sl, seq_c, seq_name_c, errfrag) == 1:
-            err_msg_b =  <bytes> errfrag
+            # NOTE: ``errfrag`` is a const input prefix to add_seq_to_seq_lib,
+            # not an output; it stays NULL here. Do not read it back as a
+            # bytes object (that dereferences NULL and crashes). Build the
+            # message from the Python-side name/value instead.
             destroy_seq_lib(sl)
-            raise OSError(err_msg_b.decode('utf8'))
+            raise OSError(
+                f'Could not add sequence {seq_name_str!r} to the seq_lib: '
+                'the sequence is empty or its name encodes an illegal weight'
+            )
     reverse_complement_seq_lib(sl)
 
     return sl
