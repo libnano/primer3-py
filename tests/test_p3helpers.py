@@ -26,6 +26,8 @@ import unittest
 
 from primer3 import p3helpers  # type: ignore
 
+from . import _leakcheck
+
 
 class TestP3Helpers(unittest.TestCase):
 
@@ -137,6 +139,40 @@ class TestP3Helpers(unittest.TestCase):
                 p3helpers.sanitize_sequence(bad)
             with self.assertRaises(ValueError):
                 p3helpers.ensure_acgt_uppercase(bad)
+
+    def test_no_memory_leak(self):
+        # Exercise every p3helpers entry point, including the error paths that
+        # allocate a scratch buffer before raising, and assert no Python/PyMem
+        # allocation growth (deterministic via tracemalloc).
+        seq = 'ACGTacgtNRYKMSWB' * 4
+        seqb = seq.encode()
+
+        def swallow(fn, bad):
+            # error paths allocate a scratch buffer before raising
+            try:
+                fn(bad)
+            except ValueError:
+                return
+            raise AssertionError(f'{fn.__name__}({bad!r}) did not raise')
+
+        def work():
+            p3helpers.reverse_complement(seq)
+            p3helpers.reverse_complement(seq, do_sanitize=True)
+            p3helpers.reverse_complement_b(seqb)
+            p3helpers.sanitize_sequence(seq)
+            p3helpers.sanitize_sequence_b(seqb)
+            p3helpers.ensure_acgt_uppercase('acgtACGT')
+            p3helpers.ensure_acgt_uppercase_b(b'acgtACGT')
+            swallow(p3helpers.reverse_complement, 'ZZZZ')
+            swallow(p3helpers.sanitize_sequence, 'ZZZZ')
+            swallow(p3helpers.ensure_acgt_uppercase, 'ACGTX')
+            swallow(p3helpers.ensure_acgt_uppercase_b, b'ACGTX')
+
+        # Non-leaking growth measures ~0.05 KiB; 64 KiB over 20k iters catches
+        # even a few-byte-per-call scratch-buffer leak with a wide margin.
+        _leakcheck.assert_no_leak(
+            self, work, iters=20000, warmup=2000, max_tracemalloc_kib=64,
+        )
 
     def test_ensure_acgt_uppercase(self):
         # 1. Test already uppercase ACGT
