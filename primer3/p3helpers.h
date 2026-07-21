@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2023. Ben Pruitt & Nick Conway;
+* Copyright (C) 2023-2026. Ben Pruitt & Nick Conway;
 * See LICENSE for full GPLv2 license.
 *
 * This program is free software; you can redistribute it and/or modify
