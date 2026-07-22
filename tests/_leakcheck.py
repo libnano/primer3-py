@@ -51,7 +51,8 @@ except ImportError:  # pragma: no cover - Windows
 
 
 def measure(fn, iters, warmup):
-    '''Run ``fn()`` ``warmup`` then ``iters`` times.
+    '''
+    Run ``fn()`` ``warmup`` then ``iters`` times.
 
     Returns ``(tracemalloc_growth_kib, peak_rss_growth_kib)`` measured across
     the ``iters`` calls only (the warmup allocations are excluded).
@@ -86,16 +87,17 @@ def assert_no_leak(
         max_tracemalloc_kib=128,
         max_peak_rss_kib=None,
 ):
-    '''Assert that repeatedly calling ``fn`` does not leak memory.
+    '''
+    Assert that repeatedly calling ``fn`` does not leak memory.
 
     Args:
-        testcase: the :class:`unittest.TestCase` (for its assert helpers)
-        fn: zero-arg callable exercising the code under test
-        iters: measured iterations after warmup
-        warmup: warmup iterations (default ``max(10, iters // 5)``) run before
+        testcase: The :class:`unittest.TestCase` (for its assert helpers)
+        fn: Zero-arg callable exercising the code under test
+        iters: Measured iterations after warmup
+        warmup: Warmup iterations (default ``max(10, iters // 5)``) run before
             measurement so caches/allocator arenas reach steady state
-        max_tracemalloc_kib: hard bound on retained Python/PyMem growth
-        max_peak_rss_kib: optional bound on peak-RSS growth (raw-malloc paths);
+        max_tracemalloc_kib: Hard bound on retained Python/PyMem growth
+        max_peak_rss_kib: Optional bound on peak-RSS growth (raw-malloc paths);
             leave ``None`` for paths whose RSS ramp is slow/noisy (e.g. design)
     '''
     if warmup is None:
