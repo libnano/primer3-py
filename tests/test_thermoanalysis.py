@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2020. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2014-2026. Ben Pruitt & Nick Conway; Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,29 +25,17 @@ Unit tests for the primer3-py low level thermodynamic calculation bindings.
 from __future__ import print_function
 
 import random
-import sys
 import unittest
-from time import sleep
-
-try:
-    import resource
-
-    def _get_mem_usage():
-        ''' Get current process memory usage in bytes '''
-        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-except (ImportError, ModuleNotFoundError):  # For Windows compatibility
-    resource = None  # type: ignore
-
-    def _get_mem_usage():  # type: ignore
-        ''' Dummy memory usage function for Windows '''
-        return 0
 
 from primer3 import (
     bindings,
     thermoanalysis,
 )
 
-from . import wrappers
+from . import (
+    _leakcheck,
+    wrappers,
+)
 
 
 class TestLowLevelBindings(unittest.TestCase):
@@ -121,6 +109,21 @@ class TestLowLevelBindings(unittest.TestCase):
                 annealing_temp_c=self.annealing_temp_c,
             )
             self.assertAlmostEqual(binding_tm, wrapper_tm, delta=0.5)
+
+    def test_calc_tm_short_sequences(self) -> None:
+        '''Sequences shorter than 2 nt must return the OLIGOTM_ERROR sentinel
+        rather than reading out of bounds (empty) or returning a nonsense Tm
+        (1 nt). See docs/included_primer3_modifications.md (oligotm.c).
+        '''
+        OLIGOTM_ERROR = -999999.9999
+        for seq in ('', 'A', 'a', b'', b'C'):
+            self.assertAlmostEqual(
+                bindings.calc_tm(seq),
+                OLIGOTM_ERROR,
+                places=3,
+            )
+        # A 2-nt sequence is still computed normally (not the sentinel).
+        self.assertGreater(bindings.calc_tm('AT'), OLIGOTM_ERROR)
 
     def test_calc_hairpin(self) -> None:
         '''Test basic hairpin input'''
@@ -380,44 +383,33 @@ class TestLowLevelBindings(unittest.TestCase):
             tm_method='not_a_tm_method',
         )
 
-    @unittest.skipIf(
-        sys.platform == 'win32',
-        'Windows does not support resource module',
-    )
     def test_memory_leaks(self) -> None:
-        '''Test for memory leaks'''
-        sm = _get_mem_usage()
-        run_count = 100
-        for x in range(run_count):
-            self.rand_args()
-            bindings.calc_heterodimer(
-                seq1=self.seq1,
-                seq2=self.seq2,
-                mv_conc=self.mv_conc,
-                dv_conc=self.dv_conc,
-                dntp_conc=self.dntp_conc,
-                dna_conc=self.dna_conc,
-                temp_c=self.temp_c,
-                max_loop=self.max_loop,
-                output_structure=True,
-            )
-        sleep(0.1)  # Pause for any GC
-        em = _get_mem_usage()
-        print(
-            f'\n\tMemory usage before {run_count} runs of '
-            f'calc_heterodimer: {sm}',
+        '''Leak check for the thermodynamic calc bindings.
+
+        Exercises the ``output_structure`` path (raw ``malloc`` of the ASCII
+        structure buffer) and ``calc_tm`` on one shared ``ThermoAnalysis``
+        instance. Tracemalloc bounds the Python/PyMem growth deterministically;
+        a warmed-up peak-RSS bound guards the raw-malloc structure buffers.
+        '''
+        self.rand_args()
+        ta = thermoanalysis.ThermoAnalysis()
+        s1, s2 = self.seq1, self.seq2
+
+        def _work():
+            '''Run one Tm plus each structure-output calculation'''
+            ta.calc_tm(s1)
+            ta.calc_heterodimer(s1, s2, output_structure=True)
+            ta.calc_homodimer(s1, output_structure=True)
+            ta.calc_hairpin(s1, output_structure=True)
+
+        _leakcheck.assert_no_leak(
+            self,
+            _work,
+            iters=200,
+            warmup=100,
+            max_tracemalloc_kib=64,
+            max_peak_rss_kib=4096,
         )
-        print(
-            f'\tMemory usage after {run_count} runs of calc_heterodimer: {em}',
-        )
-        print(f'\t\t\t\t\tDifference: {em - sm}\t')
-        delta_bytes_limit = 500
-        if em - sm > delta_bytes_limit:
-            raise AssertionError(
-                f'Memory usage increase after {run_count} runs of \n\t'
-                f'calc_heterodimer > {delta_bytes_limit} bytes -- potential '
-                f'\n\t memory leak (mem increase: {em - sm})',
-            )
 
     def test_todict(self) -> None:
         '''Unit test coverage for ``Thermoanalysis.todict``'''

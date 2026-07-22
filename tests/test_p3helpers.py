@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2020. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2014-2026. Ben Pruitt & Nick Conway; Wyss Institute
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,8 @@ Unit tests for the primer3-py p3helpers.
 import unittest
 
 from primer3 import p3helpers  # type: ignore
+
+from . import _leakcheck
 
 
 class TestP3Helpers(unittest.TestCase):
@@ -99,6 +101,82 @@ class TestP3Helpers(unittest.TestCase):
             ValueError,
             p3helpers.reverse_complement,
             'ZACGT',
+        )
+
+    def test_reverse_complement_odd_middle_base(self):
+        '''The lone middle base of an odd-length sequence must be validated
+        like every other position. Regression: previously the middle base
+        complement was assigned without checking for INVALID_BASE, so an
+        invalid middle base was silently accepted and returned as '?'.
+        '''
+        for bad in ('Z', 'ACZGT', b'Z', b'ACZGT', b'\x80', b'AC\x80GT'):
+            with self.assertRaises(ValueError):
+                if isinstance(bad, bytes):
+                    p3helpers.reverse_complement_b(bad)
+                else:
+                    p3helpers.reverse_complement(bad)
+
+    def test_high_bytes_rejected_not_oob(self):
+        '''Bytes >= 0x80 index the lookup tables, which must have 256 entries.
+        A 128-entry table would read out of bounds here; instead these
+        inputs must be rejected cleanly (invalid base), not crash.
+        '''
+        for bad in (b'\x80\x80', b'\xff\xff', b'\xc3\xa9', b'A\xffCG'):
+            with self.assertRaises(ValueError):
+                p3helpers.reverse_complement_b(bad)
+            with self.assertRaises(ValueError):
+                p3helpers.sanitize_sequence_b(bad)
+            with self.assertRaises(ValueError):
+                p3helpers.ensure_acgt_uppercase_b(bad)
+
+    def test_str_non_ascii_rejected(self):
+        '''String helpers use the UTF-8 byte length, not the code-point count,
+        and reject non-ASCII characters cleanly (a multi-byte char encodes to
+        bytes >= 0x80). Regression for the code-point/byte length mismatch and
+        in-place bytes mutation.
+        '''
+        for bad in ('ACGTé', 'éACGT', 'ACéGT'):
+            with self.assertRaises(ValueError):
+                p3helpers.reverse_complement(bad)
+            with self.assertRaises(ValueError):
+                p3helpers.sanitize_sequence(bad)
+            with self.assertRaises(ValueError):
+                p3helpers.ensure_acgt_uppercase(bad)
+
+    def test_no_memory_leak(self):
+        '''Exercise every p3helpers entry point, including the error paths that
+        allocate a scratch buffer before raising, and assert no Python/PyMem
+        allocation growth (deterministic via tracemalloc).
+        '''
+        seq = 'ACGTacgtNRYKMSWB' * 4
+        seqb = seq.encode()
+
+        def _swallow(fn, bad):
+            '''Error paths allocate a scratch buffer before raising'''
+            try:
+                fn(bad)
+            except ValueError:
+                return
+            raise AssertionError(f'{fn.__name__}({bad!r}) did not raise')
+
+        def _work():
+            '''Exercise each entry point once (success and error paths)'''
+            p3helpers.reverse_complement(seq)
+            p3helpers.reverse_complement(seq, do_sanitize=True)
+            p3helpers.reverse_complement_b(seqb)
+            p3helpers.sanitize_sequence(seq)
+            p3helpers.sanitize_sequence_b(seqb)
+            p3helpers.ensure_acgt_uppercase('acgtACGT')
+            p3helpers.ensure_acgt_uppercase_b(b'acgtACGT')
+            _swallow(p3helpers.reverse_complement, 'ZZZZ')
+            _swallow(p3helpers.sanitize_sequence, 'ZZZZ')
+            _swallow(p3helpers.ensure_acgt_uppercase, 'ACGTX')
+            _swallow(p3helpers.ensure_acgt_uppercase_b, b'ACGTX')
+
+        # Non-leaking growth measures ~0.05 KiB; 64 KiB over 20k iters catches
+        # even a few-byte-per-call scratch-buffer leak with a wide margin.
+        _leakcheck.assert_no_leak(
+            self, _work, iters=20000, warmup=2000, max_tracemalloc_kib=64,
         )
 
     def test_ensure_acgt_uppercase(self):

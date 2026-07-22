@@ -1,5 +1,5 @@
 # cython: language_level=3
-# Copyright (C) 2023. Ben Pruitt & Nick Conway;
+# Copyright (C) 2023-2026. Ben Pruitt & Nick Conway;
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,10 +31,10 @@ from libc.string cimport memcpy
 
 
 cdef extern from "p3helpers.h":
-    const char COMP_BASE_LUT[128]
-    const char SANITIZE_LUT[128]
-    const char ACGT_UPPER_LUT[128]
-    const char IS_UPPERCASE_ACGT_LUT[128]
+    const char COMP_BASE_LUT[256]
+    const char SANITIZE_LUT[256]
+    const char ACGT_UPPER_LUT[256]
+    const char IS_UPPERCASE_ACGT_LUT[256]
 
 cdef:
     char INVALID_BASE = 63 # '?' character
@@ -96,6 +96,8 @@ cdef int ss_rev_comp_seq(
 
     if length % 2:
         seq[0] = COMP_BASE_LUT[<unsigned char> seq[0]]
+        if seq[0] == INVALID_BASE:
+            return 1
 
     return 0
 
@@ -188,25 +190,10 @@ cpdef str reverse_complement(
     Raises:
         ValueError: Invalid base in sequence
     '''
-    cdef:
-        char* seq_c = NULL
-        Py_ssize_t seq_len = len(seq)
-        int check = 0
-
-    seq_b = seq.encode('utf8')
-    # convert to C str
-    seq_c = seq_b
-
-    check = ss_rev_comp_seq(seq_c, seq_len)
-    if check:
-        raise ValueError(f'Invalid base in sequence {seq}')
-    if do_sanitize:
-        check = ss_sanitize_seq(seq_c, seq_len)
-        if check:
-            raise ValueError(f'Invalid base in sequence {seq}')
-    seq_b = seq_c
-
-    return seq_b.decode('utf8')
+    # Delegate to the bytes implementation, which operates on a private
+    # malloc'd copy (never mutating an immutable bytes buffer) and uses the
+    # UTF-8 byte length rather than the code-point count.
+    return reverse_complement_b(seq.encode('utf8'), do_sanitize).decode('utf8')
 
 
 cpdef bytes reverse_complement_b(
@@ -283,21 +270,10 @@ cpdef str sanitize_sequence(
     Raises:
         ValueError: Invalid base in sequence
     '''
-    cdef:
-        char* seq_c = NULL
-        Py_ssize_t seq_len = len(seq)
-        int check = 0
-
-    seq_b = seq.encode('utf8')
-    # convert to C str
-    seq_c = seq_b
-
-    check = ss_sanitize_seq(seq_c, seq_len)
-    if check:
-        raise ValueError(f'Invalid base in equence {seq}')
-    seq_b = seq_c
-
-    return seq_b.decode('utf8')
+    # Delegate to the bytes implementation, which operates on a private
+    # malloc'd copy (never mutating an immutable bytes buffer) and uses the
+    # UTF-8 byte length rather than the code-point count.
+    return sanitize_sequence_b(seq.encode('utf8')).decode('utf8')
 
 
 cpdef bytes sanitize_sequence_b(
@@ -372,30 +348,42 @@ cpdef str ensure_acgt_uppercase(
     '''
     cdef:
         char* seq_c = NULL
+        char* seq_operate_c = NULL
         Py_ssize_t seq_len = len(seq)
-        int needs_conversion = 0
+        Py_ssize_t byte_len = 0
 
     if seq_len == 0:
         return seq
 
     seq_b = seq.encode('utf8')
     seq_c = seq_b
+    byte_len = len(seq_b)  # UTF-8 byte length, not the code-point count
 
-    # Fast path: check if sequence needs conversion
-    needs_conversion = ss_needs_conversion(seq_c, seq_len)
-    if not needs_conversion:
+    # Fast path: check if sequence needs conversion (read-only)
+    if not ss_needs_conversion(seq_c, byte_len):
         return seq  # Return original if already uppercase ACGT
 
-    # Slow path: needs conversion
-    if ss_ensure_acgt_upper(seq_c, seq_len):
-        # Find the problematic character
-        for i, c in enumerate(seq):
-            if c.upper() not in 'ACGT':
-                raise ValueError(
-                    f"Sequence contains non-ACGT base '{c}' at position {i}: {seq}"
-                )
+    # Slow path: convert on a private copy rather than mutating the
+    # immutable bytes buffer returned by encode().
+    seq_operate_c = <char *> PyMem_Malloc((byte_len + 1) * sizeof(char))
+    if seq_operate_c == NULL:
+        raise OSError('malloc failure')
+    try:
+        copy_c_char_buffer(seq_c, seq_operate_c, byte_len)
+        seq_operate_c[byte_len] = 0  # ensure null terminated
 
-    return seq_b.decode('utf8')
+        if ss_ensure_acgt_upper(seq_operate_c, byte_len):
+            # Find the problematic character
+            for i, c in enumerate(seq):
+                if c.upper() not in 'ACGT':
+                    raise ValueError(
+                        f"Sequence contains non-ACGT base '{c}' at position {i}: {seq}"
+                    )
+
+        return seq_operate_c[:byte_len].decode('utf8')
+    finally:
+        PyMem_Free(seq_operate_c)
+        seq_operate_c = NULL
 
 
 cpdef bytes ensure_acgt_uppercase_b(
@@ -443,8 +431,11 @@ cpdef bytes ensure_acgt_uppercase_b(
         seq_operate_c[seq_len] = 0  # ensure null terminated
 
         if ss_ensure_acgt_upper(seq_operate_c, seq_len):
-            # Find the problematic character
-            for i, c in enumerate(seq.decode('utf8')):
+            # Find the problematic character. Iterate raw bytes (not
+            # seq.decode) so a non-UTF8 byte (>= 0x80) yields a ValueError
+            # rather than a UnicodeDecodeError.
+            for i in range(seq_len):
+                c = chr(seq[i])
                 if c.upper() not in 'ACGT':
                     raise ValueError(
                         f"Sequence contains non-ACGT base '{c}' at position {i}: {seq}"

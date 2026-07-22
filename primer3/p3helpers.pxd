@@ -1,13 +1,13 @@
 # cython: language_level=3
-# Copyright (C) 2023. Ben Pruitt & Nick Conway;
+# Copyright (C) 2023-2026. Ben Pruitt & Nick Conway;
 # See LICENSE for full GPLv2 license.
 
 # Declare external C functions and variables
 cdef extern from "p3helpers.h":
-    const char COMP_BASE_LUT[128]
-    const char SANITIZE_LUT[128]
-    const char ACGT_UPPER_LUT[128]
-    const char IS_UPPERCASE_ACGT_LUT[128]
+    const char COMP_BASE_LUT[256]
+    const char SANITIZE_LUT[256]
+    const char ACGT_UPPER_LUT[256]
+    const char IS_UPPERCASE_ACGT_LUT[256]
 
 # Declare internal C functions
 cdef int ss_rev_comp_seq(char* seq, Py_ssize_t length) except -1 nogil

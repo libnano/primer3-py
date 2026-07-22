@@ -1,6 +1,6 @@
 # cython: language_level=3
-# Copyright (C) 2014-2020. Ben Pruitt & Nick Conway; Wyss Institute
-# Copyright (C) 2023 Ben Pruitt & Nick Conway;
+# Copyright (C) 2014-2026. Ben Pruitt & Nick Conway; Wyss Institute
+# Copyright (C) 2023-2026 Ben Pruitt & Nick Conway;
 # See LICENSE for full GPLv2 license.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1135,8 +1135,14 @@ cdef class _ThermoAnalysis:
             p3_global_settings* global_settings_data = NULL
             seq_args_t* sequence_args_data = NULL
 
-
-        err_msg = ''
+        # A design requires a sequence-args struct. If seq_args is empty/None
+        # the struct is never allocated and a NULL seq_args_t* would be passed
+        # to read_boulder_record / choose_primers (NULL deref in the C core).
+        if not seq_args:
+            raise ValueError(
+                'seq_args must be a non-empty dict '
+                '(a primer design requires at least a SEQUENCE_TEMPLATE)'
+            )
 
         if self.sequence_args_data != NULL:
             # Free memory for previous seq args
@@ -1151,9 +1157,14 @@ cdef class _ThermoAnalysis:
             if self.sequence_args_data == NULL:
                 raise OSError('Could not allocate memory for seq_arg')
 
-            global_args.update(seq_args)
+            # Merge into a new dict; do NOT mutate the caller's global_args
+            # (a design call must not pollute the user's dict with the
+            # sequence tags, which would then leak into a subsequent call).
+            combined_args = {**global_args, **seq_args}
+        else:
+            combined_args = global_args
 
-        global_arg_bytes = argdefaults.format_boulder_io(global_args)
+        global_arg_bytes = argdefaults.format_boulder_io(combined_args)
         arg_input_buffer = global_arg_bytes
         if arg_input_buffer == NULL:
             raise ValueError(global_arg_bytes)
@@ -1170,7 +1181,7 @@ cdef class _ThermoAnalysis:
         if self.global_settings_data == NULL:
             raise OSError('Could not allocate memory for p3 globals')
 
-        kmer_lists_path = global_args.get('PRIMER_MASK_KMERLIST_PATH', '')
+        kmer_lists_path = combined_args.get('PRIMER_MASK_KMERLIST_PATH', '')
         if kmer_lists_path:
             local_dir = op.dirname(op.realpath(get_dunder_file()))
             libprimer3_dir = op.join(local_dir, 'src', 'libprimer3')
@@ -1217,11 +1228,10 @@ cdef class _ThermoAnalysis:
         if self.global_settings_data == NULL or self.sequence_args_data == NULL:
             raise ValueError(
                 'Error setting Primer3 global args and sequence args\n'
-                'seq_args {seq_args}\n\n'
-                'global_args {global_args}\n\n'
+                f'seq_args {seq_args}\n\n'
+                f'global_args {global_args}\n\n'
             )
 
-        err_msg = ''
         try:
             global_settings_data = <p3_global_settings*> self.global_settings_data
 
@@ -1250,7 +1260,9 @@ cdef class _ThermoAnalysis:
                 <seq_args_t*> self.sequence_args_data
             )
             self.sequence_args_data = NULL
-            raise OSError(err_msg) from exc
+            raise OSError(
+                f'Error creating mispriming/mishybridization library: {exc}'
+            ) from exc
 
     def run_design(
             self,
@@ -1504,9 +1516,15 @@ cdef inline seq_lib* pdh_create_seq_lib(object seq_dict) except NULL:
             )
 
         if add_seq_to_seq_lib(sl, seq_c, seq_name_c, errfrag) == 1:
-            err_msg_b =  <bytes> errfrag
+            # NOTE: ``errfrag`` is a const input prefix to add_seq_to_seq_lib,
+            # not an output; it stays NULL here. Do not read it back as a
+            # bytes object (that dereferences NULL and crashes). Build the
+            # message from the Python-side name/value instead.
             destroy_seq_lib(sl)
-            raise OSError(err_msg_b.decode('utf8'))
+            raise OSError(
+                f'Could not add sequence {seq_name_str!r} to the seq_lib: '
+                'the sequence is empty or its name encodes an illegal weight'
+            )
     reverse_complement_seq_lib(sl)
 
     return sl

@@ -350,6 +350,15 @@ oligotm(const  char *s,
      ret.Tm = OLIGOTM_ERROR;
      return ret;
   }
+  /* primer3-py: reject sequences shorter than 2 nt up front (see
+   * docs/included_primer3_modifications.md). For an empty string
+   * `len = strlen(s) - 1` underflows to -1 and the nearest-neighbor terminal
+   * penalty reads s[-1]; a 1-nt sequence yields a nonsense Tm rather than the
+   * OLIGOTM_ERROR the ERROR label documents. */
+  if (strlen(s) < 2) {
+     ret.Tm = OLIGOTM_ERROR;
+     return ret;
+  }
   len = (strlen(s)-1);
   if(formamide_conc != 0.0) {
     for (i = 0; i < len + 1; i++) {
