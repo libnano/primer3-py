@@ -395,7 +395,8 @@ class TestLowLevelBindings(unittest.TestCase):
         ta = thermoanalysis.ThermoAnalysis()
         s1, s2 = self.seq1, self.seq2
 
-        def work():
+        def _work():
+            '''Run one Tm plus each structure-output calculation'''
             ta.calc_tm(s1)
             ta.calc_heterodimer(s1, s2, output_structure=True)
             ta.calc_homodimer(s1, output_structure=True)
@@ -403,7 +404,7 @@ class TestLowLevelBindings(unittest.TestCase):
 
         _leakcheck.assert_no_leak(
             self,
-            work,
+            _work,
             iters=200,
             warmup=100,
             max_tracemalloc_kib=64,

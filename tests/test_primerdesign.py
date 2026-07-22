@@ -440,13 +440,13 @@ class TestDesignBindings(unittest.TestCase):
             ],
         }
 
-        def work():
-            # fresh dict copies each run: design must not mutate its inputs
+        def _work():
+            '''Run one design; inputs are copied so they are not mutated'''
             bindings.design_primers(dict(seq_args), dict(global_args))
 
         _leakcheck.assert_no_leak(
             self,
-            work,
+            _work,
             iters=60,
             warmup=20,
             max_tracemalloc_kib=128,
