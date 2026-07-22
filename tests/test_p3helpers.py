@@ -104,10 +104,11 @@ class TestP3Helpers(unittest.TestCase):
         )
 
     def test_reverse_complement_odd_middle_base(self):
-        # The lone middle base of an odd-length sequence must be validated
-        # like every other position. Regression: previously the middle base
-        # complement was assigned without checking for INVALID_BASE, so an
-        # invalid middle base was silently accepted and returned as '?'.
+        '''The lone middle base of an odd-length sequence must be validated
+        like every other position. Regression: previously the middle base
+        complement was assigned without checking for INVALID_BASE, so an
+        invalid middle base was silently accepted and returned as '?'.
+        '''
         for bad in ('Z', 'ACZGT', b'Z', b'ACZGT', b'\x80', b'AC\x80GT'):
             with self.assertRaises(ValueError):
                 if isinstance(bad, bytes):
@@ -116,9 +117,10 @@ class TestP3Helpers(unittest.TestCase):
                     p3helpers.reverse_complement(bad)
 
     def test_high_bytes_rejected_not_oob(self):
-        # Bytes >= 0x80 index the lookup tables, which must have 256 entries.
-        # A 128-entry table would read out of bounds here; instead these
-        # inputs must be rejected cleanly (invalid base), not crash.
+        '''Bytes >= 0x80 index the lookup tables, which must have 256 entries.
+        A 128-entry table would read out of bounds here; instead these
+        inputs must be rejected cleanly (invalid base), not crash.
+        '''
         for bad in (b'\x80\x80', b'\xff\xff', b'\xc3\xa9', b'A\xffCG'):
             with self.assertRaises(ValueError):
                 p3helpers.reverse_complement_b(bad)
@@ -128,10 +130,11 @@ class TestP3Helpers(unittest.TestCase):
                 p3helpers.ensure_acgt_uppercase_b(bad)
 
     def test_str_non_ascii_rejected(self):
-        # str helpers must operate on the UTF-8 byte length, not the code-point
-        # count, and must reject non-ASCII characters cleanly (a multi-byte
-        # char encodes to bytes >= 0x80). Regression for the code-point/byte
-        # length mismatch and in-place bytes mutation.
+        '''String helpers use the UTF-8 byte length, not the code-point count,
+        and reject non-ASCII characters cleanly (a multi-byte char encodes to
+        bytes >= 0x80). Regression for the code-point/byte length mismatch and
+        in-place bytes mutation.
+        '''
         for bad in ('ACGTé', 'éACGT', 'ACéGT'):
             with self.assertRaises(ValueError):
                 p3helpers.reverse_complement(bad)
@@ -141,14 +144,15 @@ class TestP3Helpers(unittest.TestCase):
                 p3helpers.ensure_acgt_uppercase(bad)
 
     def test_no_memory_leak(self):
-        # Exercise every p3helpers entry point, including the error paths that
-        # allocate a scratch buffer before raising, and assert no Python/PyMem
-        # allocation growth (deterministic via tracemalloc).
+        '''Exercise every p3helpers entry point, including the error paths that
+        allocate a scratch buffer before raising, and assert no Python/PyMem
+        allocation growth (deterministic via tracemalloc).
+        '''
         seq = 'ACGTacgtNRYKMSWB' * 4
         seqb = seq.encode()
 
         def swallow(fn, bad):
-            # error paths allocate a scratch buffer before raising
+            '''Error paths allocate a scratch buffer before raising'''
             try:
                 fn(bad)
             except ValueError:

@@ -111,8 +111,7 @@ class TestLowLevelBindings(unittest.TestCase):
             self.assertAlmostEqual(binding_tm, wrapper_tm, delta=0.5)
 
     def test_calc_tm_short_sequences(self) -> None:
-        '''
-        Sequences shorter than 2 nt must return the OLIGOTM_ERROR sentinel
+        '''Sequences shorter than 2 nt must return the OLIGOTM_ERROR sentinel
         rather than reading out of bounds (empty) or returning a nonsense Tm
         (1 nt). See docs/included_primer3_modifications.md (oligotm.c).
         '''
@@ -385,8 +384,7 @@ class TestLowLevelBindings(unittest.TestCase):
         )
 
     def test_memory_leaks(self) -> None:
-        '''
-        Leak check for the thermodynamic calc bindings.
+        '''Leak check for the thermodynamic calc bindings.
 
         Exercises the ``output_structure`` path (raw ``malloc`` of the ASCII
         structure buffer) and ``calc_tm`` on one shared ``ThermoAnalysis``

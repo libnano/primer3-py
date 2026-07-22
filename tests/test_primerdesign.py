@@ -390,8 +390,7 @@ class TestDesignBindings(unittest.TestCase):
         'Windows does not support resource module',
     )
     def test_memory_leaks(self):
-        '''
-        Leak check for the full design path.
+        '''Leak check for the full design path.
 
         Uses tracemalloc to bound the growth of Python-side allocations (the
         result dict and everything the bindings build per run). Peak RSS is
@@ -595,8 +594,7 @@ class TestDesignBindings(unittest.TestCase):
         )
 
     def test_design_does_not_mutate_global_args(self):
-        '''
-        A design call must not merge seq_args into the caller's
+        '''A design call must not merge seq_args into the caller's
         global_args dict.
         '''
         seq_args = {
@@ -619,8 +617,7 @@ class TestDesignBindings(unittest.TestCase):
         self.assertNotIn('SEQUENCE_TEMPLATE', global_args)
 
     def test_overlap_junction_list_bounds(self):
-        '''
-        An overlap-junction list longer than PR_MAX_INTERVAL_ARRAY (200)
+        '''An overlap-junction list longer than PR_MAX_INTERVAL_ARRAY (200)
         must be rejected rather than overrunning the fixed seq_args array.
         See docs/included_primer3_modifications.md (read_boulder.c).
         '''
@@ -646,8 +643,7 @@ class TestDesignBindings(unittest.TestCase):
             bindings.design_primers(seq_args, global_args)
 
     def test_design_requires_seq_args(self):
-        '''
-        A design call with empty/None seq_args must raise cleanly rather
+        '''A design call with empty/None seq_args must raise cleanly rather
         than passing a NULL seq_args_t* into the C core.
         '''
         global_args = {
@@ -660,8 +656,7 @@ class TestDesignBindings(unittest.TestCase):
                 bindings.design_primers(bad, global_args)
 
     def test_misprime_lib_bad_sequence_raises_cleanly(self):
-        '''
-        A library sequence that the C seq_lib rejects (e.g. an empty
+        '''A library sequence that the C seq_lib rejects (e.g. an empty
         sequence value) must raise a clean exception rather than
         dereferencing a NULL errfrag pointer.
         '''

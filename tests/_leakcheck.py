@@ -51,8 +51,7 @@ except ImportError:  # pragma: no cover - Windows
 
 
 def measure(fn, iters, warmup):
-    '''
-    Run ``fn()`` ``warmup`` then ``iters`` times.
+    '''Run ``fn()`` ``warmup`` then ``iters`` times.
 
     Returns ``(tracemalloc_growth_kib, peak_rss_growth_kib)`` measured across
     the ``iters`` calls only (the warmup allocations are excluded).
@@ -87,8 +86,7 @@ def assert_no_leak(
         max_tracemalloc_kib=128,
         max_peak_rss_kib=None,
 ):
-    '''
-    Assert that repeatedly calling ``fn`` does not leak memory.
+    '''Assert that repeatedly calling ``fn`` does not leak memory.
 
     Args:
         testcase: The :class:`unittest.TestCase` (for its assert helpers)
