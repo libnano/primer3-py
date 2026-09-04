@@ -12,7 +12,7 @@ dynamic = ["version"]
 description = "Simple primer design and analysis"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "GPLv2"}
+license = {text = "GPL-2.0-or-later"}
 authors = [
     {name = "Ben Pruitt", email = "bpruittvt@gmail.com"},
     {name = "Nick Conway", email = "a.grinner@gmail.com"},
@@ -31,7 +31,7 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
-    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
 ]
 
 # Dev & doc dependencies
