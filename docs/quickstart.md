@@ -240,6 +240,6 @@ and avoid conflicts with other Python packages in your system.
 
 Contributions are welcomed via pull requests. Contact the `primer3-py` maintainers prior to beginning your work to make sure it makes sense for the project.
 
-By contributing, you also agree to release your code under the GPLv2.
+By contributing, you also agree to release your code under GPL-2.0-or-later.
 
 For detailed contribution guidelines, development setup, workflows, and release process, see our [Development Guide](development.md).
