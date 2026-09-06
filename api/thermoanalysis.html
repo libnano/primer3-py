@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Low-level thermodynamic analysis &mdash; Primer3-py 2.3.0 documentation</title>
+  <title>Low-level thermodynamic analysis &mdash; Primer3-py 2.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=c3c8ae58"></script>
+        <script src="../_static/documentation_options.js?v=67b02a41"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.3.0
+                2.3.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -104,6 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../development.html">Development Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../miscellany.html">Miscellany</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../included_primer3_modifications.html">Included Primer3 modifications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changes_link.html">Changelog</a></li>
 </ul>
 
@@ -548,10 +549,10 @@ to expose tm, dg, dh, and ds values that result from a <code class="xref py py-m
 <dd><p>ASCII structure representation split into individual lines</p>
 <p>e.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
-    <span class="s1">&#39;SEQ             -    T CCT-   A   TTGCTTTGAAACAATTCACCATGCAGA&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;SEQ          TGC GATG G    GCT TGC                           &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;STR          ACG CTAC C    CGA ACG                           &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;STR    AACCTT   T    T TTAT   G   TAGGCGAGCCACCAGCGGCATAGTAA-&#39;</span><span class="p">,</span>
+    <span class="s1">'SEQ             -    T CCT-   A   TTGCTTTGAAACAATTCACCATGCAGA'</span><span class="p">,</span>
+    <span class="s1">'SEQ          TGC GATG G    GCT TGC                           '</span><span class="p">,</span>
+    <span class="s1">'STR          ACG CTAC C    CGA ACG                           '</span><span class="p">,</span>
+    <span class="s1">'STR    AACCTT   T    T TTAT   G   TAGGCGAGCCACCAGCGGCATAGTAA-'</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -582,13 +583,13 @@ Otherwise, return a reference to the current object.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.dh">
 <span class="sig-name descname"><span class="pre">dh</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.dh" title="Link to this definition"></a></dt>
-<dd><p>delta H (entropy) of the structure (cal/mol)</p>
+<dd><p>delta H (enthalpy) of the structure (cal/mol)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="primer3.thermoanalysis.ThermoResult.ds">
 <span class="sig-name descname"><span class="pre">ds</span></span><a class="headerlink" href="#primer3.thermoanalysis.ThermoResult.ds" title="Link to this definition"></a></dt>
-<dd><p>delta S (enthalpy) of the structure (cal/K*mol)</p>
+<dd><p>delta S (entropy) of the structure (cal/K*mol)</p>
 </dd></dl>
 
 <dl class="py attribute">

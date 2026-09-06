@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; Primer3-py 2.3.0 documentation</title>
+  <title>Getting Started &mdash; Primer3-py 2.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=c3c8ae58"></script>
+        <script src="_static/documentation_options.js?v=67b02a41"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.3.0
+                2.3.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -70,6 +70,7 @@
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
+<li class="toctree-l1"><a class="reference internal" href="included_primer3_modifications.html">Included Primer3 modifications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
 </ul>
 
@@ -102,7 +103,7 @@
 <p><strong>Primer3-py</strong> is designed to be simple to install and use.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
-<p><strong>Primer3-py</strong> is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.13 builds are supported.</p>
+<p><strong>Primer3-py</strong> is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.14 builds are supported.</p>
 <p>Wheels are released for CPython versions following the <a class="reference external" href="https://devguide.python.org/versions/">EOL model</a>. Pre-built wheels are available for:</p>
 <ul class="simple">
 <li><p>MacOS (x86-64, arm64)</p></li>
@@ -131,7 +132,7 @@
 </div>
 </li>
 <li><p>Install in development mode with dev dependencies:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[dev]"</span>
 </pre></div>
 </div>
 </li>
@@ -230,41 +231,41 @@ documentation.</p>
 <p>Example usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bindings</span><span class="o">.</span><span class="n">design_primers</span><span class="p">(</span>
     <span class="n">seq_args</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;SEQUENCE_ID&#39;</span><span class="p">:</span> <span class="s1">&#39;MH1000&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;SEQUENCE_TEMPLATE&#39;</span><span class="p">:</span> <span class="p">(</span>
-            <span class="s1">&#39;GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT&#39;</span>
-            <span class="s1">&#39;AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA&#39;</span>
-            <span class="s1">&#39;ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG&#39;</span>
-            <span class="s1">&#39;CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG&#39;</span>
-            <span class="s1">&#39;TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA&#39;</span>
-            <span class="s1">&#39;TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA&#39;</span>
-            <span class="s1">&#39;ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA&#39;</span>
-            <span class="s1">&#39;TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA&#39;</span>
-            <span class="s1">&#39;GATGTTTCCCTCTAGTAG&#39;</span><span class="p">,</span>
+        <span class="s1">'SEQUENCE_ID'</span><span class="p">:</span> <span class="s1">'MH1000'</span><span class="p">,</span>
+        <span class="s1">'SEQUENCE_TEMPLATE'</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s1">'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTT'</span>
+            <span class="s1">'AGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCA'</span>
+            <span class="s1">'ACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACG'</span>
+            <span class="s1">'CACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAG'</span>
+            <span class="s1">'TTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAA'</span>
+            <span class="s1">'TGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAA'</span>
+            <span class="s1">'ATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAA'</span>
+            <span class="s1">'TTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCA'</span>
+            <span class="s1">'GATGTTTCCCTCTAGTAG'</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="s1">&#39;SEQUENCE_INCLUDED_REGION&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">36</span><span class="p">,</span><span class="mi">342</span><span class="p">]</span>
+        <span class="s1">'SEQUENCE_INCLUDED_REGION'</span><span class="p">:</span> <span class="p">[</span><span class="mi">36</span><span class="p">,</span><span class="mi">342</span><span class="p">]</span>
     <span class="p">},</span>
     <span class="n">global_args</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;PRIMER_OPT_SIZE&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_PICK_INTERNAL_OLIGO&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_INTERNAL_MAX_SELF_END&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MIN_SIZE&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MAX_SIZE&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_OPT_TM&#39;</span><span class="p">:</span> <span class="mf">60.0</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MIN_TM&#39;</span><span class="p">:</span> <span class="mf">57.0</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MAX_TM&#39;</span><span class="p">:</span> <span class="mf">63.0</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MIN_GC&#39;</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MAX_GC&#39;</span><span class="p">:</span> <span class="mf">80.0</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MAX_POLY_X&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_INTERNAL_MAX_POLY_X&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_SALT_MONOVALENT&#39;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_DNA_CONC&#39;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MAX_NS_ACCEPTED&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MAX_SELF_ANY&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_MAX_SELF_END&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_PAIR_MAX_COMPL_ANY&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_PAIR_MAX_COMPL_END&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-        <span class="s1">&#39;PRIMER_PRODUCT_SIZE_RANGE&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">'PRIMER_OPT_SIZE'</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s1">'PRIMER_PICK_INTERNAL_OLIGO'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">'PRIMER_INTERNAL_MAX_SELF_END'</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MIN_SIZE'</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MAX_SIZE'</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="s1">'PRIMER_OPT_TM'</span><span class="p">:</span> <span class="mf">60.0</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MIN_TM'</span><span class="p">:</span> <span class="mf">57.0</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MAX_TM'</span><span class="p">:</span> <span class="mf">63.0</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MIN_GC'</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MAX_GC'</span><span class="p">:</span> <span class="mf">80.0</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MAX_POLY_X'</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s1">'PRIMER_INTERNAL_MAX_POLY_X'</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s1">'PRIMER_SALT_MONOVALENT'</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+        <span class="s1">'PRIMER_DNA_CONC'</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MAX_NS_ACCEPTED'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MAX_SELF_ANY'</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s1">'PRIMER_MAX_SELF_END'</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s1">'PRIMER_PAIR_MAX_COMPL_ANY'</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s1">'PRIMER_PAIR_MAX_COMPL_END'</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s1">'PRIMER_PRODUCT_SIZE_RANGE'</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">[</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">],</span> <span class="p">[</span><span class="mi">125</span><span class="p">,</span><span class="mi">150</span><span class="p">],</span>
             <span class="p">[</span><span class="mi">150</span><span class="p">,</span><span class="mi">175</span><span class="p">],</span> <span class="p">[</span><span class="mi">175</span><span class="p">,</span><span class="mi">200</span><span class="p">],</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span><span class="mi">225</span><span class="p">]</span>
         <span class="p">],</span>
@@ -313,7 +314,7 @@ is tested via GitHub Actions to ensure it builds properly and passes our unit te
 <span class="gp"># </span>p3p-test-env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
 
 <span class="gp"># </span>Install<span class="w"> </span>development<span class="w"> </span>dependencies<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span><span class="k">in</span><span class="w"> </span>editable<span class="w"> </span>mode
-<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[dev]"</span>
 
 <span class="gp"># </span>Run<span class="w"> </span>tests<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span>directory
 <span class="gp">$ </span>pytest
@@ -328,7 +329,7 @@ and avoid conflicts with other Python packages in your system.</p>
 <section id="contributing">
 <h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
 <p>Contributions are welcomed via pull requests. Contact the <code class="docutils literal notranslate"><span class="pre">primer3-py</span></code> maintainers prior to beginning your work to make sure it makes sense for the project.</p>
-<p>By contributing, you also agree to release your code under the GPLv2.</p>
+<p>By contributing, you also agree to release your code under GPL-2.0-or-later.</p>
 <p>For detailed contribution guidelines, development setup, workflows, and release process, see our <a class="reference internal" href="development.html"><span class="std std-doc">Development Guide</span></a>.</p>
 </section>
 </section>

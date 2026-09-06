@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Included Primer3 modifications &mdash; Primer3-py 2.3.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=67b02a41"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changes_link.html" />
+    <link rel="prev" title="Miscellany" href="miscellany.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Primer3-py
+          </a>
+              <div class="version">
+                2.3.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Included Primer3 modifications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#safety-correctness-fixes">Safety / correctness fixes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#read-boulder-c-parse-intron-list-bounds-check"><code class="docutils literal notranslate"><span class="pre">read_boulder.c</span></code> — <code class="docutils literal notranslate"><span class="pre">parse_intron_list</span></code> bounds check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oligotm-c-reject-sequences-shorter-than-2-nt-in-oligotm"><code class="docutils literal notranslate"><span class="pre">oligotm.c</span></code> — reject sequences shorter than 2 nt in <code class="docutils literal notranslate"><span class="pre">oligotm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Primer3-py</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Included Primer3 modifications</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/included_primer3_modifications.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="included-primer3-modifications">
+<h1>Included Primer3 modifications<a class="headerlink" href="#included-primer3-modifications" title="Link to this heading"></a></h1>
+<p>The C sources under <code class="docutils literal notranslate"><span class="pre">primer3/src/libprimer3/</span></code> are the included copy of the
+open-source Primer3 v2.6.1 library, modified to make them amenable to the
+Python C API / Cython bindings (see also <a class="reference internal" href="miscellany.html#derivative-work"><span class="std std-ref">Derivative work</span></a>). In
+addition to the pervasive build-glue and API-surface changes, we occasionally
+patch this included C to fix bugs that are reachable through the bindings.</p>
+<p>This page records those <strong>intentional, behavior-affecting divergences</strong> from
+upstream Primer3 so they can be reviewed and re-applied if the included tree is
+ever updated to a newer upstream release. It is a living document: add an entry
+here whenever you change the included C in a way that alters behavior (pure
+mechanical/build changes and comments do not need to be listed).</p>
+<p>Each entry notes the file and function, the category of change, what changed
+and why, and whether it is reachable from the Python API.</p>
+<hr class="docutils" />
+<section id="safety-correctness-fixes">
+<h2>Safety / correctness fixes<a class="headerlink" href="#safety-correctness-fixes" title="Link to this heading"></a></h2>
+<section id="read-boulder-c-parse-intron-list-bounds-check">
+<h3><code class="docutils literal notranslate"><span class="pre">read_boulder.c</span></code> — <code class="docutils literal notranslate"><span class="pre">parse_intron_list</span></code> bounds check<a class="headerlink" href="#read-boulder-c-parse-intron-list-bounds-check" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Category:</strong> memory-safety fix (out-of-bounds write)</p></li>
+<li><p><strong>Reachable from Python:</strong> yes — <code class="docutils literal notranslate"><span class="pre">run_design</span></code> /
+<code class="docutils literal notranslate"><span class="pre">bindings.design_primers</span></code> via the <code class="docutils literal notranslate"><span class="pre">SEQUENCE_OVERLAP_JUNCTION_LIST</span></code> and
+<code class="docutils literal notranslate"><span class="pre">SEQUENCE_INTERNAL_OVERLAP_JUNCTION_LIST</span></code> tags.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">parse_intron_list</span></code> wrote <code class="docutils literal notranslate"><span class="pre">list[*count]</span></code> and incremented <code class="docutils literal notranslate"><span class="pre">*count</span></code> with no
+check against <code class="docutils literal notranslate"><span class="pre">PR_MAX_INTERVAL_ARRAY</span></code> (200). The destination arrays
+(<code class="docutils literal notranslate"><span class="pre">sa-&gt;primer_overlap_junctions</span></code>, <code class="docutils literal notranslate"><span class="pre">sa-&gt;intl_overlap_junctions</span></code>) are fixed
+<code class="docutils literal notranslate"><span class="pre">int[PR_MAX_INTERVAL_ARRAY]</span></code> fields of <code class="docutils literal notranslate"><span class="pre">seq_args</span></code>, so a junction list with more
+than 200 integers overran the array and corrupted adjacent struct fields. The
+sibling interval parsers already bounds-check; this one was the outlier.</p>
+<p>The parser now resets <code class="docutils literal notranslate"><span class="pre">*count</span></code> and returns <code class="docutils literal notranslate"><span class="pre">0</span></code> (its existing error signal, on
+which the caller appends an <code class="docutils literal notranslate"><span class="pre">&quot;Error</span> <span class="pre">in</span> <span class="pre">SEQUENCE_..._JUNCTION_LIST&quot;</span></code> message)
+when the array is full.</p>
+</section>
+<section id="oligotm-c-reject-sequences-shorter-than-2-nt-in-oligotm">
+<h3><code class="docutils literal notranslate"><span class="pre">oligotm.c</span></code> — reject sequences shorter than 2 nt in <code class="docutils literal notranslate"><span class="pre">oligotm()</span></code><a class="headerlink" href="#oligotm-c-reject-sequences-shorter-than-2-nt-in-oligotm" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Category:</strong> memory-safety + correctness fix (out-of-bounds read / nonsense
+result)</p></li>
+<li><p><strong>Reachable from Python:</strong> yes — <code class="docutils literal notranslate"><span class="pre">calc_tm</span></code> / <code class="docutils literal notranslate"><span class="pre">bindings.calc_tm</span></code> via <code class="docutils literal notranslate"><span class="pre">seqtm</span></code>.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">oligotm()</span></code> computed <code class="docutils literal notranslate"><span class="pre">len</span> <span class="pre">=</span> <span class="pre">strlen(s)</span> <span class="pre">-</span> <span class="pre">1</span></code> and then applied the
+nearest-neighbor terminal penalty at <code class="docutils literal notranslate"><span class="pre">s[len]</span></code>. For an empty string <code class="docutils literal notranslate"><span class="pre">len</span></code>
+underflowed to <code class="docutils literal notranslate"><span class="pre">-1</span></code>, so the code read <code class="docutils literal notranslate"><span class="pre">s[-1]</span></code> (out of bounds); a 1-nt sequence
+produced a nonsense Tm instead of the <code class="docutils literal notranslate"><span class="pre">OLIGOTM_ERROR</span></code> sentinel that the
+function’s own <code class="docutils literal notranslate"><span class="pre">ERROR:</span></code> label documents for “length &lt; 2”.</p>
+<p><code class="docutils literal notranslate"><span class="pre">oligotm()</span></code> now returns <code class="docutils literal notranslate"><span class="pre">OLIGOTM_ERROR</span></code> up front when <code class="docutils literal notranslate"><span class="pre">strlen(s)</span> <span class="pre">&lt;</span> <span class="pre">2</span></code>. Empty
+input still returns the same sentinel (now without the OOB read), and 1-nt
+input returns the sentinel instead of a meaningless value.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Line numbers are intentionally omitted; search for the function name and the
+<code class="docutils literal notranslate"><span class="pre">primer3-py:</span></code> comment that marks each patch in the source.</p></li>
+<li><p>When updating the included tree from a newer upstream Primer3, check each
+entry above against the incoming source and re-apply any patch that upstream
+has not itself adopted.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="miscellany.html" class="btn btn-neutral float-left" title="Miscellany" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changes_link.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright 2014-2026, Ben Pruitt &amp; Nick Conway; 2014-2018 Wyss Institute.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

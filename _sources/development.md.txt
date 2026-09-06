@@ -319,4 +319,4 @@ Primer3-py follows [PEP 440](https://peps.python.org/pep-0440/) versioning conve
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the GPLv2 License.
+By contributing, you agree that your contributions will be licensed under the GPL-2.0-or-later License.
