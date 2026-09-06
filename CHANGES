@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 2.3.1 (September 6, 2026)
+
+- Fix swapped "enthalpy" / "entropy" references in `ThermoResult` docstrings (see issue #169)
+- Correct the oligo analysis example output shown in the README (see issue #171)
+- Fix `misprime_lib` / `mishyb_lib` rejecting `bytes` sequence values (see issue #173)
+- Memory safety & correctness fixes across the bindings and bundled Primer3 source
+  (see PR #175): out-of-bounds lookup-table reads in `p3helpers` for non-ASCII input,
+  UTF-8 length handling in the string sequence helpers, `parse_intron_list` heap
+  overflow, `oligotm` out-of-bounds read for short sequences, and NULL-pointer
+  dereferences in `pdh_create_seq_lib` / `_set_globals_and_seq_args`
+- `_set_globals_and_seq_args` no longer mutates the caller's `global_args` dict and
+  now rejects empty `seq_args` (see PR #175)
+- Add an "Included Primer3 modifications" documentation page (see PR #175)
+- Correct license metadata to `GPL-2.0-or-later` to match the source file headers
+  (see PR #176)
+
 ## Version 2.3.0 (Jan 6, 2026)
 
 - Support for Python 3.14

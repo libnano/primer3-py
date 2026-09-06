@@ -5,7 +5,7 @@
 
 ## Requirements
 
-**Primer3-py** is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.13 builds are supported.
+**Primer3-py** is built and tested on MacOS, Linux and Windows 64-bit systems; we do not provide official Windows support. Python versions 3.8 - 3.14 builds are supported.
 
 Wheels are released for CPython versions following the [EOL model](https://devguide.python.org/versions/). Pre-built wheels are available for:
 - MacOS (x86-64, arm64)
