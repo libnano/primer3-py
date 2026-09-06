@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Development Guide &mdash; Primer3-py 2.3.0 documentation</title>
+  <title>Development Guide &mdash; Primer3-py 2.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=c3c8ae58"></script>
+        <script src="_static/documentation_options.js?v=67b02a41"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.3.0
+                2.3.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -84,6 +84,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
+<li class="toctree-l1"><a class="reference internal" href="included_primer3_modifications.html">Included Primer3 modifications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
 </ul>
 
@@ -123,7 +124,7 @@
 <ol class="arabic">
 <li><p>Set up your Python environment:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span><span class="k">in</span><span class="w"> </span>editable<span class="w"> </span>mode<span class="w"> </span>with<span class="w"> </span>development<span class="w"> </span>dependencies
-<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[dev]"</span>
 </pre></div>
 </div>
 </li>
@@ -412,9 +413,9 @@
 </li>
 <li><p>Update copyright end dates in source files if needed (e.g., <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>)</p></li>
 <li><p>For pre-releases, use appropriate suffix:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.1.0a1&quot;</span>  <span class="c1"># Alpha release</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.1.0b1&quot;</span>  <span class="c1"># Beta release</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.1.0rc1&quot;</span>  <span class="c1"># Release candidate</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">__version__</span> <span class="o">=</span> <span class="s2">"2.1.0a1"</span>  <span class="c1"># Alpha release</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">"2.1.0b1"</span>  <span class="c1"># Beta release</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">"2.1.0rc1"</span>  <span class="c1"># Release candidate</span>
 </pre></div>
 </div>
 </li>
@@ -535,7 +536,7 @@
 </section>
 <section id="license">
 <h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
-<p>By contributing, you agree that your contributions will be licensed under the GPLv2 License.</p>
+<p>By contributing, you agree that your contributions will be licensed under the GPL-2.0-or-later License.</p>
 </section>
 </section>
 

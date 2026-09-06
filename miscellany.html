@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Miscellany &mdash; Primer3-py 2.3.0 documentation</title>
+  <title>Miscellany &mdash; Primer3-py 2.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,13 +15,13 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=c3c8ae58"></script>
+        <script src="_static/documentation_options.js?v=67b02a41"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Changelog" href="changes_link.html" />
+    <link rel="next" title="Included Primer3 modifications" href="included_primer3_modifications.html" />
     <link rel="prev" title="Building new Cython modules against thermoanalysis.pxd" href="cython_help.html" /> 
 </head>
 
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.3.0
+                2.3.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -60,6 +60,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#licensing">Licensing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="included_primer3_modifications.html">Included Primer3 modifications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
 </ul>
 
@@ -104,6 +105,8 @@ library that includes a number of optimizations and improvements to make it
 more amenable to Python C API / Cython bindings. Every effort has been made
 to ensure that the underlying algorithms and calculations deterministically
 produce the same results as the vanilla v2.6.1 Primer3 library.</p>
+<p>Intentional, behavior-affecting changes to the included C sources are tracked
+in <a class="reference internal" href="included_primer3_modifications.html"><span class="std std-doc">Included Primer3 modifications</span></a>.</p>
 </section>
 <section id="future-work">
 <h2>Future work<a class="headerlink" href="#future-work" title="Link to this heading"></a></h2>
@@ -124,16 +127,17 @@ and review the documentation at <a class="reference internal" href="quickstart.h
 <section id="licensing">
 <h2>Licensing<a class="headerlink" href="#licensing" title="Link to this heading"></a></h2>
 <p>Citations should reference the <a class="reference external" href="http://nar.oxfordjournals.org/content/early/2012/06/21/nar.gks596">lastest Primer3 paper</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Untergasser</span><span class="p">,</span> <span class="n">Andreas</span><span class="p">,</span> <span class="n">et</span> <span class="n">al</span><span class="o">.</span> <span class="s2">&quot;Primer3—new capabilities and interfaces.&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Untergasser</span><span class="p">,</span> <span class="n">Andreas</span><span class="p">,</span> <span class="n">et</span> <span class="n">al</span><span class="o">.</span> <span class="s2">"Primer3—new capabilities and interfaces."</span>
 <span class="n">Nucleic</span> <span class="n">acids</span> <span class="n">research</span> <span class="mf">40.15</span> <span class="p">(</span><span class="mi">2012</span><span class="p">):</span> <span class="n">e115</span><span class="o">-</span><span class="n">e115</span><span class="o">.</span>
 <span class="n">doi</span><span class="p">:</span> <span class="mf">10.1093</span><span class="o">/</span><span class="n">nar</span><span class="o">/</span><span class="n">gks596</span>
 </pre></div>
 </div>
 <p>All project code, including the derivative Primer3 library, is licensed
-under GPLv2. The included Python and Python C API bindings are
-Copyright (c) 2014-2025 Ben Pruitt, Nick Conway; 2014-2018 Wyss Institute for
+under GPL-2.0-or-later. The included Python and Python C API bindings are
+Copyright (c) 2014-2026 Ben Pruitt, Nick Conway; 2014-2018 Wyss Institute for
 Biologically Inspired Engineering.</p>
-<p>See LICENSE for full GPLv2 license.</p>
+<p>See LICENSE for full GPLv2 license text; source file headers grant “or (at
+your option) any later version” per the GPL’s own terms.</p>
 <p>This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -153,7 +157,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="cython_help.html" class="btn btn-neutral float-left" title="Building new Cython modules against thermoanalysis.pxd" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="changes_link.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="included_primer3_modifications.html" class="btn btn-neutral float-right" title="Included Primer3 modifications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

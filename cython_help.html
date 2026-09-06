@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Building new Cython modules against thermoanalysis.pxd &mdash; Primer3-py 2.3.0 documentation</title>
+  <title>Building new Cython modules against thermoanalysis.pxd &mdash; Primer3-py 2.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=c3c8ae58"></script>
+        <script src="_static/documentation_options.js?v=67b02a41"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.3.0
+                2.3.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -56,6 +56,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
+<li class="toctree-l1"><a class="reference internal" href="included_primer3_modifications.html">Included Primer3 modifications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes_link.html">Changelog</a></li>
 </ul>
 
@@ -91,21 +92,21 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this works with a file named thermoanalysis.pxd in the primer3 repo</span>
 <span class="n">cimport</span> <span class="n">primer3</span><span class="o">.</span><span class="n">thermoanalysis</span> <span class="k">as</span> <span class="n">thermoanalysis</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd"># but below does not</span>
 <span class="sd">from primer3 cimport thermoanalysis</span>
 <span class="sd">as You MUST use absolute package paths in cimports i.e.</span>
 <span class="sd">cimport A.B and not from A cimport B</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">primer3</span><span class="w"> </span><span class="kn">import</span> <span class="n">thermoanalysis</span>
 
 <span class="n">cdef</span> <span class="n">thermoanalysis</span><span class="o">.</span><span class="n">ThermoAnalysis</span> <span class="n">a</span> <span class="o">=</span> <span class="n">thermoanalysis</span><span class="o">.</span><span class="n">ThermoAnalysis</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MAX NN LENGTH&quot;</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">max_nn_length</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"MAX NN LENGTH"</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">max_nn_length</span><span class="p">)</span>
 
-<span class="n">cdef</span> <span class="n">char</span><span class="o">*</span> <span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;ACGTACGT&quot;</span>
+<span class="n">cdef</span> <span class="n">char</span><span class="o">*</span> <span class="n">foo</span> <span class="o">=</span> <span class="s2">"ACGTACGT"</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TM:&quot;</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">calc_tm_c</span><span class="p">(</span><span class="n">foo</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"TM:"</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">calc_tm_c</span><span class="p">(</span><span class="n">foo</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>and to build/install using a standard <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> add the lines (fill in the …s)</p>
