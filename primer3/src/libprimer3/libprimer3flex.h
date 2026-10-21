@@ -99,7 +99,8 @@ _adjust_seq_args(
 static void
 _optimize_ok_regions_list(
     const p3_global_settings* pa,
-    seq_args_t* sa
+    seq_args_t* sa,
+    pr_append_str* warning
 );
 
 static int

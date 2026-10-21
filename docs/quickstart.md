@@ -103,7 +103,8 @@ are numerous examples of how to use the pipeline in the `tests/` directory.
 
 For documentation regarding the input and output parameters of the pipeline,
 please see the [Primer3 2.6.1 documentation](https://htmlpreview.github.io/?https://github.com/primer3-org/primer3/blob/v2.6.1/src/primer3_manual.htm) (the underlying library for
-this package is a derivative of v2.6.1).
+this package is a derivative of v2.6.1 with selected later upstream bug fixes
+applied; see [](included_primer3_modifications.md)).
 
 It is worth noting that some of the inputs deviate from the string format
 described in the Primer3 documentation, with notable exceptions being related

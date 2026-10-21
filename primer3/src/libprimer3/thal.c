@@ -1157,12 +1157,14 @@ readTLoop(char **str, char *s, double *v, int triloop, thal_results *o)
   q = p;
   while (isalpha(*q)) q++;
   *q = '\0'; q++;
+  /* primer3-py: do not NUL-terminate s. struct triloop/tetraloop::loop are
+   * exactly 5/6 bytes and are consumed as fixed-length numeric arrays, so the
+   * old s[5]/s[6] = '\0' wrote one byte past the array (upstream primer3
+   * 6461c0e; see docs/included_primer3_modifications.md). */
   if (triloop) {
     strncpy(s, p, 5);   /*triloop string has 5 characters*/
-    s[5] = '\0';
   } else {
     strncpy(s, p, 6);   /*tetraloop string has 6 characters*/
-    s[6] = '\0';
   }
   /* skip all spaces */
   while (isspace(*q)) q++;

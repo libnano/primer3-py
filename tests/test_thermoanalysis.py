@@ -24,8 +24,13 @@ Unit tests for the primer3-py low level thermodynamic calculation bindings.
 
 from __future__ import print_function
 
+import math
 import random
 import unittest
+from typing import (
+    Any,
+    Dict,
+)
 
 from primer3 import (
     bindings,
@@ -36,6 +41,38 @@ from . import (
     _leakcheck,
     wrappers,
 )
+
+
+def _owczarzy_eq16_tm(
+        tm_1m_c: float,
+        seq: str,
+        mv_mm: float,
+        dv_mm: float,
+        dntp_mm: float,
+) -> float:
+    '''Independent implementation of the Owczarzy et al. (2008) divalent
+    cation correction (Eqs. 16 and 18-20), applied to the 1 M Na+ Tm.
+
+    Only valid in the regime where Eq. 16 applies (no monovalent cations, or
+    sqrt([Mg2+]) / [Mon+] >= 0.22).
+    '''
+    n = len(seq)
+    fgc = sum(c in 'GC' for c in seq.upper()) / n
+    mg = (dv_mm - dntp_mm) / 1000.0
+    mon = mv_mm / 1000.0
+    a, b, c, d = 3.92e-5, -9.11e-6, 6.26e-5, 1.42e-5
+    e, f, g = -4.82e-4, 5.25e-4, 8.31e-5
+    if mon > 0 and math.sqrt(mg) / mon < 6.0:
+        ln_mon = math.log(mon)
+        a = 3.92e-5 * (0.843 - 0.352 * math.sqrt(mon) * ln_mon)
+        d = 1.42e-5 * (1.279 - 4.03e-3 * ln_mon - 8.03e-3 * ln_mon ** 2)
+        g = 8.31e-5 * (0.486 - 0.258 * ln_mon + 5.25e-3 * ln_mon ** 3)
+    ln_mg = math.log(mg)
+    correction = (
+        a + b * ln_mg + fgc * (c + d * ln_mg) +
+        (1.0 / (2.0 * (n - 1))) * (e + f * ln_mg + g * ln_mg ** 2)
+    )
+    return 1.0 / (1.0 / (tm_1m_c + 273.15) + correction) - 273.15
 
 
 class TestLowLevelBindings(unittest.TestCase):
@@ -124,6 +161,149 @@ class TestLowLevelBindings(unittest.TestCase):
             )
         # A 2-nt sequence is still computed normally (not the sentinel).
         self.assertGreater(bindings.calc_tm('AT'), OLIGOTM_ERROR)
+
+    def test_calc_tm_owczarzy_length_term(self) -> None:
+        '''The length-dependent term of the Owczarzy et al. (2008) Eq. 16
+        divalent cation correction must not be dropped by integer division.
+        See docs/included_primer3_modifications.md (oligotm.c) and issue #178.
+        '''
+        kw: Dict[str, Any] = {
+            'tm_method': 'santalucia',
+            'salt_corrections_method': 'owczarzy',
+        }
+        # (seq, mv_conc, dv_conc, dntp_conc, dna_conc, expected Tm). The
+        # expected values are Eq. 16 including the length term (they agree
+        # with upstream primer3 >= c5b092b); the first is also within 0.5 C
+        # of the measured value in Owczarzy et al. 2008, Table S1 (27.4 C).
+        cases = (
+            ('ATCAATCATA', 0.0, 3.0, 0.0, 2000.0, 26.954),
+            ('TGCATGCATGCA', 0.0, 10.0, 0.0, 2000.0, 58.458),
+            ('AGCGTAAGCTGATCGATCCT', 50.0, 3.0, 0.8, 250.0, 62.215),
+        )
+        for seq, mv, dv, dntp, dna, expected in cases:
+            tm = bindings.calc_tm(
+                seq,
+                mv_conc=mv,
+                dv_conc=dv,
+                dntp_conc=dntp,
+                dna_conc=dna,
+                **kw,
+            )
+            self.assertAlmostEqual(tm, expected, delta=0.01, msg=seq)
+
+    def test_calc_tm_owczarzy_matches_eq16(self) -> None:
+        '''calc_tm with the Owczarzy correction must match an independent
+        implementation of Eq. 16 across lengths and salt conditions where
+        the divalent correction applies.
+        '''
+        rng = random.Random(178)
+        n_checked = 0
+        while n_checked < 300:
+            seq = ''.join(
+                rng.choice('ACGT') for _ in range(rng.randint(8, 45))
+            )
+            mv = rng.choice((0.0, 0.0, 10.0, 25.0, 50.0, 100.0))
+            dv = rng.uniform(0.5, 20.0)
+            dntp = rng.uniform(0.0, dv * 0.8)
+            dna = rng.uniform(50.0, 2000.0)
+            free_mg = (dv - dntp) / 1000.0
+            if mv > 0 and math.sqrt(free_mg) / (mv / 1000.0) < 0.22:
+                continue  # monovalent-dominated regime (Eq. 22), not Eq. 16
+            kw: Dict[str, Any] = {
+                'dna_conc': dna,
+                'tm_method': 'santalucia',
+                'salt_corrections_method': 'owczarzy',
+            }
+            tm = bindings.calc_tm(
+                seq, mv_conc=mv, dv_conc=dv, dntp_conc=dntp, **kw,
+            )
+            tm_1m = bindings.calc_tm(
+                seq, mv_conc=1000.0, dv_conc=0.0, dntp_conc=0.0, **kw,
+            )
+            expected = _owczarzy_eq16_tm(tm_1m, seq, mv, dv, dntp)
+            self.assertAlmostEqual(tm, expected, delta=1e-4, msg=seq)
+            n_checked += 1
+
+    def test_thermo_mismatch_stack_constants(self) -> None:
+        '''Single-mismatch ("1x1 internal loop") stack enthalpies for AC/TC,
+        CT/CA (-10 -> 0 cal/mol) and TA/AA (forbidden -> 4700 cal/mol) must
+        match upstream primer3's corrected stackmm.dh. See
+        docs/included_primer3_modifications.md (thal_parameters.c).
+
+        Expected values were produced by upstream primer3's ntthal built from
+        the commit that fixed those parameters (d2844b5); each case below is
+        one whose result differs from primer3 2.6.1.
+        '''
+        kw: Dict[str, Any] = {
+            'mv_conc': 50.0,
+            'dv_conc': 1.5,
+            'dntp_conc': 0.6,
+            'dna_conc': 50.0,
+            'temp_c': 37.0,
+        }
+        # (callable, args, tm, dg, dh, ds)
+        cases = (
+            # TA/AA, heterodimer
+            (
+                bindings.calc_heterodimer, ('GCGCTAGCGC', 'GCGCAAGCGC'),
+                30.4142, -9822.87, -64200.0, -175.325,
+            ),
+            (
+                bindings.calc_heterodimer,
+                ('GCCCGGAAAGACACTA', 'TTTGACTTACC'),
+                -25.0143, -2693.39, -34100.0, -101.263,
+            ),
+            # TA/AA, hairpin (2.6.1 finds no hairpin at all)
+            (
+                bindings.calc_hairpin, ('TTCAATGGGCCATAGAA',),
+                27.4000, 824.092, -25800.0, -85.8426,
+            ),
+            # TA/AA, homodimer
+            (
+                bindings.calc_homodimer, ('GCTTACCTAAGGCAAGC',),
+                16.5862, -6452.83, -67600.0, -197.154,
+            ),
+            # AC/TC and/or CT/CA: -10 -> 0 cal/mol shifts dH by +10 per stack
+            (
+                bindings.calc_heterodimer,
+                ('GGCCCTAACACCG', 'ATCGCTGACCAGC'),
+                -44.525, -1338.19, -27700.0, -84.997,
+            ),
+        )
+        for func, args, tm, dg, dh, ds in cases:
+            res = func(*args, **kw)
+            msg = '{}{}'.format(func.__name__, args)
+            self.assertTrue(res.structure_found, msg=msg)
+            self.assertAlmostEqual(res.tm, tm, delta=0.01, msg=msg)
+            self.assertAlmostEqual(res.dg, dg, delta=0.1, msg=msg)
+            self.assertAlmostEqual(res.dh, dh, delta=1.0, msg=msg)
+            self.assertAlmostEqual(res.ds, ds, delta=0.01, msg=msg)
+
+    def test_thermo_triloop_tetraloop_tables(self) -> None:
+        '''Hairpins closed by special triloop / tetraloop table entries must
+        still be parsed and scored correctly now that readTLoop no longer
+        writes a NUL terminator one byte past struct triloop/tetraloop::loop.
+        See docs/included_primer3_modifications.md (thal.c).
+        '''
+        kw: Dict[str, Any] = {
+            'mv_conc': 50.0,
+            'dv_conc': 1.5,
+            'dntp_conc': 0.6,
+            'dna_conc': 50.0,
+            'temp_c': 37.0,
+        }
+        # (seq, tm, dg, dh, ds) from upstream primer3's ntthal (HAIRPIN).
+        cases = (
+            ('GCGCCGAAGGCGC', 95.0595, -6338.76, -40200.0, -109.177),  # CGAAG
+            ('GCGCCAAAAGGCGC', 66.5099, -3231.96, -37200.0, -109.521),  # CAAAAG
+            ('GCGCCGATAGGCGC', 93.3972, -7031.44, -45700.0, -124.677),
+        )
+        for seq, tm, dg, dh, ds in cases:
+            res = bindings.calc_hairpin(seq, **kw)
+            self.assertAlmostEqual(res.tm, tm, delta=0.01, msg=seq)
+            self.assertAlmostEqual(res.dg, dg, delta=0.1, msg=seq)
+            self.assertAlmostEqual(res.dh, dh, delta=1.0, msg=seq)
+            self.assertAlmostEqual(res.ds, ds, delta=0.01, msg=seq)
 
     def test_calc_hairpin(self) -> None:
         '''Test basic hairpin input'''

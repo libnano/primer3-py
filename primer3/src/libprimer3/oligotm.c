@@ -534,9 +534,14 @@ DONE:  /* dh and ds are now computed for the given sequence. */
            g = 8.31 * pow(10,-5) * (0.486 - 0.258 * log(K_mM/1000.0) + 5.25 * pow(10,-3) * pow(log(K_mM/1000.0),3));
         }
 
+        /* primer3-py: `len` is an int, so the original `1/(2 * (len - 1))`
+         * was integer division and always 0, silently dropping the
+         * length-dependent term of Owczarzy et al. 2008 Eq. 16. Cast to
+         * double (upstream primer3 c5b092b; see
+         * docs/included_primer3_modifications.md). */
         correction = a + (b * log(free_divalent))
                        + gcPercent * (c + (d * log(free_divalent)))
-                       + (1/(2 * (len - 1))) * (e + (f * log(free_divalent))
+                       + (1/(2 * (((double) len) - 1))) * (e + (f * log(free_divalent))
                        + g * (pow((log(free_divalent)),2)));
      }
      /**** END: UPDATED SALT BY OWCZARZY *****/

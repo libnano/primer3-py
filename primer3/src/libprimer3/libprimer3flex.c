@@ -8490,7 +8490,7 @@ _adjust_seq_args(
 
   /* Update ok regions, if non empty */
   if (sa->ok_regions.count > 0) {
-    _optimize_ok_regions_list(pa, sa);
+    _optimize_ok_regions_list(pa, sa, warning);
   }
 
 }
@@ -8503,8 +8503,14 @@ _adjust_seq_args(
 static void
 _optimize_ok_regions_list(
     const p3_global_settings* pa,
-    seq_args_t* sa
+    seq_args_t* sa,
+    pr_append_str* warning
 ) {
+  /* primer3-py: ranges are only narrowed when the result still admits the
+   * requested product sizes, and a pair of ok regions that cannot produce a
+   * product in [pmin, pmax] is collapsed to 1 bp and reported as a warning
+   * (upstream primer3 e1232c2; see docs/included_primer3_modifications.md). */
+  char buffer[255];
   int pmin = INT_MAX;
   int pmax = 0;
   int omin = pa->p_args.min_size;
@@ -8549,8 +8555,8 @@ _optimize_ok_regions_list(
       new_rs = ls + pmin - omax - 1; /* -1 just to be safe */
       new_re = le - omin + pmax + 1; /* +1 just to be safe */
       /* Adjust the ranges */
-      if ((rs == -1) || (new_rs > rs)) { rs = new_rs; }
-      if ((re == -1) || (new_re < re)) { re = new_re; }
+      if (((rs == -1) || (new_rs > rs)) && ((new_rs < re - omin) || (re < omin))) { rs = new_rs; }
+      if (((re == -1) || (new_re < re)) && (rs < new_re)) { re = new_re; }
       if (rs < 0) { rs = 0; }
       if (re > (signed) (int)strlen(sa->sequence)) { re = (int) strlen(sa->sequence); }
     }
@@ -8560,8 +8566,8 @@ _optimize_ok_regions_list(
       new_ls = rs + omin - pmax - 1; /* -1 just to be safe */
       new_le = re - pmin + omax + 1; /* +1 just to be safe */
       /* Adjust the ranges */
-      if ((ls == -1) || (new_ls > ls)) { ls = new_ls; }
-      if ((le == -1) || (new_le < le)) { le = new_le; }
+      if (((ls == -1) || (new_ls > ls)) && ((new_ls < le - omin) || (le < omin))) { ls = new_ls; }
+      if (((le == -1) || (new_le < le)) && (ls < new_le)) { le = new_le; }
       if (ls < 0) { ls = 0; }
       if (le > (signed) (int)strlen(sa->sequence)) { le = (int) strlen(sa->sequence); }
     }
@@ -8576,10 +8582,28 @@ _optimize_ok_regions_list(
       sa->ok_regions.right_pairs[i][1] - 1, ls, le, rs, re,
       pmin, pmax, omin, omax);
     */
-    sa->ok_regions.left_pairs[i][0] = ls;
-    sa->ok_regions.left_pairs[i][1] = le - ls + 1;
-    sa->ok_regions.right_pairs[i][0] = rs;
-    sa->ok_regions.right_pairs[i][1] = re - rs + 1;
+    /* NOTE: upstream primer3 e1232c2 used `pmin < re - ls + 1`, which wrongly
+     * rejects a region pair whose largest possible product is exactly pmin
+     * (e.g. a fixed 200-200 range with regions spanning exactly 200 bp);
+     * primer3-py uses `<=`. */
+    if ((pmax > rs - le) && (pmin <= re - ls + 1)) {
+      sa->ok_regions.left_pairs[i][0] = ls;
+      sa->ok_regions.left_pairs[i][1] = le - ls + 1;
+      sa->ok_regions.right_pairs[i][0] = rs;
+      sa->ok_regions.right_pairs[i][1] = re - rs + 1;
+    } else {
+      snprintf(buffer, sizeof(buffer),
+               "PAIR_OK_REGIONS[%d,%d,%d,%d] does not allow products of %d-%dbp",
+               sa->ok_regions.left_pairs[i][0],
+               sa->ok_regions.left_pairs[i][1],
+               sa->ok_regions.right_pairs[i][0],
+               sa->ok_regions.right_pairs[i][1],
+               pmin,
+               pmax);
+      sa->ok_regions.left_pairs[i][1] = 1;
+      sa->ok_regions.right_pairs[i][1] = 1;
+      pr_append_new_chunk(warning, buffer);
+    }
   }
   /* any_left and any_right not true anymore */
   sa->ok_regions.any_left = 0;
@@ -10132,7 +10156,14 @@ _check_and_adjust_1_interval(
       pr_append(err, " illegal interval");
       return 1;
     }
-    intervals[i][0] -= first_index;
+    /* primer3-py: clamp at 0 instead of letting a start position below
+     * first_index go negative (upstream primer3 a70770e; see
+     * docs/included_primer3_modifications.md). */
+    if (intervals[i][0] - first_index > 0) {
+      intervals[i][0] -= first_index;
+    } else {
+      intervals[i][0] = 0;
+    }
   }
 
   for (i=0; i < num_intervals; i++) {
