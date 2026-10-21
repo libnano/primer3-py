@@ -1,6 +1,8 @@
 The source files in this directory are derived from the Primer 2.6.1
 source and have been modified to make the library more amenable to
-Python bindings.
+Python bindings. A small number of bug fixes made to the Primer3 main
+branch after the v2.6.1 tag have also been applied; see
+docs/included_primer3_modifications.md for the full list.
 
 All modifications and related distribution are performed under the GPLv2
 (see LICENSE.txt).

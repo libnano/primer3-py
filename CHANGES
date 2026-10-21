@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+- Backport bug fixes made to the Primer3 `main` branch after v2.6.1 onto the
+  included Primer3 v2.6.1 source (see "Included Primer3 modifications" in the
+  documentation for details and the upstream commits):
+  - Fix the length-dependent term of the Owczarzy et al. (2008) Mg²⁺
+    correction being silently dropped by integer division in `calc_tm` with
+    `salt_corrections_method='owczarzy'` (see issue #178). Tm values change by
+    up to several °C for short oligos in Mg²⁺ buffers and by ~0.3-0.6 °C for
+    typical primers.
+  - Correct three single-mismatch stack enthalpies (`AC/TC`, `CT/CA`, `TA/AA`)
+    in the default thermodynamic parameters. This can change
+    `calc_hairpin` / `calc_homodimer` / `calc_heterodimer` results (and
+    secondary-structure filtering in `design_primers`) for sequences whose
+    optimal structure contains those mismatches.
+  - Fix a one-byte out-of-bounds write when parsing the triloop / tetraloop
+    thermodynamic tables.
+  - Clamp interval starts that fall below `PRIMER_FIRST_BASE_INDEX` to the
+    first base instead of letting them go negative.
+  - Fix `SEQUENCE_PRIMER_PAIR_OK_REGION_LIST` narrowing so it cannot discard
+    valid product sizes; region pairs that cannot produce the requested
+    product size now produce a `PRIMER_WARNING`.
+
 ## Version 2.3.1 (September 6, 2026)
 
 - Fix swapped "enthalpy" / "entropy" references in `ThermoResult` docstrings (see issue #169)

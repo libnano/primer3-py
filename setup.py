@@ -6,7 +6,7 @@ Primer3-py: simple oligo analysis and primer design
 =========================================================
 
 **Primer3-py** is a collection of Python bindings for a derivative of the
-popular Primer3 C library (version 2.6.1).
+popular Primer3 C library (version 2.6.1 plus selected upstream bug fixes).
 
 See README.md and http://libnano.github.io/primer3-py for more information
 and primer3_test.py for usage examples.

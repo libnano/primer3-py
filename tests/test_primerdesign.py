@@ -47,6 +47,48 @@ from . import _simulatedbindings as simulatedbindings
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
+def _random_template(length: int = 1000, seed: int = 11) -> str:
+    '''Deterministic pseudo-random DNA template.'''
+    rng = random.Random(seed)
+    return ''.join(rng.choice('ACGT') for _ in range(length))
+
+
+def _designed_pairs(result: Dict[str, Any]) -> List[Tuple[Any, ...]]:
+    '''Return (left, right, product_size, penalty) for each designed pair,
+    where left is (start, length) and right is (end, length).
+    '''
+    return [
+        (
+            tuple(result[f'PRIMER_LEFT_{i}']),
+            tuple(result[f'PRIMER_RIGHT_{i}']),
+            result[f'PRIMER_PAIR_{i}_PRODUCT_SIZE'],
+            result[f'PRIMER_PAIR_{i}_PENALTY'],
+        )
+        for i in range(result['PRIMER_PAIR_NUM_RETURNED'])
+    ]
+
+
+def _pair_in_ok_region(
+        pair: Tuple[Any, ...],
+        region: Tuple[int, int, int, int],
+) -> bool:
+    '''True if the left primer lies entirely within the region's left
+    interval and the right primer within its right interval (-1 means any).
+    '''
+    (left_start, left_len), (right_end, right_len), _, _ = pair
+    l_start, l_len, r_start, r_len = region
+    left_ok = (
+        l_start == -1 or
+        (l_start <= left_start and left_start + left_len <= l_start + l_len)
+    )
+    right_start = right_end - right_len + 1
+    right_ok = (
+        r_start == -1 or
+        (r_start <= right_start and right_end + 1 <= r_start + r_len)
+    )
+    return left_ok and right_ok
+
+
 class TestDesignBindings(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -678,6 +720,198 @@ class TestDesignBindings(unittest.TestCase):
             bindings.design_primers(
                 seq_args, global_args, misprime_lib={'SEQ1': ''},
             )
+
+    def test_pair_ok_regions_product_size_warning(self):
+        '''A pair of ok regions that cannot produce any product in the
+        requested size range is reported as a warning (and yields no pairs)
+        instead of being silently narrowed to nonsense. A region pair whose
+        largest possible product is exactly the requested size is still
+        accepted. See docs/included_primer3_modifications.md
+        (libprimer3flex.c, _optimize_ok_regions_list).
+        '''
+        seq_args = {
+            'SEQUENCE_ID': 'okreg',
+            'SEQUENCE_TEMPLATE': _random_template(),
+        }
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_MIN_SIZE': 20,
+            'PRIMER_MAX_SIZE': 20,
+            'PRIMER_PRODUCT_SIZE_RANGE': [[200, 200]],
+            'PRIMER_MIN_TM': 0,
+            'PRIMER_MAX_HAIRPIN_TH': 100,
+            'PRIMER_MAX_SELF_END': 100,
+            'PRIMER_PAIR_MAX_COMPL_END': 100,
+            'PRIMER_EXPLAIN_FLAG': 1,
+        }
+
+        def _design(regions):
+            return bindings.design_primers(
+                dict(
+                    seq_args,
+                    SEQUENCE_PRIMER_PAIR_OK_REGION_LIST=regions,
+                ),
+                global_args,
+            )
+
+        # Largest possible product is 238..419 = 182 bp < 200 bp.
+        bad = _design([[238, 20, 400, 20]])
+        self.assertEqual(
+            bad['PRIMER_WARNING'],
+            'PAIR_OK_REGIONS[238,20,400,20] does not allow products of '
+            '200-200bp',
+        )
+        self.assertEqual(bad['PRIMER_PAIR_NUM_RETURNED'], 0)
+
+        # Regions span exactly 200 bp: a 200 bp product is possible.
+        exact = _design([[238, 20, 418, 20]])
+        self.assertIsNone(exact.get('PRIMER_WARNING'))
+        pairs = _designed_pairs(exact)
+        self.assertEqual(len(pairs), 1)
+        self.assertEqual(pairs[0][0], (238, 20))
+        self.assertEqual(pairs[0][1], (437, 20))
+        self.assertEqual(pairs[0][2], 200)
+
+        # Only the impossible region pair is reported and dropped; the
+        # feasible one still designs.
+        mixed = _design([[238, 20, 400, 20], [238, 20, 418, 20]])
+        self.assertEqual(
+            mixed['PRIMER_WARNING'],
+            'PAIR_OK_REGIONS[238,20,400,20] does not allow products of '
+            '200-200bp',
+        )
+        mixed_pairs = _designed_pairs(mixed)
+        self.assertEqual(len(mixed_pairs), 1)
+        self.assertEqual(mixed_pairs[0][:3], pairs[0][:3])
+
+    def test_pair_ok_regions_narrowing(self):
+        '''Narrowing of pair ok regions must not exclude valid pairs: every
+        designed pair lies in a requested region pair and the best pair is
+        at least as good as the best matching pair of an unrestricted design.
+        '''
+        seq_args = {
+            'SEQUENCE_ID': 'okreg',
+            'SEQUENCE_TEMPLATE': _random_template(),
+        }
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 22,
+            'PRIMER_PRODUCT_SIZE_RANGE': [[100, 300]],
+            'PRIMER_MIN_THREE_PRIME_DISTANCE': 0,
+            'PRIMER_NUM_RETURN': 20,
+        }
+        unrestricted = _designed_pairs(
+            bindings.design_primers(
+                seq_args, dict(global_args, PRIMER_NUM_RETURN=5000),
+            ),
+        )
+        self.assertGreater(len(unrestricted), 100)
+
+        configs = (
+            [(100, 60, 300, 60)],
+            [(100, 60, -1, -1)],
+            [(-1, -1, 300, 80)],
+            [(100, 40, 250, 40), (400, 50, 600, 50)],
+            [(0, 80, 150, 200)],
+            [(300, 100, 380, 100)],
+        )
+        for config in configs:
+            result = bindings.design_primers(
+                dict(
+                    seq_args,
+                    SEQUENCE_PRIMER_PAIR_OK_REGION_LIST=[
+                        list(r) for r in config
+                    ],
+                ),
+                global_args,
+            )
+            self.assertIsNone(result.get('PRIMER_WARNING'), msg=str(config))
+            pairs = _designed_pairs(result)
+            expected_best = [
+                p[3] for p in unrestricted
+                if any(_pair_in_ok_region(p, r) for r in config)
+            ]
+            if expected_best:
+                self.assertTrue(pairs, msg=str(config))
+                self.assertLessEqual(
+                    pairs[0][3], min(expected_best) + 1e-9, msg=str(config),
+                )
+            for pair in pairs:
+                self.assertTrue(
+                    any(_pair_in_ok_region(pair, r) for r in config),
+                    msg='{} {}'.format(config, pair),
+                )
+                self.assertGreaterEqual(pair[2], 100)
+                self.assertLessEqual(pair[2], 300)
+
+    def test_first_base_index_interval_start_clamped(self):
+        '''An interval start below PRIMER_FIRST_BASE_INDEX is clamped to the
+        first base instead of going negative (which used to trigger a
+        spurious "outside of INCLUDED_REGION" warning). See
+        docs/included_primer3_modifications.md (libprimer3flex.c,
+        _check_and_adjust_1_interval).
+        '''
+        seq_args = {
+            'SEQUENCE_ID': 'firstbase',
+            'SEQUENCE_TEMPLATE': _random_template(),
+        }
+        global_args = {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 25,
+            'PRIMER_PRODUCT_SIZE_RANGE': [[100, 300]],
+        }
+
+        def _design(first_base_index, **extra):
+            return bindings.design_primers(
+                dict(seq_args, **extra),
+                dict(global_args, PRIMER_FIRST_BASE_INDEX=first_base_index),
+            )
+
+        # (tag, input for first_base_index=1 whose first interval starts at
+        # 0, the same input with that start corrected to 1, and the
+        # equivalent input for first_base_index=0)
+        for tag, below_first, well_formed, zero_based in (
+                (
+                    'SEQUENCE_EXCLUDED_REGION',
+                    [[0, 10]],
+                    [[1, 10]],
+                    [[0, 10]],
+                ),
+                (
+                    'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST',
+                    [[0, 100, 301, 100]],
+                    [[1, 100, 301, 100]],
+                    [[0, 100, 300, 100]],
+                ),
+        ):
+            msg = tag
+            # Reference: well-formed 1-based coordinates.
+            ref = _design(1, **{tag: well_formed})
+            self.assertIsNone(ref.get('PRIMER_WARNING'), msg=msg)
+            # An interval starting at 0 with first_base_index=1 is clamped
+            # to the first base, i.e. behaves like starting at 1.
+            clamped = _design(1, **{tag: below_first})
+            self.assertIsNone(clamped.get('PRIMER_WARNING'), msg=msg)
+            self.assertEqual(
+                _designed_pairs(clamped), _designed_pairs(ref), msg=msg,
+            )
+            self.assertGreater(
+                clamped['PRIMER_PAIR_NUM_RETURNED'], 0, msg=msg,
+            )
+            # 0-based equivalent gives the same design, shifted by one base.
+            zero = _design(0, **{tag: zero_based})
+            self.assertIsNone(zero.get('PRIMER_WARNING'), msg=msg)
+            for p0, p1 in zip(
+                    _designed_pairs(zero), _designed_pairs(clamped),
+            ):
+                self.assertEqual(p0[0][0] + 1, p1[0][0], msg=msg)
+                self.assertEqual(p0[1][0] + 1, p1[1][0], msg=msg)
+                self.assertEqual(p0[2:], p1[2:], msg=msg)
+
+        target = _design(1, SEQUENCE_TARGET=[[0, 10]])
+        self.assertIsNone(target.get('PRIMER_WARNING'))
 
     def test_PRIMER_SECONDARY_STRUCTURE_ALIGNMENT(self):
         '''Ensure all result pointers are initialized to NULL.
