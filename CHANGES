@@ -22,6 +22,18 @@
   - Fix `SEQUENCE_PRIMER_PAIR_OK_REGION_LIST` narrowing so it cannot discard
     valid product sizes; region pairs that cannot produce the requested
     product size now produce a `PRIMER_WARNING`.
+- Add Python 3.15 support.
+- **Retire Python 3.8 wheels.** PyPI will no longer publish prebuilt wheels
+  for Python 3.8 (`requires-python` is now `>=3.9`); 3.8 reached end-of-life
+  in October 2024. Users still on 3.8 will need to build from the source
+  distribution with their own compiler and a pre-3.3 `Cython`, or upgrade to
+  a supported Python version.
+  - Bumping the `cibuildwheel` release workflow to v4.2.0 (from v3.3.1) was
+    required to build Python 3.15 wheels, but v4.2.0 dropped the ability to
+    build Python 3.8 wheels, so 3.8 is dropped here to keep a single build
+    matrix.
+  - The `Cython` build requirement was bumped from `~=3.1.0` to `~=3.3.0`,
+    which is needed to build under Python 3.15.
 
 ## Version 2.3.1 (September 6, 2026)
 
