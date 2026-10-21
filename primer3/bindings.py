@@ -35,7 +35,6 @@ and/or Cython modules directly. See the docs for more details.
 import warnings
 from typing import (
     Any,
-    Dict,
     Optional,
     Union,
 )
@@ -526,11 +525,11 @@ def calcHeterodimerTm(*args, **kwargs) -> float:
 
 
 def design_primers(
-        seq_args: Dict[str, Any],
-        global_args: Dict[str, Any],
-        misprime_lib: Optional[Dict[str, Any]] = None,
-        mishyb_lib: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+        seq_args: dict[str, Any],
+        global_args: dict[str, Any],
+        misprime_lib: Optional[dict[str, Any]] = None,
+        mishyb_lib: Optional[dict[str, Any]] = None,
+) -> dict[str, Any]:
     '''Run the Primer3 design process.
     This is a wrapper around :meth:`_ThermoAnalysis.run_design`.
 
@@ -556,11 +555,11 @@ def design_primers(
 
 
 def designPrimers(
-        seq_args: Dict[str, Any],
-        global_args: Dict[str, Any],
-        misprime_lib: Optional[Dict[str, Any]] = None,
-        mishyb_lib: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+        seq_args: dict[str, Any],
+        global_args: dict[str, Any],
+        misprime_lib: Optional[dict[str, Any]] = None,
+        mishyb_lib: Optional[dict[str, Any]] = None,
+) -> dict[str, Any]:
     '''.. deprecated:: 1.0.0 Choose :func:`design_primers` function instead
 
     Run the Primer3 design process.

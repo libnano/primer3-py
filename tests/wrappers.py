@@ -35,7 +35,6 @@ from collections import namedtuple
 from os.path import join as pjoin
 from typing import (
     Any,
-    Dict,
     Optional,
     Tuple,
     Union,
@@ -437,11 +436,11 @@ def assess_oligo(seq: str) -> Tuple[THERMORESULT, THERMORESULT]:
 
 
 def design_primers(
-        p3_args: Dict[str, Any],
+        p3_args: dict[str, Any],
         input_log: Optional[io.BufferedWriter] = None,
         output_log: Optional[io.BufferedWriter] = None,
         err_log: Optional[io.BufferedWriter] = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     ''' Return the raw primer3_core output for the provided primer3 args.
 
     Args:

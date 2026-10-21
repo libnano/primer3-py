@@ -21,7 +21,6 @@ tests._simulatedbindings
 import io
 from typing import (
     Any,
-    Dict,
     List,
     Optional,
     Tuple,
@@ -32,7 +31,7 @@ from primer3 import argdefaults
 
 from . import wrappers
 
-P3_ARGS: Dict[str, Any] = {}
+P3_ARGS: dict[str, Any] = {}
 
 Sequence_T = Union[List[Any], Tuple[Any, ...]]
 Str_Bytes_T = Union[str, bytes]
@@ -46,15 +45,15 @@ def convert_result(result):
 
 
 def design_primers(
-        seq_args: Dict[str, Any],
-        global_args: Optional[Dict[str, Any]] = None,
+        seq_args: dict[str, Any],
+        global_args: Optional[dict[str, Any]] = None,
         reset_args: bool = True,
-        misprime_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
-        mishyb_lib: Optional[Dict[Str_Bytes_T, Str_Bytes_T]] = None,
+        misprime_lib: Optional[dict[Str_Bytes_T, Str_Bytes_T]] = None,
+        mishyb_lib: Optional[dict[Str_Bytes_T, Str_Bytes_T]] = None,
         input_log: Optional[io.BufferedWriter] = None,
         output_log: Optional[io.BufferedWriter] = None,
         err_log: Optional[io.BufferedWriter] = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     ''' Run the Primer3 design process, with the same interface as the bindings,
     using the wrapped subprocess of primer3_core to do the work.
 

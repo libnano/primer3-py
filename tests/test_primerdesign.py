@@ -31,7 +31,6 @@ import time
 import unittest
 from typing import (
     Any,
-    Dict,
     List,
     Tuple,
 )
@@ -53,7 +52,7 @@ def _random_template(length: int = 1000, seed: int = 11) -> str:
     return ''.join(rng.choice('ACGT') for _ in range(length))
 
 
-def _designed_pairs(result: Dict[str, Any]) -> List[Tuple[Any, ...]]:
+def _designed_pairs(result: dict[str, Any]) -> List[Tuple[Any, ...]]:
     '''Return (left, right, product_size, penalty) for each designed pair,
     where left is (start, length) and right is (end, length).
     '''
@@ -112,8 +111,8 @@ class TestDesignBindings(unittest.TestCase):
 
     def _compare_results(
         self,
-        binding_res: Dict[str, Any],
-        simulated_binding_res: Dict[str, Any],
+        binding_res: dict[str, Any],
+        simulated_binding_res: dict[str, Any],
         verbose: bool = False,
     ) -> str:
         '''Compare results between binding and simulated binding calls to
@@ -211,7 +210,7 @@ class TestDesignBindings(unittest.TestCase):
     def _convert_boulder_input(
             self,
             boulder_str: str,
-    ) -> List[Tuple[Dict, Dict, Dict]]:
+    ) -> List[Tuple[dict, dict, dict]]:
         ''' Convert a boulder IO-style input dictionary into bindings /
         simulated-bindings-friendly dictionaries.
 

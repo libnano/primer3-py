@@ -31,14 +31,13 @@ import time
 import unittest
 from typing import (
     Any,
-    Dict,
     List,
 )
 
 from primer3 import thermoanalysis  # type: ignore
 
 
-def make_random_params() -> Dict[str, Any]:
+def make_random_params() -> dict[str, Any]:
     '''
     Returns:
         dictionary of random parameters for a call  to
@@ -55,7 +54,7 @@ def make_random_params() -> Dict[str, Any]:
     )
 
 
-def make_rand_seq_pair() -> Dict[str, str]:
+def make_rand_seq_pair() -> dict[str, str]:
     '''
     Returns:
         dictionary of 2 unique sequences keyed by seq1 and seq2
