@@ -95,8 +95,10 @@ jobs:
             fi
           fi
           echo "PACKAGE_VERSION=${VERSION}" >> $GITHUB_ENV
-          # Update version in setup.py
-          sed -i.bak "s/version=.*,/version='${VERSION}',/" setup.py
+          # Update the version in primer3/__init__.py (the single source of
+          # truth; pyproject.toml resolves its dynamic version from
+          # primer3.__version__, so patching setup.py here is a no-op)
+          sed -i.bak "s/^__version__ = '.*'/__version__ = '${VERSION}'/" primer3/__init__.py
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.2.0
@@ -150,8 +152,10 @@ jobs:
             fi
           fi
           echo "PACKAGE_VERSION=${VERSION}" >> $GITHUB_ENV
-          # Update version in setup.py
-          sed -i.bak "s/version=.*,/version='${VERSION}',/" setup.py
+          # Update the version in primer3/__init__.py (the single source of
+          # truth; pyproject.toml resolves its dynamic version from
+          # primer3.__version__, so patching setup.py here is a no-op)
+          sed -i.bak "s/^__version__ = '.*'/__version__ = '${VERSION}'/" primer3/__init__.py
 
       - name: Set up Python
         uses: actions/setup-python@v5
