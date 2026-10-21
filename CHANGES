@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased
+## Version 2.4.0 (October 21, 2026)
 
 - Backport bug fixes made to the Primer3 `main` branch after v2.6.1 onto the
-  included Primer3 v2.6.1 source (see "Included Primer3 modifications" in the
-  documentation for details and the upstream commits):
+  included Primer3 v2.6.1 source (see PR #179 and "Included Primer3
+  modifications" in the documentation for details and the upstream commits):
   - Fix the length-dependent term of the Owczarzy et al. (2008) Mg²⁺
     correction being silently dropped by integer division in `calc_tm` with
     `salt_corrections_method='owczarzy'` (see issue #178). Tm values change by
@@ -22,7 +22,7 @@
   - Fix `SEQUENCE_PRIMER_PAIR_OK_REGION_LIST` narrowing so it cannot discard
     valid product sizes; region pairs that cannot produce the requested
     product size now produce a `PRIMER_WARNING`.
-- Add Python 3.15 support.
+- Add Python 3.15 support (see PR #180).
 - **Retire Python 3.8 wheels.** PyPI will no longer publish prebuilt wheels
   for Python 3.8 (`requires-python` is now `>=3.9`); 3.8 reached end-of-life
   in October 2024. Users still on 3.8 will need to build from the source
