@@ -23,9 +23,6 @@ import os.path
 import re
 from typing import (
     Any,
-    Dict,
-    List,
-    Tuple,
     Union,
 )
 
@@ -84,7 +81,7 @@ TAGS_PATH_FIX = set([
 # them to a list
 TAGS_APPEND = set(['SEQUENCE_EXCLUDED_REGION'])
 
-Sequence_T = Union[List[Any], Tuple[Any, ...]]
+Sequence_T = Union[list[Any], tuple[Any, ...]]
 Str_Bytes_T = Union[str, bytes]
 
 
@@ -178,7 +175,7 @@ def _wrap_list_with_format(v: Sequence_T, fmt: str, sep: str = ' ') -> str:
     return rv
 
 
-def wrap(k: str, v: Any) -> Tuple[str, str]:
+def wrap(k: str, v: Any) -> tuple[str, str]:
     '''Convert a primer3 input in python-friendly bindings-style form
     to a string form for use by the process wrapper
 
@@ -228,7 +225,7 @@ def wrap(k: str, v: Any) -> Tuple[str, str]:
     return k, rv
 
 
-def unwrap(k: str, v: str) -> Tuple[str, Any]:
+def unwrap(k: str, v: str) -> tuple[str, Any]:
     '''convert a wrapper result into the intended form of the
     bindings result
 
@@ -295,7 +292,7 @@ def unwrap(k: str, v: str) -> Tuple[str, Any]:
 
 
 # ~~~~~~~ RUDIMENTARY PRIMER3 MAIN WRAPPER (see Primer3 docs for args) ~~~~~~ #
-def format_boulder_io(p3_args: Dict[str, Any]) -> bytes:
+def format_boulder_io(p3_args: dict[str, Any]) -> bytes:
     '''Convert argument dictionary to boulder formatted bytes
 
     Args:
@@ -321,7 +318,7 @@ def format_boulder_io(p3_args: Dict[str, Any]) -> bytes:
     return boulder_str.encode('utf8')
 
 
-def parse_boulder_io(boulder_bytes: bytes) -> Dict[str, str]:
+def parse_boulder_io(boulder_bytes: bytes) -> dict[str, str]:
     '''Convert boulder info to a key/value dictionary
     Args:
         boulder_bytes: Bytes of boulder formatted information to parse
@@ -329,7 +326,7 @@ def parse_boulder_io(boulder_bytes: bytes) -> Dict[str, str]:
     Returns:
         Dictionary of key/values
     '''
-    data_dict: Dict[str, Any] = {}
+    data_dict: dict[str, Any] = {}
     for line in boulder_bytes.decode('utf8').split('\n'):
         try:
             k, v = line.strip().split('=')
@@ -346,19 +343,19 @@ def parse_boulder_io(boulder_bytes: bytes) -> Dict[str, str]:
     return data_dict
 
 
-def parse_multirecord_boulder_io(boulder_str: str) -> List[Dict[str, str]]:
+def parse_multirecord_boulder_io(boulder_str: str) -> list[dict[str, str]]:
     '''
     Args:
         boulder_str: boulder string to parse with multiple records
 
     Returns:
-        List of dicts per record
+        list of dicts per record
     '''
     data_dict_list = []
     for record in re.split('=\r?\n', boulder_str):
         if record == '':
             continue
-        data_dict: Dict[str, Any] = {}
+        data_dict: dict[str, Any] = {}
         for line in record.split('\n'):
             try:
                 k, v = line.strip().split('=')

@@ -26,10 +26,7 @@ melting temperature
 import os.path as op
 import random
 import sys
-from typing import (
-    Set,
-    Tuple,
-)
+from typing import Set
 
 try:
     from primer3 import thermoanalysis
@@ -84,12 +81,12 @@ def check_gc_content(seq: str, seq_len: int) -> bool:
     return True if (gc_total / seq_len) < 0.51 else False
 
 
-def search_for_30_mers() -> Tuple[int, Set[str]]:
+def search_for_30_mers() -> tuple[int, Set[str]]:
     ''' A simple and inexhaustive search for a set 20-mers that do not
     heterodimerize among themselves or form hairpins or homodimers.
 
     Returns:
-        Tuple of the form::
+        tuple of the form::
 
             <number of candidates found>, <set of oligo strings>
     '''

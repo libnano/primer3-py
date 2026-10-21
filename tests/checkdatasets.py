@@ -24,10 +24,7 @@ import os
 import os.path
 import subprocess
 import sys
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any
 
 import click
 
@@ -54,7 +51,7 @@ def precision(x: float) -> float:
     return round(x, 2)
 
 
-def todict_tr(x: ThermoResult) -> Dict[str, Any]:
+def todict_tr(x: ThermoResult) -> dict[str, Any]:
     '''Convert ``ThermoResult`` instance to a dictionary.
     Round float values for readability
 
@@ -73,7 +70,7 @@ def todict_tr(x: ThermoResult) -> Dict[str, Any]:
     }
 
 
-def todict_ta(x: ThermoAnalysis) -> Dict[str, Any]:
+def todict_ta(x: ThermoAnalysis) -> dict[str, Any]:
     '''Convert ``ThermoAnalysis`` instance to a dictionary.
 
     Args:
@@ -114,7 +111,7 @@ def git_hash() -> str:
 # end def
 
 
-def create_data_set() -> Dict[str, Any]:
+def create_data_set() -> dict[str, Any]:
     '''Create data sets for testing
 
     Returns:
@@ -145,7 +142,7 @@ def create_data_set() -> Dict[str, Any]:
     return out
 
 
-def dump_data_set(x: Dict[str, Any]) -> str:
+def dump_data_set(x: dict[str, Any]) -> str:
     '''
     Dump data set to a JSON file with the data time and git hash
 
@@ -172,7 +169,7 @@ def dump_data_set(x: Dict[str, Any]) -> str:
     return filename
 
 
-def read_data_set() -> Dict[str, Any]:
+def read_data_set() -> dict[str, Any]:
     '''
     Read data set JSON file
 
@@ -197,8 +194,8 @@ def read_data_set() -> Dict[str, Any]:
 
 
 def compare_sets(
-        reference: Dict[str, Any],
-        test_set: Dict[str, Any],
+        reference: dict[str, Any],
+        test_set: dict[str, Any],
 ) -> bool:
     '''
     Compare thermoanalysis datasets

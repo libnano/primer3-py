@@ -27,10 +27,7 @@ from __future__ import print_function
 import math
 import random
 import unittest
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any
 
 from primer3 import (
     bindings,
@@ -167,7 +164,7 @@ class TestLowLevelBindings(unittest.TestCase):
         divalent cation correction must not be dropped by integer division.
         See docs/included_primer3_modifications.md (oligotm.c) and issue #178.
         '''
-        kw: Dict[str, Any] = {
+        kw: dict[str, Any] = {
             'tm_method': 'santalucia',
             'salt_corrections_method': 'owczarzy',
         }
@@ -209,7 +206,7 @@ class TestLowLevelBindings(unittest.TestCase):
             free_mg = (dv - dntp) / 1000.0
             if mv > 0 and math.sqrt(free_mg) / (mv / 1000.0) < 0.22:
                 continue  # monovalent-dominated regime (Eq. 22), not Eq. 16
-            kw: Dict[str, Any] = {
+            kw: dict[str, Any] = {
                 'dna_conc': dna,
                 'tm_method': 'santalucia',
                 'salt_corrections_method': 'owczarzy',
@@ -234,7 +231,7 @@ class TestLowLevelBindings(unittest.TestCase):
         the commit that fixed those parameters (d2844b5); each case below is
         one whose result differs from primer3 2.6.1.
         '''
-        kw: Dict[str, Any] = {
+        kw: dict[str, Any] = {
             'mv_conc': 50.0,
             'dv_conc': 1.5,
             'dntp_conc': 0.6,
@@ -285,7 +282,7 @@ class TestLowLevelBindings(unittest.TestCase):
         writes a NUL terminator one byte past struct triloop/tetraloop::loop.
         See docs/included_primer3_modifications.md (thal.c).
         '''
-        kw: Dict[str, Any] = {
+        kw: dict[str, Any] = {
             'mv_conc': 50.0,
             'dv_conc': 1.5,
             'dntp_conc': 0.6,

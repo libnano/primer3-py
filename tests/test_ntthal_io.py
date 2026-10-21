@@ -27,7 +27,6 @@ import os
 import os.path as op
 import subprocess
 import unittest
-from typing import List
 
 TEST_DIR = op.dirname(op.realpath(__file__))
 PACKAGE_DIR = op.dirname(TEST_DIR)
@@ -37,14 +36,14 @@ LIBPRIMER3_PATH = op.join(PRIMER3_DIR, 'src', 'libprimer3')
 NTTHAL_PATH = op.join(LIBPRIMER3_PATH, 'ntthal')
 
 
-def split_args_line_to_list(line: str) -> List[str]:
+def split_args_line_to_list(line: str) -> list[str]:
     '''
     Args:
         line: a line of arguments to split by space.  Filter out empty strings
             if there are extra spaces between arguments
 
     Returns:
-        List of strings of split arguments
+        list of strings of split arguments
     '''
     args_line_list = line.split(' ')
     # filter out empty strings to prevent parsing errors
@@ -89,7 +88,7 @@ class TestLowLevelBindings(unittest.TestCase):
         failures. Failure argument lines result in no output in thal_output and
         therefore there are fewer output line sets that input argument lines
         '''
-        compute_str_list: List[str] = []
+        compute_str_list: list[str] = []
         with open(op.join(INPUT_DIR, 'thal_input'), 'r') as fd:
             input_str = fd.read()
         with open(op.join(INPUT_DIR, 'thal_output'), 'r') as fd:
