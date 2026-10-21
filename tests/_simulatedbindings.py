@@ -21,9 +21,7 @@ tests._simulatedbindings
 import io
 from typing import (
     Any,
-    List,
     Optional,
-    Tuple,
     Union,
 )
 
@@ -33,7 +31,7 @@ from . import wrappers
 
 P3_ARGS: dict[str, Any] = {}
 
-Sequence_T = Union[List[Any], Tuple[Any, ...]]
+Sequence_T = Union[list[Any], tuple[Any, ...]]
 Str_Bytes_T = Union[str, bytes]
 
 

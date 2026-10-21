@@ -29,10 +29,7 @@ import random
 import threading
 import time
 import unittest
-from typing import (
-    Any,
-    List,
-)
+from typing import Any
 
 from primer3 import thermoanalysis  # type: ignore
 
@@ -95,7 +92,7 @@ class TestThermoAnalysisInThread(unittest.TestCase):
             range(60)
         ])
 
-    def _generate_quality_list(self, length: int, i: int) -> List[int]:
+    def _generate_quality_list(self, length: int, i: int) -> list[int]:
         '''Generate a deterministic list of quality scores
 
         Args:
@@ -103,7 +100,7 @@ class TestThermoAnalysisInThread(unittest.TestCase):
             i: Thread index to use as seed
 
         Returns:
-            List of quality scores between 20 and 90
+            list of quality scores between 20 and 90
         '''
         # Use a new seed based on thread index to ensure deterministic but
         # different scores

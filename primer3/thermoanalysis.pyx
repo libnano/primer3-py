@@ -725,7 +725,7 @@ cdef class _ThermoAnalysis:
             tm_threshold: melting temperature threshold
 
         Returns:
-            Tuple[bool, int, float] of form::
+            tuple[bool, int, float] of form::
                 is_offtarget (bool),
                 max_offtarget_seq_idx (int),
                 max_offtarget_tm (double)
@@ -1273,7 +1273,7 @@ cdef class _ThermoAnalysis:
         '''Wraps the primer design functionality of Primer3.
 
         .. versionadded:: 2.0.0
-            List versions of `PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}` are added
+            list versions of `PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}` are added
             to the design output dictionary keys as a convenience.
             Original per item `PRIMER_` keys are retained as well for
             compatibility.

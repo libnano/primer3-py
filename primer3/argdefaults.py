@@ -23,8 +23,6 @@ import os.path
 import re
 from typing import (
     Any,
-    List,
-    Tuple,
     Union,
 )
 
@@ -83,7 +81,7 @@ TAGS_PATH_FIX = set([
 # them to a list
 TAGS_APPEND = set(['SEQUENCE_EXCLUDED_REGION'])
 
-Sequence_T = Union[List[Any], Tuple[Any, ...]]
+Sequence_T = Union[list[Any], tuple[Any, ...]]
 Str_Bytes_T = Union[str, bytes]
 
 
@@ -177,7 +175,7 @@ def _wrap_list_with_format(v: Sequence_T, fmt: str, sep: str = ' ') -> str:
     return rv
 
 
-def wrap(k: str, v: Any) -> Tuple[str, str]:
+def wrap(k: str, v: Any) -> tuple[str, str]:
     '''Convert a primer3 input in python-friendly bindings-style form
     to a string form for use by the process wrapper
 
@@ -227,7 +225,7 @@ def wrap(k: str, v: Any) -> Tuple[str, str]:
     return k, rv
 
 
-def unwrap(k: str, v: str) -> Tuple[str, Any]:
+def unwrap(k: str, v: str) -> tuple[str, Any]:
     '''convert a wrapper result into the intended form of the
     bindings result
 
@@ -345,13 +343,13 @@ def parse_boulder_io(boulder_bytes: bytes) -> dict[str, str]:
     return data_dict
 
 
-def parse_multirecord_boulder_io(boulder_str: str) -> List[dict[str, str]]:
+def parse_multirecord_boulder_io(boulder_str: str) -> list[dict[str, str]]:
     '''
     Args:
         boulder_str: boulder string to parse with multiple records
 
     Returns:
-        List of dicts per record
+        list of dicts per record
     '''
     data_dict_list = []
     for record in re.split('=\r?\n', boulder_str):

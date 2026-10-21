@@ -23,7 +23,6 @@ oligonucleotide thermodynamics library.
 
 '''
 import os
-from typing import List
 
 # Per PEP-440 https://peps.python.org/pep-0440/#public-version-identifiers
 __version__ = '2.4.0'
@@ -37,10 +36,10 @@ DESCRIPTION = 'Python bindings for Primer3'
 LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def includes() -> List[str]:
+def includes() -> list[str]:
     '''
     Returns:
-        List of directories to include in egg/wheel during packaging
+        list of directories to include in egg/wheel during packaging
     '''
     return [LOCAL_DIR, os.path.join(LOCAL_DIR, 'src', 'libprimer3')]
 

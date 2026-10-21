@@ -36,7 +36,6 @@ from os.path import join as pjoin
 from typing import (
     Any,
     Optional,
-    Tuple,
     Union,
 )
 
@@ -418,7 +417,7 @@ def calc_end_stability(
 calcEndStability = calc_end_stability
 
 
-def assess_oligo(seq: str) -> Tuple[THERMORESULT, THERMORESULT]:
+def assess_oligo(seq: str) -> tuple[THERMORESULT, THERMORESULT]:
     '''
     Return the thermodynamic characteristics of hairpin/homodimer structures.
 
