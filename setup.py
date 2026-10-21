@@ -15,7 +15,7 @@ Installation
 ------------
 
 **Primer3-py** has no external runtime library dependencies and should compile
-on easily most Linux and MacOS systems that are running Python 3.8 - 3.13.
+easily on most Linux and MacOS systems that are running Python 3.9 - 3.15.
 Windows compilation is also generally easy.
 
 To install from PyPI::
