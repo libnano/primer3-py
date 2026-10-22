@@ -34,7 +34,6 @@ from importlib.metadata import (
     version,
 )
 from pathlib import Path
-from typing import Dict
 
 import tomli
 
@@ -48,7 +47,7 @@ sys.path.insert(0, str(project_root))
 from tests.test_sequences import calculate_thermo_values
 
 
-def get_git_info() -> Dict[str, str]:
+def get_git_info() -> dict[str, str]:
     '''Get git branch and latest tag information.
 
     Returns:
@@ -76,7 +75,7 @@ def get_git_info() -> Dict[str, str]:
         }
 
 
-def get_dependency_versions() -> Dict[str, str]:
+def get_dependency_versions() -> dict[str, str]:
     '''Get versions of dependencies from pyproject.toml.
 
     Returns:

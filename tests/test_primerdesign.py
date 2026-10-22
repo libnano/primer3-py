@@ -29,12 +29,7 @@ import random
 import sys
 import time
 import unittest
-from typing import (
-    Any,
-    Dict,
-    List,
-    Tuple,
-)
+from typing import Any
 
 from primer3 import (
     argdefaults,
@@ -53,7 +48,7 @@ def _random_template(length: int = 1000, seed: int = 11) -> str:
     return ''.join(rng.choice('ACGT') for _ in range(length))
 
 
-def _designed_pairs(result: Dict[str, Any]) -> List[Tuple[Any, ...]]:
+def _designed_pairs(result: dict[str, Any]) -> list[tuple[Any, ...]]:
     '''Return (left, right, product_size, penalty) for each designed pair,
     where left is (start, length) and right is (end, length).
     '''
@@ -69,8 +64,8 @@ def _designed_pairs(result: Dict[str, Any]) -> List[Tuple[Any, ...]]:
 
 
 def _pair_in_ok_region(
-        pair: Tuple[Any, ...],
-        region: Tuple[int, int, int, int],
+        pair: tuple[Any, ...],
+        region: tuple[int, int, int, int],
 ) -> bool:
     '''True if the left primer lies entirely within the region's left
     interval and the right primer within its right interval (-1 means any).
@@ -95,14 +90,14 @@ class TestDesignBindings(unittest.TestCase):
         '''Set up test case'''
         random.seed(42)  # Make random operations deterministic
 
-    def _generate_quality_list(self, length: int) -> List[int]:
+    def _generate_quality_list(self, length: int) -> list[int]:
         '''Generate a deterministic list of quality scores
 
         Args:
             length: Length of quality score list to generate
 
         Returns:
-            List of quality scores between 30 and 50 with mean around 45
+            list of quality scores between 30 and 50 with mean around 45
         '''
         # Use triangular distribution to cluster scores around 45
         return [
@@ -112,8 +107,8 @@ class TestDesignBindings(unittest.TestCase):
 
     def _compare_results(
         self,
-        binding_res: Dict[str, Any],
-        simulated_binding_res: Dict[str, Any],
+        binding_res: dict[str, Any],
+        simulated_binding_res: dict[str, Any],
         verbose: bool = False,
     ) -> str:
         '''Compare results between binding and simulated binding calls to
@@ -159,11 +154,11 @@ class TestDesignBindings(unittest.TestCase):
                     print(fmt.format(k, repr(binding_res[k])))
 
         allowable_relative_difference = 0.05
-        discrepencies: List[str] = [
+        discrepencies: list[str] = [
             k for k in keys_in_binding & keys_in_sim
             if simulated_binding_res[k] != binding_res[k]
         ]
-        disagreements_list: List[str] = []
+        disagreements_list: list[str] = []
         for ds in discrepencies:
             if (
                 isinstance(binding_res[ds], (float, int)) and
@@ -211,7 +206,7 @@ class TestDesignBindings(unittest.TestCase):
     def _convert_boulder_input(
             self,
             boulder_str: str,
-    ) -> List[Tuple[Dict, Dict, Dict]]:
+    ) -> list[tuple[dict, dict, dict]]:
         ''' Convert a boulder IO-style input dictionary into bindings /
         simulated-bindings-friendly dictionaries.
 
@@ -219,7 +214,7 @@ class TestDesignBindings(unittest.TestCase):
             boulder_str: Boulder formatted string of multiple records
 
         Returns:
-            List of a tuple of dictionaries of the form::
+            list of a tuple of dictionaries of the form::
 
             [
                 (global_args, seq_args, p3_args),

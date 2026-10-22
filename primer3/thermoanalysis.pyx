@@ -63,7 +63,6 @@ import os.path as op
 import warnings as pywarnings
 from typing import (
     Any,
-    Dict,
     Optional,
     Union,
 )
@@ -245,7 +244,7 @@ cdef class ThermoResult:
         ''' Wraps ``__repr`` '''
         return self.__repr__()
 
-    def todict(self, pts=None) -> Dict[str, Any]:
+    def todict(self, pts=None) -> dict[str, Any]:
         '''
         Args:
             pts: precision to round floats to
@@ -267,7 +266,7 @@ cdef class ThermoResult:
 def _conditional_get_enum_int(
         arg_name: str,
         arg_value: Union[str, int],
-        dict_obj: Dict[str, int],
+        dict_obj: dict[str, int],
 ) -> int:
     '''Helper function to conditionally resolve an argument value enum value
     using either key or to just return the key if it is an integer
@@ -726,7 +725,7 @@ cdef class _ThermoAnalysis:
             tm_threshold: melting temperature threshold
 
         Returns:
-            Tuple[bool, int, float] of form::
+            tuple[bool, int, float] of form::
                 is_offtarget (bool),
                 max_offtarget_seq_idx (int),
                 max_offtarget_tm (double)
@@ -1082,7 +1081,7 @@ cdef class _ThermoAnalysis:
 
         return _ThermoAnalysis.calc_tm_c(<_ThermoAnalysis> self, s1)
 
-    def todict(self) -> Dict[str, Any]:
+    def todict(self) -> dict[str, Any]:
         '''
         Returns:
             dictionary form of the :class:`_ThermoAnalysis` instance
@@ -1104,10 +1103,10 @@ cdef class _ThermoAnalysis:
 
     def _set_globals_and_seq_args(
             self,
-            global_args: Dict[str, Any],
-            seq_args: Optional[Dict[str, Any]],
-            misprime_lib: Optional[Dict[str, Any]] = None,
-            mishyb_lib: Optional[Dict[str, Any]] = None,
+            global_args: dict[str, Any],
+            seq_args: Optional[dict[str, Any]],
+            misprime_lib: Optional[dict[str, Any]] = None,
+            mishyb_lib: Optional[dict[str, Any]] = None,
     ) -> None:
         '''
         Sets the Primer3 global settings and sequence settings from a Python
@@ -1266,15 +1265,15 @@ cdef class _ThermoAnalysis:
 
     def run_design(
             self,
-            global_args: Dict[str, Any],
-            seq_args: Optional[Dict[str, Any]],
-            misprime_lib: Optional[Dict[str, Any]] = None,
-            mishyb_lib: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+            global_args: dict[str, Any],
+            seq_args: Optional[dict[str, Any]],
+            misprime_lib: Optional[dict[str, Any]] = None,
+            mishyb_lib: Optional[dict[str, Any]] = None,
+    ) -> dict[str, Any]:
         '''Wraps the primer design functionality of Primer3.
 
         .. versionadded:: 2.0.0
-            List versions of `PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}` are added
+            list versions of `PRIMER_{PAIR, LEFT, RIGHT, INTERNAL}` are added
             to the design output dictionary keys as a convenience.
             Original per item `PRIMER_` keys are retained as well for
             compatibility.
@@ -1588,7 +1587,7 @@ cdef inline object pdh_design_output_to_dict(
         new_oligo_name = "INTERNAL"
         int_oligo = new_oligo_name
 
-    output_dict: Dict[str, Any] = {}
+    output_dict: dict[str, Any] = {}
 
     # Check if there are warnings and print them
     warning = p3_get_rv_and_gs_warnings(retval, global_settings_data)

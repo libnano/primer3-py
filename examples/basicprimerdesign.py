@@ -22,10 +22,7 @@ A simple script to demonstrate running primer design
 import os.path as op
 import random
 import sys
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any
 
 try:
     import primer3
@@ -35,7 +32,7 @@ except ModuleNotFoundError:
     import primer3
 
 
-def basic_primer_design() -> Dict[str, Any]:
+def basic_primer_design() -> dict[str, Any]:
     '''Peform basic primer design given the parameters defined in the function
     below
 
