@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Primer3-py 2.3.1 documentation</title>
+  <title>Changelog &mdash; Primer3-py 2.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=67b02a41"></script>
+        <script src="_static/documentation_options.js?v=4d935f96"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -36,7 +36,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.3.1
+                2.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1"><a class="reference internal" href="included_primer3_modifications.html">Included Primer3 modifications</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-4-0-october-21-2026">Version 2.4.0 (October 21, 2026)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-3-1-september-6-2026">Version 2.3.1 (September 6, 2026)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-3-0-jan-6-2026">Version 2.3.0 (Jan 6, 2026)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-2-0-may-19-2025">Version 2.2.0 (May 19, 2025)</a></li>
@@ -120,21 +121,65 @@
              
   <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="version-2-4-0-october-21-2026">
+<h2>Version 2.4.0 (October 21, 2026)<a class="headerlink" href="#version-2-4-0-october-21-2026" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Backport bug fixes made to the Primer3 <code class="docutils literal notranslate"><span class="pre">main</span></code> branch after v2.6.1 onto the
+included Primer3 v2.6.1 source (see PR #179 and “Included Primer3
+modifications” in the documentation for details and the upstream commits):</p>
+<ul>
+<li><p>Fix the length-dependent term of the Owczarzy et al. (2008) Mg²⁺
+correction being silently dropped by integer division in <code class="docutils literal notranslate"><span class="pre">calc_tm</span></code> with
+<code class="docutils literal notranslate"><span class="pre">salt_corrections_method='owczarzy'</span></code> (see issue #178). Tm values change by
+up to several °C for short oligos in Mg²⁺ buffers and by ~0.3-0.6 °C for
+typical primers.</p></li>
+<li><p>Correct three single-mismatch stack enthalpies (<code class="docutils literal notranslate"><span class="pre">AC/TC</span></code>, <code class="docutils literal notranslate"><span class="pre">CT/CA</span></code>, <code class="docutils literal notranslate"><span class="pre">TA/AA</span></code>)
+in the default thermodynamic parameters. This can change
+<code class="docutils literal notranslate"><span class="pre">calc_hairpin</span></code> / <code class="docutils literal notranslate"><span class="pre">calc_homodimer</span></code> / <code class="docutils literal notranslate"><span class="pre">calc_heterodimer</span></code> results (and
+secondary-structure filtering in <code class="docutils literal notranslate"><span class="pre">design_primers</span></code>) for sequences whose
+optimal structure contains those mismatches.</p></li>
+<li><p>Fix a one-byte out-of-bounds write when parsing the triloop / tetraloop
+thermodynamic tables.</p></li>
+<li><p>Clamp interval starts that fall below <code class="docutils literal notranslate"><span class="pre">PRIMER_FIRST_BASE_INDEX</span></code> to the
+first base instead of letting them go negative.</p></li>
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">SEQUENCE_PRIMER_PAIR_OK_REGION_LIST</span></code> narrowing so it cannot discard
+valid product sizes; region pairs that cannot produce the requested
+product size now produce a <code class="docutils literal notranslate"><span class="pre">PRIMER_WARNING</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Add Python 3.15 support (see PR #180).</p></li>
+<li><p><strong>Retire Python 3.8 wheels.</strong> PyPI will no longer publish prebuilt wheels
+for Python 3.8 (<code class="docutils literal notranslate"><span class="pre">requires-python</span></code> is now <code class="docutils literal notranslate"><span class="pre">&gt;=3.9</span></code>); 3.8 reached end-of-life
+in October 2024. Users still on 3.8 will need to build from the source
+distribution with their own compiler and a pre-3.3 <code class="docutils literal notranslate"><span class="pre">Cython</span></code>, or upgrade to
+a supported Python version.</p>
+<ul>
+<li><p>Bumping the <code class="docutils literal notranslate"><span class="pre">cibuildwheel</span></code> release workflow to v4.2.0 (from v3.3.1) was
+required to build Python 3.15 wheels, but v4.2.0 dropped the ability to
+build Python 3.8 wheels, so 3.8 is dropped here to keep a single build
+matrix.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Cython</span></code> build requirement was bumped from <code class="docutils literal notranslate"><span class="pre">~=3.1.0</span></code> to <code class="docutils literal notranslate"><span class="pre">~=3.3.0</span></code>,
+which is needed to build under Python 3.15.</p></li>
+</ul>
+</li>
+</ul>
+</section>
 <section id="version-2-3-1-september-6-2026">
 <h2>Version 2.3.1 (September 6, 2026)<a class="headerlink" href="#version-2-3-1-september-6-2026" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Fix <code class="docutils literal notranslate"><span class="pre">misprime_lib</span></code>/<code class="docutils literal notranslate"><span class="pre">mishyb_lib</span></code> rejecting <code class="docutils literal notranslate"><span class="pre">bytes</span></code> sequence values (see issue #173)</p></li>
-<li><p>Memory safety &amp; correctness fixes in the bindings and bundled Primer3 source (PR #175):
-out-of-bounds lookup-table reads in <code class="docutils literal notranslate"><span class="pre">p3helpers</span></code> for non-ASCII input, UTF-8 length
-handling in the string sequence helpers, <code class="docutils literal notranslate"><span class="pre">parse_intron_list</span></code> heap overflow,
-<code class="docutils literal notranslate"><span class="pre">oligotm</span></code> out-of-bounds read for short sequences, and NULL-pointer dereferences in
-<code class="docutils literal notranslate"><span class="pre">pdh_create_seq_lib</span></code> / <code class="docutils literal notranslate"><span class="pre">_set_globals_and_seq_args</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">_set_globals_and_seq_args</span></code> no longer mutates the caller’s <code class="docutils literal notranslate"><span class="pre">global_args</span></code> dict and now
-rejects empty <code class="docutils literal notranslate"><span class="pre">seq_args</span></code> (PR #175)</p></li>
 <li><p>Fix swapped “enthalpy” / “entropy” references in <code class="docutils literal notranslate"><span class="pre">ThermoResult</span></code> docstrings (see issue #169)</p></li>
-<li><p>Add an “Included Primer3 modifications” documentation page (PR #175)</p></li>
-<li><p>Correct README oligo analysis example output (see issue #171)</p></li>
-<li><p>Correct license metadata to GPL-2.0-or-later to match the source file headers (see issue #176)</p></li>
+<li><p>Correct the oligo analysis example output shown in the README (see issue #171)</p></li>
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">misprime_lib</span></code> / <code class="docutils literal notranslate"><span class="pre">mishyb_lib</span></code> rejecting <code class="docutils literal notranslate"><span class="pre">bytes</span></code> sequence values (see issue #173)</p></li>
+<li><p>Memory safety &amp; correctness fixes across the bindings and bundled Primer3 source
+(see PR #175): out-of-bounds lookup-table reads in <code class="docutils literal notranslate"><span class="pre">p3helpers</span></code> for non-ASCII input,
+UTF-8 length handling in the string sequence helpers, <code class="docutils literal notranslate"><span class="pre">parse_intron_list</span></code> heap
+overflow, <code class="docutils literal notranslate"><span class="pre">oligotm</span></code> out-of-bounds read for short sequences, and NULL-pointer
+dereferences in <code class="docutils literal notranslate"><span class="pre">pdh_create_seq_lib</span></code> / <code class="docutils literal notranslate"><span class="pre">_set_globals_and_seq_args</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_set_globals_and_seq_args</span></code> no longer mutates the caller’s <code class="docutils literal notranslate"><span class="pre">global_args</span></code> dict and
+now rejects empty <code class="docutils literal notranslate"><span class="pre">seq_args</span></code> (see PR #175)</p></li>
+<li><p>Add an “Included Primer3 modifications” documentation page (see PR #175)</p></li>
+<li><p>Correct license metadata to <code class="docutils literal notranslate"><span class="pre">GPL-2.0-or-later</span></code> to match the source file headers
+(see PR #176)</p></li>
 </ul>
 </section>
 <section id="version-2-3-0-jan-6-2026">

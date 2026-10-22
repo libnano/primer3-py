@@ -8,7 +8,7 @@ Thank you for your interest in contributing to primer3-py! This document provide
 
 ## Development Environment Setup
 
-Development requires Python 3.8+ and our development dependencies.
+Development requires Python 3.9+ and our development dependencies.
 
 1. Set up your Python environment:
    ```console
@@ -63,7 +63,7 @@ We follow a fork-based development model with version-specific staging branches:
 
 ```mermaid
 graph TD
-    A[upstream/master] -->|fork| B[fork/master]
+    A[upstream/main] -->|fork| B[fork/main]
     B -->|branch| C[fork/feature branch]
     C -->|PR| A
     A -->|branch| D[upstream/2.1.0-staging]
@@ -78,7 +78,7 @@ graph TD
 
 ### Branch Types
 
-1. **Main Branch** (`master`):
+1. **Main Branch** (`main`):
    - Primary development branch
    - All features and fixes merge here first
    - Always contains the latest development code
@@ -87,31 +87,31 @@ graph TD
    - Created for each version being prepared for release
    - Used for version-specific changes and testing
    - Named according to the target version (e.g., `2.1.0-staging`)
-   - Merged back to master after successful release
+   - Merged back to main after successful release
 
 3. **Feature Branches**:
    - Created in personal forks
    - Used for developing new features or fixes
    - Should have descriptive names (e.g., `feat/pin_cython`, `fix/formamide_conc`)
-   - Submit PRs from these branches to upstream master
+   - Submit PRs from these branches to upstream main
 
 ### Workflow Details
 
 1. **Feature Development**:
    - Fork the repository
-   - Create feature branch from master
+   - Create feature branch from main
    - Develop and test changes
-   - Submit PR to upstream master
+   - Submit PR to upstream main
 
 2. **Release Preparation**:
-   - Create version-specific staging branch from master
+   - Create version-specific staging branch from main
    - Make version/documentation updates
    - Perform testing and validation
-   - Merge back to master when ready
+   - Merge back to main when ready
 
 3. **Maintenance**:
-   - Keep your fork's master in sync with upstream
-   - Rebase feature branches on latest master when needed
+   - Keep your fork's main in sync with upstream
+   - Rebase feature branches on latest main when needed
    - Clean up branches after merging
 
 ## Continuous Integration

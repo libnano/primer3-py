@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Included Primer3 modifications &mdash; Primer3-py 2.3.1 documentation</title>
+  <title>Included Primer3 modifications &mdash; Primer3-py 2.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=67b02a41"></script>
+        <script src="_static/documentation_options.js?v=4d935f96"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.3.1
+                2.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,6 +54,15 @@
 <li class="toctree-l1"><a class="reference internal" href="cython_help.html">Building new Cython modules against <code class="docutils literal notranslate"><span class="pre">thermoanalysis.pxd</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="miscellany.html">Miscellany</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Included Primer3 modifications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#upstream-fixes-backported-onto-v2-6-1">Upstream fixes backported onto v2.6.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oligotm-c-length-term-of-the-owczarzy-2008-mg2-correction"><code class="docutils literal notranslate"><span class="pre">oligotm.c</span></code> — length term of the Owczarzy 2008 Mg²⁺ correction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#thal-parameters-c-primer3-config-stackmm-dh-single-mismatch-stack-enthalpies"><code class="docutils literal notranslate"><span class="pre">thal_parameters.c</span></code> / <code class="docutils literal notranslate"><span class="pre">primer3_config/stackmm.dh</span></code> — single-mismatch stack enthalpies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#thal-c-thalflex-c-readtloop-one-byte-overwrite"><code class="docutils literal notranslate"><span class="pre">thal.c</span></code> / <code class="docutils literal notranslate"><span class="pre">thalflex.c</span></code> — <code class="docutils literal notranslate"><span class="pre">readTLoop</span></code> one-byte overwrite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libprimer3flex-c-libprimer3-c-negative-interval-start-after-first-index-correction"><code class="docutils literal notranslate"><span class="pre">libprimer3flex.c</span></code> / <code class="docutils literal notranslate"><span class="pre">libprimer3.c</span></code> — negative interval start after <code class="docutils literal notranslate"><span class="pre">first_index</span></code> correction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libprimer3flex-c-libprimer3-c-ok-region-optimization-could-discard-valid-product-sizes"><code class="docutils literal notranslate"><span class="pre">libprimer3flex.c</span></code> / <code class="docutils literal notranslate"><span class="pre">libprimer3.c</span></code> — ok-region optimization could discard valid product sizes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reviewed-but-not-ported">Reviewed but not ported</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#safety-correctness-fixes">Safety / correctness fixes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#read-boulder-c-parse-intron-list-bounds-check"><code class="docutils literal notranslate"><span class="pre">read_boulder.c</span></code> — <code class="docutils literal notranslate"><span class="pre">parse_intron_list</span></code> bounds check</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#oligotm-c-reject-sequences-shorter-than-2-nt-in-oligotm"><code class="docutils literal notranslate"><span class="pre">oligotm.c</span></code> — reject sequences shorter than 2 nt in <code class="docutils literal notranslate"><span class="pre">oligotm()</span></code></a></li>
@@ -96,6 +105,13 @@ open-source Primer3 v2.6.1 library, modified to make them amenable to the
 Python C API / Cython bindings (see also <a class="reference internal" href="miscellany.html#derivative-work"><span class="std std-ref">Derivative work</span></a>). In
 addition to the pervasive build-glue and API-surface changes, we occasionally
 patch this included C to fix bugs that are reachable through the bindings.</p>
+<p><strong>The included source is Primer3 v2.6.1 plus the bug fixes listed on this
+page.</strong> Primer3 has not tagged a release since v2.6.1, but its <code class="docutils literal notranslate"><span class="pre">main</span></code> branch
+has accumulated a number of fixes; the ones that affect results or memory
+safety through the bindings have been backported here (see
+<a class="reference internal" href="#upstream-fixes-backported-onto-v2-6-1">Upstream fixes backported onto v2.6.1</a>),
+so calculations can differ from a vanilla v2.6.1 build in the cases described
+below.</p>
 <p>This page records those <strong>intentional, behavior-affecting divergences</strong> from
 upstream Primer3 so they can be reviewed and re-applied if the included tree is
 ever updated to a newer upstream release. It is a living document: add an entry
@@ -103,6 +119,160 @@ here whenever you change the included C in a way that alters behavior (pure
 mechanical/build changes and comments do not need to be listed).</p>
 <p>Each entry notes the file and function, the category of change, what changed
 and why, and whether it is reachable from the Python API.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The extension modules are built from the <code class="docutils literal notranslate"><span class="pre">*flex</span></code> variants of the library
+(<code class="docutils literal notranslate"><span class="pre">libprimer3flex.c</span></code> / <code class="docutils literal notranslate"><span class="pre">thalflex.c</span></code>, derivatives of <code class="docutils literal notranslate"><span class="pre">libprimer3.c</span></code> / <code class="docutils literal notranslate"><span class="pre">thal.c</span></code>),
+plus <code class="docutils literal notranslate"><span class="pre">oligotm.c</span></code>, <code class="docutils literal notranslate"><span class="pre">read_boulder.c</span></code> and <code class="docutils literal notranslate"><span class="pre">thal_parameters.c</span></code> directly. Where a
+fix touches <code class="docutils literal notranslate"><span class="pre">libprimer3</span></code> or <code class="docutils literal notranslate"><span class="pre">thal</span></code> code it is applied to both the compiled
+<code class="docutils literal notranslate"><span class="pre">*flex</span></code> file and its non-flex counterpart so the two do not drift apart.</p>
+</div>
+<hr class="docutils" />
+<section id="upstream-fixes-backported-onto-v2-6-1">
+<h2>Upstream fixes backported onto v2.6.1<a class="headerlink" href="#upstream-fixes-backported-onto-v2-6-1" title="Link to this heading"></a></h2>
+<p>Each of these corresponds to a commit on the Primer3 <code class="docutils literal notranslate"><span class="pre">main</span></code> branch
+(<a class="reference external" href="https://github.com/primer3-org/primer3">primer3-org/primer3</a>) after the
+v2.6.1 tag. Where an upstream hash is given, it is the commit the fix was taken
+from.</p>
+<section id="oligotm-c-length-term-of-the-owczarzy-2008-mg2-correction">
+<h3><code class="docutils literal notranslate"><span class="pre">oligotm.c</span></code> — length term of the Owczarzy 2008 Mg²⁺ correction<a class="headerlink" href="#oligotm-c-length-term-of-the-owczarzy-2008-mg2-correction" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Category:</strong> correctness fix (integer division)</p></li>
+<li><p><strong>Upstream:</strong> <code class="docutils literal notranslate"><span class="pre">c5b092b</span></code>; primer3-py issue
+<a class="reference external" href="https://github.com/libnano/primer3-py/issues/178">#178</a></p></li>
+<li><p><strong>Reachable from Python:</strong> yes — <code class="docutils literal notranslate"><span class="pre">calc_tm</span></code> / <code class="docutils literal notranslate"><span class="pre">bindings.calc_tm</span></code> with
+<code class="docutils literal notranslate"><span class="pre">salt_corrections_method='owczarzy'</span></code> and <code class="docutils literal notranslate"><span class="pre">dv_conc</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, in the regimes where
+Eq. 16 of Owczarzy et al. (2008) applies (no monovalent cations, or
+√[Mg²⁺]/[Mon⁺] ≥ 0.22).</p></li>
+</ul>
+<p>The length-dependent term <code class="docutils literal notranslate"><span class="pre">1/(2(N−1))·[e</span> <span class="pre">+</span> <span class="pre">f·ln[Mg²⁺]</span> <span class="pre">+</span> <span class="pre">g·ln²[Mg²⁺]]</span></code> was
+written <code class="docutils literal notranslate"><span class="pre">1/(2</span> <span class="pre">*</span> <span class="pre">(len</span> <span class="pre">-</span> <span class="pre">1))</span></code> with <code class="docutils literal notranslate"><span class="pre">len</span></code> an <code class="docutils literal notranslate"><span class="pre">int</span></code>, so it was integer division and
+always <code class="docutils literal notranslate"><span class="pre">0</span></code>. The term is now computed in floating point. Tm changes by roughly
+3.5–5.5 °C for 10–12-mers in Mg²⁺ buffers and by about 0.3–0.6 °C for typical
+20–25-mer primers in 50 mM K⁺ / 1.5–3 mM Mg²⁺; against the measured duplexes in
+Owczarzy et al. 2008 Table S1 the mean absolute error drops from 2.59 °C to
+1.55 °C. Other salt-correction methods are unaffected.</p>
+</section>
+<section id="thal-parameters-c-primer3-config-stackmm-dh-single-mismatch-stack-enthalpies">
+<h3><code class="docutils literal notranslate"><span class="pre">thal_parameters.c</span></code> / <code class="docutils literal notranslate"><span class="pre">primer3_config/stackmm.dh</span></code> — single-mismatch stack enthalpies<a class="headerlink" href="#thal-parameters-c-primer3-config-stackmm-dh-single-mismatch-stack-enthalpies" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Category:</strong> correctness fix (thermodynamic parameters)</p></li>
+<li><p><strong>Upstream:</strong> <code class="docutils literal notranslate"><span class="pre">d2844b5</span></code> (only the three numeric changes were taken; upstream
+also reformatted the parameter files and added citations)</p></li>
+<li><p><strong>Reachable from Python:</strong> yes — <code class="docutils literal notranslate"><span class="pre">calc_hairpin</span></code>, <code class="docutils literal notranslate"><span class="pre">calc_homodimer</span></code>,
+<code class="docutils literal notranslate"><span class="pre">calc_heterodimer</span></code> (and the self-/pair-complementarity checks inside
+<code class="docutils literal notranslate"><span class="pre">design_primers</span></code>). <code class="docutils literal notranslate"><span class="pre">calc_tm</span></code> is not affected.</p></li>
+</ul>
+<p>Three entries of the mismatch-stack enthalpy table (used for internal 1×1
+loops, i.e. a single mismatch flanked by matched base pairs) were wrong:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Stack (5’→3’ / 3’→5’)</p></th>
+<th class="head"><p>Was</p></th>
+<th class="head"><p>Now</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AC_TC</span></code></p></td>
+<td><p>−10 cal/mol</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CT_CA</span></code></p></td>
+<td><p>−10 cal/mol</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TA_AA</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">inf</span></code> (forbidden)</p></td>
+<td><p>4700 cal/mol</p></td>
+</tr>
+</tbody>
+</table>
+<p>The defaults are the <code class="docutils literal notranslate"><span class="pre">stackmm_dh</span></code> string literal in <code class="docutils literal notranslate"><span class="pre">thal_parameters.c</span></code>; the
+reference copy <code class="docutils literal notranslate"><span class="pre">primer3_config/stackmm.dh</span></code> was updated to match. The <code class="docutils literal notranslate"><span class="pre">AC_TC</span></code> /
+<code class="docutils literal notranslate"><span class="pre">CT_CA</span></code> change moves ΔH by 10 cal/mol per such stack (negligible). The <code class="docutils literal notranslate"><span class="pre">TA_AA</span></code>
+change makes a previously impossible mismatch context available to the
+dynamic programming, so a small fraction of sequences (a T·A pair stacked on an
+A·A mismatch) can now fold into a structure that was previously invisible;
+for those, hairpin/dimer ΔG, ΔH and Tm can change substantially (e.g. a
+hairpin that reported no structure under v2.6.1 now reports Tm ≈ 27 °C).
+Results agree with upstream’s <code class="docutils literal notranslate"><span class="pre">ntthal</span></code> built from <code class="docutils literal notranslate"><span class="pre">d2844b5</span></code>.</p>
+</section>
+<section id="thal-c-thalflex-c-readtloop-one-byte-overwrite">
+<h3><code class="docutils literal notranslate"><span class="pre">thal.c</span></code> / <code class="docutils literal notranslate"><span class="pre">thalflex.c</span></code> — <code class="docutils literal notranslate"><span class="pre">readTLoop</span></code> one-byte overwrite<a class="headerlink" href="#thal-c-thalflex-c-readtloop-one-byte-overwrite" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Category:</strong> memory-safety fix (out-of-bounds write)</p></li>
+<li><p><strong>Upstream:</strong> <code class="docutils literal notranslate"><span class="pre">6461c0e</span></code></p></li>
+<li><p><strong>Reachable from Python:</strong> yes, on every thermodynamic calculation (the
+default triloop/tetraloop tables are parsed when the parameters are loaded).</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">readTLoop</span></code> NUL-terminated its output with <code class="docutils literal notranslate"><span class="pre">s[5]</span> <span class="pre">=</span> <span class="pre">'\0'</span></code> / <code class="docutils literal notranslate"><span class="pre">s[6]</span> <span class="pre">=</span> <span class="pre">'\0'</span></code>, but
+<code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">triloop::loop</span></code> / <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">tetraloop::loop</span></code> are exactly 5 / 6 bytes, so
+each call wrote one byte past the array. The terminator was never used (the
+bytes are immediately converted in place to numeric codes), so it was removed;
+results are unchanged.</p>
+</section>
+<section id="libprimer3flex-c-libprimer3-c-negative-interval-start-after-first-index-correction">
+<h3><code class="docutils literal notranslate"><span class="pre">libprimer3flex.c</span></code> / <code class="docutils literal notranslate"><span class="pre">libprimer3.c</span></code> — negative interval start after <code class="docutils literal notranslate"><span class="pre">first_index</span></code> correction<a class="headerlink" href="#libprimer3flex-c-libprimer3-c-negative-interval-start-after-first-index-correction" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Category:</strong> correctness / robustness fix</p></li>
+<li><p><strong>Upstream:</strong> <code class="docutils literal notranslate"><span class="pre">a70770e</span></code></p></li>
+<li><p><strong>Reachable from Python:</strong> yes — <code class="docutils literal notranslate"><span class="pre">design_primers</span></code> with a non-zero
+<code class="docutils literal notranslate"><span class="pre">PRIMER_FIRST_BASE_INDEX</span></code> and an interval tag (<code class="docutils literal notranslate"><span class="pre">SEQUENCE_TARGET</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SEQUENCE_EXCLUDED_REGION</span></code>, <code class="docutils literal notranslate"><span class="pre">SEQUENCE_INTERNAL_EXCLUDED_REGION</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SEQUENCE_PRIMER_PAIR_OK_REGION_LIST</span></code>).</p></li>
+</ul>
+<p>In <code class="docutils literal notranslate"><span class="pre">_check_and_adjust_1_interval</span></code>, <code class="docutils literal notranslate"><span class="pre">intervals[i][0]</span> <span class="pre">-=</span> <span class="pre">first_index</span></code> could make a
+start position negative when the user’s start was below <code class="docutils literal notranslate"><span class="pre">first_index</span></code>. The
+start is now clamped to <code class="docutils literal notranslate"><span class="pre">0</span></code>. For example, with <code class="docutils literal notranslate"><span class="pre">PRIMER_FIRST_BASE_INDEX=1</span></code> an
+excluded region starting at <code class="docutils literal notranslate"><span class="pre">0</span></code> previously raised a spurious <code class="docutils literal notranslate"><span class="pre">EXCLUDED_REGION</span> <span class="pre">outside</span> <span class="pre">of</span> <span class="pre">INCLUDED_REGION</span></code> warning; it is now treated as starting at the first
+base.</p>
+</section>
+<section id="libprimer3flex-c-libprimer3-c-ok-region-optimization-could-discard-valid-product-sizes">
+<h3><code class="docutils literal notranslate"><span class="pre">libprimer3flex.c</span></code> / <code class="docutils literal notranslate"><span class="pre">libprimer3.c</span></code> — ok-region optimization could discard valid product sizes<a class="headerlink" href="#libprimer3flex-c-libprimer3-c-ok-region-optimization-could-discard-valid-product-sizes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Category:</strong> correctness fix</p></li>
+<li><p><strong>Upstream:</strong> <code class="docutils literal notranslate"><span class="pre">e1232c2</span></code> (with one deliberate difference, below)</p></li>
+<li><p><strong>Reachable from Python:</strong> yes — <code class="docutils literal notranslate"><span class="pre">design_primers</span></code> with
+<code class="docutils literal notranslate"><span class="pre">SEQUENCE_PRIMER_PAIR_OK_REGION_LIST</span></code>.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">_optimize_ok_regions_list</span></code> narrows each left/right ok-region pair using the
+requested product-size range and primer length. The narrowing could produce
+ranges that no longer admit the requested products. It now only narrows when the
+result remains consistent, and a region pair that cannot yield any product in
+the requested range is collapsed to a 1 bp region and reported as a
+<code class="docutils literal notranslate"><span class="pre">PRIMER_WARNING</span></code>:
+<code class="docutils literal notranslate"><span class="pre">PAIR_OK_REGIONS[l_start,l_len,r_start,r_len]</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">allow</span> <span class="pre">products</span> <span class="pre">of</span> <span class="pre">min-maxbp</span></code>.
+The function gained a <code class="docutils literal notranslate"><span class="pre">warning</span></code> argument to report this.</p>
+<p><strong>Difference from upstream:</strong> upstream’s final feasibility check is
+<code class="docutils literal notranslate"><span class="pre">pmin</span> <span class="pre">&lt;</span> <span class="pre">re</span> <span class="pre">-</span> <span class="pre">ls</span> <span class="pre">+</span> <span class="pre">1</span></code>, which wrongly rejects a region pair whose largest possible
+product is <em>exactly</em> the smallest requested size (for example a fixed
+<code class="docutils literal notranslate"><span class="pre">200-200</span></code> product range with regions spanning exactly 200 bp). primer3-py uses
+<code class="docutils literal notranslate"><span class="pre">pmin</span> <span class="pre">&lt;=</span> <span class="pre">re</span> <span class="pre">-</span> <span class="pre">ls</span> <span class="pre">+</span> <span class="pre">1</span></code>.</p>
+</section>
+<section id="reviewed-but-not-ported">
+<h3>Reviewed but not ported<a class="headerlink" href="#reviewed-but-not-ported" title="Link to this heading"></a></h3>
+<p>The upstream <code class="docutils literal notranslate"><span class="pre">main</span></code> branch also contains the following changes that were
+evaluated and deliberately <strong>not</strong> taken. They are listed here so a future
+re-vendoring can revisit them:</p>
+<ul class="simple">
+<li><p>A large, behavior-preserving refactor of <code class="docutils literal notranslate"><span class="pre">thal.c</span></code> (split into several
+translation units, removal of macros and global state, 2-D dynamic
+programming tables, default parameters compiled in as header tables).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">oligotm.c</span></code> rewritten without macros, and the SantaLucia 2004 parameter
+table (<code class="docutils literal notranslate"><span class="pre">c5b092b</span></code>, <code class="docutils literal notranslate"><span class="pre">23fee1d</span></code>); only the Owczarzy fix was taken.</p></li>
+<li><p>Hardening of <code class="docutils literal notranslate"><span class="pre">malloc</span></code> failure paths (<code class="docutils literal notranslate"><span class="pre">f8b6706</span></code>), which mostly touches code
+that is not exposed through the bindings (<code class="docutils literal notranslate"><span class="pre">masker</span></code>, <code class="docutils literal notranslate"><span class="pre">amplicontm</span></code>).</p></li>
+<li><p>Downgrading “left and right primer are identical” from an error to a warning
+for user-supplied primers (<code class="docutils literal notranslate"><span class="pre">8cc57fe</span></code>, <code class="docutils literal notranslate"><span class="pre">027eb29</span></code>), a policy change rather than
+a bug fix.</p></li>
+<li><p>New settings such as <code class="docutils literal notranslate"><span class="pre">PRIMER_INTERNAL_REV_COMP_G</span></code> /
+<code class="docutils literal notranslate"><span class="pre">PRIMER_INTERNAL_NO_5_PRIME_G</span></code> (<code class="docutils literal notranslate"><span class="pre">010c4e8</span></code>).</p></li>
+<li><p>Fix for a <code class="docutils literal notranslate"><span class="pre">thal</span></code> dynamic-programming-table leak (<code class="docutils literal notranslate"><span class="pre">8964d5e</span></code>); not applicable
+because the included code allocates those tables as flat arrays freed with
+<code class="docutils literal notranslate"><span class="pre">free()</span></code>.</p></li>
+</ul>
+</section>
+</section>
 <hr class="docutils" />
 <section id="safety-correctness-fixes">
 <h2>Safety / correctness fixes<a class="headerlink" href="#safety-correctness-fixes" title="Link to this heading"></a></h2>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Development Guide &mdash; Primer3-py 2.3.1 documentation</title>
+  <title>Development Guide &mdash; Primer3-py 2.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=67b02a41"></script>
+        <script src="_static/documentation_options.js?v=4d935f96"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             Primer3-py
           </a>
               <div class="version">
-                2.3.1
+                2.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -120,7 +120,7 @@
 <p>Thank you for your interest in contributing to primer3-py! This document provides comprehensive guidelines for development, contribution, and release processes.</p>
 <section id="development-environment-setup">
 <h2>Development Environment Setup<a class="headerlink" href="#development-environment-setup" title="Link to this heading"></a></h2>
-<p>Development requires Python 3.8+ and our development dependencies.</p>
+<p>Development requires Python 3.9+ and our development dependencies.</p>
 <ol class="arabic">
 <li><p>Set up your Python environment:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span><span class="k">in</span><span class="w"> </span>editable<span class="w"> </span>mode<span class="w"> </span>with<span class="w"> </span>development<span class="w"> </span>dependencies
@@ -174,7 +174,7 @@
 <h2>Branching Strategy<a class="headerlink" href="#branching-strategy" title="Link to this heading"></a></h2>
 <p>We follow a fork-based development model with version-specific staging branches:</p>
 <div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>graph TD
-    A[upstream/master] --&gt;|fork| B[fork/master]
+    A[upstream/main] --&gt;|fork| B[fork/main]
     B --&gt;|branch| C[fork/feature branch]
     C --&gt;|PR| A
     A --&gt;|branch| D[upstream/2.1.0-staging]
@@ -190,7 +190,7 @@
 <section id="branch-types">
 <h3>Branch Types<a class="headerlink" href="#branch-types" title="Link to this heading"></a></h3>
 <ol class="arabic simple">
-<li><p><strong>Main Branch</strong> (<code class="docutils literal notranslate"><span class="pre">master</span></code>):</p>
+<li><p><strong>Main Branch</strong> (<code class="docutils literal notranslate"><span class="pre">main</span></code>):</p>
 <ul class="simple">
 <li><p>Primary development branch</p></li>
 <li><p>All features and fixes merge here first</p></li>
@@ -202,7 +202,7 @@
 <li><p>Created for each version being prepared for release</p></li>
 <li><p>Used for version-specific changes and testing</p></li>
 <li><p>Named according to the target version (e.g., <code class="docutils literal notranslate"><span class="pre">2.1.0-staging</span></code>)</p></li>
-<li><p>Merged back to master after successful release</p></li>
+<li><p>Merged back to main after successful release</p></li>
 </ul>
 </li>
 <li><p><strong>Feature Branches</strong>:</p>
@@ -210,7 +210,7 @@
 <li><p>Created in personal forks</p></li>
 <li><p>Used for developing new features or fixes</p></li>
 <li><p>Should have descriptive names (e.g., <code class="docutils literal notranslate"><span class="pre">feat/pin_cython</span></code>, <code class="docutils literal notranslate"><span class="pre">fix/formamide_conc</span></code>)</p></li>
-<li><p>Submit PRs from these branches to upstream master</p></li>
+<li><p>Submit PRs from these branches to upstream main</p></li>
 </ul>
 </li>
 </ol>
@@ -221,23 +221,23 @@
 <li><p><strong>Feature Development</strong>:</p>
 <ul class="simple">
 <li><p>Fork the repository</p></li>
-<li><p>Create feature branch from master</p></li>
+<li><p>Create feature branch from main</p></li>
 <li><p>Develop and test changes</p></li>
-<li><p>Submit PR to upstream master</p></li>
+<li><p>Submit PR to upstream main</p></li>
 </ul>
 </li>
 <li><p><strong>Release Preparation</strong>:</p>
 <ul class="simple">
-<li><p>Create version-specific staging branch from master</p></li>
+<li><p>Create version-specific staging branch from main</p></li>
 <li><p>Make version/documentation updates</p></li>
 <li><p>Perform testing and validation</p></li>
-<li><p>Merge back to master when ready</p></li>
+<li><p>Merge back to main when ready</p></li>
 </ul>
 </li>
 <li><p><strong>Maintenance</strong>:</p>
 <ul class="simple">
-<li><p>Keep your fork’s master in sync with upstream</p></li>
-<li><p>Rebase feature branches on latest master when needed</p></li>
+<li><p>Keep your fork’s main in sync with upstream</p></li>
+<li><p>Rebase feature branches on latest main when needed</p></li>
 <li><p>Clean up branches after merging</p></li>
 </ul>
 </li>
