@@ -32,6 +32,7 @@ stringent performance requirments, you should consider using the C API
 and/or Cython modules directly. See the docs for more details.
 
 '''
+import threading
 import warnings
 from typing import (
     Any,
@@ -46,6 +47,9 @@ from primer3 import (  # type: ignore
 
 DEFAULT_P3_ARGS = argdefaults.Primer3PyArguments()
 THERMO_ANALYSIS = thermoanalysis.ThermoAnalysis()
+# THERMO_ANALYSIS is shared, and each call below sets its arguments before
+# using them, so concurrent calls need to be serialised.
+_THERMO_ANALYSIS_LOCK = threading.Lock()
 
 Str_Bytes_T = Union[str, bytes, object]
 
@@ -88,8 +92,9 @@ def calc_hairpin(
         :class:`RuntimeError`
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calc_hairpin(seq, output_structure).check_exc()
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calc_hairpin(seq, output_structure).check_exc()
 
 
 def calcHairpin(
@@ -130,8 +135,9 @@ def calcHairpin(
         :class:`RuntimeError`
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calcHairpin(seq, output_structure).check_exc()
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calcHairpin(seq, output_structure).check_exc()
 
 
 def calc_homodimer(
@@ -170,8 +176,9 @@ def calc_homodimer(
         :class:`RuntimeError`
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calc_homodimer(seq, output_structure).check_exc()
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calc_homodimer(seq, output_structure).check_exc()
 
 
 def calcHomodimer(
@@ -212,8 +219,9 @@ def calcHomodimer(
         :class:`RuntimeError`
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calcHomodimer(seq, output_structure).check_exc()
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calcHomodimer(seq, output_structure).check_exc()
 
 
 def calc_heterodimer(
@@ -253,12 +261,13 @@ def calc_heterodimer(
         :class:`RuntimeError`
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calc_heterodimer(
-        seq1,
-        seq2,
-        output_structure,
-    ).check_exc()
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calc_heterodimer(
+            seq1,
+            seq2,
+            output_structure,
+        ).check_exc()
 
 
 def calcHeterodimer(
@@ -300,12 +309,13 @@ def calcHeterodimer(
         :class:`RuntimeError`
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calcHeterodimer(
-        seq1,
-        seq2,
-        output_structure,
-    ).check_exc()
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calcHeterodimer(
+            seq1,
+            seq2,
+            output_structure,
+        ).check_exc()
 
 
 def calc_end_stability(
@@ -345,8 +355,9 @@ def calc_end_stability(
         :class:`RuntimeError`
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calc_end_stability(seq1, seq2).check_exc()
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calc_end_stability(seq1, seq2).check_exc()
 
 
 def calcEndStability(
@@ -388,8 +399,9 @@ def calcEndStability(
         :class:`RuntimeError`
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calcEndStability(seq1, seq2).check_exc()
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calcEndStability(seq1, seq2).check_exc()
 
 
 def calc_tm(
@@ -435,8 +447,9 @@ def calc_tm(
         The melting temperature in degrees Celsius (float).
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calc_tm(seq)
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calc_tm(seq)
 
 
 def calcTm(
@@ -484,8 +497,9 @@ def calcTm(
         The melting temperature in degrees Celsius (float).
 
     '''
-    THERMO_ANALYSIS.set_thermo_args(**locals())
-    return THERMO_ANALYSIS.calcTm(seq)
+    with _THERMO_ANALYSIS_LOCK:
+        THERMO_ANALYSIS.set_thermo_args(**locals())
+        return THERMO_ANALYSIS.calcTm(seq)
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Tm-only aliases ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -546,12 +560,13 @@ def design_primers(
         BoulderIO output from ``primer3_main``)
 
     '''
-    return THERMO_ANALYSIS.run_design(
-        global_args=global_args,
-        seq_args=seq_args,
-        misprime_lib=misprime_lib,
-        mishyb_lib=mishyb_lib,
-    )
+    with _THERMO_ANALYSIS_LOCK:
+        return THERMO_ANALYSIS.run_design(
+            global_args=global_args,
+            seq_args=seq_args,
+            misprime_lib=misprime_lib,
+            mishyb_lib=mishyb_lib,
+        )
 
 
 def designPrimers(
@@ -578,9 +593,10 @@ def designPrimers(
 
     '''
     warnings.warn('Function deprecated please use "design_primers" instead')
-    return THERMO_ANALYSIS.run_design(
-        global_args=global_args,
-        seq_args=seq_args,
-        misprime_lib=misprime_lib,
-        mishyb_lib=mishyb_lib,
-    )
+    with _THERMO_ANALYSIS_LOCK:
+        return THERMO_ANALYSIS.run_design(
+            global_args=global_args,
+            seq_args=seq_args,
+            misprime_lib=misprime_lib,
+            mishyb_lib=mishyb_lib,
+        )
