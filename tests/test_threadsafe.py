@@ -31,7 +31,10 @@ import time
 import unittest
 from typing import Any
 
-from primer3 import thermoanalysis  # type: ignore
+from primer3 import (  # type: ignore
+    bindings,
+    thermoanalysis,
+)
 
 
 def make_random_params() -> dict[str, Any]:
@@ -257,3 +260,58 @@ class TestThermoAnalysisInThread(unittest.TestCase):
             )
             self.assertEqual(new_res, res)
         print(f'total: {(time.time() - t0):0.2}')
+
+
+class TestBindingsInThread(unittest.TestCase):
+
+    def test_bindings_thread_safety(self):
+        '''Test the `bindings` functions for thread safety.
+
+        They share a single module-level `ThermoAnalysis`, and each call sets
+        its arguments (e.g. hairpin vs dimer alignment type) before running,
+        so concurrent calls must not interfere with each other.
+        '''
+        def rand_seq(_random: random.Random) -> str:
+            return ''.join(
+                _random.choice('ATGC')
+                for _ in range(_random.randint(15, 60))
+            )
+
+        def summary(seq: str) -> tuple[float, float, float]:
+            return (
+                bindings.calc_tm(seq),
+                bindings.calc_hairpin(seq).dg,
+                bindings.calc_homodimer(seq).dg,
+            )
+
+        local_random = random.Random(42)
+        ref_seqs = [rand_seq(local_random) for _ in range(30)]
+        expected = {seq: summary(seq) for seq in ref_seqs}
+
+        thread_count = 8
+        results_list: list[list[str]] = [[] for _ in range(thread_count)]
+
+        def bindings_thread(i: int) -> None:
+            _random = random.Random(42 + i)
+            for _ in range(1000):
+                seq1, seq2 = rand_seq(_random), rand_seq(_random)
+                bindings.calc_hairpin(seq1, output_structure=True)
+                bindings.calc_heterodimer(seq1, seq2, output_structure=True)
+                seq = _random.choice(ref_seqs)
+                if summary(seq) != expected[seq]:
+                    results_list[i].append(seq)
+
+        thread_list = [
+            threading.Thread(target=bindings_thread, args=(i,))
+            for i in range(thread_count)
+        ]
+        for t in thread_list:
+            t.start()
+        for t in thread_list:
+            t.join()
+
+        mismatches = [seq for res in results_list for seq in res]
+        self.assertEqual(
+            len(mismatches), 0,
+            f'{len(mismatches)} wrong results, e.g. {mismatches[:3]}',
+        )
